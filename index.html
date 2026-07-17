@@ -5,10 +5,7 @@
     <title>Meu Portfólio</title>
   </head>
   <body>
-    <header>
-      <h1>Deiver Brito</h1>
-      <p>Designer de Produto</p>
-    </header>
+    <header id="cabecalho"></header>
 
     <main id="lista-projetos">
       <!-- os projetos vão aparecer aqui, gerados pelo JavaScript -->
@@ -21,7 +18,14 @@
         { titulo: "Projeto C", descricao: "Descrição breve do projeto C." },
         { titulo: "Projeto D", descricao: "Descrição breve do projeto D." }
       ];
+      const perfil = { nome: "Deiver Brito", cargo: "Designer de Produto" };
 
+      function criarCabecalhoHTML(perfil) {
+        return `
+        <h1>${perfil.nome}</h1>
+        <p>${perfil.cargo}</p>
+      `;
+}
       function criarProjetoHTML(projeto) {
         return `
           <section>
@@ -32,9 +36,10 @@
       }
 
       const container = document.getElementById("lista-projetos");
-      projetos.forEach(projeto => {
-        container.innerHTML += criarProjetoHTML(projeto);
+        projetos.forEach(projeto => {
+          container.innerHTML += criarProjetoHTML(projeto);
       });
+      document.getElementById("cabecalho").innerHTML = criarCabecalhoHTML(perfil);
     </script>
   </body>
 </html>
