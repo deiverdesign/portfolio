@@ -1,13 +1,26 @@
+:root {
+  --color-primary: #1C5550;
+  --color-text-secondary: #666;
+  --color-background-card: #F6F4EE;
+  --color-border: #ddd;
+
+  --space-sm: 16px;
+  --space-md: 20px;
+  --space-lg: 40px;
+
+  --radius-card: 8px;
+}
+
 body {
   font-family: Arial, sans-serif;
   max-width: 700px;
   margin: 0 auto;
-  padding: 40px 20px;
-  color: #1C5550;
+  padding: var(--space-lg) var(--space-md);
+  color: var(--color-primary);
 }
 
 header {
-  margin-bottom: 40px;
+  margin-bottom: var(--space-lg);
 }
 
 header h1 {
@@ -16,17 +29,16 @@ header h1 {
 }
 
 header p {
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 16px;
 }
 
 section {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 16px;
-  background-color: #F6F4EE;
-
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  background-color: var(--color-background-card);
 }
 
 section h2 {
