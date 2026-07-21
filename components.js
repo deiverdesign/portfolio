@@ -1,7 +1,8 @@
 const projetos = [
   {
     titulo: "CURE Intelligence / SCRIOO",
-    descricao: "AI powered supply chain risk intelligence platform."
+    descricao: "AI powered supply chain risk intelligence platform.",
+    pagina: "cure-intelligence.html"
   },
   {
     titulo: "HP Subscription Onboarding",
@@ -27,16 +28,30 @@ function criarCabecalhoHTML(perfil) {
 }
 
 function criarProjetoHTML(projeto) {
+  // Se o projeto tiver uma página própria (campo "pagina"), o título
+  // vira um link pra ela. Se não tiver, fica como texto simples —
+  // é assim que os outros 3 cases continuam "não clicáveis" por enquanto.
+  const titulo = projeto.pagina
+    ? `<a href="${projeto.pagina}">${projeto.titulo}</a>`
+    : projeto.titulo;
+
   return `
     <section>
-      <h2>${projeto.titulo}</h2>
+      <h2>${titulo}</h2>
       <p>${projeto.descricao}</p>
     </section>
   `;
 }
 
 const container = document.getElementById("lista-projetos");
-projetos.forEach(projeto => {
-  container.innerHTML += criarProjetoHTML(projeto);
-});
+// Guarda de segurança: nas páginas de case (ex: cure-intelligence.html)
+// não existe #lista-projetos, então "container" viria null aqui.
+// Sem esse "if", o forEach quebraria e a linha do cabeçalho (embaixo)
+// nunca seria executada — o nome/cargo simplesmente não apareceriam.
+if (container) {
+  projetos.forEach(projeto => {
+    container.innerHTML += criarProjetoHTML(projeto);
+  });
+}
+
 document.getElementById("cabecalho").innerHTML = criarCabecalhoHTML(perfil);

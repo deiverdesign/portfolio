@@ -46,3 +46,186 @@ section h2 {
   margin-top: 0;
   color: var(--color-accent);
 }
+
+/* Sem isso, o link do card do CURE ficaria azul e sublinhado —
+   o navegador estiliza <a> por padrão, ignorando a cor herdada do h2. */
+section h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+section h2 a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================
+   Case detail pages (ex: cure-intelligence.html)
+   Reaproveita os tokens acima — nenhum token novo,
+   só classes novas pra estrutura da página de case.
+   ============================================ */
+
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--color-primary);
+}
+
+.case-hero h1 {
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.case-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: var(--space-md);
+}
+
+.case-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-md);
+  margin: 0;
+}
+
+.case-meta dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.case-meta dd {
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--color-primary);
+}
+
+.case-eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-accent);
+  margin-bottom: 4px;
+}
+
+.case-list {
+  padding-left: 1.2em;
+}
+
+.case-list li {
+  margin-bottom: 8px;
+}
+
+.case-caption {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-top: var(--space-sm);
+}
+
+.case-approach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.case-approach-item {
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.case-approach-number {
+  display: block;
+  color: var(--color-accent);
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.case-decision {
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  margin-bottom: var(--space-md);
+}
+
+.case-decision h3 {
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.case-subheading {
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.case-test-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.case-test-card {
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.case-test-title {
+  color: var(--color-accent);
+  font-weight: bold;
+  margin-bottom: var(--space-sm);
+}
+
+.case-outcome {
+  list-style: none;
+  padding-left: 0;
+}
+
+.case-outcome li {
+  padding-left: 1.5em;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.case-outcome li::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+}
+
+.case-reflection blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: var(--space-md);
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.next-case {
+  display: block;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  text-decoration: none;
+  margin-top: var(--space-lg);
+}
+
+.next-case:hover {
+  border-color: var(--color-accent);
+}
+
+.next-case-title {
+  display: block;
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  margin: 4px 0;
+}
