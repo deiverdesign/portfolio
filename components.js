@@ -6,7 +6,8 @@ const projetos = [
   },
   {
     titulo: "HP Subscription Onboarding",
-    descricao: "Guided setup for a printer inclusive subscription model."
+    descricao: "Guided setup for a printer inclusive subscription model.",
+    pagina: "hp-subscription.html"   // ← linha nova
   },
   {
     titulo: "Theodoor",
