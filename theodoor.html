@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theodoor — Deiver Brito</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header id="cabecalho"></header>
+
+  <main id="case-theodoor">
+    <a class="back-link" href="index.html">&larr; Back to work</a>
+
+    <section class="case-hero">
+      <h1>Theodoor</h1>
+      <p class="case-subtitle">Accessible app for smart door automation.</p>
+
+      <dl class="case-meta">
+        <div>
+          <dt>Role</dt>
+          <dd>Lead Product Designer &middot; Individual contributor</dd>
+        </div>
+        <div>
+          <dt>Scope</dt>
+          <dd>Mobile UX, interaction design, system feedback, accessibility considerations, motion, prototyping, design system foundations, and handoff documentation</dd>
+        </div>
+        <div>
+          <dt>Collaboration</dt>
+          <dd>Product, engineering, and client stakeholders</dd>
+        </div>
+        <div>
+          <dt>Platform</dt>
+          <dd>Mobile app</dd>
+        </div>
+        <div>
+          <dt>Duration</dt>
+          <dd>1 month</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">01 &middot; Project in a minute</p>
+      <h2>Project in a minute</h2>
+      <p>Theodoor is a mobile app for controlling an accessible smart door automation system.</p>
+      <p>My work focused on making door states, system feedback, errors, and controls clear enough that users could trust what was happening in the physical world.</p>
+      <p>Because the app controlled a real door, motion, accessibility, and feedback weren't decorative. They were part of the core interaction model.</p>
+      <p class="case-caption">Designing a mobile interface for a physical system where feedback, trust, and accessibility were central to the experience.</p>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">02 &middot; My contribution</p>
+      <h2>My contribution</h2>
+      <p>I worked on mobile UX, UI, design system foundations, motion, prototyping, and accessibility considerations.</p>
+      <ol class="case-list">
+        <li>Map door states and user actions</li>
+        <li>Design feedback for opening, closing, waiting, success, and error states</li>
+        <li>Create motion explorations to communicate system behavior</li>
+        <li>Use AI-assisted and code-based prototypes to test interaction ideas faster</li>
+        <li>Build reusable UI foundations for the mobile experience</li>
+      </ol>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">03 &middot; What made it complex</p>
+      <h2>What made it complex</h2>
+      <p>The interface needed to explain what was happening in the physical world.</p>
+      <ol class="case-list">
+        <li>The app controlled a physical object, so users needed to know whether a command was received, in progress, complete, or failed.</li>
+        <li>The experience needed to support accessibility contexts where feedback couldn't rely on visual UI alone.</li>
+        <li>Static screens weren't enough. The important part was how the system behaved over time.</li>
+      </ol>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">04 &middot; How I approached it</p>
+      <h2>How I approached it</h2>
+      <div class="case-approach-grid">
+        <div class="case-approach-item">
+          <span class="case-approach-number">01</span>
+          <h3>Map door states and user actions</h3>
+          <p>I mapped what the system needed to communicate: open, closed, opening, closing, waiting, success, error, and connection issues.</p>
+        </div>
+        <div class="case-approach-item">
+          <span class="case-approach-number">02</span>
+          <h3>Design feedback loops</h3>
+          <p>I explored how the app could confirm that a command was sent, the system was processing it, and the physical action was complete or failed.</p>
+        </div>
+        <div class="case-approach-item">
+          <span class="case-approach-number">03</span>
+          <h3>Simulate behavior before building</h3>
+          <p>I used code-based and AI-assisted prototypes to run edge-case scenarios and make state timing and transitions visible to the team before development.</p>
+        </div>
+        <div class="case-approach-item">
+          <span class="case-approach-number">04</span>
+          <h3>Build reusable foundations</h3>
+          <p>I organized UI patterns and states into reusable foundations so the app stayed consistent as the experience evolved.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">05 &middot; Behavioral prototyping</p>
+      <h2>Behavioral prototyping</h2>
+      <p>Static screens weren't enough to discuss this experience.</p>
+      <p>I built an AI-assisted prototype simulator to make edge cases, timing, and system transitions visible before development. The simulator covered scenarios like Happy Path, Empty Home, Door Locked, Partial Open with Obstruction, Pinch Protection, Path Blocked, Battery Alert, and Offline/Out of Range.</p>
+      <p>A Figma blueprint translated from the prototype helped bridge the simulation to the final design handoff.</p>
+      <p class="case-caption">The simulator made edge cases visible before development, including offline, obstruction, pinch protection, and path-blocked scenarios.</p>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">06 &middot; Key design decisions</p>
+      <h2>Key design decisions</h2>
+      <p>Design decisions that made the physical system clearer, safer, and more reliable.</p>
+
+      <article class="case-decision">
+        <h3>01 &middot; Make invisible door states visible</h3>
+        <p>The door could be open, closed, opening, closing, waiting, locked, unlocked, disconnected, or in an error state. I mapped these states so the interface clearly communicated what was happening, rather than leaving users guessing after tapping a button.</p>
+      </article>
+
+      <article class="case-decision">
+        <h3>02 &middot; Use motion as system feedback</h3>
+        <p>Motion was used to explain behavior, not just to make the app feel more polished. I explored animations for scanning, waiting, pairing, success, empty states, and error recovery so users understood what the system was doing over time. This was especially important because the app controlled a physical door &mdash; users needed feedback that a command had been received, was in progress, or required attention.</p>
+      </article>
+
+      <article class="case-decision">
+        <h3>03 &middot; Design feedback beyond visual UI</h3>
+        <p>Since this was an accessibility-oriented product, feedback couldn't rely only on what users saw. The interaction model considered visual, haptic, and audio feedback so system status could be understood across different contexts and by different users.</p>
+      </article>
+
+      <article class="case-decision">
+        <h3>04 &middot; Prototype behavior before development</h3>
+        <p>Static screens weren't enough to discuss this experience. I used prototypes, AI-assisted exploration, and code-based experiments to make behavior tangible before implementation, helping the team discuss timing, transitions, edge cases, and system feedback.</p>
+      </article>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">07 &middot; Motion + AI</p>
+      <h2>Motion + AI</h2>
+      <p>Motion was used to explain system behavior, not just to make the app feel more polished.</p>
+      <p>For states like scanning, pairing, empty home, waiting, success, and failure, static screens weren't enough. Animation needed to show that the system was searching, processing, or waiting for the user's next action.</p>
+      <p>I used AI-assisted and code-based workflows to speed up motion production, refine animation timing, and prepare Lottie outputs ready for implementation.</p>
+      <p>The goal wasn't to automate taste. It was to reduce repetitive production work so I could focus on clarity, timing, and how motion supported system feedback.</p>
+
+      <div class="case-approach-grid">
+        <div class="case-approach-item">
+          <h3>Scanning and waiting states</h3>
+          <p class="case-caption">Motion made the waiting state feel active and understandable while the system searched for nearby door devices.</p>
+        </div>
+        <div class="case-approach-item">
+          <h3>Empty state motion</h3>
+          <p class="case-caption">The empty state guided users toward the next action without making setup feel broken or incomplete.</p>
+        </div>
+      </div>
+      <p class="case-caption">Motion explorations were refined into implementation-ready Lottie outputs.</p>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">08 &middot; Design system foundations</p>
+      <h2>Design system foundations</h2>
+      <p>I organized reusable UI foundations for the app: buttons, cards, status labels, door states, feedback patterns, navigation, empty states, setup flows, errors, and recovery states.</p>
+      <p>This helped keep the experience consistent across normal use, setup, settings, motion states, and edge cases.</p>
+      <p class="case-caption">Reusable UI patterns helped the app handle setup, normal use, settings, errors, and recovery states consistently.</p>
+    </section>
+
+    <section class="case-section">
+      <p class="case-eyebrow">09 &middot; Outcome</p>
+      <h2>Outcome</h2>
+      <ul class="case-outcome">
+        <li>Made door status and system feedback easier to understand</li>
+        <li>Created clearer interaction patterns for success, waiting, error, and recovery states</li>
+        <li>Supported accessibility through multimodal feedback rather than visual-only communication</li>
+        <li>Helped the team discuss physical-digital edge cases before implementation</li>
+        <li>Built reusable UI foundations for the mobile experience</li>
+        <li>Prepared motion assets for implementation through Lottie output</li>
+      </ul>
+    </section>
+
+    <section class="case-section case-reflection">
+      <p class="case-eyebrow">10 &middot; Reflection</p>
+      <h2>Reflection</h2>
+      <blockquote>
+        <p>This project reinforced that accessibility isn't a checklist at the end of the process.</p>
+        <p>When a digital interface controls something physical, accessibility, feedback, and trust need to be part of the core interaction model.</p>
+      </blockquote>
+    </section>
+
+    <a class="next-case" href="intuit-for-education.html">
+      <span class="case-eyebrow">Next case</span>
+      <span class="next-case-title">Intuit for Education &rarr;</span>
+      <span class="case-caption">Financial education experience for students.</span>
+    </a>
+  </main>
+
+  <script src="components.js"></script>
+</body>
+</html>
