@@ -11,11 +11,13 @@ const projetos = [
   },
   {
     titulo: "Theodoor",
-    descricao: "Accessible app for smart door automation."
+    descricao: "Accessible app for smart door automation.",
+    pagina: "theodoor.html"
   },
   {
     titulo: "Intuit for Education",
-    descricao: "Financial education experience for students."
+    descricao: "Financial education experience for students.",
+    pagina: "intuit-for-education.html"
   }
 ];
 
