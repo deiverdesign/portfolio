@@ -57,19 +57,33 @@ export default function Home() {
       <NavBar context="dark" />
 
       <section className={styles.hero}>
-        <span className={styles.eyebrow}>PRODUCT DESIGNER SÊNIOR · FLORIPA · BRASIL</span>
-        <h1 className={styles.heroTitle}>Design para simplificar produtos complexos.</h1>
-        <p className={styles.heroIntro}>
-          Ajudo times a transformar ambiguidade, restrições técnicas e jornadas fragmentadas em
-          lógica de produto clara, interfaces escaláveis e experiências construíveis.
-        </p>
-        <div className={styles.heroActions}>
-          <Button variant="primary" context="light">
-            Ver trabalhos selecionados
-          </Button>
-          <Button variant="secondary" context="light">
-            Baixar currículo
-          </Button>
+        <div className={styles.heroInner}>
+          <div className={styles.heroVisual}>
+            <div className={styles.glowTeal} />
+            <div className={styles.glowOrange} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/hero-photo.png"
+              alt="Foto de Deiver Brito"
+              className={styles.heroPhoto}
+            />
+          </div>
+          <div className={styles.heroText}>
+            <span className={styles.eyebrow}>PRODUCT DESIGNER SÊNIOR · FLORIPA · BRASIL</span>
+            <h1 className={styles.heroTitle}>Design para simplificar produtos complexos.</h1>
+            <p className={styles.heroIntro}>
+              Ajudo times a transformar ambiguidade, restrições técnicas e jornadas fragmentadas em
+              lógica de produto clara, interfaces escaláveis e experiências construíveis.
+            </p>
+            <div className={styles.heroActions}>
+              <Button variant="primary" context="dark">
+                Ver trabalhos selecionados
+              </Button>
+              <Button variant="secondary" context="dark">
+                Baixar currículo
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 

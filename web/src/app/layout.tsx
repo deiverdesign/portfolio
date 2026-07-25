@@ -12,6 +12,7 @@ const boldonse = Boldonse({
   variable: "--font-boldonse",
   weight: "400",
   subsets: ["latin"],
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
