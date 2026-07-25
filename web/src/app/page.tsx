@@ -44,9 +44,8 @@ const cases = [
     tags: ["Discovery de produto", "Educação financeira", "Design Systems"],
     href: "/intuit-for-education.html",
     imageSrc: "/images/intuit.png",
-    // é o card que sobra sozinho na 2ª linha (3+1) — mesmo tratamento do Figma:
-    // print salvo em 600x600 (não 413x600) e um teto de largura pra não esticar até o fim da linha.
-    imageNativeWidth: 600,
+    // é o card que sobra sozinho na última linha — mesmo tratamento do Figma:
+    // um teto de largura pra não esticar até o fim da linha quando fica sozinho.
     maxWidth: 600,
   },
 ];

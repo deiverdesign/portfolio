@@ -72,7 +72,7 @@ export function NavBar({ context = "light", lang = "PT" }: NavBarProps) {
         {/* Desktop: tudo visível numa linha. Escondido via CSS abaixo de 1024px. */}
         <div className={styles.desktopNav}>
           {links}
-          <Button variant="primary" context={context}>
+          <Button variant="tertiary" context={context}>
             Contato
           </Button>
           {langSwitch}

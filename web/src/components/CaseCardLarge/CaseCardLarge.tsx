@@ -11,8 +11,6 @@ export interface CaseCardLargeProps {
   maxVisibleTags?: number;
   imageSrc: string;
   imageAlt: string;
-  /** Largura real do print salvo (não do card), pra cortar certo. Ver CaseCardLarge.module.css. */
-  imageNativeWidth?: number;
   href: string;
   /** Só o card que sobra sozinho na última linha recebe isso — decisão manual por página, ver responsive-rules.md. */
   maxWidth?: number;
@@ -27,7 +25,6 @@ export function CaseCardLarge({
   maxVisibleTags = 3,
   imageSrc,
   imageAlt,
-  imageNativeWidth = 413.33,
   href,
   maxWidth,
 }: CaseCardLargeProps) {
@@ -42,12 +39,7 @@ export function CaseCardLarge({
     >
       {imageSrc ? (
         // eslint-disable-next-line @next/next/no-img-element -- imagem só de demonstração, sem otimização por enquanto
-        <img
-          src={imageSrc}
-          alt={imageAlt}
-          className={styles.image}
-          style={{ aspectRatio: `${imageNativeWidth} / 260` }}
-        />
+        <img src={imageSrc} alt={imageAlt} className={styles.image} />
       ) : (
         <div className={styles.image} role="img" aria-label={imageAlt} />
       )}

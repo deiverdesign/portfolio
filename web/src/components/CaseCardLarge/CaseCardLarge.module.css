@@ -10,8 +10,10 @@
 
 .image {
   width: 100%;
-  /* aspect-ratio real vem inline por instância (CaseCardLarge.tsx) — o print salvo
-     é do card inteiro, então a proporção certa depende da largura de cada card. */
+  /* altura fixa de verdade no Figma (260px, igual em Desktop/Tablet/Mobile) —
+     não é uma proporção, então cards de larguras diferentes na mesma linha
+     sempre ficam com a mesma altura de imagem. */
+  height: 260px;
   object-fit: cover;
   object-position: top;
   background: var(--gray-200);

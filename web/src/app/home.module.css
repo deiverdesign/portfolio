@@ -28,7 +28,10 @@
 
 .glowTeal {
   position: absolute;
-  inset: 3%;
+  left: 3%;
+  top: 3%;
+  width: 95%;
+  aspect-ratio: 464.8 / 395.1; /* proporção real do blob no Figma — quase circular, não quadrada */
   background: linear-gradient(135deg, #00797b, #083a22);
   filter: blur(24px);
   border-radius: 50%;
@@ -72,7 +75,7 @@
   font-weight: 400;
   font-synthesis: none;
   color: var(--content-on-dark-primary);
-  line-height: 1.15;
+  line-height: 1.5;
   text-transform: uppercase;
 }
 
