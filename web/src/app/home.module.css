@@ -1,0 +1,52 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+  padding: var(--space-layout-200) var(--space-700);
+  max-width: 720px;
+}
+
+.eyebrow {
+  font-size: var(--font-eyebrow);
+  letter-spacing: 0.08em;
+  color: var(--content-secondary);
+}
+
+.heroTitle {
+  font-size: var(--font-hero-title);
+  font-weight: 700;
+  color: var(--content-heading);
+  line-height: 1.15;
+}
+
+.heroIntro {
+  font-size: var(--font-body-large-intro);
+  color: var(--content-primary);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-400);
+  margin-top: var(--space-300);
+}
+
+.workSection {
+  padding: var(--space-layout-100) var(--space-700);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+}
+
+.workSection h2 {
+  font-size: var(--font-h2-section-title);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--content-heading);
+}
+
+.workGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-600);
+}

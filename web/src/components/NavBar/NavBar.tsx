@@ -12,10 +12,12 @@ export interface NavBarProps {
   lang?: "PT" | "EN";
 }
 
+// Competências e Sobre ainda não têm página própria no app novo —
+// apontam pra Home por enquanto, pra não virar link quebrado (404).
 const navItems = [
   { label: "Trabalho", href: "/" },
-  { label: "Competências", href: "/competencias" },
-  { label: "Sobre", href: "/sobre" },
+  { label: "Competências", href: "/" },
+  { label: "Sobre", href: "/" },
 ];
 
 function MenuIcon() {

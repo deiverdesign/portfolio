@@ -52,15 +52,16 @@
   gap: var(--space-300);
 }
 
-/* Primary */
-.primary.dark {
+/* Primary — "Context" descreve em que fundo o botão fica, não a cor dele:
+   Context=Light (pra fundo claro) é o botão ESCURO, e vice-versa. */
+.primary.light {
   background: var(--action-primary-background);
   color: var(--action-primary-content);
 }
 
-.primary.light {
+.primary.dark {
   background: var(--background-surface);
-  color: var(--content-secondary);
+  color: var(--content-heading);
 }
 
 /* Secondary */
