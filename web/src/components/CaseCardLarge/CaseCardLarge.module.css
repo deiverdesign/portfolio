@@ -3,15 +3,17 @@
   flex-direction: column;
   min-width: 310px; /* calibrado hoje: dá 3 colunas no desktop, 2 no tablet, 1 no mobile */
   flex: 1 1 310px;
+  border: 1px solid var(--border-default);
   text-decoration: none;
   color: inherit;
 }
 
 .image {
   width: 100%;
-  aspect-ratio: 413.33 / 260; /* mesma proporção do frame de imagem no Figma */
+  /* aspect-ratio real vem inline por instância (CaseCardLarge.tsx) — o print salvo
+     é do card inteiro, então a proporção certa depende da largura de cada card. */
   object-fit: cover;
-  object-position: top; /* os prints salvos são do card inteiro; corta só a foto de cima */
+  object-position: top;
   background: var(--gray-200);
 }
 
