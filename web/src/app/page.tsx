@@ -13,6 +13,7 @@ const cases = [
       "Redesign de uma plataforma densa em dados para ajudar usuários a entender sinais de risco, fornecedores, filtros, dashboards e decisões operacionais.",
     tags: ["Sistemas complexos", "UX denso em dados", "IA", "Dashboards"],
     href: "/cure-intelligence.html",
+    imageSrc: "/images/cure.png",
   },
   {
     number: "02",
@@ -22,6 +23,7 @@ const cases = [
       "Ajudando a transformar um modelo de assinatura incluída em uma experiência mais clara de configuração e conta.",
     tags: ["UX de assinatura", "Produtos conectados", "Serviço com hardware"],
     href: "/hp-subscription.html",
+    imageSrc: "/images/hp.png",
   },
   {
     number: "03",
@@ -31,6 +33,7 @@ const cases = [
       "Design de uma experiência mobile acessível com feedback multimodal, restrições reais e edge cases.",
     tags: ["Acessibilidade", "Mobile", "UX físico-digital"],
     href: "/theodoor.html",
+    imageSrc: "/images/theodoor.png",
   },
   {
     number: "04",
@@ -40,6 +43,7 @@ const cases = [
       "Ajudando estudantes a acompanhar o presente, planejar o futuro e aprender sobre dinheiro em contexto.",
     tags: ["Discovery de produto", "Educação financeira", "Design Systems"],
     href: "/intuit-for-education.html",
+    imageSrc: "/images/intuit.png",
   },
 ];
 
@@ -69,7 +73,7 @@ export default function Home() {
         <h2>Trabalho</h2>
         <div className={styles.workGrid}>
           {cases.map((c) => (
-            <CaseCardLarge key={c.number} imageSrc="" imageAlt={c.title} {...c} />
+            <CaseCardLarge key={c.number} imageAlt={c.title} {...c} />
           ))}
         </div>
       </section>

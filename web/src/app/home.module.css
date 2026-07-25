@@ -32,6 +32,8 @@
 }
 
 .workSection {
+  max-width: 1280px;
+  margin: 0 auto;
   padding: var(--space-layout-100) var(--space-700);
   display: flex;
   flex-direction: column;
@@ -39,6 +41,8 @@
 }
 
 .workSection h2 {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
   font-size: var(--font-h2-section-title);
   text-transform: uppercase;
   letter-spacing: 0.04em;

@@ -9,8 +9,9 @@
 
 .image {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 413.33 / 260; /* mesma proporção do frame de imagem no Figma */
   object-fit: cover;
+  object-position: top; /* os prints salvos são do card inteiro; corta só a foto de cima */
   background: var(--gray-200);
 }
 
@@ -28,8 +29,9 @@
 }
 
 .title {
+  font-family: var(--font-boldonse);
   font-size: var(--font-h2-section-title);
-  font-weight: 700;
+  font-weight: 400;
   text-transform: uppercase;
   color: var(--content-heading);
   letter-spacing: 0.02em;
