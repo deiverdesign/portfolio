@@ -1,0 +1,122 @@
+.navbar {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--font-ui-medium);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-400) var(--space-700);
+}
+
+.dark {
+  background: var(--background-inverse);
+  color: var(--content-on-dark-primary);
+}
+
+.light {
+  background: var(--background-surface);
+  color: var(--content-primary);
+}
+
+.identity {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-200);
+  white-space: nowrap;
+}
+
+.identity strong {
+  font-weight: 600;
+}
+
+.identity span {
+  opacity: 0.7;
+  font-size: var(--font-caption);
+}
+
+/* Nav de desktop: tudo numa linha só */
+.desktopNav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-700);
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-600);
+}
+
+.navLinks a {
+  color: inherit;
+  opacity: 0.85;
+}
+
+.navLinks a:hover {
+  opacity: 1;
+}
+
+.langSwitch {
+  display: flex;
+  gap: var(--space-300);
+}
+
+.langSwitch button {
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+  font-size: var(--font-caption);
+  padding: var(--space-100);
+}
+
+.langSwitch button[aria-current="true"] {
+  opacity: 1;
+  font-weight: 600;
+}
+
+/* Botão hambúrguer: só existe na versão mobile */
+.menuToggle {
+  display: none;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: var(--space-300);
+}
+
+.menuToggle svg {
+  display: block;
+}
+
+/* Painel de menu mobile, some por padrão, JS controla via [data-open] */
+.mobilePanel {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-600);
+  padding: var(--space-700);
+}
+
+.mobilePanel .navLinks {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-500);
+}
+
+@media (max-width: 1023px) {
+  .desktopNav {
+    display: none;
+  }
+
+  .menuToggle {
+    display: inline-flex;
+  }
+
+  .mobilePanel[data-open="true"] {
+    display: flex;
+  }
+}

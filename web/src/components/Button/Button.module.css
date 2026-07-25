@@ -1,0 +1,88 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: var(--font-ui-medium);
+  font-weight: 500;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  position: relative;
+  transition: opacity 0.15s ease;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--action-focus-ring);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* uma camada extra em cima do botão pra hover/pressed, igual ao componente no Figma */
+.button:not(:disabled):hover::after,
+.button:not(:disabled):active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.button:not(:disabled):hover::after {
+  background: var(--action-overlay-hover);
+}
+
+.button:not(:disabled):active::after {
+  background: var(--action-overlay-pressed);
+}
+
+/* tamanho: primary/secondary usam padding maior que tertiary */
+.primary,
+.secondary {
+  padding: var(--space-400) var(--space-600);
+  gap: var(--space-400);
+}
+
+.tertiary {
+  padding: var(--space-300);
+  gap: var(--space-300);
+}
+
+/* Primary */
+.primary.dark {
+  background: var(--action-primary-background);
+  color: var(--action-primary-content);
+}
+
+.primary.light {
+  background: var(--background-surface);
+  color: var(--content-secondary);
+}
+
+/* Secondary */
+.secondary.dark {
+  background: transparent;
+  border-color: var(--border-default);
+  color: var(--content-on-dark-primary);
+}
+
+.secondary.light {
+  background: transparent;
+  border-color: var(--content-primary);
+  color: var(--content-primary);
+}
+
+/* Tertiary */
+.tertiary.light {
+  background: transparent;
+  color: var(--content-primary);
+}
+
+.tertiary.dark {
+  background: transparent;
+  color: var(--content-accent-on-dark);
+}

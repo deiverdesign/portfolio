@@ -1,0 +1,19 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-100) var(--space-300);
+  border: 1px solid transparent;
+  border-radius: 0;
+  font-size: var(--font-caption);
+  white-space: nowrap;
+}
+
+.light {
+  border-color: var(--border-tag);
+  color: var(--content-accent);
+}
+
+.dark {
+  border-color: var(--border-tag-on-dark);
+  color: var(--content-accent-on-dark);
+}
