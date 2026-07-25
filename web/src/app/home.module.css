@@ -38,13 +38,15 @@
 }
 
 .glowOrange {
+  /* posição/tamanho exatos do Figma: dot em x=-30.74,y=160.2, 202.98x202.98,
+     dentro de um container de imagem 490x452 */
   position: absolute;
-  left: -8%;
-  top: 35%;
-  width: 42%;
-  aspect-ratio: 1;
+  left: -6.27%;
+  top: 35.44%;
+  width: 41.42%;
+  height: 44.91%;
   background: radial-gradient(circle, #f95021, #3a0809);
-  filter: blur(32px);
+  filter: blur(44px);
   border-radius: 50%;
 }
 
