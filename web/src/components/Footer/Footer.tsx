@@ -11,22 +11,24 @@ const links = [
 export function Footer() {
   return (
     <footer className={styles.footer}>
-      <div className={styles.top}>
-        <div className={styles.identity}>
-          <strong>Deiver Brito</strong>
-          <span>Product Designer Sênior · Floripa · Brasil</span>
+      <div className={styles.container}>
+        <div className={styles.top}>
+          <div className={styles.identity}>
+            <strong>Deiver Brito</strong>
+            <span>Product Designer Sênior · Floripa · Brasil</span>
+          </div>
+          <nav className={styles.links}>
+            {links.map((link) => (
+              <a key={link.label} href={link.href}>
+                {link.label}
+              </a>
+            ))}
+          </nav>
         </div>
-        <nav className={styles.links}>
-          {links.map((link) => (
-            <a key={link.label} href={link.href}>
-              {link.label}
-            </a>
-          ))}
-        </nav>
+        <p className={styles.copyright}>
+          © 2026 Deiver Brito · Projetando clareza para produtos digitais complexos.
+        </p>
       </div>
-      <p className={styles.copyright}>
-        © 2026 Deiver Brito · Projetando clareza para produtos digitais complexos.
-      </p>
     </footer>
   );
 }

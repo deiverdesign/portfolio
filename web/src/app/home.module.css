@@ -94,6 +94,7 @@
 }
 
 .workSection {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: var(--space-layout-100) var(--space-700);
