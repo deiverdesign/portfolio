@@ -20,7 +20,7 @@ export const PrimaryLight: Story = {
 
 export const PrimaryDark: Story = {
   args: { variant: "primary", context: "dark", children: "Label" },
-  parameters: { backgrounds: { default: "dark" } },
+  globals: { backgrounds: { value: "dark" } },
 };
 
 export const Secondary: Story = {

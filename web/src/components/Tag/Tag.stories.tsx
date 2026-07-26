@@ -19,7 +19,7 @@ export const Light: Story = {
 
 export const Dark: Story = {
   args: { context: "dark", children: "Label" },
-  parameters: { backgrounds: { default: "dark" } },
+  globals: { backgrounds: { value: "dark" } },
 };
 
 export const BothContexts: Story = {

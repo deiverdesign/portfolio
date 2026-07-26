@@ -2,9 +2,13 @@ import type { Preview } from '@storybook/nextjs-vite'
 import '../src/app/globals.css'
 
 const preview: Preview = {
+  initialGlobals: {
+    backgrounds: { value: 'gray' },
+  },
   parameters: {
     backgrounds: {
       options: {
+        gray: { name: 'gray', value: '#bab7b2' },
         light: { name: 'light', value: '#f8f7f7' },
         dark: { name: 'dark', value: '#0b2825' },
       },
