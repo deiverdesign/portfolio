@@ -1,0 +1,21 @@
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-subtitle);
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.link:hover {
+  opacity: 0.75;
+}
+
+.light {
+  color: var(--action-tertiary-content);
+}
+
+.dark {
+  color: var(--content-on-dark-primary);
+}

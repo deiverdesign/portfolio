@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
-import { DM_Sans, Boldonse } from "next/font/google";
+import { DM_Sans, DM_Mono, Boldonse } from "next/font/google";
 import "./globals.css";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
+  subsets: ["latin"],
+});
+
+// Fonte usada no Figma pra números/labels pequenos (eyebrow, "01", legendas).
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -26,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${dmSans.variable} ${boldonse.variable}`}>
+    <html lang="pt-BR" className={`${dmSans.variable} ${dmMono.variable} ${boldonse.variable}`}>
       <body>{children}</body>
     </html>
   );
