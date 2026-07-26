@@ -54,3 +54,23 @@ tarefa aqui no repo, pode perguntar se quero trazer algo de lá.
   listar cada passo técnico, a menos que eu peça.
 - Se eu pedir algo ambíguo, pergunte com um exemplo do que você entendeu,
   em vez de assumir.
+
+## Autorizações permanentes (não precisa perguntar antes)
+
+- Pode sempre rodar `git add` / `git commit` / `git push` para `main`
+  neste repositório depois de qualquer mudança de código, sem pedir
+  confirmação antes. É um projeto solo, sem outros devs revisando —
+  reverter um commit é fácil se algo sair errado.
+- Pode sempre rodar o rebuild + deploy do Storybook na Vercel
+  (`npm run build-storybook` + `vercel deploy --prod`) depois de mexer
+  em componentes, sem perguntar antes.
+
+## O que continua precisando de confirmação, mesmo com isso acima
+
+- Apagar qualquer projeto ou recurso na Vercel (ou em qualquer serviço
+  na nuvem) — é destrutivo, fica de fora da autorização.
+- Abrir Pull Request de verdade (push numa branch nova + `gh pr
+  create`) — combinamos que isso fica manual de propósito, mesmo pra
+  scripts automatizados como o `sync-tokens.mjs`. Só faço se eu pedir
+  isso na hora, especificamente.
+- Qualquer coisa envolvendo senha, token ou credencial minha.
