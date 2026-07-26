@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { Icon, type IconName } from "../icons/Icon";
 import styles from "./Button.module.css";
 
 export type ButtonVariant = "primary" | "secondary" | "tertiary";
@@ -10,12 +11,15 @@ export interface ButtonProps
   variant?: ButtonVariant;
   /** Sobre qual fundo o botão está sendo colocado — mesma propriedade "Context" no Figma. */
   context?: ButtonContext;
+  /** Ícone opcional depois do texto — mesmo slot "Icons" do componente no Figma. */
+  icon?: IconName;
   children: ReactNode;
 }
 
 export function Button({
   variant = "primary",
   context = "light",
+  icon,
   className,
   children,
   ...rest
@@ -27,6 +31,7 @@ export function Button({
   return (
     <button className={classes} {...rest}>
       {children}
+      {icon && <Icon name={icon} size={variant === "tertiary" ? 24 : 14} className={styles.icon} />}
     </button>
   );
 }

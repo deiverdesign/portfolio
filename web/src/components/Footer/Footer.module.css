@@ -40,6 +40,20 @@
   color: var(--content-accent);
 }
 
+/* No Mobile do Figma, o Footer empilha: identidade em cima, links sempre
+   em coluna embaixo — nunca em linha, mesmo com espaço sobrando. */
+@media (max-width: 599px) {
+  .top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-500);
+  }
+
+  .links {
+    flex-direction: column;
+  }
+}
+
 .copyright {
   padding-top: var(--space-700);
   border-top: 1px solid var(--border-default);

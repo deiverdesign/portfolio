@@ -87,3 +87,7 @@
   background: transparent;
   color: var(--content-accent-on-dark);
 }
+
+.icon {
+  flex-shrink: 0;
+}

@@ -8,6 +8,12 @@ const meta = {
   argTypes: {
     variant: { control: "select", options: ["primary", "secondary", "tertiary"] },
     context: { control: "select", options: ["light", "dark"] },
+    icon: {
+      control: "select",
+      options: ["none", "download", "arrow-right", "menu", "close", "external-link"],
+      mapping: { none: undefined },
+      description: "Liga/desliga o ícone (slot \"Icons\" do Figma) e escolhe qual.",
+    },
   },
 } satisfies Meta<typeof Button>;
 
@@ -15,7 +21,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const PrimaryLight: Story = {
-  args: { variant: "primary", context: "light", children: "Label" },
+  args: { variant: "primary", context: "light", children: "Label", icon: "download" },
 };
 
 export const PrimaryDark: Story = {
