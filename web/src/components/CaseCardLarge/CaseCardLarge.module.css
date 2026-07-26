@@ -1,11 +1,20 @@
 .card {
   display: flex;
   flex-direction: column;
-  min-width: 310px; /* calibrado hoje: dá 3 colunas no desktop, 2 no tablet, 1 no mobile */
+  min-width: 310px; /* calibrado hoje: dá 2 colunas no tablet, 1 no mobile */
   flex: 1 1 310px;
   border: 1px solid var(--border-default);
   text-decoration: none;
   color: inherit;
+}
+
+/* Acima de 1024px o container fica largo o bastante pra caber 3 no min-width
+   de tablet/mobile — sobe o min-width só aqui pra travar em no máximo 2. */
+@media (min-width: 1025px) {
+  .card {
+    min-width: 500px;
+    flex-basis: 500px;
+  }
 }
 
 .image {
