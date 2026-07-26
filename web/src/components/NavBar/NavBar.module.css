@@ -79,14 +79,16 @@
   font-weight: 600;
 }
 
-/* Botão hambúrguer: só existe na versão mobile */
+/* Botão hambúrguer: só existe na versão mobile.
+   Padding calibrado pra dar 44x44px de área de toque (ícone de 20px + 12px
+   de cada lado) — mínimo recomendado pra toque confiável no polegar. */
 .menuToggle {
   display: none;
   background: none;
   border: none;
   color: inherit;
   cursor: pointer;
-  padding: var(--space-300);
+  padding: var(--space-400);
 }
 
 .menuToggle svg {

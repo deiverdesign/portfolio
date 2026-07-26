@@ -36,6 +36,7 @@ export function CaseCardLarge({
       href={href}
       className={styles.card}
       style={maxWidth ? { maxWidth } : undefined}
+      aria-label={`Ver case: ${title}`}
     >
       {imageSrc ? (
         // eslint-disable-next-line @next/next/no-img-element -- imagem só de demonstração, sem otimização por enquanto
