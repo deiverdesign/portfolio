@@ -1,0 +1,42 @@
+name: Deploy Storybook
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/src/components/**"
+      - "web/src/app/globals.css"
+      - "web/src/styles/**"
+      - "web/.storybook/**"
+      - "web/package.json"
+      - "web/package-lock.json"
+      - ".github/workflows/deploy-storybook.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Deploy to Vercel
+        working-directory: web/storybook-static
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: team_n6d57wAi3Wcc2Ab5Cbmx2c0D
+          VERCEL_PROJECT_ID: prj_NmeDb8gUtsrjMKjlFl0DvpiiCVmF
+        run: npx vercel deploy --prod --yes --token="$VERCEL_TOKEN"
