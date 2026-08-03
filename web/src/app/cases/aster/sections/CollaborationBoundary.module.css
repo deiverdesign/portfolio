@@ -1,0 +1,28 @@
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-300);
+  padding: var(--space-500);
+  border: 1px solid rgba(247, 242, 233, 0.18);
+  border-radius: 6px;
+}
+
+.flowStep {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-300);
+}
+
+.flowNode {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--aster-forest-deep);
+  background: var(--aster-mint);
+  padding: var(--space-200) var(--space-400);
+  border-radius: 999px;
+}
+
+.flowArrow {
+  color: var(--aster-sage);
+}

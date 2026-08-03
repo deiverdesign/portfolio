@@ -48,6 +48,25 @@
   text-transform: uppercase;
   color: var(--content-heading);
   letter-spacing: 0.02em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-300);
+}
+
+.lockedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-dm-sans);
+  font-size: var(--font-caption);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--content-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 2px var(--space-300);
 }
 
 .summary {

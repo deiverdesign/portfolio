@@ -27,7 +27,7 @@ export function NavBar({ context = "light", lang = "PT" }: NavBarProps) {
   const links = (
     <div className={styles.navLinks}>
       {navItems.map((item) => (
-        <a key={item.href} href={item.href}>
+        <a key={item.label} href={item.href}>
           {item.label}
         </a>
       ))}

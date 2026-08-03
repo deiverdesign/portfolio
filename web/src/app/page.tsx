@@ -44,8 +44,20 @@ const cases = [
     tags: ["Discovery de produto", "Educação financeira", "Design Systems"],
     href: "/intuit-for-education.html",
     imageSrc: "/images/intuit.png",
-    // é o card que sobra sozinho na última linha — mesmo tratamento do Figma:
-    // um teto de largura pra não esticar até o fim da linha quando fica sozinho.
+  },
+  {
+    number: "05",
+    title: "ASTER",
+    summary: "Explorando IA como colaboradora clínica em consultas de alto risco.",
+    description:
+      "Um estudo de caso protegido por senha sobre confiança, limites de atuação e responsabilidade compartilhada entre médicos e uma IA colaboradora clínica.",
+    tags: ["Interação com IA", "Saúde", "Confiança e segurança"],
+    href: "/cases/aster",
+    imageSrc: "",
+    imageAlt: "ASTER — imagem de capa ainda não disponível",
+    locked: true,
+    // agora é o card que sobra sozinho na última linha (5 cases, 2 por
+    // coluna no Desktop) — mesmo tratamento que o Intuit tinha antes.
     maxWidth: 600,
   },
 ];

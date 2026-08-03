@@ -1,3 +1,59 @@
+## ASTER case — password setup
+
+The `/cases/aster` case study is protected by a password checked on the
+server (not in the browser). To make it work, the owner has to supply a
+password through an environment variable — it is never written into the
+code or committed to the repo.
+
+**Variable name:** `ASTER_CASE_PASSWORD`
+
+### Local development
+
+Create `web/.env.local` (already covered by `.gitignore` — the `.env*`
+rule — so it's never committed):
+
+```
+ASTER_CASE_PASSWORD=choose-a-password-here
+```
+
+Restart `npm run dev` after adding or changing it.
+
+### Production (Vercel)
+
+1. Open the `portfolio` project on [vercel.com](https://vercel.com).
+2. Go to **Settings → Environment Variables**.
+3. Add `ASTER_CASE_PASSWORD` with the real password, scoped to
+   **Production** (and Preview, if you want password-protected previews
+   to work too).
+4. Redeploy (`vercel deploy --prod`, or push to `main`) so the new
+   deployment picks up the variable — env vars only apply to
+   deployments created after they're saved.
+
+### How the protection actually works
+
+- Submitting the password calls a Server Action that checks it against
+  `ASTER_CASE_PASSWORD` **on the server** — the password itself is never
+  sent to or stored in the browser's JavaScript.
+- On success, the server sets an `HttpOnly` cookie (`aster_session`) —
+  a cookie that JavaScript in the browser cannot read, only the server
+  can verify it. The cookie is signed (HMAC using the password as the
+  key), so it can't be forged by manually setting a cookie value in
+  DevTools.
+- The cookie has no expiration set, so it's a session cookie: closing
+  the browser clears it. The "Lock this case" button in the case
+  clears it immediately too.
+- The cookie's `Path` is scoped to `/cases/aster`, so it's never sent
+  to (or usable by) any other page on the site.
+- If someone visits `/cases/aster` directly without a valid cookie, the
+  server renders only the password screen — the actual case content
+  (copy, image placeholders, everything) is never included in that
+  page's HTML, so there's nothing to find by viewing source.
+
+See `web/src/app/cases/aster/session.ts` and `actions.ts` for the
+implementation.
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

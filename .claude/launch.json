@@ -14,6 +14,13 @@
       "port": 3001
     },
     {
+      "name": "web-react-verify",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "web", "run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
       "name": "storybook",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "web", "run", "storybook"],

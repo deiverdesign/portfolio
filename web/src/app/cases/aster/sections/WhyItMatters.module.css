@@ -1,0 +1,29 @@
+.chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-300);
+  padding: var(--space-500);
+  background: var(--aster-cream);
+  border: 1px solid var(--aster-border);
+  border-radius: 6px;
+}
+
+.chainStep {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-300);
+}
+
+.chainNode {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--aster-forest);
+  background: var(--aster-mint);
+  padding: var(--space-200) var(--space-400);
+  border-radius: 999px;
+}
+
+.chainArrow {
+  color: var(--aster-sage-text);
+}

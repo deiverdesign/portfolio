@@ -1,0 +1,41 @@
+/*
+  Identidade visual só do case ASTER — não usa as cores do resto do
+  portfólio (verde-escuro/dourado). Contraste de cada par texto/fundo já
+  conferido via cálculo real de WCAG (não por "parece legível o
+  suficiente" — ver LEARNINGS.md, seção 6, sobre esse tipo de bug).
+
+  --aster-sage-text, --aster-lavender-text e --aster-coral-deep são
+  versões mais escuras das cores decorativas (--aster-sage,
+  --aster-lavender, --aster-coral), feitas especificamente pra passar em
+  4,5:1 quando usadas como texto — as versões claras servem só de fundo
+  decorativo, nunca de cor de texto.
+*/
+
+.theme {
+  --aster-cream: #f7f2e9;
+  --aster-stone: #ede6d8;
+  --aster-border: #dad2bf;
+  --aster-ink: #2b2a25;
+
+  --aster-forest: #1e3b32;
+  --aster-forest-deep: #12241e;
+  --aster-cream-on-dark: #f7f2e9;
+
+  --aster-sage: #a9bfa0;
+  --aster-sage-text: #54634e;
+
+  --aster-mint: #cfe3d3;
+
+  --aster-lavender: #c3bedb;
+  --aster-lavender-text: #5c5480;
+
+  --aster-peach: #f0c6a8;
+  --aster-coral: #d97757;
+  /* #9c4b30, não #b85c3c: a versão mais clara passava em cream (4.06) mas
+     ficava abaixo de 4,5:1 em cima do stone (3.65) — texto de erro e o
+     rótulo "Placeholder" usam essa cor sobre os dois fundos. */
+  --aster-coral-deep: #9c4b30;
+
+  color: var(--aster-ink);
+  font-family: var(--font-dm-sans), Arial, Helvetica, sans-serif;
+}

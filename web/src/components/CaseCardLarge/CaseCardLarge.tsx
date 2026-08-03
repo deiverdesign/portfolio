@@ -14,6 +14,8 @@ export interface CaseCardLargeProps {
   href: string;
   /** Só o card que sobra sozinho na última linha recebe isso — decisão manual por página, ver responsive-rules.md. */
   maxWidth?: number;
+  /** Case protegido por senha (ex: ASTER) — mostra um indicador "Password protected" no card público. */
+  locked?: boolean;
 }
 
 export function CaseCardLarge({
@@ -27,6 +29,7 @@ export function CaseCardLarge({
   imageAlt,
   href,
   maxWidth,
+  locked = false,
 }: CaseCardLargeProps) {
   const visibleTags = tags.slice(0, maxVisibleTags);
   const hiddenCount = tags.length - visibleTags.length;
@@ -36,7 +39,7 @@ export function CaseCardLarge({
       href={href}
       className={styles.card}
       style={maxWidth ? { maxWidth } : undefined}
-      aria-label={`Ver case: ${title}`}
+      aria-label={`Ver case: ${title}${locked ? " (protegido por senha)" : ""}`}
     >
       {imageSrc ? (
         // eslint-disable-next-line @next/next/no-img-element -- imagem só de demonstração, sem otimização por enquanto
@@ -46,7 +49,26 @@ export function CaseCardLarge({
       )}
       <div className={styles.content}>
         <span className={styles.number}>{number}</span>
-        <h3 className={styles.title}>{title}</h3>
+        <h3 className={styles.title}>
+          {title}
+          {locked && (
+            <span className={styles.lockedBadge}>
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 14 14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                aria-hidden="true"
+              >
+                <rect x="3" y="6.5" width="8" height="6" rx="1" />
+                <path d="M4.5 6.5V4.5a2.5 2.5 0 0 1 5 0v2" />
+              </svg>
+              Password protected
+            </span>
+          )}
+        </h3>
         <p className={styles.summary}>{summary}</p>
         <p className={styles.description}>{description}</p>
         <div className={styles.tagRow}>
