@@ -13,11 +13,9 @@ export interface NavBarProps {
   lang?: "PT" | "EN";
 }
 
-// Competências ainda não tem página própria no app novo —
-// aponta pra Home por enquanto, pra não virar link quebrado (404).
 const navItems = [
   { label: "Trabalho", href: "/" },
-  { label: "Competências", href: "/" },
+  { label: "Competências", href: "/competencias" },
   { label: "Sobre", href: "/sobre" },
 ];
 
