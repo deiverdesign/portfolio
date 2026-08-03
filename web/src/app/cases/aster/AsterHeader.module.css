@@ -11,13 +11,26 @@
   z-index: 10;
 }
 
+.leftGroup {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-500);
+  justify-self: start;
+}
+
 .back {
   display: inline-flex;
   align-items: center;
   gap: var(--space-200);
   font-size: var(--font-caption);
   color: var(--aster-sage-text);
-  justify-self: start;
+}
+
+.identity {
+  font-weight: 600;
+  font-size: var(--font-ui-medium);
+  color: var(--content-primary);
+  white-space: nowrap;
 }
 
 .back:hover {
