@@ -117,3 +117,145 @@
   flex-wrap: wrap;
   gap: var(--space-600);
 }
+
+.aboutSection {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-layout-100) var(--space-700);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-800);
+}
+
+.sectionEyebrow {
+  font-size: var(--font-eyebrow);
+  letter-spacing: 0.08em;
+  color: var(--content-muted-on-light);
+}
+
+.aboutIntro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-layout-100);
+}
+
+.aboutText {
+  flex: 1 1 400px;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+}
+
+.aboutName {
+  font-family: var(--font-boldonse);
+  font-size: var(--font-h1-page-title);
+  font-weight: 400;
+  font-synthesis: none;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-heading);
+}
+
+.aboutText p {
+  font-size: var(--font-subtitle);
+  color: var(--content-primary);
+}
+
+.aboutPhotoBlock {
+  flex: 0 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+.aboutPhoto {
+  width: 100%;
+  aspect-ratio: 720 / 669;
+  object-fit: cover;
+  background: var(--background-primary);
+}
+
+.aboutCaption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  font-size: var(--font-caption);
+  color: var(--content-secondary);
+}
+
+.aboutRows {
+  display: flex;
+  flex-direction: column;
+}
+
+.aboutRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-layout-100);
+  padding: var(--space-800) 0;
+  border-top: 1px solid var(--border-default);
+}
+
+.aboutRowLabel {
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.aboutRowLabel .number {
+  font-size: var(--font-caption);
+  color: var(--content-secondary);
+}
+
+.aboutRowLabel h3 {
+  font-family: var(--font-boldonse);
+  font-size: var(--font-eyebrow);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-heading);
+}
+
+.aboutRowContent {
+  flex: 2 1 480px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+}
+
+.aboutRowContent p {
+  font-size: var(--font-subtitle);
+  color: var(--content-primary);
+}
+
+.valueGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-600);
+}
+
+.valueCard {
+  flex: 1 1 220px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  padding: var(--space-600);
+  border: 1px solid var(--border-default);
+}
+
+.valueCard h4 {
+  font-family: var(--font-boldonse);
+  font-size: var(--font-eyebrow);
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--content-heading);
+}
+
+.valueCard p {
+  font-size: var(--font-body);
+  color: var(--content-secondary);
+}
