@@ -1,0 +1,38 @@
+.legend {
+  background: var(--aster-stone);
+  padding: var(--space-600) var(--space-700);
+}
+
+.intro {
+  max-width: 960px;
+  margin: 0 auto var(--space-500);
+  font-size: var(--font-caption);
+  color: var(--aster-sage-text);
+}
+
+.list {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-500);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.term {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--aster-forest);
+}
+
+.description {
+  font-size: var(--font-caption);
+  color: var(--aster-ink);
+  line-height: 1.5;
+  margin: 0;
+}

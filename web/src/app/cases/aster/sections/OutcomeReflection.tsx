@@ -15,7 +15,7 @@ const outcomes = [
 
 export function OutcomeReflection() {
   return (
-    <Section id="outcome" number="16" eyebrow="Outcome and reflection" title="What this exploration actually produced">
+    <Section id="outcome" number="12" eyebrow="Outcome and reflection" title="What this exploration actually produced">
       <ul className={shared.list}>
         {outcomes.map((outcome) => (
           <li key={outcome}>{outcome}</li>

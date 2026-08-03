@@ -1,5 +1,6 @@
 import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import { Section } from "./Section";
+import { StatusTag } from "./StatusTag";
 import shared from "./shared.module.css";
 
 const illustrativeConditions = [
@@ -13,11 +14,13 @@ export function HardNoConditions() {
   return (
     <Section
       id="hard-no"
-      number="15"
+      number="11"
       eyebrow="Defining what would make us stop"
       title="Deciding what would make us stop, before momentum makes it hard to"
       tone="forestDeep"
     >
+      <StatusTag status="proposed" onDark />
+
       <p>
         The business needed one of two useful outcomes: evidence that the concept could work, or
         an early and inexpensive signal that it should not continue.

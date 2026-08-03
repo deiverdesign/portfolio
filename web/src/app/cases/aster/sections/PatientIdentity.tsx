@@ -1,5 +1,6 @@
 import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import { Section } from "./Section";
+import { StatusTag } from "./StatusTag";
 import shared from "./shared.module.css";
 
 const states = [
@@ -19,10 +20,12 @@ export function PatientIdentity() {
   return (
     <Section
       id="patient-identity"
-      number="09"
+      number="07"
       eyebrow="Patient identity and ambiguity"
       title="Getting identity wrong is worse than not knowing it yet"
     >
+      <StatusTag status="implemented" />
+
       <p className={shared.keyStatement}>No patient context is safer than the wrong patient context.</p>
 
       <div className={shared.grid3}>

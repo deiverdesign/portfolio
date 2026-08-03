@@ -2,25 +2,27 @@ import theme from "./aster-theme.module.css";
 import { AsterHeader } from "./AsterHeader";
 import { Hero } from "./sections/Hero";
 import { Disclaimer } from "./sections/Disclaimer";
-import { WhyItMatters } from "./sections/WhyItMatters";
-import { BeyondScribe } from "./sections/BeyondScribe";
-import { Viability } from "./sections/Viability";
-import { QuestionsBeforeInterfaces } from "./sections/QuestionsBeforeInterfaces";
-import { InternalSimulation } from "./sections/InternalSimulation";
-import { CollaborationBoundary } from "./sections/CollaborationBoundary";
-import { ExperiencePrinciples } from "./sections/ExperiencePrinciples";
+import { StatusLegend } from "./sections/StatusLegend";
+import { ProblemAndOpportunity } from "./sections/ProblemAndOpportunity";
 import { ProductWalkthrough } from "./sections/ProductWalkthrough";
+import { WhatIDrove } from "./sections/WhatIDrove";
+import { Viability } from "./sections/Viability";
+import { QuestionsAndSimulation } from "./sections/QuestionsAndSimulation";
+import { PrinciplesAndBoundary } from "./sections/PrinciplesAndBoundary";
 import { PatientIdentity } from "./sections/PatientIdentity";
-import { RestrainedInsights } from "./sections/RestrainedInsights";
-import { DraftVsNotes } from "./sections/DraftVsNotes";
-import { RecordingControl } from "./sections/RecordingControl";
-import { CorrectionProvenance } from "./sections/CorrectionProvenance";
+import { DocumentationAndInsights } from "./sections/DocumentationAndInsights";
+import { PlannedScenarios } from "./sections/PlannedScenarios";
 import { DiscoveryToDecisions } from "./sections/DiscoveryToDecisions";
 import { HardNoConditions } from "./sections/HardNoConditions";
 import { OutcomeReflection } from "./sections/OutcomeReflection";
 import { Closing } from "./sections/Closing";
 
-/** Case completo do ASTER — só renderizado depois que page.tsx confirma a sessão. */
+/**
+ * Case completo do ASTER — só renderizado depois que page.tsx confirma a
+ * sessão. Arquitetura editorial de 12 capítulos (revisão 2), aprovada
+ * depois da primeira versão de 16 — protótipo e contribuição pessoal
+ * aparecem logo no início, discovery redistribuído depois do produto.
+ */
 export function AsterCase() {
   return (
     <div className={theme.theme}>
@@ -28,19 +30,16 @@ export function AsterCase() {
       <main>
         <Hero />
         <Disclaimer />
-        <WhyItMatters />
-        <BeyondScribe />
-        <Viability />
-        <QuestionsBeforeInterfaces />
-        <InternalSimulation />
-        <CollaborationBoundary />
-        <ExperiencePrinciples />
+        <StatusLegend />
+        <ProblemAndOpportunity />
         <ProductWalkthrough />
+        <WhatIDrove />
+        <Viability />
+        <QuestionsAndSimulation />
+        <PrinciplesAndBoundary />
         <PatientIdentity />
-        <RestrainedInsights />
-        <DraftVsNotes />
-        <RecordingControl />
-        <CorrectionProvenance />
+        <DocumentationAndInsights />
+        <PlannedScenarios />
         <DiscoveryToDecisions />
         <HardNoConditions />
         <OutcomeReflection />

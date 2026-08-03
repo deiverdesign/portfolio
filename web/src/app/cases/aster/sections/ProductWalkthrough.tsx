@@ -1,6 +1,7 @@
 import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import { Section } from "./Section";
 import { ExternalLink } from "./ExternalLink";
+import { StatusTag } from "./StatusTag";
 import { ASTER_PROTOTYPE_URL } from "./links";
 import shared from "./shared.module.css";
 
@@ -23,11 +24,13 @@ export function ProductWalkthrough() {
   return (
     <Section
       id="walkthrough"
-      number="08"
+      number="02"
       eyebrow="Product walkthrough"
       title="Inside the ASTER workspace"
       tone="stone"
     >
+      <StatusTag status="implemented" />
+
       <AssetPlaceholder assetId="aster-macbook-mockup" />
 
       <p>

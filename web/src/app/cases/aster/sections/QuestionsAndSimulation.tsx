@@ -1,7 +1,21 @@
 import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import { Section } from "./Section";
+import { ExternalLink } from "./ExternalLink";
+import { StatusTag } from "./StatusTag";
+import { ASTER_FIGJAM_URL } from "./links";
 import shared from "./shared.module.css";
-import styles from "./InternalSimulation.module.css";
+import styles from "./QuestionsAndSimulation.module.css";
+
+const questions = [
+  "When should AI interrupt?",
+  "What happens when AI disagrees with the physician?",
+  "How should uncertainty be communicated?",
+  "What sources support each insight?",
+  "Should AI update its reasoning when the physician adds information?",
+  "How do we prevent the wrong patient context from being loaded?",
+  "Who owns the final decision?",
+  "What happens when the AI is wrong?",
+];
 
 const structure = [
   "Internal participant acting as physician",
@@ -24,19 +38,41 @@ const scenarios = [
   "Information corrected during the consultation",
 ];
 
-export function InternalSimulation() {
+export function QuestionsAndSimulation() {
   return (
     <Section
-      id="simulation"
+      id="questions"
       number="05"
-      eyebrow="Proposed internal simulation"
-      title="A design-led way to test before clinical validation"
+      eyebrow="Questions that shaped the concept"
+      title="Before any screen, a set of hard questions"
+      tone="stone"
     >
+      <StatusTag status="explored" />
+
+      <AssetPlaceholder assetId="aster-figjam-overview" />
+
+      <ul className={shared.list}>
+        {questions.map((question) => (
+          <li key={question}>{question}</li>
+        ))}
+      </ul>
+
+      <p>
+        These questions did not produce definitive clinical answers. They shaped the boundaries
+        and behavior of the concept.
+      </p>
+
+      <AssetPlaceholder assetId="aster-figjam-critical-questions" />
+
       <p>
         Before any clinical validation could happen, the concept needed a way to find its own
-        breaking points. The proposal: a scripted, internally-run simulation, not a real patient
-        interaction.
+        breaking points — testing these questions, not just answering them.
       </p>
+
+      <h3 className={shared.subheading}>A proposed internal simulation</h3>
+      <StatusTag status="proposed" />
+
+      <p>The proposal: a scripted, internally-run simulation, not a real patient interaction.</p>
 
       <ol className={shared.list}>
         {structure.map((step) => (
@@ -73,6 +109,8 @@ export function InternalSimulation() {
         The purpose was not to prove that the system was safe. It was to discover where the
         interaction model could fail.
       </p>
+
+      <ExternalLink href={ASTER_FIGJAM_URL}>Explore the discovery board</ExternalLink>
     </Section>
   );
 }

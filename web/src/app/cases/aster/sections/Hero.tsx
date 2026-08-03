@@ -1,4 +1,6 @@
 import { AssetPlaceholder } from "../assets/AssetPlaceholder";
+import { ExternalLink } from "./ExternalLink";
+import { ASTER_PROTOTYPE_URL } from "./links";
 import styles from "./Hero.module.css";
 
 const meta = [
@@ -31,9 +33,14 @@ export function Hero() {
             ))}
           </dl>
 
-          <a href="#why-it-matters" className={styles.cta}>
-            Start reading <span aria-hidden="true">↓</span>
-          </a>
+          <div className={styles.ctaRow}>
+            <a href="#problem-and-opportunity" className={styles.cta}>
+              Start reading <span aria-hidden="true">↓</span>
+            </a>
+            <ExternalLink href={ASTER_PROTOTYPE_URL} className={styles.secondaryCta}>
+              Explore the interactive prototype
+            </ExternalLink>
+          </div>
         </div>
 
         <div className={styles.visual}>

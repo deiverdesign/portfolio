@@ -67,11 +67,18 @@
   margin: 0;
 }
 
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-600);
+  margin-top: var(--space-400);
+}
+
 .cta {
   display: inline-flex;
   align-items: center;
   gap: var(--space-300);
-  margin-top: var(--space-400);
   width: fit-content;
   font-weight: 600;
   color: var(--aster-cream-on-dark);
@@ -87,6 +94,19 @@
 .cta:focus-visible {
   outline: 3px solid var(--aster-mint);
   outline-offset: 4px;
+}
+
+.secondaryCta {
+  color: var(--aster-sage);
+}
+
+.secondaryCta:hover {
+  color: var(--aster-mint);
+}
+
+.secondaryCta:focus-visible {
+  outline: 3px solid var(--aster-mint);
+  outline-offset: 3px;
 }
 
 .visual {

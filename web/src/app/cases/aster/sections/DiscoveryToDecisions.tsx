@@ -1,5 +1,6 @@
 import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import { Section } from "./Section";
+import { StatusTag } from "./StatusTag";
 import styles from "./DiscoveryToDecisions.module.css";
 
 const mappings = [
@@ -14,7 +15,9 @@ const mappings = [
 
 export function DiscoveryToDecisions() {
   return (
-    <Section id="discovery-to-decisions" number="14" eyebrow="From discovery to decisions" title="Every design decision traces back to a discovery finding">
+    <Section id="discovery-to-decisions" number="10" eyebrow="From discovery to decisions" title="Every design decision traces back to a discovery finding">
+      <StatusTag status="explored" />
+
       <AssetPlaceholder assetId="aster-figjam-decisions" />
 
       <div className={styles.tableWrap}>

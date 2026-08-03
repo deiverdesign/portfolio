@@ -1,4 +1,5 @@
 import { Section } from "./Section";
+import { StatusTag } from "./StatusTag";
 import shared from "./shared.module.css";
 
 const dimensions = [
@@ -33,15 +34,14 @@ export function Viability() {
   return (
     <Section
       id="viability"
-      number="03"
+      number="04"
       eyebrow="Viability is multidimensional"
       title="A promising interaction model is not the same as a viable product"
       tone="stone"
     >
-      <p>
-        A concept like ASTER can only move forward responsibly if it holds up across five
-        different dimensions — and design can speak directly to some of them, but not all.
-      </p>
+      <StatusTag status="explored" />
+
+      <p>A concept like ASTER holds up across five dimensions — design speaks directly to some, not all.</p>
 
       <div className={shared.grid3}>
         {dimensions.map((dimension) => (
