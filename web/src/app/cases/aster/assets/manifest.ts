@@ -24,19 +24,61 @@ export interface AsterAssetSpec {
   placement: string;
   transparent: boolean;
   alt: string;
+  /** Quando definido, AssetPlaceholder renderiza a imagem real em vez do placeholder. */
+  src?: string;
+  /** Fonte alternativa pra telas ≤599px (renderiza via <picture>). */
+  srcMobile?: string;
 }
 
 export const asterAssetManifest: Record<string, AsterAssetSpec> = {
   "aster-physician-device-hero": {
     id: "aster-physician-device-hero",
-    label: "Médico usando o dispositivo ambiente ASTER",
+    label: "Médica usando o dispositivo ambiente ASTER numa consulta",
     aspectRatio: "4/5",
-    minWidth: 1200,
+    minWidth: 1122,
+    minHeight: 1402,
+    format: "JPG ou PNG",
+    placement: "Hero",
+    transparent: false,
+    alt: "Physician wearing the ASTER device while speaking with a patient.",
+    src: "/images/aster/aster-physician-device-hero.png",
+  },
+  "aster-device-control-macro": {
+    id: "aster-device-control-macro",
+    label: "Detalhe editorial: controle físico do dispositivo ASTER",
+    aspectRatio: "1912/823",
+    minWidth: 1912,
+    minHeight: 823,
+    format: "JPG ou PNG",
+    placement: "Abertura de How it works — detalhe, sem virar seção própria",
+    transparent: false,
+    alt: "Physician pressing the control on the wearable ASTER device.",
+    src: "/images/aster/aster-device-control-macro.png",
+  },
+  "aster-working-notes": {
+    id: "aster-working-notes",
+    label: "Comparação editorial: AI Draft vs My Notes",
+    aspectRatio: "8/5",
+    minWidth: 2400,
     minHeight: 1500,
     format: "JPG ou PNG",
-    placement: "Hero (seção 2) e fechamento (seção 19)",
+    placement: "Decisão 5c — AI Draft is not My Notes",
     transparent: false,
-    alt: "Médico numa consulta, com um pequeno dispositivo ambiente preso à roupa, sem olhar para uma tela.",
+    alt: "Comparison between AI Draft and physician-authored My Notes.",
+    src: "/images/aster/aster-working-notes-desktop.png",
+    srcMobile: "/images/aster/aster-working-notes-mobile.png",
+  },
+  "aster-closing-workspace": {
+    id: "aster-closing-workspace",
+    label: "Fechamento: médica revisando o workspace ASTER",
+    aspectRatio: "1915/821",
+    minWidth: 1915,
+    minHeight: 821,
+    format: "JPG ou PNG",
+    placement: "Closing — não usar no Hero nem como mockup principal de How it works",
+    transparent: false,
+    alt: "Physician reviewing the ASTER consultation workspace on a laptop.",
+    src: "/images/aster/aster-closing-workspace.png",
   },
   "aster-prototype-hero": {
     id: "aster-prototype-hero",

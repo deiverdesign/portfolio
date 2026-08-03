@@ -16,6 +16,20 @@ export interface AssetPlaceholderProps {
 export function AssetPlaceholder({ assetId, variant = "photo" }: AssetPlaceholderProps) {
   const spec = asterAssetManifest[assetId];
 
+  if (spec.src) {
+    // eslint-disable-next-line @next/next/no-img-element
+    const img = <img src={spec.src} alt={spec.alt} className={`${styles.image} ${styles[variant]}`} />;
+
+    if (!spec.srcMobile) return img;
+
+    return (
+      <picture>
+        <source media="(max-width: 599px)" srcSet={spec.srcMobile} />
+        {img}
+      </picture>
+    );
+  }
+
   return (
     <div
       className={`${styles.placeholder} ${styles[variant]}`}

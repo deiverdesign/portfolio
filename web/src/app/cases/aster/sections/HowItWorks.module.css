@@ -1,3 +1,10 @@
+.macro {
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
 .reconstructionCaption {
   font-size: var(--font-body);
   color: var(--aster-forest);

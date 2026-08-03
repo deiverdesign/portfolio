@@ -2,7 +2,6 @@ import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import { Tag } from "@/components/Tag/Tag";
 import { Section } from "./Section";
 import { ExternalLink } from "./ExternalLink";
-import { Tabs } from "./Tabs";
 import { ASTER_FIGJAM_URL } from "./links";
 import shared from "./shared.module.css";
 import styles from "./DesignDecisions.module.css";
@@ -11,23 +10,6 @@ const patientStates = [
   { assetId: "aster-known-patient" as const, title: "Known Patient", tagLabel: "Functional prototype scenario" },
   { assetId: "aster-unknown-patient" as const, title: "Unknown Patient", tagLabel: "Selectable representation" },
   { assetId: "aster-ambiguous-match" as const, title: "Ambiguous Match", tagLabel: "Selectable representation" },
-];
-
-const aiDraftPoints = [
-  "Generated from consultation events",
-  "Organizes the conversation",
-  "Remains reviewable",
-  "Resets with scenario playback",
-];
-
-const myNotesPoints = [
-  "Authored by the physician",
-  "Created immediately without categorization",
-  "Edited inline",
-  "Autosaved",
-  "Soft-deleted with Undo",
-  "Preserved across Restart and scenario changes",
-  "Cleared only through confirmation",
 ];
 
 const correctionSteps = [
@@ -130,49 +112,9 @@ export function DesignDecisions() {
           accountable for what.
         </p>
 
-        <Tabs
-          label="Compare AI Draft and My Notes"
-          items={[
-            {
-              id: "ai-draft",
-              label: "AI Draft",
-              content: (
-                <>
-                  <AssetPlaceholder assetId="aster-ai-draft" />
-                  <ul className={shared.list}>
-                    {aiDraftPoints.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                </>
-              ),
-            },
-            {
-              id: "my-notes",
-              label: "My Notes",
-              content: (
-                <>
-                  <AssetPlaceholder assetId="aster-my-notes" />
-                  <ul className={shared.list}>
-                    {myNotesPoints.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                </>
-              ),
-            },
-          ]}
-        />
+        <AssetPlaceholder assetId="aster-working-notes" />
 
-        <p className={shared.keyStatement}>
-          AI-generated documentation and physician-authored notes remain visibly separate.
-          Nothing is combined automatically.
-        </p>
-
-        <p className={styles.plainCaption}>
-          Both panels shown above are implemented in the portfolio prototype. Combining the notes
-          would be simpler to build, but authorship would be less clear.
-        </p>
+        <p className={styles.plainCaption}>Implemented in the portfolio prototype.</p>
       </div>
 
       {/* 5d — Correction provenance */}

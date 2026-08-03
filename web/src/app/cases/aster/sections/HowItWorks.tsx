@@ -1,5 +1,6 @@
 import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import { Section } from "./Section";
+import shared from "./shared.module.css";
 import styles from "./HowItWorks.module.css";
 
 const flow = [
@@ -13,6 +14,11 @@ const flow = [
 export function HowItWorks() {
   return (
     <Section id="how-it-works" eyebrow="How it works" title="Three things stay visible together" tone="stone">
+      <div className={styles.macro}>
+        <AssetPlaceholder assetId="aster-device-control-macro" />
+        <p className={shared.caption}>Designed for quick, discreet control during the consultation.</p>
+      </div>
+
       <AssetPlaceholder assetId="aster-macbook-mockup" />
 
       <p className={styles.reconstructionCaption}>

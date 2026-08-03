@@ -4,22 +4,20 @@
 }
 
 .inner {
-  max-width: 1280px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
   gap: var(--space-layout-100);
 }
 
 .visual {
-  flex: 1 1 320px;
-  max-width: 380px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .text {
-  flex: 1 1 460px;
+  width: 100%;
   max-width: 640px;
   display: flex;
   flex-direction: column;

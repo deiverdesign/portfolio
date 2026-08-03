@@ -9,7 +9,7 @@ export function Closing() {
     <section className={styles.closing} aria-labelledby="closing-heading">
       <div className={styles.inner}>
         <div className={styles.visual}>
-          <AssetPlaceholder assetId="aster-physician-device-hero" variant="device" />
+          <AssetPlaceholder assetId="aster-closing-workspace" />
         </div>
 
         <div className={styles.text}>
