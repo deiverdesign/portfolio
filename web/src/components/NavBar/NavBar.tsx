@@ -13,12 +13,12 @@ export interface NavBarProps {
   lang?: "PT" | "EN";
 }
 
-// Competências ainda não tem seção nem página própria no app novo —
+// Competências ainda não tem página própria no app novo —
 // aponta pra Home por enquanto, pra não virar link quebrado (404).
 const navItems = [
   { label: "Trabalho", href: "/" },
   { label: "Competências", href: "/" },
-  { label: "Sobre", href: "#sobre" },
+  { label: "Sobre", href: "/sobre" },
 ];
 
 export function NavBar({ context = "light", lang = "PT" }: NavBarProps) {
@@ -57,7 +57,7 @@ export function NavBar({ context = "light", lang = "PT" }: NavBarProps) {
         {/* Desktop: tudo visível numa linha. Escondido via CSS abaixo de 1024px. */}
         <div className={styles.desktopNav}>
           {links}
-          <Button variant="secondary" context={context}>
+          <Button variant="secondary" context={context} href="/sobre#contato">
             Contato
           </Button>
           {langSwitch}
