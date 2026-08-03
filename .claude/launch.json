@@ -10,8 +10,9 @@
     {
       "name": "web-react",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "web", "run", "dev", "--", "-p", "3001"],
-      "port": 3001
+      "runtimeArgs": ["--prefix", "web", "run", "dev"],
+      "port": 3001,
+      "autoPort": true
     },
     {
       "name": "web-react-verify",

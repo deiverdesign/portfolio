@@ -12,7 +12,7 @@ const cases = [
     description:
       "Redesign de uma plataforma densa em dados para ajudar usuários a entender sinais de risco, fornecedores, filtros, dashboards e decisões operacionais.",
     tags: ["Sistemas complexos", "UX denso em dados", "IA", "Dashboards"],
-    href: "/cure-intelligence.html",
+    href: "/cases/cure",
     imageSrc: "/images/cure.png",
   },
   {
@@ -22,7 +22,7 @@ const cases = [
     description:
       "Ajudando a transformar um modelo de assinatura incluída em uma experiência mais clara de configuração e conta.",
     tags: ["UX de assinatura", "Produtos conectados", "Serviço com hardware"],
-    href: "/hp-subscription.html",
+    href: "/cases/hp",
     imageSrc: "/images/hp.png",
   },
   {
@@ -32,7 +32,7 @@ const cases = [
     description:
       "Design de uma experiência mobile acessível com feedback multimodal, restrições reais e edge cases.",
     tags: ["Acessibilidade", "Mobile", "UX físico-digital"],
-    href: "/theodoor.html",
+    href: "/cases/theodoor",
     imageSrc: "/images/theodoor.png",
   },
   {
@@ -42,7 +42,7 @@ const cases = [
     description:
       "Ajudando estudantes a acompanhar o presente, planejar o futuro e aprender sobre dinheiro em contexto.",
     tags: ["Discovery de produto", "Educação financeira", "Design Systems"],
-    href: "/intuit-for-education.html",
+    href: "/cases/intuit",
     imageSrc: "/images/intuit.png",
   },
   {
