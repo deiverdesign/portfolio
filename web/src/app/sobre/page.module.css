@@ -1,0 +1,189 @@
+.aboutSection {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-layout-100) var(--space-700);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-800);
+}
+
+.eyebrow {
+  font-size: var(--font-eyebrow);
+  letter-spacing: 0.08em;
+  color: var(--content-muted-on-light);
+}
+
+.aboutIntro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-layout-100);
+}
+
+.aboutText {
+  flex: 1 1 400px;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+}
+
+.aboutName {
+  font-family: var(--font-boldonse);
+  font-size: var(--font-h1-page-title);
+  font-weight: 400;
+  font-synthesis: none;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-heading);
+}
+
+.aboutText p {
+  font-size: var(--font-subtitle);
+  color: var(--content-primary);
+}
+
+.aboutPhotoBlock {
+  flex: 0 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+.aboutPhoto {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: 50% 50%;
+  background: var(--background-primary);
+}
+
+.aboutCaption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  font-size: var(--font-caption);
+  color: var(--content-secondary);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-layout-100);
+  padding: var(--space-800) 0;
+  border-top: 1px solid var(--border-default);
+}
+
+.rowLabel {
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.rowLabel .number {
+  font-size: var(--font-caption);
+  color: var(--content-secondary);
+}
+
+.rowLabel h2 {
+  font-family: var(--font-boldonse);
+  font-size: var(--font-eyebrow);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-heading);
+}
+
+.rowContent {
+  flex: 2 1 480px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+}
+
+.rowContent p {
+  font-size: var(--font-subtitle);
+  color: var(--content-primary);
+}
+
+.valueList {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.valueItem {
+  display: flex;
+  gap: var(--space-400);
+  padding: var(--space-500) 0;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.valueItem:first-child {
+  padding-top: 0;
+}
+
+.valueBullet {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--content-secondary);
+}
+
+.valueItem h3 {
+  font-size: var(--font-subtitle);
+  font-weight: 600;
+  color: var(--content-heading);
+}
+
+.valueItem p {
+  font-size: var(--font-body);
+  color: var(--content-secondary);
+  margin-top: var(--space-200);
+}
+
+.contactSection {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-700) var(--space-layout-200);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.contactTitle {
+  font-family: var(--font-boldonse);
+  font-size: var(--font-h1-page-title);
+  font-weight: 400;
+  font-synthesis: none;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-heading);
+  margin-bottom: var(--space-300);
+}
+
+.contactSection p {
+  font-size: var(--font-subtitle);
+  color: var(--content-primary);
+  max-width: 560px;
+}
+
+.contactSection p.contactEmail {
+  color: var(--content-secondary);
+}
+
+.contactActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-400);
+  margin-top: var(--space-400);
+}
