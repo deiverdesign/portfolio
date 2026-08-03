@@ -28,7 +28,7 @@
 
 .identity {
   font-weight: 600;
-  font-size: var(--font-ui-medium);
+  font-size: var(--font-caption);
   color: var(--content-primary);
   white-space: nowrap;
 }
