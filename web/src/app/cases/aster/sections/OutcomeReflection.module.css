@@ -1,0 +1,13 @@
+.reflection {
+  border-left: 3px solid var(--aster-coral);
+  padding-left: var(--space-500);
+  margin: 0;
+}
+
+.reflection p {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
+  font-size: var(--font-subtitle);
+  line-height: 1.6;
+  color: var(--aster-forest);
+}

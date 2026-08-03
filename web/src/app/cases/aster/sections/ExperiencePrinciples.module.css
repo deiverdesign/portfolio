@@ -1,0 +1,32 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-700);
+}
+
+.principle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  padding-top: var(--space-500);
+  border-top: 2px solid var(--aster-coral);
+}
+
+.index {
+  font-family: var(--font-dm-mono);
+  color: var(--aster-sage-text);
+  font-size: var(--font-caption);
+}
+
+.title {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
+  font-size: var(--font-subtitle);
+  color: var(--aster-forest);
+}
+
+.text {
+  font-size: var(--font-body);
+  color: var(--aster-ink);
+  line-height: 1.6;
+}

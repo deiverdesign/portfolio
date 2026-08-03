@@ -180,6 +180,38 @@ Token da Vercel, token do Figma: sempre gerados pelo usuário e configurados
 por ele mesmo (secret do GitHub, ou `export` no terminal dele) — a IA nunca
 vê o valor.
 
+### O app Next.js (`web/`) é o site que está no ar — os 4 cases antigos em HTML não são
+
+Confirmado direto na Vercel (`get_project` no projeto `portfolio`): o
+deploy publicado é o app Next.js, não o HTML estático da raiz. Isso quer
+dizer que `cure-intelligence.html`, `hp-subscription.html`, `theodoor.html`
+e `intuit-for-education.html` **dão 404 em produção hoje** — a Home nova
+(`web/src/app/page.tsx`) ainda linka pra eles como `/cure-intelligence.html`,
+um caminho que só existia no output estático antigo. Ainda não migrados pra
+rotas reais dentro do app Next.js — ver task sugerida no chip da sessão que
+criou o case ASTER.
+
+**Implicação prática**: qualquer page novo que precise aparecer no site
+publicado de verdade (como o case ASTER) precisa ser uma rota dentro de
+`web/src/app/`, não um `.html` solto na raiz.
+
+### Senha de case protegido: variável de ambiente + cookie assinado, não gate no cliente
+
+O case ASTER (`web/src/app/cases/aster/`) introduziu o primeiro fluxo de
+autenticação do projeto. Como o app roda num servidor de verdade (Next.js
+na Vercel, não é HTML estático), deu pra fazer proteção real: a senha fica
+numa env var (`ASTER_CASE_PASSWORD`, nunca no código), a checagem acontece
+numa Server Action no servidor, e a sessão é um cookie `HttpOnly` **assinado
+com HMAC usando a própria senha como chave** — sem assinatura, alguém
+poderia só criar o cookie certo pelo DevTools e entrar sem saber a senha.
+Ver `web/README.md` (seção "ASTER case — password setup") pra configurar.
+
+**Padrão pra reaproveitar em um próximo case protegido**: `session.ts` (
+assinatura/verificação) + `actions.ts` (Server Actions `unlock`/`lock`) +
+`page.tsx` como Server Component que decide entre renderizar o gate ou o
+conteúdo — o conteúdo protegido nunca é enviado no HTML pra quem não tem
+cookie válido, então não tem nada pra achar "vendo o código-fonte".
+
 ---
 
 ## 6. Acessibilidade (WCAG AA)

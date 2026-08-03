@@ -12,7 +12,7 @@ const cases = [
     description:
       "Redesign de uma plataforma densa em dados para ajudar usuários a entender sinais de risco, fornecedores, filtros, dashboards e decisões operacionais.",
     tags: ["Sistemas complexos", "UX denso em dados", "IA", "Dashboards"],
-    href: "/cure-intelligence.html",
+    href: "/cases/cure",
     imageSrc: "/images/cure.png",
   },
   {
@@ -22,7 +22,7 @@ const cases = [
     description:
       "Ajudando a transformar um modelo de assinatura incluída em uma experiência mais clara de configuração e conta.",
     tags: ["UX de assinatura", "Produtos conectados", "Serviço com hardware"],
-    href: "/hp-subscription.html",
+    href: "/cases/hp",
     imageSrc: "/images/hp.png",
   },
   {
@@ -32,7 +32,7 @@ const cases = [
     description:
       "Design de uma experiência mobile acessível com feedback multimodal, restrições reais e edge cases.",
     tags: ["Acessibilidade", "Mobile", "UX físico-digital"],
-    href: "/theodoor.html",
+    href: "/cases/theodoor",
     imageSrc: "/images/theodoor.png",
   },
   {
@@ -42,10 +42,22 @@ const cases = [
     description:
       "Ajudando estudantes a acompanhar o presente, planejar o futuro e aprender sobre dinheiro em contexto.",
     tags: ["Discovery de produto", "Educação financeira", "Design Systems"],
-    href: "/intuit-for-education.html",
+    href: "/cases/intuit",
     imageSrc: "/images/intuit.png",
-    // é o card que sobra sozinho na última linha — mesmo tratamento do Figma:
-    // um teto de largura pra não esticar até o fim da linha quando fica sozinho.
+  },
+  {
+    number: "05",
+    title: "ASTER",
+    summary: "Explorando IA como colaboradora clínica em consultas de alto risco.",
+    description:
+      "Um estudo de caso protegido por senha sobre confiança, limites de atuação e responsabilidade compartilhada entre médicos e uma IA colaboradora clínica.",
+    tags: ["Interação com IA", "Saúde", "Confiança e segurança"],
+    href: "/cases/aster",
+    imageSrc: "",
+    imageAlt: "ASTER — imagem de capa ainda não disponível",
+    locked: true,
+    // agora é o card que sobra sozinho na última linha (5 cases, 2 por
+    // coluna no Desktop) — mesmo tratamento que o Intuit tinha antes.
     maxWidth: 600,
   },
 ];

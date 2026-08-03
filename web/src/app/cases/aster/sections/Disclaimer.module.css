@@ -1,0 +1,12 @@
+.disclaimer {
+  background: var(--aster-peach);
+  padding: var(--space-500) var(--space-700);
+}
+
+.disclaimer p {
+  max-width: 960px;
+  margin: 0 auto;
+  font-size: var(--font-caption);
+  line-height: 1.6;
+  color: var(--aster-ink);
+}
