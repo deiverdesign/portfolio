@@ -11,6 +11,18 @@ export function LockButton() {
   return (
     <form action={lockAster} className={styles.form}>
       <button type="submit" className={styles.button}>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 14 14"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          aria-hidden="true"
+        >
+          <rect x="3" y="6.5" width="8" height="6" rx="1" />
+          <path d="M4.5 6.5V4.5a2.5 2.5 0 0 1 5 0v2" />
+        </svg>
         Lock this case
       </button>
     </form>

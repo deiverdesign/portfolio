@@ -1,27 +1,29 @@
 .form {
   display: inline-block;
+  justify-self: end;
 }
 
 .button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-200);
   min-height: 44px;
-  padding: var(--space-300) var(--space-500);
-  border: 1px solid var(--aster-border);
-  border-radius: 4px;
+  padding: var(--space-300) var(--space-200);
+  border: none;
   background: transparent;
   color: var(--aster-sage-text);
   font-size: var(--font-caption);
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: color 0.15s ease;
 }
 
 .button:hover {
-  border-color: var(--aster-forest);
   color: var(--aster-forest);
 }
 
 .button:focus-visible {
   outline: 3px solid var(--aster-forest);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

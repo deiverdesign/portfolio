@@ -34,7 +34,9 @@
   font-weight: 400;
   font-size: var(--font-hero-title);
   line-height: 1.35;
-  color: var(--aster-cream-on-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-on-dark-primary);
 }
 
 .subtitle {

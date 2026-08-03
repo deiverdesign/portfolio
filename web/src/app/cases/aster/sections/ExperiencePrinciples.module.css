@@ -22,7 +22,9 @@
   font-family: var(--font-boldonse);
   font-weight: 400;
   font-size: var(--font-subtitle);
-  color: var(--aster-forest);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-heading);
 }
 
 .text {
