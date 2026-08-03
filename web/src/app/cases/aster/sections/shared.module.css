@@ -1,5 +1,5 @@
 /* Peças reaproveitadas por várias seções — evita repetir a mesma regra
-   de card/grid/lista em 16 arquivos CSS diferentes. */
+   de card/grid/lista em vários arquivos CSS diferentes. */
 
 .keyStatement {
   font-family: var(--font-boldonse);
@@ -21,95 +21,10 @@
   padding-left: var(--space-500);
 }
 
-.grid2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-600);
-}
-
 .grid3 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: var(--space-500);
-}
-
-.grid4 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: var(--space-500);
-}
-
-.card {
-  background: var(--aster-stone);
-  border: 1px solid var(--aster-border);
-  border-radius: 6px;
-  padding: var(--space-600);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-300);
-}
-
-.cardOnDark {
-  background: rgba(247, 242, 233, 0.06);
-  border: 1px solid rgba(247, 242, 233, 0.18);
-  border-radius: 6px;
-  padding: var(--space-600);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-300);
-}
-
-.cardNumber {
-  font-family: var(--font-dm-mono);
-  color: var(--aster-coral-deep);
-  font-size: var(--font-caption);
-}
-
-.cardTitle {
-  font-weight: 600;
-  font-size: var(--font-subtitle);
-  color: var(--aster-forest);
-}
-
-.cardOnDark .cardTitle {
-  color: var(--aster-cream-on-dark);
-}
-
-.cardText {
-  font-size: var(--font-body);
-  color: var(--aster-ink);
-  line-height: 1.6;
-}
-
-.cardOnDark .cardText {
-  color: var(--aster-mint);
-}
-
-.pillRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-300);
-}
-
-.pill {
-  font-size: var(--font-caption);
-  padding: 4px var(--space-400);
-  border-radius: 999px;
-  border: 1px solid var(--aster-border);
-  color: var(--aster-sage-text);
-}
-
-/* Pra usar .pill fora de um .pillRow, direto num container flex-column
-   (que por padrão esticaria o span pra largura total). */
-.pillStandalone {
-  align-self: flex-start;
-}
-
-/* Variante pra usar sobre fundo escuro (tone="forestDeep") — o .pill
-   base usa cores calibradas pra fundo claro. */
-.pillOnDark {
-  border-color: var(--aster-sage);
-  color: var(--aster-sage);
 }
 
 .list {
@@ -138,41 +53,10 @@
   font-style: italic;
 }
 
-/* Subtítulo interno de um capítulo que combina dois temas (ex: perguntas
-   + simulação) — mesma convenção de título do resto do site, num
-   tamanho menor. */
-.subheading {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  font-size: var(--font-subtitle);
-  color: var(--content-heading);
-  margin-top: var(--space-400);
-}
-
 .captionOnDark {
   font-size: var(--font-caption);
   color: var(--aster-sage);
   font-style: italic;
-}
-
-.ctaLink {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-300);
-  font-weight: 600;
-  color: var(--aster-forest);
-  width: fit-content;
-}
-
-.ctaLink:hover {
-  color: var(--aster-coral-deep);
-}
-
-.ctaLink:focus-visible {
-  outline: 3px solid var(--aster-forest);
-  outline-offset: 3px;
 }
 
 .visuallyHidden {

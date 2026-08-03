@@ -36,6 +36,16 @@
      rótulo "Placeholder" usam essa cor sobre os dois fundos. */
   --aster-coral-deep: #9c4b30;
 
+  /* Sobrescreve os tokens semânticos que Tag/LinkTertiary (componentes
+     compartilhados do design system principal) leem por padrão — assim
+     os dois herdam a paleta do ASTER automaticamente, sem precisar de
+     nenhuma variante nova no código dos componentes. */
+  --content-accent: var(--aster-forest);
+  --content-accent-on-dark: var(--aster-sage);
+  --border-tag: var(--aster-border);
+  --border-tag-on-dark: var(--aster-sage);
+  --action-tertiary-content: var(--aster-forest);
+
   color: var(--aster-ink);
   font-family: var(--font-dm-sans), Arial, Helvetica, sans-serif;
 }

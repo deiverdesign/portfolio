@@ -16,12 +16,14 @@ export function Hero() {
       <div className={styles.inner}>
         <div className={styles.text}>
           <p className={styles.wordmark}>ASTER</p>
+          <p className={styles.eyebrow}>AMBIENT AI FOR CLINICAL CONSULTATIONS</p>
           <h1 id="aster-hero-heading" className={styles.title}>
-            Designing trust between physicians and AI
+            ASTER HELPS PHYSICIANS LISTEN, REMEMBER AND DOCUMENT — WITHOUT DECIDING FOR THEM.
           </h1>
           <p className={styles.subtitle}>
-            Exploring the interaction boundaries of an AI clinical collaborator in a high-risk
-            domain.
+            A small device worn by the physician captures the consultation. The workspace
+            identifies the patient, builds a live transcript, brings relevant context into view
+            and prepares draft notes for review.
           </p>
 
           <dl className={styles.meta}>
@@ -34,10 +36,10 @@ export function Hero() {
           </dl>
 
           <div className={styles.ctaRow}>
-            <a href="#problem-and-opportunity" className={styles.cta}>
-              Start reading <span aria-hidden="true">↓</span>
+            <a href="#how-it-works" className={styles.cta}>
+              See how it works <span aria-hidden="true">↓</span>
             </a>
-            <ExternalLink href={ASTER_PROTOTYPE_URL} className={styles.secondaryCta}>
+            <ExternalLink href={ASTER_PROTOTYPE_URL} context="dark">
               Explore the interactive prototype
             </ExternalLink>
           </div>

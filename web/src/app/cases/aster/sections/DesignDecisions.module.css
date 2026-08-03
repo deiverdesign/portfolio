@@ -1,0 +1,187 @@
+.decision {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+  padding-top: var(--space-600);
+  border-top: 1px solid var(--aster-border);
+}
+
+.decision:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.decisionTitle {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
+  font-size: var(--font-subtitle);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-heading);
+}
+
+.patientCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.patientMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-300);
+  flex-wrap: wrap;
+}
+
+.patientName {
+  font-weight: 600;
+  color: var(--aster-ink);
+}
+
+.plainCaption,
+.factualCaption {
+  font-size: var(--font-caption);
+  color: var(--aster-sage-text);
+  line-height: 1.5;
+}
+
+/* Mock de Insight — mesmo padrão visual usado antes na versão de 12 capítulos. */
+.mock {
+  background: var(--aster-cream);
+  border: 1px solid var(--aster-lavender);
+  border-left: 4px solid var(--aster-lavender-text);
+  border-radius: 6px;
+  padding: var(--space-500);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  max-width: 480px;
+}
+
+.mockLabel {
+  font-family: var(--font-dm-mono);
+  font-size: var(--font-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--aster-lavender-text);
+}
+
+.mockContext {
+  font-size: var(--font-body);
+  color: var(--aster-ink);
+  font-style: italic;
+}
+
+.mockReason {
+  font-size: var(--font-caption);
+  color: var(--aster-sage-text);
+}
+
+.mockFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-300);
+  margin-top: var(--space-200);
+}
+
+.mockStatus {
+  font-size: var(--font-caption);
+  padding: 2px var(--space-300);
+  border-radius: 999px;
+  background: var(--aster-mint);
+  color: var(--aster-forest);
+}
+
+.mockDirection {
+  font-size: var(--font-caption);
+  color: var(--aster-sage-text);
+}
+
+/* Tratamento visual deliberadamente "menos pronto" pra decisão que não
+   chegou a ser construída — contorno tracejado + opacidade reduzida,
+   pra não competir visualmente com as 3 decisões implementadas. */
+.sketchWrap {
+  position: relative;
+  display: inline-flex;
+  max-width: 480px;
+  opacity: 0.75;
+  outline: 2px dashed var(--aster-coral-deep);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.sketchTag {
+  position: absolute;
+  top: var(--space-400);
+  left: var(--space-400);
+}
+
+.disclosure {
+  margin-top: var(--space-500);
+  border-top: 1px solid var(--aster-border);
+  padding-top: var(--space-500);
+}
+
+.disclosureSummary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--aster-forest);
+  width: fit-content;
+}
+
+.disclosureSummary:focus-visible {
+  outline: 3px solid var(--aster-forest);
+  outline-offset: 3px;
+}
+
+.disclosureBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+  margin-top: var(--space-500);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--aster-border);
+  border-radius: 6px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-body);
+}
+
+.tableCaption {
+  text-align: left;
+  padding: var(--space-400) var(--space-500);
+  font-size: var(--font-caption);
+  color: var(--aster-sage-text);
+  background: var(--aster-cream);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: var(--space-400) var(--space-500);
+  border-top: 1px solid var(--aster-border);
+}
+
+.table th {
+  font-size: var(--font-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--aster-forest);
+  background: var(--aster-mint);
+}
+
+.table td:first-child {
+  color: var(--aster-ink);
+  font-weight: 600;
+}
+
+.arrow {
+  color: var(--aster-coral-deep);
+}

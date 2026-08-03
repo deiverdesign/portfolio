@@ -2,26 +2,21 @@ import theme from "./aster-theme.module.css";
 import { AsterHeader } from "./AsterHeader";
 import { Hero } from "./sections/Hero";
 import { Disclaimer } from "./sections/Disclaimer";
-import { StatusLegend } from "./sections/StatusLegend";
-import { ProblemAndOpportunity } from "./sections/ProblemAndOpportunity";
-import { ProductWalkthrough } from "./sections/ProductWalkthrough";
-import { WhatIDrove } from "./sections/WhatIDrove";
-import { Viability } from "./sections/Viability";
-import { QuestionsAndSimulation } from "./sections/QuestionsAndSimulation";
-import { PrinciplesAndBoundary } from "./sections/PrinciplesAndBoundary";
-import { PatientIdentity } from "./sections/PatientIdentity";
-import { DocumentationAndInsights } from "./sections/DocumentationAndInsights";
-import { PlannedScenarios } from "./sections/PlannedScenarios";
-import { DiscoveryToDecisions } from "./sections/DiscoveryToDecisions";
-import { HardNoConditions } from "./sections/HardNoConditions";
-import { OutcomeReflection } from "./sections/OutcomeReflection";
+import { HowItWorks } from "./sections/HowItWorks";
+import { MyRole } from "./sections/MyRole";
+import { TheHardPart } from "./sections/TheHardPart";
+import { DesignDecisions } from "./sections/DesignDecisions";
+import { FunctionalPrototype } from "./sections/FunctionalPrototype";
+import { CannotClaim } from "./sections/CannotClaim";
+import { WhatILearned } from "./sections/WhatILearned";
 import { Closing } from "./sections/Closing";
 
 /**
  * Case completo do ASTER — só renderizado depois que page.tsx confirma a
- * sessão. Arquitetura editorial de 12 capítulos (revisão 2), aprovada
- * depois da primeira versão de 16 — protótipo e contribuição pessoal
- * aparecem logo no início, discovery redistribuído depois do produto.
+ * sessão. Storyboard v2: narrativa em 8 partes organizada pela sequência
+ * de perguntas de um recrutador (o que é / como funciona / quem fez /
+ * qual o desafio / decisões / protótipo / limites / aprendizado), não
+ * pela cronologia do processo de discovery.
  */
 export function AsterCase() {
   return (
@@ -30,19 +25,13 @@ export function AsterCase() {
       <main>
         <Hero />
         <Disclaimer />
-        <StatusLegend />
-        <ProblemAndOpportunity />
-        <ProductWalkthrough />
-        <WhatIDrove />
-        <Viability />
-        <QuestionsAndSimulation />
-        <PrinciplesAndBoundary />
-        <PatientIdentity />
-        <DocumentationAndInsights />
-        <PlannedScenarios />
-        <DiscoveryToDecisions />
-        <HardNoConditions />
-        <OutcomeReflection />
+        <HowItWorks />
+        <MyRole />
+        <TheHardPart />
+        <DesignDecisions />
+        <FunctionalPrototype />
+        <CannotClaim />
+        <WhatILearned />
       </main>
       <Closing />
     </div>

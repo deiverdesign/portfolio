@@ -29,6 +29,13 @@
   color: var(--aster-sage);
 }
 
+.eyebrow {
+  font-size: var(--font-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--aster-sage);
+}
+
 .title {
   font-family: var(--font-boldonse);
   font-weight: 400;
@@ -94,19 +101,6 @@
 .cta:focus-visible {
   outline: 3px solid var(--aster-mint);
   outline-offset: 4px;
-}
-
-.secondaryCta {
-  color: var(--aster-sage);
-}
-
-.secondaryCta:hover {
-  color: var(--aster-mint);
-}
-
-.secondaryCta:focus-visible {
-  outline: 3px solid var(--aster-mint);
-  outline-offset: 3px;
 }
 
 .visual {
