@@ -203,6 +203,49 @@ const COPY = {
   },
 } as const;
 
+const IMAGES = {
+  hero: {
+    src: "/images/cases/intuit/hero.png",
+    alt: { en: "A student checking the Track section of the app on their phone, next to a laptop.", pt: "Uma estudante olhando a seção Track do app no celular, ao lado de um laptop." },
+  },
+  lightDarkMode: {
+    src: "/images/cases/intuit/light-dark-mode.png",
+    alt: { en: "Light and dark mode screens across the Track, Plan, and Learn sections.", pt: "Telas em modo claro e escuro nas seções Track, Plan e Learn." },
+  },
+  figjamBoard: {
+    src: "/images/cases/intuit/figjam-board.png",
+    alt: { en: "FigJam board from stakeholder and client conversations.", pt: "Board no FigJam com conversas de stakeholders e cliente." },
+  },
+  uiDirections: {
+    src: "/images/cases/intuit/ui-directions.png",
+    alt: { en: "Four UI directions compared during Maze validation.", pt: "Quatro direções visuais de UI comparadas durante a validação no Maze." },
+  },
+  trackFlow: {
+    src: "/images/cases/intuit/track-flow.png",
+    alt: { en: "Track flow — check-in modal and confidence survey.", pt: "Fluxo do Track — modal de check-in e pesquisa de confiança." },
+  },
+  learnFlow: {
+    src: "/images/cases/intuit/learn-flow.png",
+    alt: { en: "Learn flow — Happy Path and General Search.", pt: "Fluxo do Learn — Happy Path e busca geral." },
+  },
+  illustrationBoard: {
+    src: "/images/cases/intuit/illustration-board.png",
+    alt: { en: "AI-assisted illustration board — financial concepts visualized.", pt: "Board de ilustrações assistidas por IA — conceitos financeiros visualizados." },
+  },
+  illustrationBundles: {
+    src: "/images/cases/intuit/illustration-bundles.png",
+    alt: { en: "Illustration bundles organized in Figma — financial aid, student loans, scholarship search, college costs.", pt: "Pacotes de ilustração organizados no Figma — ajuda financeira, empréstimos estudantis, busca de bolsas, custos da faculdade." },
+  },
+  designSystemTokens: {
+    src: "/images/cases/intuit/design-system-tokens.png",
+    alt: { en: "Design system color tokens and functions.", pt: "Tokens e funções de cor do design system." },
+  },
+  figmaFileStructure: {
+    src: "/images/cases/intuit/figma-file-structure.png",
+    alt: { en: "Figma file structure — production UI with dark mode and font scaling pages.", pt: "Estrutura do arquivo Figma — UI de produção com páginas de modo escuro e escala de fonte." },
+  },
+} as const;
+
 export function IntuitContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const homeHref = locale === "pt" ? "/" : "/en";
@@ -231,12 +274,19 @@ export function IntuitContent({ locale }: { locale: Locale }) {
           </dl>
         </section>
 
+        <div className={styles.heroImage}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={IMAGES.hero.src} alt={IMAGES.hero.alt[locale]} />
+        </div>
+
         <section className={styles.section}>
           <SectionHeader eyebrow={`01 · ${t.minuteTitle}`} title={t.minuteTitle} />
           {t.minuteParas.map((p) => (
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.minuteCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.lightDarkMode.src} alt={IMAGES.lightDarkMode.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -259,6 +309,8 @@ export function IntuitContent({ locale }: { locale: Locale }) {
             ))}
           </ol>
           <p className={styles.caption}>{t.complexCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.figjamBoard.src} alt={IMAGES.figjamBoard.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -267,6 +319,8 @@ export function IntuitContent({ locale }: { locale: Locale }) {
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.researchCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.uiDirections.src} alt={IMAGES.uiDirections.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -294,6 +348,12 @@ export function IntuitContent({ locale }: { locale: Locale }) {
               ))}
             </Card>
           ))}
+          <div className={styles.approachGrid}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.trackFlow.src} alt={IMAGES.trackFlow.alt[locale]} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.learnFlow.src} alt={IMAGES.learnFlow.alt[locale]} />
+          </div>
           <p className={styles.caption}>{t.decisionsCaption}</p>
         </section>
 
@@ -303,6 +363,12 @@ export function IntuitContent({ locale }: { locale: Locale }) {
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.illustrationCaption}</p>
+          <div className={styles.approachGrid}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.illustrationBoard.src} alt={IMAGES.illustrationBoard.alt[locale]} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.illustrationBundles.src} alt={IMAGES.illustrationBundles.alt[locale]} />
+          </div>
         </section>
 
         <section className={styles.section}>
@@ -311,6 +377,12 @@ export function IntuitContent({ locale }: { locale: Locale }) {
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.foundationsCaption}</p>
+          <div className={styles.approachGrid}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.designSystemTokens.src} alt={IMAGES.designSystemTokens.alt[locale]} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.figmaFileStructure.src} alt={IMAGES.figmaFileStructure.alt[locale]} />
+          </div>
         </section>
 
         <section className={styles.section}>

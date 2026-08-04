@@ -193,6 +193,19 @@
   gap: var(--space-600);
 }
 
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-400);
+}
+
+.videoGrid video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
 /* .approachItem, .decision e .testCard viraram o componente Card —
    isso aqui é só o que sobrou de estilo específico de conteúdo dentro
    deles (número, título, texto), que o Card não sabe sobre. */

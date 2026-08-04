@@ -175,6 +175,29 @@ const COPY = {
   },
 } as const;
 
+const IMAGES = {
+  hero: {
+    src: "/images/cases/hp/hero.png",
+    alt: { en: "HP Instant Ink box being delivered, next to a laptop showing the HP Smart account overview.", pt: "Caixa do HP Instant Ink sendo entregue, ao lado de um laptop mostrando a visão geral da conta no HP Smart." },
+  },
+  overviewScreens: {
+    src: "/images/cases/hp/overview-screens.png",
+    alt: { en: "Four mobile screens: account overview, monthly paper summary, billing cycle, and cartridge status.", pt: "Quatro telas mobile: visão geral da conta, resumo mensal de papel, ciclo de faturamento e status do cartucho." },
+  },
+  desktopDashboard: {
+    src: "/images/cases/hp/desktop-dashboard.png",
+    alt: { en: "Desktop view of the HP Smart account overview, showing plan usage and support details.", pt: "Visão desktop da visão geral da conta no HP Smart, mostrando uso do plano e detalhes de suporte." },
+  },
+  flowDiagram: {
+    src: "/images/cases/hp/flow-diagram.png",
+    alt: { en: "Flow diagram mapping user actions and HP's system actions across the account pages.", pt: "Diagrama de fluxo mapeando ações do usuário e ações do sistema da HP nas páginas de conta." },
+  },
+  onboardingFlow: {
+    src: "/images/cases/hp/onboarding-flow.png",
+    alt: { en: "Three onboarding screens: all-inclusive plan intro, choose your printer, and page volume selection.", pt: "Três telas de onboarding: introdução ao plano all-inclusive, escolha da impressora e seleção de volume de páginas." },
+  },
+} as const;
+
 export function HpContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const homeHref = locale === "pt" ? "/" : "/en";
@@ -203,12 +226,19 @@ export function HpContent({ locale }: { locale: Locale }) {
           </dl>
         </section>
 
+        <div className={styles.heroImage}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={IMAGES.hero.src} alt={IMAGES.hero.alt[locale]} />
+        </div>
+
         <section className={styles.section}>
           <SectionHeader eyebrow={`01 · ${t.minuteTitle}`} title={t.minuteTitle} />
           {t.minuteParas.map((p) => (
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.minuteCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.overviewScreens.src} alt={IMAGES.overviewScreens.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -230,6 +260,8 @@ export function HpContent({ locale }: { locale: Locale }) {
             ))}
           </ol>
           <p className={styles.caption}>{t.complexCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.desktopDashboard.src} alt={IMAGES.desktopDashboard.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -243,6 +275,8 @@ export function HpContent({ locale }: { locale: Locale }) {
               </Card>
             ))}
           </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.flowDiagram.src} alt={IMAGES.flowDiagram.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -257,6 +291,8 @@ export function HpContent({ locale }: { locale: Locale }) {
               ))}
             </Card>
           ))}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.onboardingFlow.src} alt={IMAGES.onboardingFlow.alt[locale]} />
           <p className={styles.caption}>{t.decisionsCaption}</p>
         </section>
 

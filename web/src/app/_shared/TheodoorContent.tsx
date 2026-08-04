@@ -227,6 +227,31 @@ const COPY = {
   },
 } as const;
 
+const IMAGES = {
+  hero: {
+    src: "/images/cases/theodoor/hero.png",
+    alt: { en: "A person using a wheelchair opens a door with the Theodoor app on their phone.", pt: "Uma pessoa em cadeira de rodas abre uma porta com o app Theodoor no celular." },
+  },
+  appInterface: {
+    src: "/images/cases/theodoor/app-interface.png",
+    alt: { en: "Theodoor's smart door app interface, showing the door list and controls.", pt: "Interface do app Theodoor, mostrando a lista de portas e os controles." },
+  },
+  prototypeSimulator: {
+    src: "/images/cases/theodoor/prototype-simulator.png",
+    alt: { en: "The behavioral prototype simulator with test scenarios like in-motion obstruction and offline states.", pt: "O simulador do protótipo comportamental com cenários de teste como obstrução em movimento e estados offline." },
+  },
+  designSystem: {
+    src: "/images/cases/theodoor/design-system.png",
+    alt: { en: "Design system reference sheet showing color variables, semantic tokens, and a color audit.", pt: "Folha de referência do design system mostrando variáveis de cor, tokens semânticos e uma auditoria de cores." },
+  },
+} as const;
+
+const VIDEOS = [
+  { src: "/videos/cases/theodoor/scanning-for-devices.mp4", label: { en: "Scanning for devices", pt: "Buscando dispositivos" } },
+  { src: "/videos/cases/theodoor/door-page-empty.mp4", label: { en: "Empty state, door page", pt: "Estado vazio, página da porta" } },
+  { src: "/videos/cases/theodoor/screen-recording.mp4", label: { en: "Interaction walkthrough", pt: "Passo a passo da interação" } },
+] as const;
+
 export function TheodoorContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const homeHref = locale === "pt" ? "/" : "/en";
@@ -255,12 +280,19 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
           </dl>
         </section>
 
+        <div className={styles.heroImage}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={IMAGES.hero.src} alt={IMAGES.hero.alt[locale]} />
+        </div>
+
         <section className={styles.section}>
           <SectionHeader eyebrow={`01 · ${t.minuteTitle}`} title={t.minuteTitle} />
           {t.minuteParas.map((p) => (
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.minuteCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.appInterface.src} alt={IMAGES.appInterface.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -302,6 +334,8 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.behavioralCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.prototypeSimulator.src} alt={IMAGES.prototypeSimulator.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -333,6 +367,12 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
             ))}
           </div>
           <p className={styles.caption}>{t.motionCaption}</p>
+
+          <div className={styles.videoGrid}>
+            {VIDEOS.map((video) => (
+              <video key={video.src} src={video.src} aria-label={video.label[locale]} autoPlay muted loop playsInline />
+            ))}
+          </div>
         </section>
 
         <section className={styles.section}>
@@ -341,6 +381,8 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.foundationsCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.designSystem.src} alt={IMAGES.designSystem.alt[locale]} />
         </section>
 
         <section className={styles.section}>
