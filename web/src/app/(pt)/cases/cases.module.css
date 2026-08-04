@@ -126,21 +126,14 @@
   box-sizing: border-box;
 }
 
+/* Usado só no label solto do card "next case" — o par eyebrow+título
+   de cada seção agora vem do componente SectionHeader. */
 .eyebrow {
   font-family: var(--font-dm-mono);
   font-size: var(--font-eyebrow);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--content-accent);
-}
-
-.sectionTitle {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-h2-section-title);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--content-heading);
 }
 
 .subheading {
@@ -177,15 +170,9 @@
   gap: var(--space-600);
 }
 
-.approachItem {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-300);
-  padding: var(--space-600);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-}
-
+/* .approachItem, .decision e .testCard viraram o componente Card —
+   isso aqui é só o que sobrou de estilo específico de conteúdo dentro
+   deles (número, título, texto), que o Card não sabe sobre. */
 .approachNumber {
   font-family: var(--font-dm-mono);
   font-size: var(--font-step-number);
@@ -193,53 +180,18 @@
   color: var(--content-accent);
 }
 
-.approachItem h3 {
+/* Título dentro de um Card (item de abordagem ou decisão) — o Card em
+   si não assume nada sobre o conteúdo, então isso fica explícito na
+   marcação (className="cardTitle" no h3), não implícito por posição. */
+.cardTitle {
   font-size: var(--font-subtitle);
   color: var(--content-heading);
-}
-
-.approachItem p {
-  font-size: var(--font-body-large-intro);
-  line-height: 1.6;
-  color: var(--content-secondary);
-}
-
-.decision {
-  padding: var(--space-600);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-300);
-}
-
-.decision h3 {
-  font-size: var(--font-subtitle);
-  color: var(--content-heading);
-}
-
-.decision p {
-  font-size: var(--font-body-large-intro);
-  line-height: 1.6;
-  color: var(--content-primary);
 }
 
 .testGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-600);
-}
-
-.testCard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-300);
-  padding: var(--space-600);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  font-size: var(--font-body-large-intro);
-  line-height: 1.6;
-  color: var(--content-primary);
 }
 
 .testTitle {
@@ -281,36 +233,14 @@
   border-top: none;
 }
 
-.reflectionQuote {
-  border-left: 3px solid var(--content-accent);
-  padding-left: var(--space-600);
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-400);
-  font-size: var(--font-body-large-intro);
-  color: var(--content-heading);
-}
-
-/* Diferente de .section (que só tem borda no topo), este tem contorno
-   nos 4 lados — precisa de respiro nas laterais mesmo no mobile, senão
-   a borda encosta na tela. Por isso width usa calc() em vez do padding
-   interno de .section fazer esse papel. */
+/* Borda e padding já vêm do componente Card — isso só cuida da
+   largura/centralização (mesma lógica de .section: calc() pra sobrar
+   respiro nas laterais no mobile, já que o Card tem contorno nos 4
+   lados, diferente de .section que só tem borda no topo). */
 .nextCase {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-200);
-  padding: var(--space-700);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
   width: calc(100% - 2 * var(--space-700));
   max-width: 720px;
   margin: 0 auto;
-  box-sizing: border-box;
-}
-
-.nextCase:hover {
-  border-color: var(--content-accent);
 }
 
 .nextCaseTitle {

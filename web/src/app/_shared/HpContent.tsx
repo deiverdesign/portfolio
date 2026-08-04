@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { NavBar, type Locale } from "@/components/NavBar/NavBar";
 import { Footer } from "@/components/Footer/Footer";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import { Card } from "@/components/Card/Card";
+import { Quote } from "@/components/Quote/Quote";
 import styles from "../(pt)/cases/cases.module.css";
 
 const COPY = {
@@ -201,8 +204,7 @@ export function HpContent({ locale }: { locale: Locale }) {
         </section>
 
         <section className={styles.section}>
-          <p className={styles.eyebrow}>01 · {t.minuteTitle}</p>
-          <h2 className={styles.sectionTitle}>{t.minuteTitle}</h2>
+          <SectionHeader eyebrow={`01 · ${t.minuteTitle}`} title={t.minuteTitle} />
           {t.minuteParas.map((p) => (
             <p key={p}>{p}</p>
           ))}
@@ -210,8 +212,7 @@ export function HpContent({ locale }: { locale: Locale }) {
         </section>
 
         <section className={styles.section}>
-          <p className={styles.eyebrow}>02 · {t.contributionTitle}</p>
-          <h2 className={styles.sectionTitle}>{t.contributionTitle}</h2>
+          <SectionHeader eyebrow={`02 · ${t.contributionTitle}`} title={t.contributionTitle} />
           <p>{t.contributionIntro}</p>
           <ol className={styles.list}>
             {t.contributionList.map((li) => (
@@ -221,8 +222,7 @@ export function HpContent({ locale }: { locale: Locale }) {
         </section>
 
         <section className={styles.section}>
-          <p className={styles.eyebrow}>03 · {t.complexTitle}</p>
-          <h2 className={styles.sectionTitle}>{t.complexTitle}</h2>
+          <SectionHeader eyebrow={`03 · ${t.complexTitle}`} title={t.complexTitle} />
           <p>{t.complexIntro}</p>
           <ol className={styles.list}>
             {t.complexList.map((li) => (
@@ -233,38 +233,35 @@ export function HpContent({ locale }: { locale: Locale }) {
         </section>
 
         <section className={styles.section}>
-          <p className={styles.eyebrow}>04 · {t.approachTitle}</p>
-          <h2 className={styles.sectionTitle}>{t.approachTitle}</h2>
+          <SectionHeader eyebrow={`04 · ${t.approachTitle}`} title={t.approachTitle} />
           <div className={styles.approachGrid}>
             {t.approachItems.map((item, i) => (
-              <div className={styles.approachItem} key={item.title}>
+              <Card key={item.title}>
                 <span className={styles.approachNumber}>{String(i + 1).padStart(2, "0")}</span>
-                <h3>{item.title}</h3>
+                <h3 className={styles.cardTitle}>{item.title}</h3>
                 <p>{item.text}</p>
-              </div>
+              </Card>
             ))}
           </div>
         </section>
 
         <section className={styles.section}>
-          <p className={styles.eyebrow}>05 · {t.decisionsTitle}</p>
-          <h2 className={styles.sectionTitle}>{t.decisionsTitle}</h2>
+          <SectionHeader eyebrow={`05 · ${t.decisionsTitle}`} title={t.decisionsTitle} />
           <p>{t.decisionsIntro}</p>
 
           {t.decisions.map((d) => (
-            <article className={styles.decision} key={d.title}>
-              <h3>{d.title}</h3>
+            <Card key={d.title}>
+              <h3 className={styles.cardTitle}>{d.title}</h3>
               {d.paragraphs.map((p) => (
                 <p key={p}>{p}</p>
               ))}
-            </article>
+            </Card>
           ))}
           <p className={styles.caption}>{t.decisionsCaption}</p>
         </section>
 
         <section className={styles.section}>
-          <p className={styles.eyebrow}>06 · {t.outcomeTitle}</p>
-          <h2 className={styles.sectionTitle}>{t.outcomeTitle}</h2>
+          <SectionHeader eyebrow={`06 · ${t.outcomeTitle}`} title={t.outcomeTitle} />
           <ul className={styles.outcomeList}>
             {t.outcomeList.map((li) => (
               <li key={li}>{li}</li>
@@ -274,20 +271,19 @@ export function HpContent({ locale }: { locale: Locale }) {
         </section>
 
         <section className={`${styles.section} ${styles.reflection}`}>
-          <p className={styles.eyebrow}>07 · {t.reflectionTitle}</p>
-          <h2 className={styles.sectionTitle}>{t.reflectionTitle}</h2>
-          <blockquote className={styles.reflectionQuote}>
+          <SectionHeader eyebrow={`07 · ${t.reflectionTitle}`} title={t.reflectionTitle} />
+          <Quote>
             {t.reflectionParas.map((p) => (
               <p key={p}>{p}</p>
             ))}
-          </blockquote>
+          </Quote>
         </section>
 
-        <Link className={styles.nextCase} href={t.nextCaseHref}>
+        <Card href={t.nextCaseHref} padding="spacious" className={styles.nextCase}>
           <span className={styles.eyebrow}>{t.nextCaseLabel}</span>
           <span className={styles.nextCaseTitle}>{t.nextCaseTitle}</span>
           <span className={styles.caption}>{t.nextCaseCaption}</span>
-        </Link>
+        </Card>
       </main>
 
       <Footer locale={locale} />
