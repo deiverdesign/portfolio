@@ -1,0 +1,37 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.eyebrow {
+  font-family: var(--font-dm-mono);
+  font-size: var(--font-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.eyebrow.light {
+  color: var(--content-accent);
+}
+
+.eyebrow.dark {
+  color: var(--content-accent-on-dark);
+}
+
+.title {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
+  font-size: var(--font-h2-section-title);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.title.light {
+  color: var(--content-heading);
+}
+
+.title.dark {
+  color: var(--content-on-dark-primary);
+}
