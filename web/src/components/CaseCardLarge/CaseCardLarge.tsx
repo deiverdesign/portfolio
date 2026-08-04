@@ -1,6 +1,31 @@
 import { Tag } from "@/components/Tag/Tag";
 import styles from "./CaseCardLarge.module.css";
 
+export type CaseCardLocale = "pt" | "en";
+
+const STRINGS: Record<CaseCardLocale, {
+  viewCase: string;
+  passwordProtectedSuffix: string;
+  passwordProtectedBadge: string;
+  seeCase: string;
+  more: (count: number) => string;
+}> = {
+  pt: {
+    viewCase: "Ver case",
+    passwordProtectedSuffix: " (protegido por senha)",
+    passwordProtectedBadge: "Protegido por senha",
+    seeCase: "Ver case",
+    more: (count) => `+${count} mais`,
+  },
+  en: {
+    viewCase: "See case",
+    passwordProtectedSuffix: " (password protected)",
+    passwordProtectedBadge: "Password protected",
+    seeCase: "See case",
+    more: (count) => `+${count} more`,
+  },
+};
+
 export interface CaseCardLargeProps {
   number: string;
   title: string;
@@ -16,6 +41,8 @@ export interface CaseCardLargeProps {
   maxWidth?: number;
   /** Case protegido por senha (ex: ASTER) — mostra um indicador "Password protected" no card público. */
   locked?: boolean;
+  /** Idioma dos textos fixos do card (aria-label, badge, "See case", "+N more"). */
+  locale?: CaseCardLocale;
 }
 
 export function CaseCardLarge({
@@ -30,7 +57,9 @@ export function CaseCardLarge({
   href,
   maxWidth,
   locked = false,
+  locale = "pt",
 }: CaseCardLargeProps) {
+  const t = STRINGS[locale];
   const visibleTags = tags.slice(0, maxVisibleTags);
   const hiddenCount = tags.length - visibleTags.length;
 
@@ -39,7 +68,7 @@ export function CaseCardLarge({
       href={href}
       className={styles.card}
       style={maxWidth ? { maxWidth } : undefined}
-      aria-label={`Ver case: ${title}${locked ? " (protegido por senha)" : ""}`}
+      aria-label={`${t.viewCase}: ${title}${locked ? t.passwordProtectedSuffix : ""}`}
     >
       {imageSrc ? (
         // eslint-disable-next-line @next/next/no-img-element -- imagem só de demonstração, sem otimização por enquanto
@@ -65,7 +94,7 @@ export function CaseCardLarge({
                 <rect x="3" y="6.5" width="8" height="6" rx="1" />
                 <path d="M4.5 6.5V4.5a2.5 2.5 0 0 1 5 0v2" />
               </svg>
-              Password protected
+              {t.passwordProtectedBadge}
             </span>
           )}
         </h3>
@@ -78,11 +107,11 @@ export function CaseCardLarge({
             </Tag>
           ))}
           {hiddenCount > 0 && (
-            <Tag context="light">+{hiddenCount} more</Tag>
+            <Tag context="light">{t.more(hiddenCount)}</Tag>
           )}
         </div>
         <span className={styles.link}>
-          See case <span aria-hidden="true">→</span>
+          {t.seeCase} <span aria-hidden="true">→</span>
         </span>
       </div>
     </a>

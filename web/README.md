@@ -1,3 +1,39 @@
+## Typography — which font-size token to use
+
+`src/styles/tokens.css` defines a scale of named font-size tokens
+(`--font-body`, `--font-subtitle`, `--font-body-large-intro`, etc.),
+generated from Figma. Nothing in the app should ever use a hardcoded
+`font-size: 14px` — always reference one of these tokens, so the whole
+site stays in sync if the scale changes in Figma.
+
+**The rule that was missing until now:** the token choice depends on
+what role the text plays, not just "how big does it look ok". In
+practice, three roles cover almost everything:
+
+| Role | Token | Desktop size | Example |
+|---|---|---|---|
+| Paragraph you're meant to actually **read** (case study body copy, bio, capability description) | `--font-body-large-intro` | 16px | `<p>` inside a case study section |
+| Secondary/supporting text (card preview blurb, photo caption, meta label like "Duration") | `--font-body` or `--font-caption` | 12px | `.metaValue`, `.caption`, card `.description` |
+| UI label (nav link, button, tag) | `--font-ui-medium` / `--font-subtitle` | 14–16px | NavBar links, `<Tag>` |
+
+Before this pass, the ASTER case used `--font-body-large-intro` for
+its section paragraphs, but Capabilities, About, and the 4 other case
+studies (Cure/HP/Theodoor/Intuit) used `--font-body` or
+`--font-subtitle` (12–14px desktop) for the same kind of reading text
+— same visual role, three different tokens, so the site read as
+inconsistent page to page even though each page individually used
+tokens correctly. Fixed by moving every "reading paragraph" selector
+to `--font-body-large-intro`, matching what ASTER already did — see
+`cases.module.css`, `competencias/page.module.css`, and
+`sobre/page.module.css`. `--font-body`/`--font-caption` stay reserved
+for genuinely secondary/small text, not full paragraphs.
+
+This isn't in Storybook yet — there's no "Typography" story showing
+the scale, since these are page-level CSS Module styles, not a
+reusable design-system component like `<Button>` or `<Tag>`. Worth
+adding later if it gets confusing again, but the token file itself
+(`tokens.css`) is already the single source of truth in the meantime.
+
 ## ASTER case — password setup
 
 The `/cases/aster` case study is protected by a password checked on the
@@ -42,14 +78,18 @@ Restart `npm run dev` after adding or changing it.
 - The cookie has no expiration set, so it's a session cookie: closing
   the browser clears it. The "Lock this case" button in the case
   clears it immediately too.
-- The cookie's `Path` is scoped to `/cases/aster`, so it's never sent
-  to (or usable by) any other page on the site.
-- If someone visits `/cases/aster` directly without a valid cookie, the
-  server renders only the password screen — the actual case content
-  (copy, image placeholders, everything) is never included in that
-  page's HTML, so there's nothing to find by viewing source.
+- The cookie's `Path` is `/`, so the same unlocked session works on
+  both `/cases/aster` (PT) and `/en/cases/aster` (EN) — unlocking one
+  language unlocks the other too, without asking for the password
+  twice. It's still never sent to unrelated third-party sites, since
+  cookies are always scoped to this domain regardless of `Path`.
+- If someone visits `/cases/aster` or `/en/cases/aster` directly
+  without a valid cookie, the server renders only the password screen
+  — the actual case content (copy, image placeholders, everything) is
+  never included in that page's HTML, so there's nothing to find by
+  viewing source.
 
-See `web/src/app/cases/aster/session.ts` and `actions.ts` for the
+See `web/src/app/_shared/aster/session.ts` and `actions.ts` for the
 implementation.
 
 ---

@@ -7,7 +7,7 @@ const meta = {
   parameters: { layout: "fullscreen" },
   argTypes: {
     context: { control: "select", options: ["light", "dark"] },
-    lang: { control: "select", options: ["PT", "EN"] },
+    locale: { control: "select", options: ["pt", "en"] },
   },
 } satisfies Meta<typeof NavBar>;
 
@@ -15,11 +15,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Dark: Story = {
-  args: { context: "dark", lang: "PT" },
+  args: { context: "dark", locale: "pt", otherLocaleHref: "/en" },
 };
 
 export const Light: Story = {
-  args: { context: "light", lang: "PT" },
+  args: { context: "light", locale: "pt", otherLocaleHref: "/en" },
 };
 
 /**
@@ -28,7 +28,7 @@ export const Light: Story = {
  * de preview do Storybook pra ver a troca acontecer.
  */
 export const ResizeToSeeHamburger: Story = {
-  args: { context: "dark", lang: "PT" },
+  args: { context: "dark", locale: "pt", otherLocaleHref: "/en" },
   parameters: {
     docs: {
       description: {

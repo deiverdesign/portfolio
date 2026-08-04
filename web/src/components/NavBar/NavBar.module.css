@@ -26,6 +26,8 @@
   align-items: baseline;
   gap: var(--space-200);
   white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
 }
 
 .identity strong {
@@ -35,6 +37,12 @@
 .identity span {
   opacity: 0.7;
   font-size: var(--font-caption);
+}
+
+.identity:focus-visible,
+.navLinks a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 /* Nav de desktop: tudo numa linha só */
@@ -59,24 +67,38 @@
   opacity: 1;
 }
 
-.langSwitch {
-  display: flex;
-  gap: var(--space-300);
+.navLinks a.active {
+  opacity: 1;
+  font-weight: 600;
 }
 
-.langSwitch button {
-  background: none;
-  border: none;
-  color: inherit;
-  opacity: 0.6;
-  cursor: pointer;
+.langSwitch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-300);
   font-size: var(--font-caption);
+}
+
+.langCurrent {
+  opacity: 1;
+  font-weight: 600;
   padding: var(--space-100);
 }
 
-.langSwitch button[aria-current="true"] {
+.langSwitch a {
+  color: inherit;
+  opacity: 0.6;
+  padding: var(--space-100);
+}
+
+.langSwitch a:hover {
   opacity: 1;
-  font-weight: 600;
+}
+
+.langSwitch a:focus-visible {
+  opacity: 1;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 /* Botão hambúrguer: só existe na versão mobile.
