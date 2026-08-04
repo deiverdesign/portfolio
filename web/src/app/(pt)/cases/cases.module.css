@@ -110,6 +110,29 @@
   }
 }
 
+/* Imagem grande logo abaixo do hero — mesma largura da faixa (1152px). */
+.heroImage {
+  width: 100%;
+  max-width: 1152px;
+  padding: 0 var(--space-700);
+  box-sizing: border-box;
+}
+
+.heroImage img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+/* Imagem dentro da coluna de leitura (720px) — mesma régua de .section. */
+.sectionImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
 /* Coluna de leitura — mais estreita que o hero (720px, igual ao Figma
    Site) pra linha de texto não ficar cansativa. */
 .section {

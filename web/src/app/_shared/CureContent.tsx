@@ -282,6 +282,33 @@ const COPY = {
   },
 } as const;
 
+const IMAGES = {
+  hero: {
+    src: "/images/cases/cure/hero.png",
+    alt: { en: "SCRIOO risk map open on a laptop, next to shipping containers.", pt: "Mapa de risco da SCRIOO aberto num laptop, ao lado de contêineres de transporte." },
+  },
+  riskMapComparison: {
+    src: "/images/cases/cure/risk-map-comparison.png",
+    alt: { en: "Before and after comparison of the risk map, from a dense dark UI to a clearer light UI.", pt: "Comparação antes e depois do mapa de risco, de uma UI escura densa para uma UI clara mais legível." },
+  },
+  mobileView: {
+    src: "/images/cases/cure/mobile-view.png",
+    alt: { en: "Three mobile screens showing the risk map, incident analytics, and insight reports.", pt: "Três telas mobile mostrando o mapa de risco, analytics de incidentes e relatórios de insight." },
+  },
+  screenDetail: {
+    src: "/images/cases/cure/screen-detail.png",
+    alt: { en: "Risk map with a supplier detail panel open, showing risk type, owner, and KPI tolerance.", pt: "Mapa de risco com painel de detalhe de fornecedor aberto, mostrando tipo de risco, responsável e tolerância de KPI." },
+  },
+  incidentThroughTime: {
+    src: "/images/cases/cure/incident-through-time.png",
+    alt: { en: "Incidents through time chart comparing risk score across suppliers over several dates.", pt: "Gráfico de incidentes ao longo do tempo comparando o índice de risco entre fornecedores em várias datas." },
+  },
+  designSystem: {
+    src: "/images/cases/cure/design-system-foundations.png",
+    alt: { en: "Design system reference sheet showing component states: sidebar, filters, risk detail, edit mode, and modals.", pt: "Folha de referência do design system mostrando estados de componentes: sidebar, filtros, detalhe de risco, modo de edição e modais." },
+  },
+} as const;
+
 export function CureContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const homeHref = locale === "pt" ? "/" : "/en";
@@ -310,6 +337,11 @@ export function CureContent({ locale }: { locale: Locale }) {
           </dl>
         </section>
 
+        <div className={styles.heroImage}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={IMAGES.hero.src} alt={IMAGES.hero.alt[locale]} />
+        </div>
+
         <section className={styles.section}>
           <SectionHeader eyebrow={`01 · ${t.minuteTitle}`} title={t.minuteTitle} />
           {t.minuteParas.map((p) => (
@@ -326,6 +358,8 @@ export function CureContent({ locale }: { locale: Locale }) {
             ))}
           </ol>
           <p className={styles.caption}>{t.contributionCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.riskMapComparison.src} alt={IMAGES.riskMapComparison.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -336,6 +370,8 @@ export function CureContent({ locale }: { locale: Locale }) {
               <li key={li}>{li}</li>
             ))}
           </ol>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.mobileView.src} alt={IMAGES.mobileView.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -350,6 +386,8 @@ export function CureContent({ locale }: { locale: Locale }) {
             ))}
           </div>
           <p className={styles.caption}>{t.approachCaption}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.screenDetail.src} alt={IMAGES.screenDetail.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -395,10 +433,14 @@ export function CureContent({ locale }: { locale: Locale }) {
               </Card>
             ))}
           </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.incidentThroughTime.src} alt={IMAGES.incidentThroughTime.alt[locale]} />
         </section>
 
         <section className={styles.section}>
           <SectionHeader eyebrow={`08 · ${t.outcomeTitle}`} title={t.outcomeTitle} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.designSystem.src} alt={IMAGES.designSystem.alt[locale]} />
           <ul className={styles.outcomeList}>
             {t.outcomeList.map((li) => (
               <li key={li}>{li}</li>
