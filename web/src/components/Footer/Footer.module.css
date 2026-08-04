@@ -19,6 +19,16 @@
   gap: var(--space-600);
 }
 
+.identity {
+  color: inherit;
+  text-decoration: none;
+}
+
+.identity:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 .identity strong {
   display: block;
   font-weight: 600;

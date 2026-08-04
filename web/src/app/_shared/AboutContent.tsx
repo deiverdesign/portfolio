@@ -1,4 +1,5 @@
-import { NavBar, RESUME_HREF, type Locale } from "@/components/NavBar/NavBar";
+import { NavBar } from "@/components/NavBar/NavBar";
+import { RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "@/components/NavBar/constants";
 import { Button } from "@/components/Button/Button";
 import { Footer } from "@/components/Footer/Footer";
 import styles from "../(pt)/sobre/page.module.css";
@@ -7,7 +8,7 @@ type Row =
   | { number: string; title: string; paragraphs: string[]; values?: undefined }
   | { number: string; title: string; paragraphs?: undefined; values: { title: string; description: string }[] };
 
-interface AboutCopy {
+export interface AboutCopy {
   eyebrowAbout: string;
   photoAlt: string;
   name: string;
@@ -23,7 +24,7 @@ interface AboutCopy {
   downloadResume: string;
 }
 
-const COPY: Record<Locale, AboutCopy> = {
+export const ABOUT_COPY: Record<Locale, AboutCopy> = {
   pt: {
     eyebrowAbout: "SOBRE",
     photoAlt: "Foto de Deiver Brito",
@@ -164,7 +165,7 @@ const COPY: Record<Locale, AboutCopy> = {
 };
 
 export function AboutContent({ locale }: { locale: Locale }) {
-  const t = COPY[locale];
+  const t = ABOUT_COPY[locale];
   const otherLocaleHref = locale === "pt" ? "/en/about" : "/sobre";
   const contactId = locale === "pt" ? "contato" : "contact";
 
@@ -243,7 +244,13 @@ export function AboutContent({ locale }: { locale: Locale }) {
             >
               {t.viewLinkedIn}
             </Button>
-            <Button variant="secondary" context="light" icon="download" href={RESUME_HREF[locale]}>
+            <Button
+              variant="secondary"
+              context="light"
+              icon="download"
+              href={RESUME_HREF[locale]}
+              download={RESUME_DOWNLOAD_NAME[locale]}
+            >
               {t.downloadResume}
             </Button>
           </div>

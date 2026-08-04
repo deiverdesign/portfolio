@@ -10,7 +10,7 @@ interface RelatedWork {
   href: string;
 }
 
-interface Capability {
+export interface Capability {
   number: string;
   title: string;
   tags: string[];
@@ -26,7 +26,7 @@ interface CapabilitiesCopy {
   capabilities: Capability[];
 }
 
-function buildCopy(locale: Locale): CapabilitiesCopy {
+export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
   const prefix = locale === "pt" ? "/cases" : "/en/cases";
 
   const cure: RelatedWork =
@@ -204,7 +204,7 @@ function buildCopy(locale: Locale): CapabilitiesCopy {
 }
 
 export function CapabilitiesContent({ locale }: { locale: Locale }) {
-  const t = buildCopy(locale);
+  const t = buildCapabilitiesCopy(locale);
   const otherLocaleHref = locale === "pt" ? "/en/capabilities" : "/competencias";
 
   return (

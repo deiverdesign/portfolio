@@ -213,6 +213,7 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     placement: "Seção 6 — Questions before interfaces (abertura)",
     transparent: false,
     alt: "Visão panorâmica do board de discovery do ASTER, mostrando a extensão do processo sem detalhe legível.",
+    src: "/images/aster/aster-figjam-overview.png",
   },
   "aster-figjam-critical-questions": {
     id: "aster-figjam-critical-questions",

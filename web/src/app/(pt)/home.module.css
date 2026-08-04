@@ -117,3 +117,107 @@
   flex-wrap: wrap;
   gap: var(--space-600);
 }
+
+.sectionEyebrow {
+  font-size: var(--font-eyebrow);
+  letter-spacing: 0.08em;
+  color: var(--content-muted-on-light);
+}
+
+.sectionIntro {
+  font-size: var(--font-body-large-intro);
+  line-height: 1.6;
+  color: var(--content-secondary);
+  max-width: 720px;
+}
+
+/* Experiência adicional (Softplan) — sem imagem de propósito, é confidencial */
+.additionalCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-400);
+  padding: var(--space-700);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  max-width: 640px;
+}
+
+.additionalTitle {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
+  font-size: var(--font-h2-section-title);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-heading);
+}
+
+.additionalDescription {
+  font-size: var(--font-body-large-intro);
+  line-height: 1.6;
+  color: var(--content-primary);
+}
+
+.additionalTagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-300);
+}
+
+.additionalBadge {
+  font-size: var(--font-caption);
+  color: var(--content-secondary);
+  font-style: italic;
+}
+
+.capabilitiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-600);
+}
+
+/* Mesmo tratamento visual das citações nos cases (ver .reflectionQuote em cases.module.css) */
+.aboutQuote {
+  border-left: 3px solid var(--content-accent);
+  padding-left: var(--space-600);
+  margin: 0;
+  font-size: var(--font-body-large-intro);
+  line-height: 1.6;
+  color: var(--content-heading);
+  max-width: 720px;
+}
+
+.finalCta {
+  background: var(--background-inverse);
+  padding: var(--space-layout-200) var(--space-700);
+}
+
+.finalCtaInner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-500);
+}
+
+.finalCtaTitle {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
+  font-size: var(--font-h1-page-title);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--content-on-dark-primary);
+}
+
+.finalCtaAvailability {
+  font-size: var(--font-body-large-intro);
+  color: var(--content-muted);
+}
+
+.finalCtaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-400);
+  margin-top: var(--space-300);
+}

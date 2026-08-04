@@ -4,21 +4,18 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/Button/Button";
 import { Icon } from "@/components/icons/Icon";
+import { HOME_HREF, RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "./constants";
 import styles from "./NavBar.module.css";
 
 export type NavBarContext = "light" | "dark";
-export type Locale = "pt" | "en";
-
-/** Currículo é o mesmo PDF pra quem já fala português ou inglês — só o conteúdo do arquivo muda por idioma. */
-export const RESUME_HREF: Record<Locale, string> = {
-  pt: "/curriculo-deiver-brito.pdf",
-  en: "/resume-deiver-brito.pdf",
-};
-
-export const HOME_HREF: Record<Locale, string> = {
-  pt: "/",
-  en: "/en",
-};
+/**
+ * Re-exportado só como TIPO (apagado em tempo de build, não cruza a
+ * fronteira client/server) — pra quem já importa `Locale` daqui não
+ * quebrar. Valores (RESUME_HREF etc.) NÃO são re-exportados por este
+ * arquivo: Server Components precisam importar de "./constants"
+ * diretamente, nunca de um módulo "use client".
+ */
+export type { Locale } from "./constants";
 
 export interface NavBarProps {
   /** Sobre qual fundo a NavBar está — mesma propriedade "Context" no Figma. */
@@ -51,7 +48,7 @@ const STRINGS: Record<Locale, {
   switchLangLabel: string;
 }> = {
   pt: {
-    resume: "Currículo ↗",
+    resume: "Currículo ↓",
     contact: "Contato",
     contactHref: "/sobre#contato",
     openMenu: "Abrir menu",
@@ -60,7 +57,7 @@ const STRINGS: Record<Locale, {
     switchLangLabel: "Mudar para inglês",
   },
   en: {
-    resume: "Resume ↗",
+    resume: "Resume ↓",
     contact: "Contact",
     contactHref: "/en/about#contact",
     openMenu: "Open menu",
@@ -88,7 +85,9 @@ export function NavBar({ context = "light", locale, otherLocaleHref }: NavBarPro
           {item.label}
         </a>
       ))}
-      <a href={RESUME_HREF[locale]}>{t.resume}</a>
+      <a href={RESUME_HREF[locale]} download={RESUME_DOWNLOAD_NAME[locale]}>
+        {t.resume}
+      </a>
     </div>
   );
 

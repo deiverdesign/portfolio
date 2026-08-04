@@ -1,7 +1,13 @@
-import { NavBar, RESUME_HREF, type Locale } from "@/components/NavBar/NavBar";
+import { NavBar } from "@/components/NavBar/NavBar";
+import { RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "@/components/NavBar/constants";
 import { Button } from "@/components/Button/Button";
 import { CaseCardLarge } from "@/components/CaseCardLarge/CaseCardLarge";
+import { CapabilityCard } from "@/components/CapabilityCard/CapabilityCard";
+import { LinkTertiary } from "@/components/LinkTertiary/LinkTertiary";
+import { Tag } from "@/components/Tag/Tag";
 import { Footer } from "@/components/Footer/Footer";
+import { buildCapabilitiesCopy } from "./CapabilitiesContent";
+import { ABOUT_COPY } from "./AboutContent";
 import styles from "../(pt)/home.module.css";
 
 interface CaseCopy {
@@ -26,6 +32,28 @@ interface HomeCopy {
   ctaSecondary: string;
   workHeading: string;
   cases: CaseCopy[];
+  additionalExperience: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    tags: string[];
+    badge: string;
+  };
+  capabilitiesPreview: {
+    eyebrow: string;
+    title: string;
+    cardLinkLabel: string;
+    viewAllLabel: string;
+  };
+  aboutPreview: {
+    eyebrow: string;
+    linkLabel: string;
+  };
+  finalCta: {
+    eyebrow: string;
+    title: string;
+    contactLabel: string;
+  };
 }
 
 const COPY: Record<Locale, HomeCopy> = {
@@ -93,6 +121,36 @@ const COPY: Record<Locale, HomeCopy> = {
         maxWidth: 600,
       },
     ],
+    additionalExperience: {
+      eyebrow: "EXPERIÊNCIA ADICIONAL",
+      title: "Enterprise Legal Tech / Softplan",
+      description:
+        "Experiência em product design em fluxos jurídicos complexos, sistemas judiciais e institucionais, produtos legados, usuários operacionais, repositórios de pesquisa e governança de design system. Case público não mostrado por confidencialidade.",
+      tags: [
+        "UX enterprise",
+        "Legal Tech",
+        "Sistemas legados",
+        "Usuários operacionais",
+        "Design Systems",
+        "Fluxos complexos",
+      ],
+      badge: "Mencionado no currículo",
+    },
+    capabilitiesPreview: {
+      eyebrow: "COMPETÊNCIAS",
+      title: "Explore o trabalho por competência",
+      cardLinkLabel: "Ver trabalhos relacionados",
+      viewAllLabel: "Ver todas as competências",
+    },
+    aboutPreview: {
+      eyebrow: "SOBRE",
+      linkLabel: "Leia mais sobre mim",
+    },
+    finalCta: {
+      eyebrow: "VAMOS TRABALHAR JUNTOS",
+      title: "Vamos construir produtos mais claros.",
+      contactLabel: "Fale comigo",
+    },
   },
   en: {
     heroPhotoAlt: "Photo of Deiver Brito",
@@ -158,12 +216,47 @@ const COPY: Record<Locale, HomeCopy> = {
         maxWidth: 600,
       },
     ],
+    additionalExperience: {
+      eyebrow: "ADDITIONAL EXPERIENCE",
+      title: "Enterprise Legal Tech / Softplan",
+      description:
+        "Product design experience across complex legal flows, judicial and institutional systems, legacy products, operational users, research repositories, and design system governance. Public case study not shown due to confidentiality.",
+      tags: [
+        "Enterprise UX",
+        "Legal Tech",
+        "Legacy Systems",
+        "Operational Users",
+        "Design Systems",
+        "Complex flows",
+      ],
+      badge: "Mentioned in resume",
+    },
+    capabilitiesPreview: {
+      eyebrow: "CAPABILITIES",
+      title: "Explore the work by capability",
+      cardLinkLabel: "View related work",
+      viewAllLabel: "See all capabilities",
+    },
+    aboutPreview: {
+      eyebrow: "ABOUT",
+      linkLabel: "Read more about me",
+    },
+    finalCta: {
+      eyebrow: "LET'S WORK TOGETHER",
+      title: "Let's build clearer products.",
+      contactLabel: "Contact me",
+    },
   },
 };
 
 export function HomeContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const otherLocaleHref = locale === "pt" ? "/en" : "/";
+  const about = ABOUT_COPY[locale];
+  const aboutHref = locale === "pt" ? "/sobre" : "/en/about";
+  const capabilities = buildCapabilitiesCopy(locale);
+  const capabilitiesHref = locale === "pt" ? "/competencias" : "/en/capabilities";
+  const previewCapabilities = capabilities.capabilities.slice(0, 4);
 
   return (
     <>
@@ -186,7 +279,13 @@ export function HomeContent({ locale }: { locale: Locale }) {
                 <Button variant="primary" context="dark" href="#work">
                   {t.ctaPrimary}
                 </Button>
-                <Button variant="secondary" context="dark" href={RESUME_HREF[locale]}>
+                <Button
+                  variant="secondary"
+                  context="dark"
+                  icon="download"
+                  href={RESUME_HREF[locale]}
+                  download={RESUME_DOWNLOAD_NAME[locale]}
+                >
                   {t.ctaSecondary}
                 </Button>
               </div>
@@ -200,6 +299,82 @@ export function HomeContent({ locale }: { locale: Locale }) {
             {t.cases.map((c) => (
               <CaseCardLarge key={c.number} imageAlt={c.title} locale={locale} {...c} />
             ))}
+          </div>
+        </section>
+
+        <section className={styles.workSection}>
+          <span className={styles.sectionEyebrow}>{t.additionalExperience.eyebrow}</span>
+          <div className={styles.additionalCard}>
+            <h3 className={styles.additionalTitle}>{t.additionalExperience.title}</h3>
+            <p className={styles.additionalDescription}>{t.additionalExperience.description}</p>
+            <div className={styles.additionalTagRow}>
+              {t.additionalExperience.tags.map((tag) => (
+                <Tag key={tag} context="light">
+                  {tag}
+                </Tag>
+              ))}
+            </div>
+            <span className={styles.additionalBadge}>{t.additionalExperience.badge}</span>
+          </div>
+        </section>
+
+        <section className={styles.workSection}>
+          <span className={styles.sectionEyebrow}>{t.capabilitiesPreview.eyebrow}</span>
+          <h2>{t.capabilitiesPreview.title}</h2>
+          <p className={styles.sectionIntro}>{capabilities.intro}</p>
+          <div className={styles.capabilitiesGrid}>
+            {previewCapabilities.map((cap) => (
+              <CapabilityCard
+                key={cap.number}
+                number={cap.number}
+                title={cap.title}
+                description={cap.description}
+                tags={cap.tags}
+                linkLabel={t.capabilitiesPreview.cardLinkLabel}
+                href={capabilitiesHref}
+              />
+            ))}
+          </div>
+          <LinkTertiary context="light" href={capabilitiesHref}>
+            {t.capabilitiesPreview.viewAllLabel}
+          </LinkTertiary>
+        </section>
+
+        <section className={styles.workSection}>
+          <span className={styles.sectionEyebrow}>{t.aboutPreview.eyebrow}</span>
+          <blockquote className={styles.aboutQuote}>{about.bioParagraphs[0]}</blockquote>
+          <LinkTertiary context="light" href={aboutHref}>
+            {t.aboutPreview.linkLabel}
+          </LinkTertiary>
+        </section>
+
+        <section className={styles.finalCta}>
+          <div className={styles.finalCtaInner}>
+            <span className={styles.eyebrow}>{t.finalCta.eyebrow}</span>
+            <h2 className={styles.finalCtaTitle}>{t.finalCta.title}</h2>
+            <p className={styles.finalCtaAvailability}>{about.contactBody[0]}</p>
+            <div className={styles.finalCtaActions}>
+              <Button variant="primary" context="dark" icon="arrow-right" href="mailto:deiverbrito@gmail.com">
+                {t.finalCta.contactLabel}
+              </Button>
+              <Button
+                variant="secondary"
+                context="dark"
+                icon="download"
+                href={RESUME_HREF[locale]}
+                download={RESUME_DOWNLOAD_NAME[locale]}
+              >
+                {t.ctaSecondary}
+              </Button>
+              <Button
+                variant="secondary"
+                context="dark"
+                icon="external-link"
+                href="https://linkedin.com/in/deiverbrito"
+              >
+                {about.viewLinkedIn}
+              </Button>
+            </div>
           </div>
         </section>
       </main>
