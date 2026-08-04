@@ -37,12 +37,16 @@ export function HowItWorks({ locale }: { locale: Locale }) {
 
   return (
     <Section id="how-it-works" eyebrow={t.eyebrow} title={t.title} tone="stone">
-      <div className={styles.macro}>
-        <AssetPlaceholder assetId="aster-device-control-macro" />
-        <p className={shared.caption}>{t.macroCaption}</p>
-      </div>
+      <div className={styles.layout}>
+        <div className={styles.macro}>
+          <AssetPlaceholder assetId="aster-device-control-macro" />
+          <p className={shared.caption}>{t.macroCaption}</p>
+        </div>
 
-      <AssetPlaceholder assetId="aster-macbook-mockup" />
+        <div className={styles.mockup}>
+          <AssetPlaceholder assetId="aster-macbook-mockup" />
+        </div>
+      </div>
 
       <p className={styles.reconstructionCaption}>{t.reconstructionCaption}</p>
 

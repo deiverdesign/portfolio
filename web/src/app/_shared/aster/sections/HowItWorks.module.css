@@ -1,8 +1,23 @@
+/* Foto do dispositivo + mockup do MacBook lado a lado, como no Figma —
+   300px : 628px dentro de um container de 960px, gap de 32px. */
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-800);
+  align-items: start;
+}
+
 .macro {
-  max-width: 480px;
+  flex: 1 1 260px;
+  max-width: 300px;
   display: flex;
   flex-direction: column;
   gap: var(--space-300);
+}
+
+.mockup {
+  flex: 2 1 460px;
+  max-width: 628px;
 }
 
 .reconstructionCaption {
