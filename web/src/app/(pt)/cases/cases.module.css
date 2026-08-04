@@ -3,12 +3,17 @@
    system tokens from web/src/styles/tokens.css instead of the old
    hardcoded colors. */
 
+/* Container agora só empilha verticalmente — cada filho (backLink, hero,
+   .section) centraliza a própria largura, porque o hero é mais largo
+   (1152px, igual ao deiverbrito.figma.site) e o corpo do texto é mais
+   estreito (720px), pra não deixar linha de leitura larga demais.
+   Valores medidos direto no Figma Site, não aproximados. */
 .container {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: var(--space-layout-100) var(--space-700) var(--space-layout-200);
+  width: 100%;
+  padding: var(--space-layout-100) 0 var(--space-layout-200);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-layout-100);
 }
 
@@ -18,20 +23,31 @@
   gap: var(--space-300);
   color: var(--content-secondary);
   font-size: var(--font-subtitle);
-  align-self: flex-start;
+  width: 100%;
+  max-width: 1152px;
+  padding: 0 var(--space-700);
+  box-sizing: border-box;
 }
 
 .backLink:hover {
   color: var(--content-heading);
 }
 
+/* Grid de 3 colunas iguais: título+intro ocupam as 2 primeiras (2/3),
+   o card de metadados ocupa a 3ª (1/3) — mesma proporção do Figma Site. */
 .hero {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-600);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-900);
+  align-items: start;
+  width: 100%;
+  max-width: 1152px;
+  padding: 0 var(--space-700);
+  box-sizing: border-box;
 }
 
 .heroTitle {
+  grid-column: 1 / 3;
   font-family: var(--font-boldonse);
   font-weight: 400;
   font-size: var(--font-h1-page-title);
@@ -41,15 +57,24 @@
 }
 
 .heroSubtitle {
+  grid-column: 1 / 3;
   font-size: var(--font-body-large-intro);
   color: var(--content-secondary);
 }
 
+/* Card de metadados (Role/Scope/Collaboration/Platform) — vira uma
+   coluna lateral com borda, ao lado do título, em vez de uma fileira
+   horizontal em cima do texto. */
 .metaGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-600);
-  margin-top: var(--space-300);
+  grid-column: 3 / 4;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: var(--space-600);
+  align-self: start;
 }
 
 .metaLabel {
@@ -67,12 +92,38 @@
   color: var(--content-primary);
 }
 
+/* Abaixo de 1024px (breakpoint "lg" do Figma Site), o card de
+   metadados desce pra baixo do texto em vez de ficar ao lado. */
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .heroTitle,
+  .heroSubtitle {
+    grid-column: 1;
+  }
+
+  .metaGrid {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+/* Coluna de leitura — mais estreita que o hero (720px, igual ao Figma
+   Site) pra linha de texto não ficar cansativa. */
 .section {
   display: flex;
   flex-direction: column;
   gap: var(--space-400);
   padding-top: var(--space-layout-100);
   border-top: 1px solid var(--border-default);
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-left: var(--space-700);
+  padding-right: var(--space-700);
+  box-sizing: border-box;
 }
 
 .eyebrow {
@@ -241,6 +292,10 @@
   color: var(--content-heading);
 }
 
+/* Diferente de .section (que só tem borda no topo), este tem contorno
+   nos 4 lados — precisa de respiro nas laterais mesmo no mobile, senão
+   a borda encosta na tela. Por isso width usa calc() em vez do padding
+   interno de .section fazer esse papel. */
 .nextCase {
   display: flex;
   flex-direction: column;
@@ -248,6 +303,10 @@
   padding: var(--space-700);
   border: 1px solid var(--border-default);
   border-radius: 8px;
+  width: calc(100% - 2 * var(--space-700));
+  max-width: 720px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .nextCase:hover {
