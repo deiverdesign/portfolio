@@ -43,6 +43,8 @@ export interface CaseCardLargeProps {
   locked?: boolean;
   /** Idioma dos textos fixos do card (aria-label, badge, "See case", "+N more"). */
   locale?: CaseCardLocale;
+  /** Ponto da imagem que fica visível quando ela é cortada pra caber nos 260px de altura. "top" (padrão) funciona bem pra screenshots de produto, onde o conteúdo importante fica no topo; "center" evita cortar imagens com um elemento centralizado (ex: ícone/ilustração), como a capa do ASTER. */
+  imagePosition?: "top" | "center";
 }
 
 export function CaseCardLarge({
@@ -58,6 +60,7 @@ export function CaseCardLarge({
   maxWidth,
   locked = false,
   locale = "pt",
+  imagePosition = "top",
 }: CaseCardLargeProps) {
   const t = STRINGS[locale];
   const visibleTags = tags.slice(0, maxVisibleTags);
@@ -72,7 +75,12 @@ export function CaseCardLarge({
     >
       {imageSrc ? (
         // eslint-disable-next-line @next/next/no-img-element -- imagem só de demonstração, sem otimização por enquanto
-        <img src={imageSrc} alt={imageAlt} className={styles.image} />
+        <img
+          src={imageSrc}
+          alt={imageAlt}
+          className={styles.image}
+          style={{ objectPosition: imagePosition }}
+        />
       ) : (
         <div className={styles.image} role="img" aria-label={imageAlt} />
       )}

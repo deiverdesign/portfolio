@@ -21,6 +21,7 @@ interface CaseCopy {
   imageAlt?: string;
   locked?: boolean;
   maxWidth?: number;
+  imagePosition?: "top" | "center";
 }
 
 interface HomeCopy {
@@ -119,6 +120,7 @@ const COPY: Record<Locale, HomeCopy> = {
         imageAlt: "Ilustração de uma pasta trancada, representando o case protegido por senha.",
         locked: true,
         maxWidth: 600,
+        imagePosition: "center" as const,
       },
     ],
     additionalExperience: {
@@ -214,6 +216,7 @@ const COPY: Record<Locale, HomeCopy> = {
         imageAlt: "Illustration of a locked folder, representing the password-protected case.",
         locked: true,
         maxWidth: 600,
+        imagePosition: "center" as const,
       },
     ],
     additionalExperience: {
