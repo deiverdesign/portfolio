@@ -1,4 +1,3 @@
-import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import { ExternalLink } from "./ExternalLink";
 import { ASTER_PROTOTYPE_URL } from "./links";
 import type { Locale } from "@/components/NavBar/NavBar";
@@ -55,7 +54,9 @@ export function Hero({ locale }: { locale: Locale }) {
             {t.title}
           </h1>
           <p className={styles.subtitle}>{t.subtitle}</p>
+        </div>
 
+        <div className={styles.side}>
           <dl className={styles.meta}>
             {t.meta.map((item) => (
               <div key={item.term}>
@@ -73,10 +74,6 @@ export function Hero({ locale }: { locale: Locale }) {
               {t.ctaSecondary}
             </ExternalLink>
           </div>
-        </div>
-
-        <div className={styles.visual}>
-          <AssetPlaceholder assetId="aster-physician-device-hero" variant="device" />
         </div>
       </div>
     </section>

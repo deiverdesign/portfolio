@@ -28,6 +28,11 @@
 
   --aster-lavender: #c3bedb;
   --aster-lavender-text: #5c5480;
+  /* Card "A suggestion should look like a suggestion" — atualizado no
+     Figma pra um contorno mais saturado sobre um fundo quase branco,
+     valores extraídos direto do node (494:7109), não aproximados. */
+  --aster-violet: #7a35e1;
+  --aster-paper: #fffefb;
 
   --aster-peach: #f0c6a8;
   --aster-coral: #d97757;

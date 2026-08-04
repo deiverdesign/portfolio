@@ -17,6 +17,18 @@ export function AssetPlaceholder({ assetId, variant = "photo" }: AssetPlaceholde
   const spec = asterAssetManifest[assetId];
 
   if (spec.src) {
+    if (/\.(mp4|webm|mov)$/i.test(spec.src)) {
+      return (
+        <video
+          className={`${styles.image} ${styles[variant]}`}
+          src={spec.src}
+          controls
+          playsInline
+          aria-label={spec.alt}
+        />
+      );
+    }
+
     // eslint-disable-next-line @next/next/no-img-element
     const img = <img src={spec.src} alt={spec.alt} className={`${styles.image} ${styles[variant]}`} />;
 

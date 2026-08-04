@@ -9,14 +9,17 @@ export interface SectionProps {
   eyebrow: string;
   title: string;
   tone?: SectionTone;
+  /** Imagem opcional que aparece ANTES do eyebrow/título — usada quando a seção abre com uma imagem grande (ex: "The hard part"). */
+  image?: ReactNode;
   children: ReactNode;
 }
 
 /** Casca comum pra toda seção numerada do case: eyebrow, título, fundo. */
-export function Section({ id, number, eyebrow, title, tone = "cream", children }: SectionProps) {
+export function Section({ id, number, eyebrow, title, tone = "cream", image, children }: SectionProps) {
   return (
     <section id={id} className={`${styles.section} ${styles[tone]}`} aria-labelledby={`${id}-heading`}>
       <div className={styles.inner}>
+        {image}
         <p className={styles.eyebrow}>
           {number ? <span className={styles.number}>{number} · </span> : null}
           {eyebrow}

@@ -36,14 +36,6 @@ const COPY: Record<Locale, {
     plainCaption: string;
   };
   decision5c: { title: string; risk: string; plainCaption: string };
-  decision5d: {
-    title: string;
-    risk: string;
-    steps: string[];
-    sketchTag: string;
-    body: string;
-    caption: string;
-  };
   disclosureSummary: string;
   figjamLink: string;
   tableCaption: string;
@@ -52,7 +44,7 @@ const COPY: Record<Locale, {
   discoveryMappings: Array<{ finding: string; decision: string }>;
 }> = {
   en: {
-    eyebrow: "Four design decisions",
+    eyebrow: "Three design decisions",
     title: "Show me an actual decision",
     decision5a: {
       title: "Better no patient than the wrong patient",
@@ -86,20 +78,6 @@ const COPY: Record<Locale, {
       risk: "Risk: merging AI-generated and physician-authored content would blur who's accountable for what.",
       plainCaption: "Implemented in the portfolio prototype.",
     },
-    decision5d: {
-      title: "An error should be corrected, not erased",
-      risk: "Risk: silently rewriting a mistake erases how it happened.",
-      steps: [
-        "Initial AI interpretation",
-        "Physician correction",
-        "Affected draft content updated",
-        "Dependent insight updated or withdrawn",
-        "Visible explanation of why it changed",
-      ],
-      sketchTag: "Planned, not built",
-      body: "Design decision: a correction should update dependent content, not delete the trail — the previous interpretation stays visible, with an explanation of what changed.",
-      caption: "I designed this direction, but it was never tested.",
-    },
     disclosureSummary: "See the discovery behind these decisions",
     figjamLink: "Explore the discovery board",
     tableCaption: "Mapping between discovery findings and the prototype decisions they informed",
@@ -116,7 +94,7 @@ const COPY: Record<Locale, {
     ],
   },
   pt: {
-    eyebrow: "Quatro decisões de design",
+    eyebrow: "Três decisões de design",
     title: "Me mostra uma decisão de verdade",
     decision5a: {
       title: "Melhor nenhum paciente do que o paciente errado",
@@ -149,20 +127,6 @@ const COPY: Record<Locale, {
       title: "AI Draft não é My Notes",
       risk: "Risco: fundir conteúdo gerado por IA com conteúdo escrito pelo médico borraria quem é responsável por quê.",
       plainCaption: "Implementado no protótipo de portfólio.",
-    },
-    decision5d: {
-      title: "Um erro deve ser corrigido, não apagado",
-      risk: "Risco: reescrever silenciosamente um erro apaga como ele aconteceu.",
-      steps: [
-        "Interpretação inicial da IA",
-        "Correção do médico",
-        "Conteúdo de rascunho afetado atualizado",
-        "Insight dependente atualizado ou retirado",
-        "Explicação visível do motivo da mudança",
-      ],
-      sketchTag: "Planejado, não construído",
-      body: "Decisão de design: uma correção deve atualizar conteúdo dependente, não apagar o rastro — a interpretação anterior permanece visível, com uma explicação do que mudou.",
-      caption: "Eu desenhei essa direção, mas ela nunca foi testada.",
     },
     disclosureSummary: "Veja o discovery por trás dessas decisões",
     figjamLink: "Explore o board de discovery",
@@ -235,26 +199,6 @@ export function DesignDecisions({ locale }: { locale: Locale }) {
         <AssetPlaceholder assetId="aster-working-notes" />
 
         <p className={styles.plainCaption}>{t.decision5c.plainCaption}</p>
-      </div>
-
-      {/* 5d — Correction provenance */}
-      <div className={styles.decision}>
-        <h3 className={styles.decisionTitle}>{t.decision5d.title}</h3>
-        <p className={shared.caption}>{t.decision5d.risk}</p>
-
-        <ol className={shared.list}>
-          {t.decision5d.steps.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ol>
-
-        <div className={styles.sketchWrap}>
-          <AssetPlaceholder assetId="aster-correction-needed" />
-          <Tag className={styles.sketchTag}>{t.decision5d.sketchTag}</Tag>
-        </div>
-
-        <p>{t.decision5d.body}</p>
-        <p className={shared.caption}>{t.decision5d.caption}</p>
       </div>
 
       {/* Conteúdo secundário — não interrompe a narrativa principal */}

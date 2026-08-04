@@ -1,4 +1,5 @@
 import { Section } from "./Section";
+import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import shared from "./shared.module.css";
 import type { Locale } from "@/components/NavBar/NavBar";
 
@@ -26,7 +27,12 @@ const COPY: Record<Locale, { eyebrow: string; title: string; keyStatement: strin
 export function TheHardPart({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   return (
-    <Section id="the-hard-part" eyebrow={t.eyebrow} title={t.title}>
+    <Section
+      id="the-hard-part"
+      eyebrow={t.eyebrow}
+      title={t.title}
+      image={<AssetPlaceholder assetId="aster-figjam-overview" />}
+    >
       <p className={shared.keyStatement}>{t.keyStatement}</p>
       {t.paragraphs.map((p) => (
         <p key={p}>{p}</p>

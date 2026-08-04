@@ -1,6 +1,7 @@
 import theme from "./aster-theme.module.css";
 import { AsterHeader } from "./AsterHeader";
 import { Hero } from "./sections/Hero";
+import { HeroBanner } from "./sections/HeroBanner";
 import { Disclaimer } from "./sections/Disclaimer";
 import { HowItWorks } from "./sections/HowItWorks";
 import { MyRole } from "./sections/MyRole";
@@ -26,6 +27,7 @@ export function AsterCase({ locale }: { locale: Locale }) {
       <AsterHeader locale={locale} />
       <main>
         <Hero locale={locale} />
+        <HeroBanner />
         <Disclaimer locale={locale} />
         <HowItWorks locale={locale} />
         <MyRole locale={locale} />

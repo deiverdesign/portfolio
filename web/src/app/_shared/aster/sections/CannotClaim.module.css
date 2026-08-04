@@ -1,0 +1,20 @@
+/* Duas colunas: imagem (~314px) + texto (~614px), como no Figma —
+   diferente das outras seções, que são uma coluna única de texto. */
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-800);
+  align-items: start;
+}
+
+.imageCol {
+  flex: 1 1 280px;
+  max-width: 314px;
+}
+
+.textCol {
+  flex: 2 1 460px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+}

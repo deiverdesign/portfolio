@@ -1,6 +1,8 @@
 import { Section } from "./Section";
+import { AssetPlaceholder } from "../assets/AssetPlaceholder";
 import shared from "./shared.module.css";
 import type { Locale } from "@/components/NavBar/NavBar";
+import styles from "./CannotClaim.module.css";
 
 const COPY: Record<Locale, {
   eyebrow: string;
@@ -61,23 +63,31 @@ export function CannotClaim({ locale }: { locale: Locale }) {
 
   return (
     <Section id="cannot-claim" eyebrow={t.eyebrow} title={t.title} tone="forestDeep">
-      <p>{t.para1}</p>
-      <p>{t.para2}</p>
-      <p>{t.para3}</p>
+      <div className={styles.layout}>
+        <div className={styles.imageCol}>
+          <AssetPlaceholder assetId="aster-cannot-claim-photo" />
+        </div>
 
-      <p className={shared.keyStatementOnDark}>{t.keyStatement}</p>
+        <div className={styles.textCol}>
+          <p>{t.para1}</p>
+          <p>{t.para2}</p>
+          <p>{t.para3}</p>
 
-      <p>{t.para4}</p>
+          <p className={shared.keyStatementOnDark}>{t.keyStatement}</p>
 
-      <ul className={shared.list}>
-        {t.hardNoExamples.map((example) => (
-          <li key={example}>{example}</li>
-        ))}
-      </ul>
+          <p>{t.para4}</p>
 
-      <p className={shared.captionOnDark}>{t.captionOnDark}</p>
+          <ul className={shared.list}>
+            {t.hardNoExamples.map((example) => (
+              <li key={example}>{example}</li>
+            ))}
+          </ul>
 
-      <p>{t.closing}</p>
+          <p className={shared.captionOnDark}>{t.captionOnDark}</p>
+
+          <p>{t.closing}</p>
+        </div>
+      </div>
     </Section>
   );
 }

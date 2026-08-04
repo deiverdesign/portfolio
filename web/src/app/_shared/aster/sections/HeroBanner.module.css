@@ -1,0 +1,9 @@
+.wrap {
+  background: var(--aster-cream);
+  padding: var(--space-layout-200) var(--space-700);
+}
+
+.inner {
+  max-width: 1360px;
+  margin: 0 auto;
+}

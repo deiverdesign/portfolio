@@ -46,11 +46,11 @@
   line-height: 1.5;
 }
 
-/* Mock de Insight — mesmo padrão visual usado antes na versão de 12 capítulos. */
+/* Mock de Insight. */
 .mock {
-  background: var(--aster-cream);
-  border: 1px solid var(--aster-lavender);
-  border-left: 4px solid var(--aster-lavender-text);
+  background: var(--aster-paper);
+  border: 1px solid var(--aster-violet);
+  border-left: 4px solid var(--aster-violet);
   border-radius: 6px;
   padding: var(--space-500);
   display: flex;
@@ -96,25 +96,6 @@
 .mockDirection {
   font-size: var(--font-caption);
   color: var(--aster-sage-text);
-}
-
-/* Tratamento visual deliberadamente "menos pronto" pra decisão que não
-   chegou a ser construída — contorno tracejado + opacidade reduzida,
-   pra não competir visualmente com as 3 decisões implementadas. */
-.sketchWrap {
-  position: relative;
-  display: inline-flex;
-  max-width: 480px;
-  opacity: 0.75;
-  outline: 2px dashed var(--aster-coral-deep);
-  outline-offset: 4px;
-  border-radius: 6px;
-}
-
-.sketchTag {
-  position: absolute;
-  top: var(--space-400);
-  left: var(--space-400);
 }
 
 .disclosure {

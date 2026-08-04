@@ -31,17 +31,17 @@ export interface AsterAssetSpec {
 }
 
 export const asterAssetManifest: Record<string, AsterAssetSpec> = {
-  "aster-physician-device-hero": {
-    id: "aster-physician-device-hero",
-    label: "Médica usando o dispositivo ambiente ASTER numa consulta",
-    aspectRatio: "4/5",
-    minWidth: 1122,
-    minHeight: 1402,
+  "aster-hero-banner": {
+    id: "aster-hero-banner",
+    label: "Banner logo após o Hero: médica com paciente",
+    aspectRatio: "2040/650",
+    minWidth: 2040,
+    minHeight: 650,
     format: "JPG ou PNG",
-    placement: "Hero",
+    placement: "Entre o Hero e o Disclaimer",
     transparent: false,
-    alt: "Physician wearing the ASTER device while speaking with a patient.",
-    src: "/images/aster/aster-physician-device-hero.png",
+    alt: "A physician wearing the ASTER device speaks with an elderly patient in a consultation room.",
+    src: "/images/aster/aster-hero-banner.png",
   },
   "aster-device-control-macro": {
     id: "aster-device-control-macro",
@@ -102,6 +102,7 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     placement: "Seção 11 — Patient identity and ambiguity",
     transparent: false,
     alt: "Workspace ASTER com o contexto completo de um paciente já identificado, histórico disponível.",
+    src: "/images/aster/aster-known-patient.png",
   },
   "aster-unknown-patient": {
     id: "aster-unknown-patient",
@@ -113,6 +114,7 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     placement: "Seção 11 — Patient identity and ambiguity",
     transparent: false,
     alt: "Workspace ASTER capturando a consulta sem nenhum contexto de paciente anexado.",
+    src: "/images/aster/aster-unknown-patient.png",
   },
   "aster-ambiguous-match": {
     id: "aster-ambiguous-match",
@@ -124,6 +126,7 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     placement: "Seção 11 — Patient identity and ambiguity",
     transparent: false,
     alt: "Tela pedindo confirmação explícita entre dois ou mais pacientes com nomes semelhantes.",
+    src: "/images/aster/aster-ambiguous-match.png",
   },
   "aster-recording-paused": {
     id: "aster-recording-paused",
@@ -135,17 +138,6 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     placement: "Seção 14 — Control over recording",
     transparent: false,
     alt: "Transcrição ao vivo pausada, com um marcador visível indicando o intervalo sem captura.",
-  },
-  "aster-correction-needed": {
-    id: "aster-correction-needed",
-    label: "Estado: correção com histórico visível",
-    aspectRatio: "16/10",
-    minWidth: 1400,
-    minHeight: 875,
-    format: "JPG ou PNG",
-    placement: "Seção 15 — Correction and provenance",
-    transparent: false,
-    alt: "Interpretação original da IA ao lado da correção feita pelo médico, com explicação do que mudou.",
   },
   "aster-insight-detail": {
     id: "aster-insight-detail",
@@ -269,6 +261,19 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     placement: "Seção 10 — Product walkthrough (alternativa/complemento ao mockup estático)",
     transparent: false,
     alt: "Gravação de tela curta demonstrando a captura de uma consulta e a geração de um Insight no ASTER.",
+    src: "/images/aster/aster-walkthrough-video.mp4",
+  },
+  "aster-cannot-claim-photo": {
+    id: "aster-cannot-claim-photo",
+    label: "Foto editorial: dispositivo + workspace, seção 'What wasn't proven here'",
+    aspectRatio: "314/466",
+    minWidth: 628,
+    minHeight: 932,
+    format: "JPG ou PNG",
+    placement: "Seção 'What wasn't proven here' — coluna de imagem ao lado do texto",
+    transparent: false,
+    alt: "Physician adjusting the ASTER wearable device, with the consultation workspace open on a laptop below.",
+    src: "/images/aster/aster-cannot-claim-photo.png",
   },
 };
 
