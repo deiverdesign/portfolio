@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer/Footer";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
+import { Tag } from "@/components/Tag/Tag";
+import { getNextCase } from "./HomeContent";
 import styles from "../(pt)/cases/cases.module.css";
 
 const COPY = {
@@ -11,6 +13,7 @@ const COPY = {
     backLink: "← Back to work",
     heroTitle: "CURE Intelligence / SCRIOO",
     heroSubtitle: "AI-powered supply chain risk intelligence platform.",
+    tags: ["Complex systems", "AI", "Data-heavy UX", "Enterprise", "Web platform", "Design Systems"],
     meta: [
       { label: "Role", value: "Product Designer · Individual contributor" },
       {
@@ -139,14 +142,12 @@ const COPY = {
       "Once that was clear, UI decisions became easier to explain, test, and document.",
     ],
     nextCaseLabel: "Next case",
-    nextCaseTitle: "HP Subscription Onboarding →",
-    nextCaseCaption: "Guided setup for a printer-inclusive subscription model.",
-    nextCaseHref: "/en/cases/hp",
   },
   pt: {
     backLink: "← Voltar ao trabalho",
     heroTitle: "CURE Intelligence / SCRIOO",
     heroSubtitle: "Plataforma de inteligência de riscos em supply chain com IA.",
+    tags: ["Sistemas complexos", "IA", "UX denso em dados", "Enterprise", "Plataforma web", "Design Systems"],
     meta: [
       { label: "Papel", value: "Product Designer · Contribuidor individual" },
       {
@@ -276,9 +277,6 @@ const COPY = {
       "Uma vez que isso estava claro, decisões de UI ficaram mais fáceis de explicar, testar e documentar.",
     ],
     nextCaseLabel: "Próximo case",
-    nextCaseTitle: "HP Subscription Onboarding →",
-    nextCaseCaption: "Configuração guiada para um modelo de assinatura com impressora incluída.",
-    nextCaseHref: "/cases/hp",
   },
 } as const;
 
@@ -313,6 +311,8 @@ export function CureContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const homeHref = locale === "pt" ? "/" : "/en";
   const otherLocaleHref = locale === "pt" ? "/en/cases/cure" : "/cases/cure";
+  const currentHref = locale === "pt" ? "/cases/cure" : "/en/cases/cure";
+  const nextCase = getNextCase(locale, currentHref);
 
   return (
     <>
@@ -324,6 +324,14 @@ export function CureContent({ locale }: { locale: Locale }) {
         </Link>
 
         <section className={styles.hero}>
+          <div className={styles.tagRow}>
+            {t.tags.map((tag) => (
+              <Tag key={tag} context="light">
+                {tag}
+              </Tag>
+            ))}
+          </div>
+
           <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
           <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
 
@@ -458,10 +466,10 @@ export function CureContent({ locale }: { locale: Locale }) {
           </Quote>
         </section>
 
-        <Card href={t.nextCaseHref} padding="spacious" className={styles.nextCase}>
+        <Card href={nextCase.href} padding="spacious" className={styles.nextCase}>
           <span className={styles.eyebrow}>{t.nextCaseLabel}</span>
-          <span className={styles.nextCaseTitle}>{t.nextCaseTitle}</span>
-          <span className={styles.caption}>{t.nextCaseCaption}</span>
+          <span className={styles.nextCaseTitle}>{nextCase.title} →</span>
+          <span className={styles.caption}>{nextCase.summary}</span>
         </Card>
       </main>
 

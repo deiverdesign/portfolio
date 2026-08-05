@@ -266,6 +266,18 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
   ];
 }
 
+/**
+ * Próximo case na sequência de /work, pulando os bloqueados (ex: ASTER) e
+ * voltando pro início depois do último — assim, cases novos adicionados em
+ * `buildCasesCopy` entram automaticamente na sequência sem editar cada
+ * página individualmente.
+ */
+export function getNextCase(locale: Locale, currentHref: string): CaseCopy {
+  const openCases = buildCasesCopy(locale).filter((c) => !c.locked);
+  const currentIndex = openCases.findIndex((c) => c.href === currentHref);
+  return openCases[(currentIndex + 1) % openCases.length];
+}
+
 export function HomeContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const otherLocaleHref = locale === "pt" ? "/en" : "/";
