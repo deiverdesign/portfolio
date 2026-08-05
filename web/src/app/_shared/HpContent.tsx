@@ -6,7 +6,7 @@ import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
 import { getNextCase } from "./HomeContent";
-import styles from "../(pt)/cases/cases.module.css";
+import styles from "./cases.module.css";
 
 const COPY = {
   en: {
@@ -198,9 +198,9 @@ const IMAGES = {
 
 export function HpContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
-  const homeHref = locale === "pt" ? "/" : "/en";
-  const otherLocaleHref = locale === "pt" ? "/en/cases/hp" : "/cases/hp";
-  const currentHref = locale === "pt" ? "/cases/hp" : "/en/cases/hp";
+  const homeHref = locale === "pt" ? "/pt" : "/";
+  const otherLocaleHref = locale === "pt" ? "/cases/hp" : "/pt/cases/hp";
+  const currentHref = locale === "pt" ? "/pt/cases/hp" : "/cases/hp";
   const nextCase = getNextCase(locale, currentHref);
 
   return (

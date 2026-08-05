@@ -19,7 +19,7 @@ const COPY: Record<Locale, {
 }> = {
   en: {
     back: "Back to portfolio",
-    homeHref: "/en",
+    homeHref: "/",
     eyebrow: "AMBIENT AI FOR CLINICAL CONSULTATIONS",
     title: "ASTER HELPS PHYSICIANS LISTEN, REMEMBER AND DOCUMENT — WITHOUT DECIDING FOR THEM.",
     subtitle:
@@ -36,7 +36,7 @@ const COPY: Record<Locale, {
   },
   pt: {
     back: "Voltar ao portfólio",
-    homeHref: "/",
+    homeHref: "/pt",
     eyebrow: "IA AMBIENTE PARA CONSULTAS CLÍNICAS",
     title: "O ASTER AJUDA MÉDICOS A OUVIR, LEMBRAR E DOCUMENTAR — SEM DECIDIR POR ELES.",
     subtitle:

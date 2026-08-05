@@ -2,7 +2,7 @@ import Link from "next/link";
 import { NavBar, type Locale } from "@/components/NavBar/NavBar";
 import { Tag } from "@/components/Tag/Tag";
 import { Footer } from "@/components/Footer/Footer";
-import styles from "../(pt)/competencias/page.module.css";
+import styles from "./capabilities.module.css";
 
 interface RelatedWork {
   title: string;
@@ -27,7 +27,7 @@ interface CapabilitiesCopy {
 }
 
 export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
-  const prefix = locale === "pt" ? "/cases" : "/en/cases";
+  const prefix = locale === "pt" ? "/pt/cases" : "/cases";
 
   const cure: RelatedWork =
     locale === "pt"
@@ -263,7 +263,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
 
 export function CapabilitiesContent({ locale }: { locale: Locale }) {
   const t = buildCapabilitiesCopy(locale);
-  const otherLocaleHref = locale === "pt" ? "/en/capabilities" : "/competencias";
+  const otherLocaleHref = locale === "pt" ? "/capabilities" : "/pt/competencias";
 
   return (
     <>

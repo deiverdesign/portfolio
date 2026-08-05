@@ -24,6 +24,6 @@ export const RESUME_DOWNLOAD_NAME: Record<Locale, string> = {
 };
 
 export const HOME_HREF: Record<Locale, string> = {
-  pt: "/",
-  en: "/en",
+  pt: "/pt",
+  en: "/",
 };

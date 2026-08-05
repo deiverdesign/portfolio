@@ -14,27 +14,27 @@
 const baseUrl = process.argv[2] || process.env.BASE_URL || "http://localhost:3001";
 
 const PT_ROUTES = [
+  "/pt",
+  "/pt/work",
+  "/pt/sobre",
+  "/pt/competencias",
+  "/pt/cases/cure",
+  "/pt/cases/hp",
+  "/pt/cases/theodoor",
+  "/pt/cases/intuit",
+  "/pt/cases/aster",
+];
+
+const EN_ROUTES = [
   "/",
   "/work",
-  "/sobre",
-  "/competencias",
+  "/about",
+  "/capabilities",
   "/cases/cure",
   "/cases/hp",
   "/cases/theodoor",
   "/cases/intuit",
   "/cases/aster",
-];
-
-const EN_ROUTES = [
-  "/en",
-  "/en/work",
-  "/en/about",
-  "/en/capabilities",
-  "/en/cases/cure",
-  "/en/cases/hp",
-  "/en/cases/theodoor",
-  "/en/cases/intuit",
-  "/en/cases/aster",
 ];
 
 // Palavras que só existem em PT — se aparecerem numa rota EN, é vazamento.
@@ -107,9 +107,9 @@ function checkLinksStayInLocale(links, locale) {
   const violations = [];
   for (const href of links) {
     if (STATIC_ASSET.test(href)) continue;
-    const isEnHref = href === "/en" || href.startsWith("/en/");
-    if (locale === "pt" && isEnHref) violations.push(href);
-    if (locale === "en" && !isEnHref) violations.push(href);
+    const isPtHref = href === "/pt" || href.startsWith("/pt/");
+    if (locale === "pt" && !isPtHref) violations.push(href);
+    if (locale === "en" && isPtHref) violations.push(href);
   }
   return [...new Set(violations)];
 }

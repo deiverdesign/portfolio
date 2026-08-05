@@ -8,7 +8,7 @@ import { Tag } from "@/components/Tag/Tag";
 import { Footer } from "@/components/Footer/Footer";
 import { buildCapabilitiesCopy } from "./CapabilitiesContent";
 import { ABOUT_COPY } from "./AboutContent";
-import styles from "../(pt)/home.module.css";
+import styles from "./home.module.css";
 
 export interface CaseCopy {
   number: string;
@@ -147,7 +147,7 @@ const COPY: Record<Locale, HomeCopy> = {
  * primeiros, ver `featuredCases` abaixo) e pela página /work (mostra os 5).
  */
 export function buildCasesCopy(locale: Locale): CaseCopy[] {
-  const prefix = locale === "pt" ? "/cases" : "/en/cases";
+  const prefix = locale === "pt" ? "/pt/cases" : "/cases";
 
   if (locale === "en") {
     return [
@@ -280,14 +280,14 @@ export function getNextCase(locale: Locale, currentHref: string): CaseCopy {
 
 export function HomeContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
-  const otherLocaleHref = locale === "pt" ? "/en" : "/";
+  const otherLocaleHref = locale === "pt" ? "/" : "/pt";
   const about = ABOUT_COPY[locale];
-  const aboutHref = locale === "pt" ? "/sobre" : "/en/about";
+  const aboutHref = locale === "pt" ? "/pt/sobre" : "/about";
   const capabilities = buildCapabilitiesCopy(locale);
-  const capabilitiesHref = locale === "pt" ? "/competencias" : "/en/capabilities";
+  const capabilitiesHref = locale === "pt" ? "/pt/competencias" : "/capabilities";
   const previewCapabilities = capabilities.capabilities.slice(0, 4);
   const featuredCases = buildCasesCopy(locale).slice(0, 2);
-  const workHref = locale === "pt" ? "/work" : "/en/work";
+  const workHref = locale === "pt" ? "/pt/work" : "/work";
 
   return (
     <>

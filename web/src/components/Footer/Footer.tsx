@@ -13,9 +13,9 @@ const CONTENT: Record<Locale, {
   pt: {
     role: "Product Designer Sênior · Floripa · Brasil",
     links: [
-      { label: "Trabalho", href: "/" },
-      { label: "Competências", href: "/competencias" },
-      { label: "Sobre", href: "/sobre" },
+      { label: "Trabalho", href: "/pt" },
+      { label: "Competências", href: "/pt/competencias" },
+      { label: "Sobre", href: "/pt/sobre" },
       { label: "LinkedIn", href: "https://linkedin.com/in/deiverbrito" },
       { label: "Currículo", href: RESUME_HREF.pt, download: RESUME_DOWNLOAD_NAME.pt },
     ],
@@ -24,9 +24,9 @@ const CONTENT: Record<Locale, {
   en: {
     role: "Senior Product Designer · Floripa · Brazil",
     links: [
-      { label: "Work", href: "/en" },
-      { label: "Capabilities", href: "/en/capabilities" },
-      { label: "About", href: "/en/about" },
+      { label: "Work", href: "/" },
+      { label: "Capabilities", href: "/capabilities" },
+      { label: "About", href: "/about" },
       { label: "LinkedIn", href: "https://linkedin.com/in/deiverbrito" },
       { label: "Resume", href: RESUME_HREF.en, download: RESUME_DOWNLOAD_NAME.en },
     ],

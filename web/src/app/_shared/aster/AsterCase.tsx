@@ -22,7 +22,7 @@ import type { Locale } from "@/components/NavBar/NavBar";
  * (/cases/aster) e EN (/en/cases/aster) via prop `locale`.
  */
 export function AsterCase({ locale }: { locale: Locale }) {
-  const otherLocaleHref = locale === "pt" ? "/en/cases/aster" : "/cases/aster";
+  const otherLocaleHref = locale === "pt" ? "/cases/aster" : "/pt/cases/aster";
 
   return (
     <div className={theme.theme}>

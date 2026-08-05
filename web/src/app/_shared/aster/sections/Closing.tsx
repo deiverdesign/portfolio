@@ -18,7 +18,7 @@ const COPY: Record<Locale, {
     prototypeLink: "Explore the interactive prototype",
     figjamLink: "Explore the discovery board",
     backLink: "Back to portfolio",
-    homeHref: "/en",
+    homeHref: "/",
   },
   pt: {
     statement:
@@ -26,7 +26,7 @@ const COPY: Record<Locale, {
     prototypeLink: "Explore o protótipo interativo",
     figjamLink: "Explore o board de discovery",
     backLink: "Voltar ao portfólio",
-    homeHref: "/",
+    homeHref: "/pt",
   },
 };
 

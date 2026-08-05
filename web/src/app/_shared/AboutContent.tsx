@@ -2,7 +2,7 @@ import { NavBar } from "@/components/NavBar/NavBar";
 import { RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "@/components/NavBar/constants";
 import { Button } from "@/components/Button/Button";
 import { Footer } from "@/components/Footer/Footer";
-import styles from "../(pt)/sobre/page.module.css";
+import styles from "./about.module.css";
 
 type Row =
   | { number: string; title: string; paragraphs: string[]; values?: undefined }
@@ -166,7 +166,7 @@ export const ABOUT_COPY: Record<Locale, AboutCopy> = {
 
 export function AboutContent({ locale }: { locale: Locale }) {
   const t = ABOUT_COPY[locale];
-  const otherLocaleHref = locale === "pt" ? "/en/about" : "/sobre";
+  const otherLocaleHref = locale === "pt" ? "/about" : "/pt/sobre";
   const contactId = locale === "pt" ? "contato" : "contact";
 
   return (

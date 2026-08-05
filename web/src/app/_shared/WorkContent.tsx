@@ -3,8 +3,8 @@ import type { Locale } from "@/components/NavBar/constants";
 import { CaseCardLarge } from "@/components/CaseCardLarge/CaseCardLarge";
 import { Footer } from "@/components/Footer/Footer";
 import { buildCasesCopy } from "./HomeContent";
-import homeStyles from "../(pt)/home.module.css";
-import styles from "../(pt)/work/page.module.css";
+import homeStyles from "./home.module.css";
+import styles from "./work.module.css";
 
 const COPY: Record<Locale, { eyebrow: string; title: string; intro: string }> = {
   en: {
@@ -23,7 +23,7 @@ const COPY: Record<Locale, { eyebrow: string; title: string; intro: string }> = 
 
 export function WorkContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
-  const otherLocaleHref = locale === "pt" ? "/en/work" : "/work";
+  const otherLocaleHref = locale === "pt" ? "/work" : "/pt/work";
   const cases = buildCasesCopy(locale);
 
   return (

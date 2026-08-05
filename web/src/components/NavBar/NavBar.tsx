@@ -27,14 +27,14 @@ export interface NavBarProps {
 
 const NAV_ITEMS: Record<Locale, Array<{ label: string; href: string }>> = {
   pt: [
-    { label: "Trabalho", href: "/work" },
-    { label: "Competências", href: "/competencias" },
-    { label: "Sobre", href: "/sobre" },
+    { label: "Trabalho", href: "/pt/work" },
+    { label: "Competências", href: "/pt/competencias" },
+    { label: "Sobre", href: "/pt/sobre" },
   ],
   en: [
-    { label: "Work", href: "/en/work" },
-    { label: "Capabilities", href: "/en/capabilities" },
-    { label: "About", href: "/en/about" },
+    { label: "Work", href: "/work" },
+    { label: "Capabilities", href: "/capabilities" },
+    { label: "About", href: "/about" },
   ],
 };
 
@@ -50,7 +50,7 @@ const STRINGS: Record<Locale, {
   pt: {
     resume: "Currículo ↓",
     contact: "Contato",
-    contactHref: "/sobre#contato",
+    contactHref: "/pt/sobre#contato",
     openMenu: "Abrir menu",
     closeMenu: "Fechar menu",
     currentLangLabel: "Português (idioma atual)",
@@ -59,7 +59,7 @@ const STRINGS: Record<Locale, {
   en: {
     resume: "Resume ↓",
     contact: "Contact",
-    contactHref: "/en/about#contact",
+    contactHref: "/about#contact",
     openMenu: "Open menu",
     closeMenu: "Close menu",
     currentLangLabel: "English (current language)",
