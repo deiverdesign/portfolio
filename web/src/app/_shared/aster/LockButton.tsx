@@ -13,10 +13,10 @@ const COPY: Record<Locale, string> = {
  * funciona mesmo antes do JavaScript da página carregar (progressive
  * enhancement padrão do Next.js pra forms com Server Action).
  */
-export function LockButton({ locale }: { locale: Locale }) {
+export function LockButton({ locale, context = "light" }: { locale: Locale; context?: "light" | "dark" }) {
   return (
     <form action={lockAster} className={styles.form}>
-      <button type="submit" className={styles.button}>
+      <button type="submit" className={`${styles.button} ${styles[context]}`}>
         <svg
           width="12"
           height="12"

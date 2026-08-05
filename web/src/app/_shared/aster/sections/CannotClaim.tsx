@@ -65,7 +65,7 @@ export function CannotClaim({ locale }: { locale: Locale }) {
     <Section id="cannot-claim" eyebrow={t.eyebrow} title={t.title} tone="forestDeep">
       <div className={styles.layout}>
         <div className={styles.imageCol}>
-          <AssetPlaceholder assetId="aster-cannot-claim-photo" />
+          <AssetPlaceholder assetId="aster-cannot-claim-photo" locale={locale} />
         </div>
 
         <div className={styles.textCol}>

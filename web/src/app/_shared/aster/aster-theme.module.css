@@ -34,6 +34,11 @@
   --aster-violet: #7a35e1;
   --aster-paper: #fffefb;
 
+  /* Borda ao redor do bloco Role/Focus/Output/Status no Hero — usada pra
+     separar visualmente esse grupo dos CTAs abaixo (common region do
+     Gestalt), valor exato extraído do Figma (node 494:6895). */
+  --aster-teal: #319b92;
+
   --aster-peach: #f0c6a8;
   --aster-coral: #d97757;
   /* #9c4b30, não #b85c3c: a versão mais clara passava em cream (4.06) mas

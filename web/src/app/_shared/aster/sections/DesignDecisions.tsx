@@ -158,7 +158,7 @@ export function DesignDecisions({ locale }: { locale: Locale }) {
         <div className={shared.grid3}>
           {t.decision5a.patientStates.map((state) => (
             <div key={state.assetId} className={styles.patientCard}>
-              <AssetPlaceholder assetId={state.assetId} />
+              <AssetPlaceholder assetId={state.assetId} locale={locale} />
               <div className={styles.patientMeta}>
                 <span className={styles.patientName}>{state.title}</span>
                 <Tag>{state.tagLabel}</Tag>
@@ -196,7 +196,7 @@ export function DesignDecisions({ locale }: { locale: Locale }) {
         <h3 className={styles.decisionTitle}>{t.decision5c.title}</h3>
         <p className={shared.caption}>{t.decision5c.risk}</p>
 
-        <AssetPlaceholder assetId="aster-working-notes" />
+        <AssetPlaceholder assetId="aster-working-notes" locale={locale} />
 
         <p className={styles.plainCaption}>{t.decision5c.plainCaption}</p>
       </div>
@@ -205,7 +205,7 @@ export function DesignDecisions({ locale }: { locale: Locale }) {
       <details className={styles.disclosure}>
         <summary className={styles.disclosureSummary}>{t.disclosureSummary}</summary>
         <div className={styles.disclosureBody}>
-          <AssetPlaceholder assetId="aster-figjam-overview" />
+          <AssetPlaceholder assetId="aster-figjam-overview" locale={locale} />
           <ExternalLink href={ASTER_FIGJAM_URL}>{t.figjamLink}</ExternalLink>
 
           <div className={styles.tableWrap}>

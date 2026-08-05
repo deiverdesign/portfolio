@@ -1,5 +1,5 @@
 import theme from "./aster-theme.module.css";
-import { AsterHeader } from "./AsterHeader";
+import { NavBar } from "@/components/NavBar/NavBar";
 import { Hero } from "./sections/Hero";
 import { HeroBanner } from "./sections/HeroBanner";
 import { Disclaimer } from "./sections/Disclaimer";
@@ -22,12 +22,14 @@ import type { Locale } from "@/components/NavBar/NavBar";
  * (/cases/aster) e EN (/en/cases/aster) via prop `locale`.
  */
 export function AsterCase({ locale }: { locale: Locale }) {
+  const otherLocaleHref = locale === "pt" ? "/en/cases/aster" : "/cases/aster";
+
   return (
     <div className={theme.theme}>
-      <AsterHeader locale={locale} />
+      <NavBar context="dark" locale={locale} otherLocaleHref={otherLocaleHref} />
       <main>
         <Hero locale={locale} />
-        <HeroBanner />
+        <HeroBanner locale={locale} />
         <Disclaimer locale={locale} />
         <HowItWorks locale={locale} />
         <MyRole locale={locale} />

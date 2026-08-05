@@ -1,6 +1,5 @@
 .form {
   display: inline-block;
-  justify-self: end;
 }
 
 .button {
@@ -11,19 +10,34 @@
   padding: var(--space-300) var(--space-200);
   border: none;
   background: transparent;
-  color: var(--aster-sage-text);
   font-size: var(--font-caption);
   cursor: pointer;
   transition: color 0.15s ease;
 }
 
-.button:hover {
+.button.light {
+  color: var(--aster-sage-text);
+}
+
+.button.light:hover {
   color: var(--aster-forest);
+}
+
+.button.dark {
+  color: var(--aster-cream-on-dark);
+}
+
+.button.dark:hover {
+  color: var(--aster-mint);
 }
 
 .button:focus-visible {
   outline: 3px solid var(--aster-forest);
   outline-offset: 3px;
+}
+
+.button.dark:focus-visible {
+  outline-color: var(--aster-mint);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -37,7 +37,7 @@ export function Closing({ locale }: { locale: Locale }) {
     <section className={styles.closing} aria-labelledby="closing-heading">
       <div className={styles.inner}>
         <div className={styles.visual}>
-          <AssetPlaceholder assetId="aster-closing-workspace" />
+          <AssetPlaceholder assetId="aster-closing-workspace" locale={locale} />
         </div>
 
         <div className={styles.text}>

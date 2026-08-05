@@ -1,9 +1,13 @@
+import Link from "next/link";
 import { ExternalLink } from "./ExternalLink";
+import { LockButton } from "../LockButton";
 import { ASTER_PROTOTYPE_URL } from "./links";
 import type { Locale } from "@/components/NavBar/NavBar";
 import styles from "./Hero.module.css";
 
 const COPY: Record<Locale, {
+  back: string;
+  homeHref: string;
   eyebrow: string;
   title: string;
   subtitle: string;
@@ -12,6 +16,8 @@ const COPY: Record<Locale, {
   ctaSecondary: string;
 }> = {
   en: {
+    back: "Back to portfolio",
+    homeHref: "/en",
     eyebrow: "AMBIENT AI FOR CLINICAL CONSULTATIONS",
     title: "ASTER HELPS PHYSICIANS LISTEN, REMEMBER AND DOCUMENT — WITHOUT DECIDING FOR THEM.",
     subtitle:
@@ -26,6 +32,8 @@ const COPY: Record<Locale, {
     ctaSecondary: "Explore the interactive prototype",
   },
   pt: {
+    back: "Voltar ao portfólio",
+    homeHref: "/",
     eyebrow: "IA AMBIENTE PARA CONSULTAS CLÍNICAS",
     title: "O ASTER AJUDA MÉDICOS A OUVIR, LEMBRAR E DOCUMENTAR — SEM DECIDIR POR ELES.",
     subtitle:
@@ -47,6 +55,13 @@ export function Hero({ locale }: { locale: Locale }) {
   return (
     <section className={styles.hero} aria-labelledby="aster-hero-heading">
       <div className={styles.inner}>
+        <div className={styles.topRow}>
+          <Link href={t.homeHref} className={styles.back}>
+            <span aria-hidden="true">←</span> {t.back}
+          </Link>
+          <LockButton locale={locale} context="dark" />
+        </div>
+
         <div className={styles.text}>
           <p className={styles.wordmark}>ASTER</p>
           <p className={styles.eyebrow}>{t.eyebrow}</p>
@@ -57,7 +72,7 @@ export function Hero({ locale }: { locale: Locale }) {
         </div>
 
         <div className={styles.side}>
-          <dl className={styles.meta}>
+          <dl className={styles.metaBox}>
             {t.meta.map((item) => (
               <div key={item.term}>
                 <dt>{item.term}</dt>

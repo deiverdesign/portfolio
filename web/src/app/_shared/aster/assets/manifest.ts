@@ -11,6 +11,8 @@
  * de handoff.
  */
 
+import type { Locale } from "@/components/NavBar/constants";
+
 export type AsterAssetFormat = "JPG ou PNG" | "PNG (fundo transparente)" | "MP4 ou GIF" | "SVG";
 
 export interface AsterAssetSpec {
@@ -23,7 +25,8 @@ export interface AsterAssetSpec {
   format: AsterAssetFormat;
   placement: string;
   transparent: boolean;
-  alt: string;
+  /** Alt text por idioma — a página renderizada usa a versão do locale atual. */
+  alt: Record<Locale, string>;
   /** Quando definido, AssetPlaceholder renderiza a imagem real em vez do placeholder. */
   src?: string;
   /** Fonte alternativa pra telas ≤599px (renderiza via <picture>). */
@@ -40,7 +43,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Entre o Hero e o Disclaimer",
     transparent: false,
-    alt: "A physician wearing the ASTER device speaks with an elderly patient in a consultation room.",
+    alt: {
+      en: "A physician wearing the ASTER device speaks with an elderly patient in a consultation room.",
+      pt: "Uma médica usando o dispositivo ASTER conversa com uma paciente idosa numa sala de consulta.",
+    },
     src: "/images/aster/aster-hero-banner.png",
   },
   "aster-device-control-macro": {
@@ -52,7 +58,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "How it works — coluna esquerda, ao lado do mockup do MacBook",
     transparent: false,
-    alt: "Physician pressing the control on the wearable ASTER device.",
+    alt: {
+      en: "Physician pressing the control on the wearable ASTER device.",
+      pt: "Médica pressionando o controle do dispositivo vestível ASTER.",
+    },
     src: "/images/aster/aster-device-control-macro.png",
   },
   "aster-working-notes": {
@@ -64,7 +73,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Decisão 5c — AI Draft is not My Notes",
     transparent: false,
-    alt: "Comparison between AI Draft and physician-authored My Notes.",
+    alt: {
+      en: "Comparison between AI Draft and physician-authored My Notes.",
+      pt: "Comparação entre AI Draft e My Notes escritas pela médica.",
+    },
     src: "/images/aster/aster-working-notes-desktop.png",
     srcMobile: "/images/aster/aster-working-notes-mobile.png",
   },
@@ -77,19 +89,25 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Closing — não usar no Hero nem como mockup principal de How it works",
     transparent: false,
-    alt: "Physician reviewing the ASTER consultation workspace on a laptop.",
+    alt: {
+      en: "Physician reviewing the ASTER consultation workspace on a laptop.",
+      pt: "Médica revisando o workspace de consulta do ASTER num laptop.",
+    },
     src: "/images/aster/aster-closing-workspace.png",
   },
   "aster-prototype-hero": {
     id: "aster-prototype-hero",
     label: "Composição editorial do protótipo ASTER",
-    aspectRatio: "16/9",
-    minWidth: 1600,
-    minHeight: 900,
+    aspectRatio: "1440/618",
+    minWidth: 1440,
+    minHeight: 618,
     format: "JPG ou PNG",
     placement: "Hero (fragmento de interface) e CTA do protótipo",
     transparent: false,
-    alt: "Fragmento da interface do workspace ASTER mostrando contexto do paciente e transcrição ao vivo.",
+    alt: {
+      en: "Fragment of the ASTER workspace interface showing patient context and live transcript.",
+      pt: "Fragmento da interface do workspace ASTER mostrando contexto do paciente e transcrição ao vivo.",
+    },
     src: "/images/aster/aster-prototype-hero.png",
   },
   "aster-known-patient": {
@@ -101,7 +119,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 11 — Patient identity and ambiguity",
     transparent: false,
-    alt: "Workspace ASTER com o contexto completo de um paciente já identificado, histórico disponível.",
+    alt: {
+      en: "ASTER workspace with the full context of an already-identified patient, history available.",
+      pt: "Workspace ASTER com o contexto completo de um paciente já identificado, histórico disponível.",
+    },
     src: "/images/aster/aster-known-patient.png",
   },
   "aster-unknown-patient": {
@@ -113,7 +134,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 11 — Patient identity and ambiguity",
     transparent: false,
-    alt: "Workspace ASTER capturando a consulta sem nenhum contexto de paciente anexado.",
+    alt: {
+      en: "ASTER workspace capturing the consultation with no patient context attached yet.",
+      pt: "Workspace ASTER capturando a consulta sem nenhum contexto de paciente anexado.",
+    },
     src: "/images/aster/aster-unknown-patient.png",
   },
   "aster-ambiguous-match": {
@@ -125,7 +149,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 11 — Patient identity and ambiguity",
     transparent: false,
-    alt: "Tela pedindo confirmação explícita entre dois ou mais pacientes com nomes semelhantes.",
+    alt: {
+      en: "Screen asking for explicit confirmation between two or more patients with similar names.",
+      pt: "Tela pedindo confirmação explícita entre dois ou mais pacientes com nomes semelhantes.",
+    },
     src: "/images/aster/aster-ambiguous-match.png",
   },
   "aster-recording-paused": {
@@ -137,7 +164,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 14 — Control over recording",
     transparent: false,
-    alt: "Transcrição ao vivo pausada, com um marcador visível indicando o intervalo sem captura.",
+    alt: {
+      en: "Live transcript paused, with a visible marker indicating the gap without capture.",
+      pt: "Transcrição ao vivo pausada, com um marcador visível indicando o intervalo sem captura.",
+    },
   },
   "aster-insight-detail": {
     id: "aster-insight-detail",
@@ -148,7 +178,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 12 — Restrained Insights",
     transparent: false,
-    alt: "Cartão de Insight expandido mostrando contexto, motivo do aparecimento e status de revisão do médico.",
+    alt: {
+      en: "Expanded Insight card showing context, the reason it appeared, and the physician's review status.",
+      pt: "Cartão de Insight expandido mostrando contexto, motivo do aparecimento e status de revisão do médico.",
+    },
   },
   "aster-ai-draft": {
     id: "aster-ai-draft",
@@ -159,7 +192,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 13 — AI Draft and My Notes",
     transparent: false,
-    alt: "Painel de rascunho gerado automaticamente a partir dos eventos da consulta, organizado e revisável.",
+    alt: {
+      en: "Panel with a draft automatically generated from the consultation events, organized and reviewable.",
+      pt: "Painel de rascunho gerado automaticamente a partir dos eventos da consulta, organizado e revisável.",
+    },
   },
   "aster-my-notes": {
     id: "aster-my-notes",
@@ -170,7 +206,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 13 — AI Draft and My Notes",
     transparent: false,
-    alt: "Painel de notas autoradas pelo médico, com edição inline e indicador de salvamento automático.",
+    alt: {
+      en: "Panel with notes authored by the physician, with inline editing and an autosave indicator.",
+      pt: "Painel de notas autoradas pelo médico, com edição inline e indicador de salvamento automático.",
+    },
   },
   "aster-macbook-mockup": {
     id: "aster-macbook-mockup",
@@ -181,7 +220,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 10 — Product walkthrough",
     transparent: false,
-    alt: "Workspace ASTER completo exibido num MacBook, mostrando as três zonas de trabalho lado a lado.",
+    alt: {
+      en: "Full ASTER workspace displayed on a MacBook, showing the three work zones side by side.",
+      pt: "Workspace ASTER completo exibido num MacBook, mostrando as três zonas de trabalho lado a lado.",
+    },
     src: "/images/aster/aster-macbook-mockup.png",
   },
   "aster-screen-miscellany": {
@@ -193,7 +235,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "PNG (fundo transparente)",
     placement: "Seção 13 — AI Draft and My Notes (composição de apoio)",
     transparent: true,
-    alt: "Composição sobreposta de vários recortes de tela do ASTER, sem hierarquia única de leitura.",
+    alt: {
+      en: "Overlapping composition of several ASTER screen crops, with no single reading hierarchy.",
+      pt: "Composição sobreposta de vários recortes de tela do ASTER, sem hierarquia única de leitura.",
+    },
   },
   "aster-figjam-overview": {
     id: "aster-figjam-overview",
@@ -204,7 +249,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 6 — Questions before interfaces (abertura)",
     transparent: false,
-    alt: "Visão panorâmica do board de discovery do ASTER, mostrando a extensão do processo sem detalhe legível.",
+    alt: {
+      en: "Panoramic view of the ASTER discovery board, showing the extent of the process without legible detail.",
+      pt: "Visão panorâmica do board de discovery do ASTER, mostrando a extensão do processo sem detalhe legível.",
+    },
     src: "/images/aster/aster-figjam-overview.png",
   },
   "aster-figjam-critical-questions": {
@@ -216,7 +264,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 6 — Questions before interfaces",
     transparent: false,
-    alt: "Recorte focado do FigJam com as perguntas que moldaram os limites da interação entre IA e médico.",
+    alt: {
+      en: "Focused crop of the FigJam board with the questions that shaped the boundaries of AI-physician interaction.",
+      pt: "Recorte focado do FigJam com as perguntas que moldaram os limites da interação entre IA e médico.",
+    },
   },
   "aster-figjam-simulation": {
     id: "aster-figjam-simulation",
@@ -227,7 +278,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 7 — Proposed internal simulation",
     transparent: false,
-    alt: "Recorte do FigJam documentando a estrutura da simulação interna e as variações testadas.",
+    alt: {
+      en: "FigJam crop documenting the structure of the internal simulation and the variations tested.",
+      pt: "Recorte do FigJam documentando a estrutura da simulação interna e as variações testadas.",
+    },
   },
   "aster-figjam-decisions": {
     id: "aster-figjam-decisions",
@@ -238,7 +292,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 16 — From discovery to decisions",
     transparent: false,
-    alt: "Recorte do FigJam ligando um achado específico do discovery à decisão de produto que ele gerou.",
+    alt: {
+      en: "FigJam crop connecting a specific discovery finding to the product decision it informed.",
+      pt: "Recorte do FigJam ligando um achado específico do discovery à decisão de produto que ele gerou.",
+    },
   },
   "aster-figjam-hard-no": {
     id: "aster-figjam-hard-no",
@@ -249,7 +306,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 17 — Defining what would make us stop",
     transparent: false,
-    alt: "Recorte do FigJam listando as condições que fariam a equipe parar de investir no conceito.",
+    alt: {
+      en: "FigJam crop listing the conditions that would make the team stop investing in the concept.",
+      pt: "Recorte do FigJam listando as condições que fariam a equipe parar de investir no conceito.",
+    },
   },
   "aster-walkthrough-video": {
     id: "aster-walkthrough-video",
@@ -260,7 +320,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "MP4 ou GIF",
     placement: "Seção 10 — Product walkthrough (alternativa/complemento ao mockup estático)",
     transparent: false,
-    alt: "Gravação de tela curta demonstrando a captura de uma consulta e a geração de um Insight no ASTER.",
+    alt: {
+      en: "Short screen recording demonstrating a consultation being captured and an Insight appearing in ASTER.",
+      pt: "Gravação de tela curta demonstrando a captura de uma consulta e a geração de um Insight no ASTER.",
+    },
     src: "/images/aster/aster-walkthrough-video.mp4",
   },
   "aster-cannot-claim-photo": {
@@ -272,7 +335,10 @@ export const asterAssetManifest: Record<string, AsterAssetSpec> = {
     format: "JPG ou PNG",
     placement: "Seção 'What wasn't proven here' — coluna de imagem ao lado do texto",
     transparent: false,
-    alt: "Physician adjusting the ASTER wearable device, with the consultation workspace open on a laptop below.",
+    alt: {
+      en: "Physician adjusting the ASTER wearable device, with the consultation workspace open on a laptop below.",
+      pt: "Médica ajustando o dispositivo vestível ASTER, com o workspace de consulta aberto num laptop abaixo.",
+    },
     src: "/images/aster/aster-cannot-claim-photo.png",
   },
 };

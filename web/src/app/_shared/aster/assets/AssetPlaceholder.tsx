@@ -1,8 +1,10 @@
 import { asterAssetManifest, type AsterAssetId } from "./manifest";
+import type { Locale } from "@/components/NavBar/constants";
 import styles from "./AssetPlaceholder.module.css";
 
 export interface AssetPlaceholderProps {
   assetId: AsterAssetId;
+  locale: Locale;
   /** Estilo do placeholder — "photo" (retangular) ou "device" (mais estreito, pro hero do médico). */
   variant?: "photo" | "device";
 }
@@ -13,8 +15,9 @@ export interface AssetPlaceholderProps {
  * handoff — proporção, dimensão mínima, formato e alt text — visível
  * direto na página, pra trocar por um arquivo real sem adivinhar nada.
  */
-export function AssetPlaceholder({ assetId, variant = "photo" }: AssetPlaceholderProps) {
+export function AssetPlaceholder({ assetId, locale, variant = "photo" }: AssetPlaceholderProps) {
   const spec = asterAssetManifest[assetId];
+  const alt = spec.alt[locale];
 
   if (spec.src) {
     if (/\.(mp4|webm|mov)$/i.test(spec.src)) {
@@ -24,13 +27,13 @@ export function AssetPlaceholder({ assetId, variant = "photo" }: AssetPlaceholde
           src={spec.src}
           controls
           playsInline
-          aria-label={spec.alt}
+          aria-label={alt}
         />
       );
     }
 
     // eslint-disable-next-line @next/next/no-img-element
-    const img = <img src={spec.src} alt={spec.alt} className={`${styles.image} ${styles[variant]}`} />;
+    const img = <img src={spec.src} alt={alt} className={`${styles.image} ${styles[variant]}`} />;
 
     if (!spec.srcMobile) return img;
 
@@ -68,7 +71,7 @@ export function AssetPlaceholder({ assetId, variant = "photo" }: AssetPlaceholde
             <dd>{spec.format}</dd>
           </div>
         </dl>
-        <p className={styles.altNote}>Alt text final: “{spec.alt}”</p>
+        <p className={styles.altNote}>Alt text final: “{alt}”</p>
       </div>
     </div>
   );

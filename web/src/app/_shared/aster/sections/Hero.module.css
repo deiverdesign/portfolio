@@ -13,6 +13,34 @@
   gap: var(--space-layout-100);
 }
 
+/* flex: 1 1 100% força quebra de linha própria dentro do .inner (que já
+   é flex-wrap) — fica acima das duas colunas sem precisar de outro wrapper. */
+.topRow {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-500);
+  margin-bottom: var(--space-500);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-200);
+  font-size: var(--font-caption);
+  color: var(--aster-sage);
+}
+
+.back:hover {
+  color: var(--aster-mint);
+}
+
+.back:focus-visible {
+  outline: 3px solid var(--aster-mint);
+  outline-offset: 3px;
+}
+
 .text {
   flex: 1.32 1 460px;
   max-width: 640px;
@@ -60,13 +88,19 @@
   max-width: 52ch;
 }
 
-.meta {
+/* Borda ao redor do grid — sem ela, "Veja como funciona" logo abaixo
+   lia como se fizesse parte do bloco de metadados (proximidade do
+   Gestalt). A borda cria uma "common region" clara pro grupo. */
+.metaBox {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-500);
+  gap: var(--space-700);
+  border: 1px solid var(--aster-teal);
+  border-radius: 4px;
+  padding: var(--space-700);
 }
 
-.meta dt {
+.metaBox dt {
   font-size: var(--font-caption);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -74,7 +108,7 @@
   margin-bottom: 4px;
 }
 
-.meta dd {
+.metaBox dd {
   font-size: var(--font-caption);
   color: var(--aster-cream-on-dark);
   margin: 0;
@@ -85,7 +119,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-600);
-  margin-top: var(--space-400);
+  margin-top: var(--space-500);
 }
 
 .cta {

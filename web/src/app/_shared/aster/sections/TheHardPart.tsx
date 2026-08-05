@@ -31,7 +31,7 @@ export function TheHardPart({ locale }: { locale: Locale }) {
       id="the-hard-part"
       eyebrow={t.eyebrow}
       title={t.title}
-      image={<AssetPlaceholder assetId="aster-figjam-overview" />}
+      image={<AssetPlaceholder assetId="aster-figjam-overview" locale={locale} />}
     >
       <p className={shared.keyStatement}>{t.keyStatement}</p>
       {t.paragraphs.map((p) => (

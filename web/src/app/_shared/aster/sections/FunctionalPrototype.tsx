@@ -66,9 +66,9 @@ export function FunctionalPrototype({ locale }: { locale: Locale }) {
     <Section id="functional-prototype" eyebrow={t.eyebrow} title={t.title}>
       <p>{t.intro}</p>
 
-      <AssetPlaceholder assetId="aster-prototype-hero" />
+      <AssetPlaceholder assetId="aster-prototype-hero" locale={locale} />
 
-      <AssetPlaceholder assetId="aster-walkthrough-video" />
+      <AssetPlaceholder assetId="aster-walkthrough-video" locale={locale} />
 
       <p>{t.presentLabel}</p>
       <ul className={shared.list}>
