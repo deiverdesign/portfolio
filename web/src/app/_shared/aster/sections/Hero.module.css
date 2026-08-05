@@ -1,6 +1,10 @@
 .hero {
   background: linear-gradient(150deg, var(--aster-forest-deep) 0%, #0a1613 100%);
-  padding: var(--space-layout-400) var(--space-700) var(--space-layout-300);
+  /* padding-top é metade de --space-layout-400 — o valor cheio deixava um
+     vão vazio grande demais entre o NavBar e "Back to portfolio" em todos
+     os breakpoints (calc() em vez de um token fixo pra continuar a
+     metade exata, já que o token muda por breakpoint). */
+  padding: calc(var(--space-layout-400) / 2) var(--space-700) var(--space-layout-300);
 }
 
 /* Duas colunas: título+subtítulo à esquerda (640px no Figma), metadados+CTAs
