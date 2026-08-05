@@ -42,14 +42,15 @@
 .links {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-700);
 }
 
-.links a {
+.navLink {
   color: var(--content-primary);
 }
 
-.links a:hover {
+.navLink:hover {
   color: var(--content-accent);
 }
 

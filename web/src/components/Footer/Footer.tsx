@@ -1,3 +1,4 @@
+import { Button } from "@/components/Button/Button";
 import styles from "./Footer.module.css";
 import { HOME_HREF, RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "@/components/NavBar/constants";
 
@@ -7,15 +8,18 @@ export interface FooterProps {
 
 const CONTENT: Record<Locale, {
   role: string;
-  links: Array<{ label: string; href: string; download?: string }>;
+  navLinks: Array<{ label: string; href: string }>;
+  actions: Array<{ label: string; href: string; download?: string }>;
   copyright: string;
 }> = {
   pt: {
     role: "Product Designer Sênior · Floripa · Brasil",
-    links: [
+    navLinks: [
       { label: "Trabalho", href: "/pt" },
       { label: "Competências", href: "/pt/competencias" },
       { label: "Sobre", href: "/pt/sobre" },
+    ],
+    actions: [
       { label: "LinkedIn", href: "https://linkedin.com/in/deiverbrito" },
       { label: "Currículo", href: RESUME_HREF.pt, download: RESUME_DOWNLOAD_NAME.pt },
     ],
@@ -23,10 +27,12 @@ const CONTENT: Record<Locale, {
   },
   en: {
     role: "Senior Product Designer · Floripa · Brazil",
-    links: [
+    navLinks: [
       { label: "Work", href: "/" },
       { label: "Capabilities", href: "/capabilities" },
       { label: "About", href: "/about" },
+    ],
+    actions: [
       { label: "LinkedIn", href: "https://linkedin.com/in/deiverbrito" },
       { label: "Resume", href: RESUME_HREF.en, download: RESUME_DOWNLOAD_NAME.en },
     ],
@@ -46,10 +52,15 @@ export function Footer({ locale }: FooterProps) {
             <span>{t.role}</span>
           </a>
           <nav className={styles.links}>
-            {t.links.map((link) => (
-              <a key={link.label} href={link.href} download={link.download}>
+            {t.navLinks.map((link) => (
+              <a key={link.label} href={link.href} className={styles.navLink}>
                 {link.label}
               </a>
+            ))}
+            {t.actions.map((action) => (
+              <Button key={action.label} variant="secondary" context="light" href={action.href} download={action.download}>
+                {action.label}
+              </Button>
             ))}
           </nav>
         </div>
