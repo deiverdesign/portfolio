@@ -242,6 +242,25 @@ export function getNextCase(locale: Locale, currentHref: string): CaseCopy {
   return openCases[(currentIndex + 1) % openCases.length];
 }
 
+/**
+ * Par anterior/próximo pro paginador no topo de cada case (diferente do
+ * card "Next case" no rodapé, que dá loop de propósito) — aqui as pontas
+ * não dão loop: no primeiro case, previous vem null (botão desabilitado);
+ * no último, next vem null. Mesma lista de `getNextCase`, então um case
+ * novo em `buildCasesCopy` já entra na sequência automaticamente.
+ */
+export function getCaseNavigation(
+  locale: Locale,
+  currentHref: string
+): { previous: CaseCopy | null; next: CaseCopy | null } {
+  const openCases = buildCasesCopy(locale).filter((c) => !c.locked);
+  const currentIndex = openCases.findIndex((c) => c.href === currentHref);
+  return {
+    previous: currentIndex > 0 ? openCases[currentIndex - 1] : null,
+    next: currentIndex >= 0 && currentIndex < openCases.length - 1 ? openCases[currentIndex + 1] : null,
+  };
+}
+
 export function HomeContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const otherLocaleHref = locale === "pt" ? "/" : "/pt";

@@ -17,20 +17,66 @@
   gap: var(--space-layout-100);
 }
 
-.backLink {
-  display: inline-flex;
+/* Fileira do topo: link de voltar à esquerda, paginador anterior/próximo
+   à direita — mesma largura/padding que o resto do case (1152px). */
+.topRow {
+  display: flex;
   align-items: center;
-  gap: var(--space-300);
-  color: var(--content-secondary);
-  font-size: var(--font-subtitle);
+  justify-content: space-between;
+  gap: var(--space-600);
   width: 100%;
   max-width: 1152px;
   padding: 0 var(--space-700);
   box-sizing: border-box;
 }
 
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-300);
+  color: var(--content-secondary);
+  font-size: var(--font-subtitle);
+}
+
 .backLink:hover {
   color: var(--content-heading);
+}
+
+/* Paginador anterior/próximo — mesmo ícone (arrow-right) nos dois,
+   girado 180° no botão "anterior". Cor e borda trocam pra
+   --border-strong no estado desabilitado (medido no Figma: os dois
+   tokens, border/disabled e content/disabled, resolvem pro mesmo
+   #bab7b2 que já é --border-strong no projeto). */
+.caseNav {
+  display: flex;
+  gap: 10px;
+}
+
+.caseNavButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-400);
+  border: 1px solid var(--content-primary);
+  color: var(--content-primary);
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.caseNavButton:hover {
+  border-color: var(--content-accent);
+  color: var(--content-accent);
+}
+
+.caseNavButton:disabled {
+  border-color: var(--border-strong);
+  color: var(--border-strong);
+  cursor: not-allowed;
+}
+
+.caseNavIconPrev {
+  transform: rotate(180deg);
 }
 
 /* Grid de 3 colunas iguais: título+intro ocupam as 2 primeiras (2/3),

@@ -5,7 +5,8 @@ import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
-import { getNextCase } from "./HomeContent";
+import { Icon } from "@/components/icons/Icon";
+import { getNextCase, getCaseNavigation } from "./HomeContent";
 import styles from "./cases.module.css";
 
 const COPY = {
@@ -114,6 +115,7 @@ const COPY = {
       "This project reinforced that accessibility isn't a checklist at the end of the process.",
       "When a digital interface controls something physical, accessibility, feedback, and trust need to be part of the core interaction model.",
     ],
+    prevCaseLabel: "Previous case",
     nextCaseLabel: "Next case",
   },
   pt: {
@@ -221,6 +223,7 @@ const COPY = {
       "Esse projeto reforçou que acessibilidade não é uma checklist no fim do processo.",
       "Quando uma interface digital controla algo físico, acessibilidade, feedback e confiança precisam fazer parte do modelo de interação central.",
     ],
+    prevCaseLabel: "Case anterior",
     nextCaseLabel: "Próximo case",
   },
 } as const;
@@ -257,15 +260,39 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
   const otherLocaleHref = locale === "pt" ? "/cases/theodoor" : "/pt/cases/theodoor";
   const currentHref = locale === "pt" ? "/pt/cases/theodoor" : "/cases/theodoor";
   const nextCase = getNextCase(locale, currentHref);
+  const caseNav = getCaseNavigation(locale, currentHref);
 
   return (
     <>
       <NavBar context="dark" locale={locale} otherLocaleHref={otherLocaleHref} />
 
       <main className={styles.container}>
-        <Link className={styles.backLink} href={homeHref}>
-          {t.backLink}
-        </Link>
+        <div className={styles.topRow}>
+          <Link className={styles.backLink} href={homeHref}>
+            {t.backLink}
+          </Link>
+
+          <nav className={styles.caseNav} aria-label={locale === "pt" ? "Navegação entre cases" : "Case navigation"}>
+            {caseNav.previous ? (
+              <Link className={styles.caseNavButton} href={caseNav.previous.href} aria-label={t.prevCaseLabel}>
+                <Icon name="arrow-right" className={styles.caseNavIconPrev} />
+              </Link>
+            ) : (
+              <button type="button" className={styles.caseNavButton} disabled aria-label={t.prevCaseLabel}>
+                <Icon name="arrow-right" className={styles.caseNavIconPrev} />
+              </button>
+            )}
+            {caseNav.next ? (
+              <Link className={styles.caseNavButton} href={caseNav.next.href} aria-label={t.nextCaseLabel}>
+                <Icon name="arrow-right" />
+              </Link>
+            ) : (
+              <button type="button" className={styles.caseNavButton} disabled aria-label={t.nextCaseLabel}>
+                <Icon name="arrow-right" />
+              </button>
+            )}
+          </nav>
+        </div>
 
         <section className={styles.hero}>
           <div className={styles.heroText}>

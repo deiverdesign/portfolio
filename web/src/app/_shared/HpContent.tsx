@@ -5,7 +5,8 @@ import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
-import { getNextCase } from "./HomeContent";
+import { Icon } from "@/components/icons/Icon";
+import { getNextCase, getCaseNavigation } from "./HomeContent";
 import styles from "./cases.module.css";
 
 const COPY = {
@@ -88,6 +89,7 @@ const COPY = {
       "This project reminded me that UI work can surface product questions that haven't been resolved yet.",
       "When a subscription includes physical service operations, the interface isn't just organizing choices. It's helping the team make the service logic explicit.",
     ],
+    prevCaseLabel: "Previous case",
     nextCaseLabel: "Next case",
   },
   pt: {
@@ -169,6 +171,7 @@ const COPY = {
       "Esse projeto me lembrou que trabalho de UI pode trazer à tona perguntas de produto que ainda não foram resolvidas.",
       "Quando uma assinatura inclui operações de serviço físico, a interface não está só organizando escolhas. Está ajudando o time a tornar a lógica do serviço explícita.",
     ],
+    prevCaseLabel: "Case anterior",
     nextCaseLabel: "Próximo case",
   },
 } as const;
@@ -222,15 +225,39 @@ export function HpContent({ locale }: { locale: Locale }) {
   const otherLocaleHref = locale === "pt" ? "/cases/hp" : "/pt/cases/hp";
   const currentHref = locale === "pt" ? "/pt/cases/hp" : "/cases/hp";
   const nextCase = getNextCase(locale, currentHref);
+  const caseNav = getCaseNavigation(locale, currentHref);
 
   return (
     <>
       <NavBar context="dark" locale={locale} otherLocaleHref={otherLocaleHref} />
 
       <main className={styles.container}>
-        <Link className={styles.backLink} href={homeHref}>
-          {t.backLink}
-        </Link>
+        <div className={styles.topRow}>
+          <Link className={styles.backLink} href={homeHref}>
+            {t.backLink}
+          </Link>
+
+          <nav className={styles.caseNav} aria-label={locale === "pt" ? "Navegação entre cases" : "Case navigation"}>
+            {caseNav.previous ? (
+              <Link className={styles.caseNavButton} href={caseNav.previous.href} aria-label={t.prevCaseLabel}>
+                <Icon name="arrow-right" className={styles.caseNavIconPrev} />
+              </Link>
+            ) : (
+              <button type="button" className={styles.caseNavButton} disabled aria-label={t.prevCaseLabel}>
+                <Icon name="arrow-right" className={styles.caseNavIconPrev} />
+              </button>
+            )}
+            {caseNav.next ? (
+              <Link className={styles.caseNavButton} href={caseNav.next.href} aria-label={t.nextCaseLabel}>
+                <Icon name="arrow-right" />
+              </Link>
+            ) : (
+              <button type="button" className={styles.caseNavButton} disabled aria-label={t.nextCaseLabel}>
+                <Icon name="arrow-right" />
+              </button>
+            )}
+          </nav>
+        </div>
 
         <section className={styles.hero}>
           <div className={styles.heroText}>

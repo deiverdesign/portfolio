@@ -5,7 +5,8 @@ import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
-import { getNextCase } from "./HomeContent";
+import { Icon } from "@/components/icons/Icon";
+import { getNextCase, getCaseNavigation } from "./HomeContent";
 import styles from "./cases.module.css";
 
 const COPY = {
@@ -142,6 +143,7 @@ const COPY = {
       "This project reinforced a lesson I still use often: in complex products, the first design challenge isn't the screen — it's understanding what decision the interface needs to support.",
       "Once that was clear, UI decisions became easier to explain, test, and document.",
     ],
+    prevCaseLabel: "Previous case",
     nextCaseLabel: "Next case",
   },
   pt: {
@@ -278,6 +280,7 @@ const COPY = {
       "Esse projeto reforçou uma lição que ainda uso bastante: em produtos complexos, o primeiro desafio de design não é a tela — é entender qual decisão a interface precisa apoiar.",
       "Uma vez que isso estava claro, decisões de UI ficaram mais fáceis de explicar, testar e documentar.",
     ],
+    prevCaseLabel: "Case anterior",
     nextCaseLabel: "Próximo case",
   },
 } as const;
@@ -319,15 +322,39 @@ export function CureContent({ locale }: { locale: Locale }) {
   const otherLocaleHref = locale === "pt" ? "/cases/cure" : "/pt/cases/cure";
   const currentHref = locale === "pt" ? "/pt/cases/cure" : "/cases/cure";
   const nextCase = getNextCase(locale, currentHref);
+  const caseNav = getCaseNavigation(locale, currentHref);
 
   return (
     <>
       <NavBar context="dark" locale={locale} otherLocaleHref={otherLocaleHref} />
 
       <main className={styles.container}>
-        <Link className={styles.backLink} href={homeHref}>
-          {t.backLink}
-        </Link>
+        <div className={styles.topRow}>
+          <Link className={styles.backLink} href={homeHref}>
+            {t.backLink}
+          </Link>
+
+          <nav className={styles.caseNav} aria-label={locale === "pt" ? "Navegação entre cases" : "Case navigation"}>
+            {caseNav.previous ? (
+              <Link className={styles.caseNavButton} href={caseNav.previous.href} aria-label={t.prevCaseLabel}>
+                <Icon name="arrow-right" className={styles.caseNavIconPrev} />
+              </Link>
+            ) : (
+              <button type="button" className={styles.caseNavButton} disabled aria-label={t.prevCaseLabel}>
+                <Icon name="arrow-right" className={styles.caseNavIconPrev} />
+              </button>
+            )}
+            {caseNav.next ? (
+              <Link className={styles.caseNavButton} href={caseNav.next.href} aria-label={t.nextCaseLabel}>
+                <Icon name="arrow-right" />
+              </Link>
+            ) : (
+              <button type="button" className={styles.caseNavButton} disabled aria-label={t.nextCaseLabel}>
+                <Icon name="arrow-right" />
+              </button>
+            )}
+          </nav>
+        </div>
 
         <section className={styles.hero}>
           <div className={styles.heroText}>

@@ -5,7 +5,8 @@ import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
-import { getNextCase } from "./HomeContent";
+import { Icon } from "@/components/icons/Icon";
+import { getNextCase, getCaseNavigation } from "./HomeContent";
 import styles from "./cases.module.css";
 
 const COPY = {
@@ -102,6 +103,7 @@ const COPY = {
       "This project taught me how much early design system work shapes everything that comes after. Building stable foundations before product direction was fully defined required judgment calls that held up through significant changes.",
       "Working closely with a Design Lead in a daily three-way review with the PM was one of the most effective collaboration structures I've experienced. Each person owned a distinct part of the problem, and that clarity made fast, quality decisions possible even under ambiguity.",
     ],
+    prevCaseLabel: "Previous case",
     nextCaseLabel: "Next case",
   },
   pt: {
@@ -197,6 +199,7 @@ const COPY = {
       "Esse projeto me ensinou o quanto trabalho inicial de design system molda tudo que vem depois. Construir fundações estáveis antes da direção de produto estar totalmente definida exigiu decisões de julgamento que se sustentaram através de mudanças significativas.",
       "Trabalhar de perto com um Design Lead numa revisão diária a três com o PM foi uma das estruturas de colaboração mais eficazes que já vivenciei. Cada pessoa era dona de uma parte distinta do problema, e essa clareza tornou possível decisões rápidas e de qualidade mesmo sob ambiguidade.",
     ],
+    prevCaseLabel: "Case anterior",
     nextCaseLabel: "Próximo case",
   },
 } as const;
@@ -250,15 +253,39 @@ export function IntuitContent({ locale }: { locale: Locale }) {
   const otherLocaleHref = locale === "pt" ? "/cases/intuit" : "/pt/cases/intuit";
   const currentHref = locale === "pt" ? "/pt/cases/intuit" : "/cases/intuit";
   const nextCase = getNextCase(locale, currentHref);
+  const caseNav = getCaseNavigation(locale, currentHref);
 
   return (
     <>
       <NavBar context="dark" locale={locale} otherLocaleHref={otherLocaleHref} />
 
       <main className={styles.container}>
-        <Link className={styles.backLink} href={homeHref}>
-          {t.backLink}
-        </Link>
+        <div className={styles.topRow}>
+          <Link className={styles.backLink} href={homeHref}>
+            {t.backLink}
+          </Link>
+
+          <nav className={styles.caseNav} aria-label={locale === "pt" ? "Navegação entre cases" : "Case navigation"}>
+            {caseNav.previous ? (
+              <Link className={styles.caseNavButton} href={caseNav.previous.href} aria-label={t.prevCaseLabel}>
+                <Icon name="arrow-right" className={styles.caseNavIconPrev} />
+              </Link>
+            ) : (
+              <button type="button" className={styles.caseNavButton} disabled aria-label={t.prevCaseLabel}>
+                <Icon name="arrow-right" className={styles.caseNavIconPrev} />
+              </button>
+            )}
+            {caseNav.next ? (
+              <Link className={styles.caseNavButton} href={caseNav.next.href} aria-label={t.nextCaseLabel}>
+                <Icon name="arrow-right" />
+              </Link>
+            ) : (
+              <button type="button" className={styles.caseNavButton} disabled aria-label={t.nextCaseLabel}>
+                <Icon name="arrow-right" />
+              </button>
+            )}
+          </nav>
+        </div>
 
         <section className={styles.hero}>
           <div className={styles.heroText}>
