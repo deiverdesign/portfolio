@@ -93,9 +93,12 @@
   margin-top: var(--space-300);
 }
 
+/* 1152px, não 1280 — todas as seções do corpo da Home no Figma Site usam
+   max-w-6xl (1152px) de forma uniforme (trabalho, additional experience,
+   competências, sobre). Só o Hero usa uma largura própria, diferente. */
 .workSection {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1152px;
   margin: 0 auto;
   padding: var(--space-layout-100) var(--space-700);
   display: flex;
