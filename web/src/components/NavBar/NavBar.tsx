@@ -27,12 +27,12 @@ export interface NavBarProps {
 
 const NAV_ITEMS: Record<Locale, Array<{ label: string; href: string }>> = {
   pt: [
-    { label: "Trabalho", href: "/" },
+    { label: "Trabalho", href: "/work" },
     { label: "Competências", href: "/competencias" },
     { label: "Sobre", href: "/sobre" },
   ],
   en: [
-    { label: "Work", href: "/en" },
+    { label: "Work", href: "/en/work" },
     { label: "Capabilities", href: "/en/capabilities" },
     { label: "About", href: "/en/about" },
   ],

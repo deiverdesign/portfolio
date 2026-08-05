@@ -10,7 +10,7 @@ import { buildCapabilitiesCopy } from "./CapabilitiesContent";
 import { ABOUT_COPY } from "./AboutContent";
 import styles from "../(pt)/home.module.css";
 
-interface CaseCopy {
+export interface CaseCopy {
   number: string;
   title: string;
   summary: string;
@@ -32,7 +32,7 @@ interface HomeCopy {
   ctaPrimary: string;
   ctaSecondary: string;
   workHeading: string;
-  cases: CaseCopy[];
+  viewAllCasesLabel: string;
   additionalExperience: {
     eyebrow: string;
     title: string;
@@ -67,62 +67,7 @@ const COPY: Record<Locale, HomeCopy> = {
     ctaPrimary: "Ver trabalhos selecionados",
     ctaSecondary: "Baixar currículo",
     workHeading: "Trabalho",
-    cases: [
-      {
-        number: "01",
-        title: "Cure Intelligence / SCRIOO",
-        summary: "Plataforma de inteligência de riscos em supply chain com IA.",
-        description:
-          "Redesign de uma plataforma densa em dados para ajudar usuários a entender sinais de risco, fornecedores, filtros, dashboards e decisões operacionais.",
-        tags: ["Sistemas complexos", "UX denso em dados", "IA", "Dashboards"],
-        href: "/cases/cure",
-        imageSrc: "/images/cure.png",
-      },
-      {
-        number: "02",
-        title: "HP Subscription Onboarding",
-        summary: "Configuração guiada para um modelo de assinatura com impressora incluída.",
-        description:
-          "Ajudando a transformar um modelo de assinatura incluída em uma experiência mais clara de configuração e conta.",
-        tags: ["UX de assinatura", "Produtos conectados", "Serviço com hardware"],
-        href: "/cases/hp",
-        imageSrc: "/images/hp.png",
-      },
-      {
-        number: "03",
-        title: "Theodoor",
-        summary: "App acessível para automação de portas inteligentes.",
-        description:
-          "Design de uma experiência mobile acessível com feedback multimodal, restrições reais e edge cases.",
-        tags: ["Acessibilidade", "Mobile", "UX físico-digital"],
-        href: "/cases/theodoor",
-        imageSrc: "/images/theodoor.png",
-      },
-      {
-        number: "04",
-        title: "Intuit for Education",
-        summary: "Experiência de educação financeira para estudantes.",
-        description:
-          "Ajudando estudantes a acompanhar o presente, planejar o futuro e aprender sobre dinheiro em contexto.",
-        tags: ["Discovery de produto", "Educação financeira", "Design Systems"],
-        href: "/cases/intuit",
-        imageSrc: "/images/intuit.png",
-      },
-      {
-        number: "05",
-        title: "ASTER",
-        summary: "Explorando IA como colaboradora clínica em consultas de alto risco.",
-        description:
-          "Um estudo de caso protegido por senha sobre confiança, limites de atuação e responsabilidade compartilhada entre médicos e uma IA colaboradora clínica.",
-        tags: ["Interação com IA", "Saúde", "Confiança e segurança"],
-        href: "/cases/aster",
-        imageSrc: "/images/aster/aster-cover.png",
-        imageAlt: "Ilustração de uma pasta trancada, representando o case protegido por senha.",
-        locked: true,
-        maxWidth: 600,
-        imagePosition: "center" as const,
-      },
-    ],
+    viewAllCasesLabel: "Ver todos os trabalhos",
     additionalExperience: {
       eyebrow: "EXPERIÊNCIA ADICIONAL",
       title: "Enterprise Legal Tech / Softplan",
@@ -163,62 +108,7 @@ const COPY: Record<Locale, HomeCopy> = {
     ctaPrimary: "View selected work",
     ctaSecondary: "Download resume",
     workHeading: "Work",
-    cases: [
-      {
-        number: "01",
-        title: "Cure Intelligence / SCRIOO",
-        summary: "AI-powered supply chain risk intelligence platform.",
-        description:
-          "Redesign of a data-heavy platform to help users understand risk signals, suppliers, filters, dashboards, and operational decisions.",
-        tags: ["Complex systems", "AI", "Data-heavy UX", "Enterprise"],
-        href: "/en/cases/cure",
-        imageSrc: "/images/cure.png",
-      },
-      {
-        number: "02",
-        title: "HP Subscription Onboarding",
-        summary: "Guided setup for a printer-inclusive subscription model.",
-        description:
-          "Helping turn a printer-inclusive subscription model into a clearer setup and account experience, through UX/UI, design system application, and handoff for implementation.",
-        tags: ["Subscription UX", "Connected products", "Hardware service"],
-        href: "/en/cases/hp",
-        imageSrc: "/images/hp.png",
-      },
-      {
-        number: "03",
-        title: "Theodoor",
-        summary: "Accessible app for smart door automation.",
-        description:
-          "Designing an accessible mobile experience with multimodal feedback, real constraints, edge cases, and AI-assisted behavioral prototyping.",
-        tags: ["Accessibility", "Mobile", "Physical-digital UX"],
-        href: "/en/cases/theodoor",
-        imageSrc: "/images/theodoor.png",
-      },
-      {
-        number: "04",
-        title: "Intuit for Education",
-        summary: "Financial education experience for students.",
-        description:
-          "Helping students track the present, plan the future, and learn about money in context, through a mobile product with rich visual language and a design system I helped build from the ground up.",
-        tags: ["Product Discovery", "Financial education", "Design Systems"],
-        href: "/en/cases/intuit",
-        imageSrc: "/images/intuit.png",
-      },
-      {
-        number: "05",
-        title: "ASTER",
-        summary: "Exploring AI as a clinical collaborator in high-risk consultations.",
-        description:
-          "A password-protected case study about trust, interaction boundaries, and shared accountability between physicians and a clinical AI collaborator.",
-        tags: ["AI interaction", "Healthcare", "Trust and safety"],
-        href: "/en/cases/aster",
-        imageSrc: "/images/aster/aster-cover.png",
-        imageAlt: "Illustration of a locked folder, representing the password-protected case.",
-        locked: true,
-        maxWidth: 600,
-        imagePosition: "center" as const,
-      },
-    ],
+    viewAllCasesLabel: "See all work",
     additionalExperience: {
       eyebrow: "ADDITIONAL EXPERIENCE",
       title: "Enterprise Legal Tech / Softplan",
@@ -252,6 +142,130 @@ const COPY: Record<Locale, HomeCopy> = {
   },
 };
 
+/**
+ * Todos os 5 cases — fonte única compartilhada pela Home (mostra só os 2
+ * primeiros, ver `featuredCases` abaixo) e pela página /work (mostra os 5).
+ */
+export function buildCasesCopy(locale: Locale): CaseCopy[] {
+  const prefix = locale === "pt" ? "/cases" : "/en/cases";
+
+  if (locale === "en") {
+    return [
+      {
+        number: "01",
+        title: "Cure Intelligence / SCRIOO",
+        summary: "AI-powered supply chain risk intelligence platform.",
+        description:
+          "Redesign of a data-heavy platform to help users understand risk signals, suppliers, filters, dashboards, and operational decisions.",
+        tags: ["Complex systems", "AI", "Data-heavy UX", "Enterprise"],
+        href: `${prefix}/cure`,
+        imageSrc: "/images/cure.png",
+      },
+      {
+        number: "02",
+        title: "HP Subscription Onboarding",
+        summary: "Guided setup for a printer-inclusive subscription model.",
+        description:
+          "Helping turn a printer-inclusive subscription model into a clearer setup and account experience, through UX/UI, design system application, and handoff for implementation.",
+        tags: ["Subscription UX", "Connected products", "Hardware service"],
+        href: `${prefix}/hp`,
+        imageSrc: "/images/hp.png",
+      },
+      {
+        number: "03",
+        title: "Theodoor",
+        summary: "Accessible app for smart door automation.",
+        description:
+          "Designing an accessible mobile experience with multimodal feedback, real constraints, edge cases, and AI-assisted behavioral prototyping.",
+        tags: ["Accessibility", "Mobile", "Physical-digital UX"],
+        href: `${prefix}/theodoor`,
+        imageSrc: "/images/theodoor.png",
+      },
+      {
+        number: "04",
+        title: "Intuit for Education",
+        summary: "Financial education experience for students.",
+        description:
+          "Helping students track the present, plan the future, and learn about money in context, through a mobile product with rich visual language and a design system I helped build from the ground up.",
+        tags: ["Product Discovery", "Financial education", "Design Systems"],
+        href: `${prefix}/intuit`,
+        imageSrc: "/images/intuit.png",
+      },
+      {
+        number: "05",
+        title: "ASTER",
+        summary: "Exploring AI as a clinical collaborator in high-risk consultations.",
+        description:
+          "A password-protected case study about trust, interaction boundaries, and shared accountability between physicians and a clinical AI collaborator.",
+        tags: ["AI interaction", "Healthcare", "Trust and safety"],
+        href: `${prefix}/aster`,
+        imageSrc: "/images/aster/aster-cover.png",
+        imageAlt: "Illustration of a locked folder, representing the password-protected case.",
+        locked: true,
+        maxWidth: 600,
+        imagePosition: "center" as const,
+      },
+    ];
+  }
+
+  return [
+    {
+      number: "01",
+      title: "Cure Intelligence / SCRIOO",
+      summary: "Plataforma de inteligência de riscos em supply chain com IA.",
+      description:
+        "Redesign de uma plataforma densa em dados para ajudar usuários a entender sinais de risco, fornecedores, filtros, dashboards e decisões operacionais.",
+      tags: ["Sistemas complexos", "UX denso em dados", "IA", "Dashboards"],
+      href: `${prefix}/cure`,
+      imageSrc: "/images/cure.png",
+    },
+    {
+      number: "02",
+      title: "HP Subscription Onboarding",
+      summary: "Configuração guiada para um modelo de assinatura com impressora incluída.",
+      description:
+        "Ajudando a transformar um modelo de assinatura incluída em uma experiência mais clara de configuração e conta.",
+      tags: ["UX de assinatura", "Produtos conectados", "Serviço com hardware"],
+      href: `${prefix}/hp`,
+      imageSrc: "/images/hp.png",
+    },
+    {
+      number: "03",
+      title: "Theodoor",
+      summary: "App acessível para automação de portas inteligentes.",
+      description:
+        "Design de uma experiência mobile acessível com feedback multimodal, restrições reais e edge cases.",
+      tags: ["Acessibilidade", "Mobile", "UX físico-digital"],
+      href: `${prefix}/theodoor`,
+      imageSrc: "/images/theodoor.png",
+    },
+    {
+      number: "04",
+      title: "Intuit for Education",
+      summary: "Experiência de educação financeira para estudantes.",
+      description:
+        "Ajudando estudantes a acompanhar o presente, planejar o futuro e aprender sobre dinheiro em contexto.",
+      tags: ["Discovery de produto", "Educação financeira", "Design Systems"],
+      href: `${prefix}/intuit`,
+      imageSrc: "/images/intuit.png",
+    },
+    {
+      number: "05",
+      title: "ASTER",
+      summary: "Explorando IA como colaboradora clínica em consultas de alto risco.",
+      description:
+        "Um estudo de caso protegido por senha sobre confiança, limites de atuação e responsabilidade compartilhada entre médicos e uma IA colaboradora clínica.",
+      tags: ["Interação com IA", "Saúde", "Confiança e segurança"],
+      href: `${prefix}/aster`,
+      imageSrc: "/images/aster/aster-cover.png",
+      imageAlt: "Ilustração de uma pasta trancada, representando o case protegido por senha.",
+      locked: true,
+      maxWidth: 600,
+      imagePosition: "center" as const,
+    },
+  ];
+}
+
 export function HomeContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const otherLocaleHref = locale === "pt" ? "/en" : "/";
@@ -260,6 +274,8 @@ export function HomeContent({ locale }: { locale: Locale }) {
   const capabilities = buildCapabilitiesCopy(locale);
   const capabilitiesHref = locale === "pt" ? "/competencias" : "/en/capabilities";
   const previewCapabilities = capabilities.capabilities.slice(0, 4);
+  const featuredCases = buildCasesCopy(locale).slice(0, 2);
+  const workHref = locale === "pt" ? "/work" : "/en/work";
 
   return (
     <>
@@ -299,10 +315,13 @@ export function HomeContent({ locale }: { locale: Locale }) {
         <section id="work" className={styles.workSection}>
           <h2>{t.workHeading}</h2>
           <div className={styles.workGrid}>
-            {t.cases.map((c) => (
+            {featuredCases.map((c) => (
               <CaseCardLarge key={c.number} imageAlt={c.title} locale={locale} {...c} />
             ))}
           </div>
+          <LinkTertiary context="light" href={workHref}>
+            {t.viewAllCasesLabel}
+          </LinkTertiary>
         </section>
 
         <section className={styles.workSection}>

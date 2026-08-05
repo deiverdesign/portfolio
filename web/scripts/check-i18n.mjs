@@ -15,6 +15,7 @@ const baseUrl = process.argv[2] || process.env.BASE_URL || "http://localhost:300
 
 const PT_ROUTES = [
   "/",
+  "/work",
   "/sobre",
   "/competencias",
   "/cases/cure",
@@ -26,6 +27,7 @@ const PT_ROUTES = [
 
 const EN_ROUTES = [
   "/en",
+  "/en/work",
   "/en/about",
   "/en/capabilities",
   "/en/cases/cure",
