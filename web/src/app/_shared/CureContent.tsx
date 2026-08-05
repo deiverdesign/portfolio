@@ -127,6 +127,7 @@ const COPY = {
         informed: "Lighter first layer with progressive access to detail.",
       },
     ],
+    selectedVisualsTitle: "Selected visuals",
     outcomeTitle: "Outcome",
     outcomeList: [
       "Made dense risk information easier to scan and compare",
@@ -262,6 +263,7 @@ const COPY = {
         informed: "Primeira camada mais leve com acesso progressivo ao detalhe.",
       },
     ],
+    selectedVisualsTitle: "Visuais selecionados",
     outcomeTitle: "Resultado",
     outcomeList: [
       "Tornou a informação densa de risco mais fácil de escanear e comparar",
@@ -293,9 +295,13 @@ const IMAGES = {
     src: "/images/cases/cure/mobile-view.png",
     alt: { en: "Three mobile screens showing the risk map, incident analytics, and insight reports.", pt: "Três telas mobile mostrando o mapa de risco, analytics de incidentes e relatórios de insight." },
   },
-  screenDetail: {
-    src: "/images/cases/cure/screen-detail.png",
-    alt: { en: "Risk map with a supplier detail panel open, showing risk type, owner, and KPI tolerance.", pt: "Mapa de risco com painel de detalhe de fornecedor aberto, mostrando tipo de risco, responsável e tolerância de KPI." },
+  screenGrid: {
+    src: "/images/cases/cure/screen-grid.png",
+    alt: { en: "Collage of SCRIOO screens — risk detail, incident charts, insights, suppliers, and documents.", pt: "Colagem de telas da SCRIOO — detalhe de risco, gráficos de incidentes, insights, fornecedores e documentos." },
+  },
+  selectedVisuals: {
+    src: "/images/cases/cure/selected-visuals.png",
+    alt: { en: "Two SCRIOO screens layered together: the risk map with a supplier popup, and the expanded risk detail panel.", pt: "Duas telas da SCRIOO sobrepostas: o mapa de risco com um popup de fornecedor, e o painel de detalhe de risco expandido." },
   },
   incidentThroughTime: {
     src: "/images/cases/cure/incident-through-time.png",
@@ -395,7 +401,7 @@ export function CureContent({ locale }: { locale: Locale }) {
           </div>
           <p className={styles.caption}>{t.approachCaption}</p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.sectionImage} src={IMAGES.screenDetail.src} alt={IMAGES.screenDetail.alt[locale]} />
+          <img className={styles.sectionImage} src={IMAGES.screenGrid.src} alt={IMAGES.screenGrid.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -443,6 +449,12 @@ export function CureContent({ locale }: { locale: Locale }) {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className={styles.sectionImage} src={IMAGES.incidentThroughTime.src} alt={IMAGES.incidentThroughTime.alt[locale]} />
+        </section>
+
+        <section className={styles.section}>
+          <SectionHeader eyebrow={`07 · ${t.selectedVisualsTitle}`} title={t.selectedVisualsTitle} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.selectedVisuals.src} alt={IMAGES.selectedVisuals.alt[locale]} />
         </section>
 
         <section className={styles.section}>
