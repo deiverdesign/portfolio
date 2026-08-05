@@ -413,7 +413,9 @@ export function IntuitContent({ locale }: { locale: Locale }) {
 
         <Card href={nextCase.href} padding="spacious" className={styles.nextCase}>
           <span className={styles.eyebrow}>{t.nextCaseLabel}</span>
-          <span className={styles.nextCaseTitle}>{nextCase.title} →</span>
+          <span className={styles.nextCaseTitle}>
+            {nextCase.title} <span className={styles.nextCaseArrow}>→</span>
+          </span>
           <span className={styles.caption}>{nextCase.summary}</span>
         </Card>
       </main>

@@ -305,10 +305,28 @@
    largura/centralização (mesma lógica de .section: calc() pra sobrar
    respiro nas laterais no mobile, já que o Card tem contorno nos 4
    lados, diferente de .section que só tem borda no topo). */
+/* Cores exatas do site Figma (deiverbrito.figma.site/work/theodoor):
+   fundo verde-escuro, borda superior e label em dourado, título e
+   legenda em creme — os tokens semânticos do resto da página (que
+   assumem fundo claro) não servem aqui, por isso os valores fixos. */
 .nextCase {
   width: calc(100% - 2 * var(--space-700));
   max-width: 720px;
   margin: 0 auto;
+  background: #1c5550;
+  border: none;
+  border-top: 2px solid #ac9d5d;
+  border-radius: 0;
+}
+
+.nextCase .eyebrow {
+  color: #ac9d5d;
+}
+
+.nextCase .caption {
+  color: #f6f4ee;
+  opacity: 0.8;
+  font-style: normal;
 }
 
 .nextCaseTitle {
@@ -316,5 +334,9 @@
   font-weight: 400;
   font-size: var(--font-h2-section-title);
   text-transform: uppercase;
-  color: var(--content-heading);
+  color: #f6f4ee;
+}
+
+.nextCaseArrow {
+  color: #ac9d5d;
 }
