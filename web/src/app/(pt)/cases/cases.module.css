@@ -46,6 +46,13 @@
   box-sizing: border-box;
 }
 
+.tagRow {
+  grid-column: 1 / 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-300);
+}
+
 .heroTitle {
   grid-column: 1 / 3;
   font-family: var(--font-boldonse);
@@ -99,6 +106,7 @@
     grid-template-columns: 1fr;
   }
 
+  .tagRow,
   .heroTitle,
   .heroSubtitle {
     grid-column: 1;

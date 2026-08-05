@@ -92,6 +92,12 @@
   max-width: 52ch;
 }
 
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-300);
+}
+
 /* Borda ao redor do grid — sem ela, "Veja como funciona" logo abaixo
    lia como se fizesse parte do bloco de metadados (proximidade do
    Gestalt). A borda cria uma "common region" clara pro grupo. */

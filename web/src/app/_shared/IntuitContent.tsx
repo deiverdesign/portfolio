@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer/Footer";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
+import { Tag } from "@/components/Tag/Tag";
+import { getNextCase } from "./HomeContent";
 import styles from "../(pt)/cases/cases.module.css";
 
 const COPY = {
@@ -11,6 +13,7 @@ const COPY = {
     backLink: "← Back to work",
     heroTitle: "Intuit for Education",
     heroSubtitle: "Financial education experience for students.",
+    tags: ["Product Discovery", "Financial education", "Design Systems", "UI concepts", "Gen Z", "Visual direction"],
     meta: [
       { label: "Role", value: "Product Designer · Core contributor" },
       {
@@ -100,14 +103,12 @@ const COPY = {
       "Working closely with a Design Lead in a daily three-way review with the PM was one of the most effective collaboration structures I've experienced. Each person owned a distinct part of the problem, and that clarity made fast, quality decisions possible even under ambiguity.",
     ],
     nextCaseLabel: "Next case",
-    nextCaseTitle: "CURE Intelligence / SCRIOO →",
-    nextCaseCaption: "AI-powered supply chain risk intelligence platform.",
-    nextCaseHref: "/en/cases/cure",
   },
   pt: {
     backLink: "← Voltar ao trabalho",
     heroTitle: "Intuit for Education",
     heroSubtitle: "Experiência de educação financeira para estudantes.",
+    tags: ["Discovery de produto", "Educação financeira", "Design Systems", "Conceitos de UI", "Gen Z", "Direção visual"],
     meta: [
       { label: "Papel", value: "Product Designer · Contribuidor principal" },
       {
@@ -197,9 +198,6 @@ const COPY = {
       "Trabalhar de perto com um Design Lead numa revisão diária a três com o PM foi uma das estruturas de colaboração mais eficazes que já vivenciei. Cada pessoa era dona de uma parte distinta do problema, e essa clareza tornou possível decisões rápidas e de qualidade mesmo sob ambiguidade.",
     ],
     nextCaseLabel: "Próximo case",
-    nextCaseTitle: "CURE Intelligence / SCRIOO →",
-    nextCaseCaption: "Plataforma de inteligência de riscos em supply chain com IA.",
-    nextCaseHref: "/cases/cure",
   },
 } as const;
 
@@ -250,6 +248,8 @@ export function IntuitContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const homeHref = locale === "pt" ? "/" : "/en";
   const otherLocaleHref = locale === "pt" ? "/en/cases/intuit" : "/cases/intuit";
+  const currentHref = locale === "pt" ? "/cases/intuit" : "/en/cases/intuit";
+  const nextCase = getNextCase(locale, currentHref);
 
   return (
     <>
@@ -261,6 +261,14 @@ export function IntuitContent({ locale }: { locale: Locale }) {
         </Link>
 
         <section className={styles.hero}>
+          <div className={styles.tagRow}>
+            {t.tags.map((tag) => (
+              <Tag key={tag} context="light">
+                {tag}
+              </Tag>
+            ))}
+          </div>
+
           <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
           <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
 
@@ -403,10 +411,10 @@ export function IntuitContent({ locale }: { locale: Locale }) {
           </Quote>
         </section>
 
-        <Card href={t.nextCaseHref} padding="spacious" className={styles.nextCase}>
+        <Card href={nextCase.href} padding="spacious" className={styles.nextCase}>
           <span className={styles.eyebrow}>{t.nextCaseLabel}</span>
-          <span className={styles.nextCaseTitle}>{t.nextCaseTitle}</span>
-          <span className={styles.caption}>{t.nextCaseCaption}</span>
+          <span className={styles.nextCaseTitle}>{nextCase.title} →</span>
+          <span className={styles.caption}>{nextCase.summary}</span>
         </Card>
       </main>
 

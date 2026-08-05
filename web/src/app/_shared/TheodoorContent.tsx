@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer/Footer";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
+import { Tag } from "@/components/Tag/Tag";
+import { getNextCase } from "./HomeContent";
 import styles from "../(pt)/cases/cases.module.css";
 
 const COPY = {
@@ -11,6 +13,7 @@ const COPY = {
     backLink: "← Back to work",
     heroTitle: "Theodoor",
     heroSubtitle: "Accessible app for smart door automation.",
+    tags: ["Accessibility", "Mobile", "Physical-digital UX", "Motion", "AI-assisted prototyping", "Design Systems", "Edge cases"],
     meta: [
       { label: "Role", value: "Lead Product Designer · Individual contributor" },
       {
@@ -112,14 +115,12 @@ const COPY = {
       "When a digital interface controls something physical, accessibility, feedback, and trust need to be part of the core interaction model.",
     ],
     nextCaseLabel: "Next case",
-    nextCaseTitle: "Intuit for Education →",
-    nextCaseCaption: "Financial education experience for students.",
-    nextCaseHref: "/en/cases/intuit",
   },
   pt: {
     backLink: "← Voltar ao trabalho",
     heroTitle: "Theodoor",
     heroSubtitle: "App acessível para automação de portas inteligentes.",
+    tags: ["Acessibilidade", "Mobile", "UX físico-digital", "Motion", "Prototipação assistida por IA", "Design Systems", "Edge cases"],
     meta: [
       { label: "Papel", value: "Lead Product Designer · Contribuidor individual" },
       {
@@ -221,9 +222,6 @@ const COPY = {
       "Quando uma interface digital controla algo físico, acessibilidade, feedback e confiança precisam fazer parte do modelo de interação central.",
     ],
     nextCaseLabel: "Próximo case",
-    nextCaseTitle: "Intuit for Education →",
-    nextCaseCaption: "Experiência de educação financeira para estudantes.",
-    nextCaseHref: "/cases/intuit",
   },
 } as const;
 
@@ -257,6 +255,8 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const homeHref = locale === "pt" ? "/" : "/en";
   const otherLocaleHref = locale === "pt" ? "/en/cases/theodoor" : "/cases/theodoor";
+  const currentHref = locale === "pt" ? "/cases/theodoor" : "/en/cases/theodoor";
+  const nextCase = getNextCase(locale, currentHref);
 
   return (
     <>
@@ -268,6 +268,14 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
         </Link>
 
         <section className={styles.hero}>
+          <div className={styles.tagRow}>
+            {t.tags.map((tag) => (
+              <Tag key={tag} context="light">
+                {tag}
+              </Tag>
+            ))}
+          </div>
+
           <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
           <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
 
@@ -423,10 +431,10 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
           </Quote>
         </section>
 
-        <Card href={t.nextCaseHref} padding="spacious" className={styles.nextCase}>
+        <Card href={nextCase.href} padding="spacious" className={styles.nextCase}>
           <span className={styles.eyebrow}>{t.nextCaseLabel}</span>
-          <span className={styles.nextCaseTitle}>{t.nextCaseTitle}</span>
-          <span className={styles.caption}>{t.nextCaseCaption}</span>
+          <span className={styles.nextCaseTitle}>{nextCase.title} →</span>
+          <span className={styles.caption}>{nextCase.summary}</span>
         </Card>
       </main>
 

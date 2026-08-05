@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ExternalLink } from "./ExternalLink";
 import { LockButton } from "../LockButton";
 import { ASTER_PROTOTYPE_URL } from "./links";
+import { Tag } from "@/components/Tag/Tag";
 import type { Locale } from "@/components/NavBar/NavBar";
 import styles from "./Hero.module.css";
 
@@ -11,6 +12,7 @@ const COPY: Record<Locale, {
   eyebrow: string;
   title: string;
   subtitle: string;
+  tags: string[];
   meta: Array<{ term: string; detail: string }>;
   ctaPrimary: string;
   ctaSecondary: string;
@@ -22,6 +24,7 @@ const COPY: Record<Locale, {
     title: "ASTER HELPS PHYSICIANS LISTEN, REMEMBER AND DOCUMENT — WITHOUT DECIDING FOR THEM.",
     subtitle:
       "A small device worn by the physician captures the consultation. The workspace identifies the patient, builds a live transcript, brings relevant context into view and prepares draft notes for review.",
+    tags: ["AI interaction", "Healthcare", "Clinical workflows", "Trust and safety", "Human-in-the-loop", "Prototype"],
     meta: [
       { term: "Role", detail: "Product Design" },
       { term: "Focus", detail: "AI interaction, clinical workflows, safety and trust" },
@@ -38,6 +41,7 @@ const COPY: Record<Locale, {
     title: "O ASTER AJUDA MÉDICOS A OUVIR, LEMBRAR E DOCUMENTAR — SEM DECIDIR POR ELES.",
     subtitle:
       "Um pequeno dispositivo usado pelo médico captura a consulta. O workspace identifica o paciente, constrói uma transcrição ao vivo, traz contexto relevante à vista e prepara notas de rascunho para revisão.",
+    tags: ["Interação com IA", "Saúde", "Fluxos clínicos", "Confiança e segurança", "Decisão humana", "Protótipo"],
     meta: [
       { term: "Papel", detail: "Product Design" },
       { term: "Foco", detail: "Interação com IA, fluxos clínicos, segurança e confiança" },
@@ -69,6 +73,13 @@ export function Hero({ locale }: { locale: Locale }) {
             {t.title}
           </h1>
           <p className={styles.subtitle}>{t.subtitle}</p>
+          <div className={styles.tagRow}>
+            {t.tags.map((tag) => (
+              <Tag key={tag} context="dark">
+                {tag}
+              </Tag>
+            ))}
+          </div>
         </div>
 
         <div className={styles.side}>

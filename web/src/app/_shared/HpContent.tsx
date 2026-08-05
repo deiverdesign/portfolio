@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer/Footer";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
+import { Tag } from "@/components/Tag/Tag";
+import { getNextCase } from "./HomeContent";
 import styles from "../(pt)/cases/cases.module.css";
 
 const COPY = {
@@ -11,6 +13,7 @@ const COPY = {
     backLink: "← Back to work",
     heroTitle: "HP Subscription Onboarding",
     heroSubtitle: "Guided setup for a printer inclusive subscription model.",
+    tags: ["Subscription UX", "Connected products", "Hardware service", "Design Systems", "Enterprise", "Complex flows"],
     meta: [
       { label: "Role", value: "Product Designer · Individual contributor" },
       { label: "Scope", value: "UX/UI execution, subscription setup flows, edge cases, and handoff documentation" },
@@ -86,14 +89,12 @@ const COPY = {
       "When a subscription includes physical service operations, the interface isn't just organizing choices. It's helping the team make the service logic explicit.",
     ],
     nextCaseLabel: "Next case",
-    nextCaseTitle: "Theodoor →",
-    nextCaseCaption: "Accessible app for smart door automation.",
-    nextCaseHref: "/en/cases/theodoor",
   },
   pt: {
     backLink: "← Voltar ao trabalho",
     heroTitle: "HP Subscription Onboarding",
     heroSubtitle: "Configuração guiada para um modelo de assinatura com impressora incluída.",
+    tags: ["UX de assinatura", "Produtos conectados", "Serviço com hardware", "Design Systems", "Enterprise", "Fluxos complexos"],
     meta: [
       { label: "Papel", value: "Product Designer · Contribuidor individual" },
       { label: "Escopo", value: "Execução de UX/UI, fluxos de configuração de assinatura, edge cases e documentação de handoff" },
@@ -169,9 +170,6 @@ const COPY = {
       "Quando uma assinatura inclui operações de serviço físico, a interface não está só organizando escolhas. Está ajudando o time a tornar a lógica do serviço explícita.",
     ],
     nextCaseLabel: "Próximo case",
-    nextCaseTitle: "Theodoor →",
-    nextCaseCaption: "App acessível para automação de portas inteligentes.",
-    nextCaseHref: "/cases/theodoor",
   },
 } as const;
 
@@ -202,6 +200,8 @@ export function HpContent({ locale }: { locale: Locale }) {
   const t = COPY[locale];
   const homeHref = locale === "pt" ? "/" : "/en";
   const otherLocaleHref = locale === "pt" ? "/en/cases/hp" : "/cases/hp";
+  const currentHref = locale === "pt" ? "/cases/hp" : "/en/cases/hp";
+  const nextCase = getNextCase(locale, currentHref);
 
   return (
     <>
@@ -213,6 +213,14 @@ export function HpContent({ locale }: { locale: Locale }) {
         </Link>
 
         <section className={styles.hero}>
+          <div className={styles.tagRow}>
+            {t.tags.map((tag) => (
+              <Tag key={tag} context="light">
+                {tag}
+              </Tag>
+            ))}
+          </div>
+
           <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
           <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
 
@@ -315,10 +323,10 @@ export function HpContent({ locale }: { locale: Locale }) {
           </Quote>
         </section>
 
-        <Card href={t.nextCaseHref} padding="spacious" className={styles.nextCase}>
+        <Card href={nextCase.href} padding="spacious" className={styles.nextCase}>
           <span className={styles.eyebrow}>{t.nextCaseLabel}</span>
-          <span className={styles.nextCaseTitle}>{t.nextCaseTitle}</span>
-          <span className={styles.caption}>{t.nextCaseCaption}</span>
+          <span className={styles.nextCaseTitle}>{nextCase.title} →</span>
+          <span className={styles.caption}>{nextCase.summary}</span>
         </Card>
       </main>
 
