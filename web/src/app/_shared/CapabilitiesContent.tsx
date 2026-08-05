@@ -68,6 +68,32 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
           href: `${prefix}/theodoor`,
         };
 
+  const intuit: RelatedWork =
+    locale === "pt"
+      ? {
+          title: "Intuit for Education",
+          summary: "Experiência de educação financeira para estudantes.",
+          href: `${prefix}/intuit`,
+        }
+      : {
+          title: "Intuit for Education",
+          summary: "Financial education experience for students.",
+          href: `${prefix}/intuit`,
+        };
+
+  const aster: RelatedWork =
+    locale === "pt"
+      ? {
+          title: "ASTER",
+          summary: "Explorando IA como colaboradora clínica em consultas de alto risco.",
+          href: `${prefix}/aster`,
+        }
+      : {
+          title: "ASTER",
+          summary: "Exploring AI as a clinical collaborator in high-risk consultations.",
+          href: `${prefix}/aster`,
+        };
+
   if (locale === "en") {
     return {
       eyebrow: "CAPABILITIES",
@@ -82,26 +108,42 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
           tags: ["Complex systems", "Enterprise UX", "Operational users"],
           description:
             "My core practice is making sense of complexity — not flattening it artificially, but creating interfaces and systems where dense logic becomes usable. I work with end-to-end flows, multi-state components, operational workflows, and contexts where the product logic itself is part of the design challenge.",
-          relatedWork: [cure, hp],
+          relatedWork: [cure, hp, aster],
         },
         {
           number: "02",
+          title: "Research and discovery",
+          tags: ["Discovery", "User research", "Usability testing"],
+          description:
+            "Before I design the solution, I need to understand the problem. I run user interviews, discovery workshops with the client, and usability tests to validate hypotheses before committing weeks of UI work. I use low-fidelity wireframes not as a deliverable, but as a conversation tool — to align business rules with the client before they turn into code.",
+          relatedWork: [intuit, cure],
+        },
+        {
+          number: "03",
           title: "Design Systems",
           tags: ["Design Systems", "Web platform"],
           description:
             "Design systems are a means to an end: product coherence at scale. I've worked inside established enterprise systems and helped build systems from scratch — writing component documentation, defining token structures, collaborating with engineering on implementation, and building the governance layer that keeps the system alive.",
-          relatedWork: [cure, hp],
-        },
-        {
-          number: "03",
-          title: "AI-assisted prototyping",
-          tags: ["AI", "Prototyping"],
-          description:
-            "I use AI tools not as a shortcut, but as thinking partners — to simulate edge cases, generate realistic test content, rapidly prototype interaction logic, and explore behavior variations that would take weeks to build manually. This accelerates the work without replacing design judgment.",
-          relatedWork: [cure, theodoor],
+          relatedWork: [cure, hp, intuit],
         },
         {
           number: "04",
+          title: "AI-assisted prototyping",
+          tags: ["AI", "Prototyping"],
+          description:
+            "I use AI tools not as a shortcut, but as thinking partners in my workflow — to simulate edge cases, generate realistic test content, rapidly prototype interaction logic, and explore behavior variations that would take weeks to build manually. This accelerates the work without replacing design judgment; here AI serves my process, not the product itself.",
+          relatedWork: [cure, theodoor],
+        },
+        {
+          number: "05",
+          title: "Designing for AI systems",
+          tags: ["AI", "Trust and error", "Human decision"],
+          description:
+            "AI systems fail, and design has to deal with that, not hide it. I design interfaces that communicate a prediction's confidence level, make model error visible and recoverable, and make clear where the final decision still belongs to a person. Here AI isn't a tool in my process — it's the system I'm designing.",
+          relatedWork: [aster, cure],
+        },
+        {
+          number: "06",
           title: "Accessibility and inclusive UX",
           tags: ["Accessibility", "Inclusive UX", "Mobile"],
           description:
@@ -109,7 +151,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
           relatedWork: [theodoor],
         },
         {
-          number: "05",
+          number: "07",
           title: "Motion and interaction",
           tags: ["Motion / Interaction", "Interaction design"],
           description:
@@ -117,7 +159,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
           relatedWork: [theodoor],
         },
         {
-          number: "06",
+          number: "08",
           title: "Data-heavy UX",
           tags: ["Data-heavy UX", "Enterprise", "Complex systems"],
           description:
@@ -125,7 +167,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
           relatedWork: [cure, hp],
         },
         {
-          number: "07",
+          number: "09",
           title: "Documentation and handoff",
           tags: ["Design Systems", "Complex flows"],
           description:
@@ -149,26 +191,42 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
         tags: ["Sistemas complexos", "UX enterprise", "Usuários operacionais"],
         description:
           "Minha prática principal é dar sentido à complexidade — não simplificá-la artificialmente, mas criar interfaces e sistemas em que lógicas densas se tornam utilizáveis. Trabalho com fluxos ponta a ponta, componentes com múltiplos estados, workflows operacionais e contextos em que a própria lógica do produto faz parte do desafio de design.",
-        relatedWork: [cure, hp],
+        relatedWork: [cure, hp, aster],
       },
       {
         number: "02",
+        title: "Pesquisa e discovery",
+        tags: ["Pesquisa", "Discovery", "Testes de usabilidade"],
+        description:
+          "Antes de desenhar a solução, preciso entender o problema. Conduzo entrevistas com usuários, workshops de discovery com o cliente e testes de usabilidade para validar hipóteses antes de comprometer semanas de trabalho de UI. Uso wireframes de baixa fidelidade não como entregável, mas como ferramenta de conversa — para alinhar regras de negócio com o cliente antes que virem código.",
+        relatedWork: [intuit, cure],
+      },
+      {
+        number: "03",
         title: "Design Systems",
         tags: ["Design Systems", "Plataforma web"],
         description:
           "Design systems são um meio para um fim: coerência de produto em escala. Já trabalhei dentro de sistemas enterprise estabelecidos e ajudei a criar sistemas do zero, escrevendo documentação de componentes, definindo estruturas de tokens, colaborando com engenharia na implementação e construindo a camada de governança que mantém o sistema vivo.",
-        relatedWork: [cure, hp],
-      },
-      {
-        number: "03",
-        title: "Prototipação assistida por IA",
-        tags: ["IA", "Prototipação"],
-        description:
-          "Uso ferramentas de IA não como atalho, mas como parceiras de raciocínio para simular edge cases, gerar conteúdo realista de teste, prototipar rapidamente lógica de interação e explorar variações de comportamento que levariam semanas para construir manualmente. Isso acelera o trabalho sem substituir o julgamento de design.",
-        relatedWork: [cure, theodoor],
+        relatedWork: [cure, hp, intuit],
       },
       {
         number: "04",
+        title: "Prototipação assistida por IA",
+        tags: ["IA", "Prototipação"],
+        description:
+          "Uso ferramentas de IA não como atalho, mas como parceiras de raciocínio no meu processo de trabalho — para simular edge cases, gerar conteúdo realista de teste, prototipar rapidamente lógica de interação e explorar variações de comportamento que levariam semanas para construir manualmente. Isso acelera o trabalho sem substituir o julgamento de design; aqui a IA está a serviço do meu processo, não do produto final.",
+        relatedWork: [cure, theodoor],
+      },
+      {
+        number: "05",
+        title: "Design para sistemas de IA",
+        tags: ["IA", "Confiança e erro", "Decisão humana"],
+        description:
+          "Sistemas de IA erram, e o design precisa lidar com isso, não escondê-lo. Desenho interfaces que comunicam o nível de confiança de uma previsão, tornam o erro do modelo visível e recuperável, e deixam claro onde a decisão final continua sendo de uma pessoa. Aqui a IA não é uma ferramenta do meu processo — é o próprio sistema que estou desenhando.",
+        relatedWork: [aster, cure],
+      },
+      {
+        number: "06",
         title: "Acessibilidade e UX inclusiva",
         tags: ["Acessibilidade", "UX inclusiva", "Mobile"],
         description:
@@ -176,7 +234,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
         relatedWork: [theodoor],
       },
       {
-        number: "05",
+        number: "07",
         title: "Motion e interação",
         tags: ["Motion / Interação", "Design de interação"],
         description:
@@ -184,7 +242,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
         relatedWork: [theodoor],
       },
       {
-        number: "06",
+        number: "08",
         title: "UX denso em dados",
         tags: ["UX denso em dados", "Enterprise", "Sistemas complexos"],
         description:
@@ -192,7 +250,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
         relatedWork: [cure, hp],
       },
       {
-        number: "07",
+        number: "09",
         title: "Documentação e handoff",
         tags: ["Design Systems", "Fluxos complexos"],
         description:
