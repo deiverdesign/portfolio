@@ -4,7 +4,6 @@ import { Button } from "@/components/Button/Button";
 import { CaseCardLarge } from "@/components/CaseCardLarge/CaseCardLarge";
 import { CapabilityCard } from "@/components/CapabilityCard/CapabilityCard";
 import { LinkTertiary } from "@/components/LinkTertiary/LinkTertiary";
-import { Tag } from "@/components/Tag/Tag";
 import { Footer } from "@/components/Footer/Footer";
 import { buildCapabilitiesCopy } from "./CapabilitiesContent";
 import { ABOUT_COPY } from "./AboutContent";
@@ -33,13 +32,6 @@ interface HomeCopy {
   ctaSecondary: string;
   workHeading: string;
   viewAllCasesLabel: string;
-  additionalExperience: {
-    eyebrow: string;
-    title: string;
-    description: string;
-    tags: string[];
-    badge: string;
-  };
   capabilitiesPreview: {
     eyebrow: string;
     title: string;
@@ -68,21 +60,6 @@ const COPY: Record<Locale, HomeCopy> = {
     ctaSecondary: "Baixar currículo",
     workHeading: "Trabalho",
     viewAllCasesLabel: "Ver todos os trabalhos",
-    additionalExperience: {
-      eyebrow: "EXPERIÊNCIA ADICIONAL",
-      title: "Enterprise Legal Tech / Softplan",
-      description:
-        "Experiência em product design em fluxos jurídicos complexos, sistemas judiciais e institucionais, produtos legados, usuários operacionais, repositórios de pesquisa e governança de design system. Case público não mostrado por confidencialidade.",
-      tags: [
-        "UX enterprise",
-        "Legal Tech",
-        "Sistemas legados",
-        "Usuários operacionais",
-        "Design Systems",
-        "Fluxos complexos",
-      ],
-      badge: "Mencionado no currículo",
-    },
     capabilitiesPreview: {
       eyebrow: "COMPETÊNCIAS",
       title: "Explore o trabalho por competência",
@@ -109,21 +86,6 @@ const COPY: Record<Locale, HomeCopy> = {
     ctaSecondary: "Download resume",
     workHeading: "Work",
     viewAllCasesLabel: "See all work",
-    additionalExperience: {
-      eyebrow: "ADDITIONAL EXPERIENCE",
-      title: "Enterprise Legal Tech / Softplan",
-      description:
-        "Product design experience across complex legal flows, judicial and institutional systems, legacy products, operational users, research repositories, and design system governance. Public case study not shown due to confidentiality.",
-      tags: [
-        "Enterprise UX",
-        "Legal Tech",
-        "Legacy Systems",
-        "Operational Users",
-        "Design Systems",
-        "Complex flows",
-      ],
-      badge: "Mentioned in resume",
-    },
     capabilitiesPreview: {
       eyebrow: "CAPABILITIES",
       title: "Explore the work by capability",
@@ -160,6 +122,7 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
         tags: ["Complex systems", "AI", "Data-heavy UX", "Enterprise"],
         href: `${prefix}/cure`,
         imageSrc: "/images/cure.png",
+        imagePosition: "center" as const,
       },
       {
         number: "02",
@@ -218,6 +181,7 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
       tags: ["Sistemas complexos", "UX denso em dados", "IA", "Dashboards"],
       href: `${prefix}/cure`,
       imageSrc: "/images/cure.png",
+      imagePosition: "center" as const,
     },
     {
       number: "02",
@@ -334,22 +298,6 @@ export function HomeContent({ locale }: { locale: Locale }) {
           <LinkTertiary context="light" href={workHref}>
             {t.viewAllCasesLabel}
           </LinkTertiary>
-        </section>
-
-        <section className={styles.workSection}>
-          <span className={styles.sectionEyebrow}>{t.additionalExperience.eyebrow}</span>
-          <div className={styles.additionalCard}>
-            <h3 className={styles.additionalTitle}>{t.additionalExperience.title}</h3>
-            <p className={styles.additionalDescription}>{t.additionalExperience.description}</p>
-            <div className={styles.additionalTagRow}>
-              {t.additionalExperience.tags.map((tag) => (
-                <Tag key={tag} context="light">
-                  {tag}
-                </Tag>
-              ))}
-            </div>
-            <span className={styles.additionalBadge}>{t.additionalExperience.badge}</span>
-          </div>
         </section>
 
         <section className={styles.workSection}>
