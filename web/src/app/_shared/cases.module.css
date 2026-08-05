@@ -35,11 +35,17 @@
 
 /* Grid de 3 colunas iguais: título+intro ocupam as 2 primeiras (2/3),
    o card de metadados ocupa a 3ª (1/3) — mesma proporção do Figma Site. */
-/* column-gap separa a coluna de texto do card de metadados; row-gap
-   fica em 0 de propósito — tagRow/heroTitle usam margin-bottom pra
-   reproduzir o espaçamento exato do Figma Site (mb-5/mb-4 = 20px/16px)
-   entre tags→título→subtítulo, em vez de um gap de grid único e maior
-   demais aplicado às três fileiras ao mesmo tempo. */
+/* tagRow/heroTitle/heroSubtitle vivem dentro de .heroText, um único
+   item do grid (uma linha só). Antes eles eram 3 filhos diretos do
+   grid, cada um virando sua própria linha por auto-placement — como
+   .metaGrid é mais alto que esse texto e ocupava grid-row:1/3 (span de
+   2 linhas), o algoritmo de sizing do Grid inflava as duas linhas de
+   texto pra abrir espaço pra ele, criando um vão gigante entre as tags,
+   o título e o subtítulo (visível só com o metaGrid alto o bastante —
+   por isso não aparecia num teste rápido). Com .heroText como uma
+   única linha, margin-bottom em cada elemento passa a ser o único
+   espaçamento entre eles, do jeito que já estava (mb-5/mb-4 = 20px/16px,
+   medido no Figma Site). */
 .hero {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -52,8 +58,13 @@
   box-sizing: border-box;
 }
 
-.tagRow {
+.heroText {
   grid-column: 1 / 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.tagRow {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-300);
@@ -61,7 +72,6 @@
 }
 
 .heroTitle {
-  grid-column: 1 / 3;
   font-family: var(--font-boldonse);
   font-weight: 400;
   font-size: var(--font-h1-page-title);
@@ -72,17 +82,16 @@
 }
 
 .heroSubtitle {
-  grid-column: 1 / 3;
   font-size: var(--font-body-large-intro);
   color: var(--content-secondary);
 }
 
 /* Card de metadados (Role/Scope/Collaboration/Platform) — vira uma
    coluna lateral com borda, ao lado do título, em vez de uma fileira
-   horizontal em cima do texto. */
+   horizontal em cima do texto. Uma linha só do grid agora (igual
+   .heroText) — não precisa mais dar span em 2 linhas. */
 .metaGrid {
   grid-column: 3 / 4;
-  grid-row: 1 / 3;
   display: flex;
   flex-direction: column;
   gap: var(--space-500);
@@ -114,15 +123,12 @@
     grid-template-columns: 1fr;
   }
 
-  .tagRow,
-  .heroTitle,
-  .heroSubtitle {
+  .heroText {
     grid-column: 1;
   }
 
   .metaGrid {
     grid-column: 1;
-    grid-row: auto;
     margin-top: var(--space-900);
   }
 }

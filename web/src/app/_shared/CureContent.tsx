@@ -330,16 +330,18 @@ export function CureContent({ locale }: { locale: Locale }) {
         </Link>
 
         <section className={styles.hero}>
-          <div className={styles.tagRow}>
-            {t.tags.map((tag) => (
-              <Tag key={tag} context="light">
-                {tag}
-              </Tag>
-            ))}
-          </div>
+          <div className={styles.heroText}>
+            <div className={styles.tagRow}>
+              {t.tags.map((tag) => (
+                <Tag key={tag} context="light">
+                  {tag}
+                </Tag>
+              ))}
+            </div>
 
-          <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
-          <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
+            <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
+            <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
+          </div>
 
           <dl className={styles.metaGrid}>
             {t.meta.map((m) => (
