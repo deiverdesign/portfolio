@@ -35,10 +35,16 @@
 
 /* Grid de 3 colunas iguais: título+intro ocupam as 2 primeiras (2/3),
    o card de metadados ocupa a 3ª (1/3) — mesma proporção do Figma Site. */
+/* column-gap separa a coluna de texto do card de metadados; row-gap
+   fica em 0 de propósito — tagRow/heroTitle usam margin-bottom pra
+   reproduzir o espaçamento exato do Figma Site (mb-5/mb-4 = 20px/16px)
+   entre tags→título→subtítulo, em vez de um gap de grid único e maior
+   demais aplicado às três fileiras ao mesmo tempo. */
 .hero {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-900);
+  column-gap: var(--space-900);
+  row-gap: 0;
   align-items: start;
   width: 100%;
   max-width: 1152px;
@@ -51,6 +57,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-300);
+  margin-bottom: var(--space-600);
 }
 
 .heroTitle {
@@ -61,6 +68,7 @@
   text-transform: uppercase;
   letter-spacing: 0.02em;
   color: var(--content-heading);
+  margin-bottom: var(--space-500);
 }
 
 .heroSubtitle {
@@ -115,6 +123,7 @@
   .metaGrid {
     grid-column: 1;
     grid-row: auto;
+    margin-top: var(--space-900);
   }
 }
 
