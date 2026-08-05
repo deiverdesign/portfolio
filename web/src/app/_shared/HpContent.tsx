@@ -178,21 +178,41 @@ const IMAGES = {
     src: "/images/cases/hp/hero.png",
     alt: { en: "HP Instant Ink box being delivered, next to a laptop showing the HP Smart account overview.", pt: "Caixa do HP Instant Ink sendo entregue, ao lado de um laptop mostrando a visão geral da conta no HP Smart." },
   },
-  overviewScreens: {
-    src: "/images/cases/hp/overview-screens.png",
-    alt: { en: "Four mobile screens: account overview, monthly paper summary, billing cycle, and cartridge status.", pt: "Quatro telas mobile: visão geral da conta, resumo mensal de papel, ciclo de faturamento e status do cartucho." },
+  overviewScreen: {
+    src: "/images/cases/hp/overview-screen.png",
+    alt: { en: "Mobile account overview screen showing plan pages used, printer status, and support details.", pt: "Tela mobile de visão geral da conta mostrando páginas do plano usadas, status da impressora e detalhes de suporte." },
   },
-  desktopDashboard: {
-    src: "/images/cases/hp/desktop-dashboard.png",
+  setupScreen: {
+    src: "/images/cases/hp/setup-screen.png",
+    alt: { en: "Mobile screen showing the monthly paper summary and plan and rollover page usage.", pt: "Tela mobile mostrando o resumo mensal de papel e o uso de páginas do plano e de rollover." },
+  },
+  billingScreen: {
+    src: "/images/cases/hp/billing-screen.png",
+    alt: { en: "Mobile screen showing the billing cycle period with a bar chart of pages printed over time.", pt: "Tela mobile mostrando o ciclo de faturamento com um gráfico de barras de páginas impressas ao longo do tempo." },
+  },
+  cartridgeScreen: {
+    src: "/images/cases/hp/cartridge-screen.png",
+    alt: { en: "Mobile screen showing cartridge status for each ink color, with replacement alerts.", pt: "Tela mobile mostrando o status de cada cartucho de tinta, com alertas de substituição." },
+  },
+  desktopMockup: {
+    src: "/images/cases/hp/desktop-mockup.png",
     alt: { en: "Desktop view of the HP Smart account overview, showing plan usage and support details.", pt: "Visão desktop da visão geral da conta no HP Smart, mostrando uso do plano e detalhes de suporte." },
   },
-  flowDiagram: {
-    src: "/images/cases/hp/flow-diagram.png",
-    alt: { en: "Flow diagram mapping user actions and HP's system actions across the account pages.", pt: "Diagrama de fluxo mapeando ações do usuário e ações do sistema da HP nas páginas de conta." },
+  allInclusivePlan: {
+    src: "/images/cases/hp/all-inclusive-plan.png",
+    alt: { en: "Mobile screen introducing the all-inclusive printer subscription plan.", pt: "Tela mobile apresentando o plano de assinatura all-inclusive da impressora." },
   },
-  onboardingFlow: {
-    src: "/images/cases/hp/onboarding-flow.png",
-    alt: { en: "Three onboarding screens: all-inclusive plan intro, choose your printer, and page volume selection.", pt: "Três telas de onboarding: introdução ao plano all-inclusive, escolha da impressora e seleção de volume de páginas." },
+  choosePrinter: {
+    src: "/images/cases/hp/choose-printer.png",
+    alt: { en: "Mobile screen for choosing a printer, comparing Essential, Versatile, and Professional tiers.", pt: "Tela mobile para escolher a impressora, comparando os níveis Essential, Versatile e Professional." },
+  },
+  pageVolume: {
+    src: "/images/cases/hp/page-volume.png",
+    alt: { en: "Mobile screen for selecting monthly page volume, with pricing per tier.", pt: "Tela mobile para selecionar o volume mensal de páginas, com preço por nível." },
+  },
+  outcomeDiagram: {
+    src: "/images/cases/hp/outcome-diagram.png",
+    alt: { en: "Overview board mapping the subscription flow: trial pages, plan pages, billing states, delivery status, payments, and user vs. HP actions.", pt: "Board de visão geral mapeando o fluxo da assinatura: páginas de teste, páginas do plano, estados de faturamento, status de entrega, pagamentos e ações do usuário vs. da HP." },
   },
 } as const;
 
@@ -247,8 +267,16 @@ export function HpContent({ locale }: { locale: Locale }) {
             <p key={p}>{p}</p>
           ))}
           <p className={styles.caption}>{t.minuteCaption}</p>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.sectionImage} src={IMAGES.overviewScreens.src} alt={IMAGES.overviewScreens.alt[locale]} />
+          <div className={styles.phoneGrid}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.overviewScreen.src} alt={IMAGES.overviewScreen.alt[locale]} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.setupScreen.src} alt={IMAGES.setupScreen.alt[locale]} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.billingScreen.src} alt={IMAGES.billingScreen.alt[locale]} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.cartridgeScreen.src} alt={IMAGES.cartridgeScreen.alt[locale]} />
+          </div>
         </section>
 
         <section className={styles.section}>
@@ -271,7 +299,7 @@ export function HpContent({ locale }: { locale: Locale }) {
           </ol>
           <p className={styles.caption}>{t.complexCaption}</p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.sectionImage} src={IMAGES.desktopDashboard.src} alt={IMAGES.desktopDashboard.alt[locale]} />
+          <img className={styles.sectionImage} src={IMAGES.desktopMockup.src} alt={IMAGES.desktopMockup.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -285,8 +313,6 @@ export function HpContent({ locale }: { locale: Locale }) {
               </Card>
             ))}
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.sectionImage} src={IMAGES.flowDiagram.src} alt={IMAGES.flowDiagram.alt[locale]} />
         </section>
 
         <section className={styles.section}>
@@ -301,13 +327,21 @@ export function HpContent({ locale }: { locale: Locale }) {
               ))}
             </Card>
           ))}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.sectionImage} src={IMAGES.onboardingFlow.src} alt={IMAGES.onboardingFlow.alt[locale]} />
+          <div className={styles.phoneGrid}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.allInclusivePlan.src} alt={IMAGES.allInclusivePlan.alt[locale]} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.choosePrinter.src} alt={IMAGES.choosePrinter.alt[locale]} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.sectionImage} src={IMAGES.pageVolume.src} alt={IMAGES.pageVolume.alt[locale]} />
+          </div>
           <p className={styles.caption}>{t.decisionsCaption}</p>
         </section>
 
         <section className={styles.section}>
           <SectionHeader eyebrow={`06 · ${t.outcomeTitle}`} title={t.outcomeTitle} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.sectionImage} src={IMAGES.outcomeDiagram.src} alt={IMAGES.outcomeDiagram.alt[locale]} />
           <ul className={styles.outcomeList}>
             {t.outcomeList.map((li) => (
               <li key={li}>{li}</li>
