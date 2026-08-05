@@ -285,7 +285,7 @@ export function HomeContent({ locale }: { locale: Locale }) {
   const aboutHref = locale === "pt" ? "/pt/sobre" : "/about";
   const capabilities = buildCapabilitiesCopy(locale);
   const capabilitiesHref = locale === "pt" ? "/pt/competencias" : "/capabilities";
-  const previewCapabilities = capabilities.capabilities.slice(0, 4);
+  const previewCapabilities = capabilities.capabilities.slice(0, 3);
   const featuredCases = buildCasesCopy(locale).slice(0, 2);
   const workHref = locale === "pt" ? "/pt/work" : "/work";
 
