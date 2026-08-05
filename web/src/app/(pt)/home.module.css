@@ -143,7 +143,7 @@
   padding: var(--space-700);
   border: 1px solid var(--border-default);
   border-radius: 8px;
-  max-width: 640px;
+  width: 100%;
 }
 
 .additionalTitle {
@@ -155,10 +155,14 @@
   color: var(--content-heading);
 }
 
+/* max-width igual ao Figma Site (max-w-2xl, 672px) — só a descrição,
+   não o card inteiro, pra linha de texto não ficar cansativa mesmo
+   com o card ocupando a largura toda do grid. */
 .additionalDescription {
   font-size: var(--font-body-large-intro);
   line-height: 1.6;
   color: var(--content-primary);
+  max-width: 42rem;
 }
 
 .additionalTagRow {
