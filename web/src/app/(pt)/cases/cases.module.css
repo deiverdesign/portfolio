@@ -193,17 +193,41 @@
   gap: var(--space-600);
 }
 
-.videoGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-400);
+.motionItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
 }
 
-.videoGrid video {
+.phoneGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-600);
+}
+
+/* Moldura de celular — borda preta grossa simulando o bezel de um
+   smartphone, valores exatos medidos no Figma Site (5px de borda, 11px
+   de raio). Sem essa borda, um border-radius sozinho no vídeo deixava
+   um pontinho preto vazando em cada canto — o vídeo em si não tem
+   canto arredondado, só a borda "fecha" visualmente o corte. */
+.phoneFrame {
   width: 100%;
-  height: auto;
+  aspect-ratio: 176/381;
+  object-fit: cover;
   display: block;
-  border-radius: 8px;
+  border: 5px solid #000;
+  border-radius: 11px;
+}
+
+/* Gravação de tela desktop — sem moldura de celular, raio pequeno,
+   formato mais largo (também medido no Figma Site). */
+.screenFrame {
+  width: 100%;
+  max-width: 652px;
+  aspect-ratio: 652/396;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
 }
 
 /* .approachItem, .decision e .testCard viraram o componente Card —

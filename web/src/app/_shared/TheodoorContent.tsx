@@ -89,8 +89,8 @@ const COPY = {
     motionItems: [
       { title: "Scanning and waiting states", caption: "Motion made the waiting state feel active and understandable while the system searched for nearby door devices." },
       { title: "Empty state motion", caption: "The empty state guided users toward the next action without making setup feel broken or incomplete." },
+      { title: "Lottie production workflow", caption: "Motion explorations were refined into implementation-ready Lottie outputs." },
     ],
-    motionCaption: "Motion explorations were refined into implementation-ready Lottie outputs.",
     foundationsTitle: "Design system foundations",
     foundationsParas: [
       "I organized reusable UI foundations for the app: buttons, cards, status labels, door states, feedback patterns, navigation, empty states, setup flows, errors, and recovery states.",
@@ -198,8 +198,8 @@ const COPY = {
     motionItems: [
       { title: "Estados de escaneamento e espera", caption: "O motion fez o estado de espera parecer ativo e compreensível enquanto o sistema buscava dispositivos de porta próximos." },
       { title: "Motion do estado vazio", caption: "O estado vazio guiava usuários para a próxima ação sem fazer a configuração parecer quebrada ou incompleta." },
+      { title: "Fluxo de produção Lottie", caption: "As explorações de motion foram refinadas em outputs Lottie prontos para implementação." },
     ],
-    motionCaption: "As explorações de motion foram refinadas em outputs Lottie prontos para implementação.",
     foundationsTitle: "Fundações de design system",
     foundationsParas: [
       "Organizei fundações de UI reutilizáveis para o app: botões, cards, rótulos de status, estados da porta, padrões de feedback, navegação, estados vazios, fluxos de configuração, erros e estados de recuperação.",
@@ -246,10 +246,11 @@ const IMAGES = {
   },
 } as const;
 
+/** frame: "phone" = mockup de celular (borda preta grossa, como no Figma); "screen" = gravação de tela desktop, sem moldura de telefone. */
 const VIDEOS = [
-  { src: "/videos/cases/theodoor/scanning-for-devices.mp4", label: { en: "Scanning for devices", pt: "Buscando dispositivos" } },
-  { src: "/videos/cases/theodoor/door-page-empty.mp4", label: { en: "Empty state, door page", pt: "Estado vazio, página da porta" } },
-  { src: "/videos/cases/theodoor/screen-recording.mp4", label: { en: "Interaction walkthrough", pt: "Passo a passo da interação" } },
+  { src: "/videos/cases/theodoor/scanning-for-devices.mp4", frame: "phone", label: { en: "Scanning for devices", pt: "Buscando dispositivos" } },
+  { src: "/videos/cases/theodoor/door-page-empty.mp4", frame: "phone", label: { en: "Empty state, door page", pt: "Estado vazio, página da porta" } },
+  { src: "/videos/cases/theodoor/screen-recording.mp4", frame: "screen", label: { en: "Interaction walkthrough", pt: "Passo a passo da interação" } },
 ] as const;
 
 export function TheodoorContent({ locale }: { locale: Locale }) {
@@ -358,20 +359,39 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
             <p key={p}>{p}</p>
           ))}
 
-          <div className={styles.approachGrid}>
-            {t.motionItems.map((item) => (
-              <Card key={item.title}>
-                <h3 className={styles.cardTitle}>{item.title}</h3>
-                <p className={styles.caption}>{item.caption}</p>
-              </Card>
-            ))}
+          <div className={styles.phoneGrid}>
+            {t.motionItems.slice(0, 2).map((item, i) => {
+              const video = VIDEOS[i];
+              return (
+                <div className={styles.motionItem} key={item.title}>
+                  <h3 className={styles.cardTitle}>{item.title}</h3>
+                  <video
+                    className={styles.phoneFrame}
+                    src={video.src}
+                    aria-label={video.label[locale]}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
+                  <p className={styles.caption}>{item.caption}</p>
+                </div>
+              );
+            })}
           </div>
-          <p className={styles.caption}>{t.motionCaption}</p>
 
-          <div className={styles.videoGrid}>
-            {VIDEOS.map((video) => (
-              <video key={video.src} src={video.src} aria-label={video.label[locale]} autoPlay muted loop playsInline />
-            ))}
+          <div className={styles.motionItem}>
+            <h3 className={styles.cardTitle}>{t.motionItems[2].title}</h3>
+            <video
+              className={styles.screenFrame}
+              src={VIDEOS[2].src}
+              aria-label={VIDEOS[2].label[locale]}
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+            <p className={styles.caption}>{t.motionItems[2].caption}</p>
           </div>
         </section>
 
