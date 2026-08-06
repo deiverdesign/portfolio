@@ -1,3 +1,4 @@
+import { RevealMask } from "@/components/RevealMask/RevealMask";
 import styles from "./SectionHeader.module.css";
 
 export type SectionHeaderContext = "light" | "dark";
@@ -16,8 +17,10 @@ export function SectionHeader({ eyebrow, title, level = "h2", context = "light" 
   const Title = level;
   return (
     <div className={styles.header}>
-      <span className={`${styles.eyebrow} ${styles[context]}`}>{eyebrow}</span>
-      <Title className={`${styles.title} ${styles[context]}`}>{title}</Title>
+      <RevealMask className={`${styles.eyebrow} ${styles[context]}`}>{eyebrow}</RevealMask>
+      <Title className={`${styles.title} ${styles[context]}`}>
+        <RevealMask delayMs={80}>{title}</RevealMask>
+      </Title>
     </div>
   );
 }

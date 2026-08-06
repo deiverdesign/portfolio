@@ -6,6 +6,48 @@
   border: 1px solid var(--border-default);
   text-decoration: none;
   color: inherit;
+  /* overflow:hidden aqui (em vez de um wrapper só na imagem) contém o
+     scale(1.04) do hover — .image e .content são empilhados sem
+     sobreposição, então o corte fica idêntico ao de um wrapper dedicado. */
+  overflow: hidden;
+  /* entrada no viewport (Passo 6, item 3): opacity + translateY(16px), com
+     stagger via --reveal-delay. transform aqui também é usado pelo
+     :active (scale, --dur-instant) — enquanto a entrada não termina, o
+     transform do card inteiro precisa da duração lenta (--dur-slow) pra
+     entrar suave; depois que termina (.hasEntered, setado via
+     onTransitionEnd no componente), a duração volta pra --dur-instant
+     pro press ficar responsivo. Sem isso, todo hover/active do card
+     herdaria os 700ms da entrada pro resto da vida da página. */
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    border-color var(--dur-fast) var(--ease-out-quart),
+    opacity var(--dur-slow) var(--ease-out-quart) var(--reveal-delay, 0ms),
+    transform var(--dur-slow) var(--ease-out-quart) var(--reveal-delay, 0ms);
+}
+
+.card.isVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card.hasEntered {
+  transition:
+    border-color var(--dur-fast) var(--ease-out-quart),
+    transform var(--dur-instant) var(--ease-out-quart);
+}
+
+.card:hover {
+  border-color: var(--gray-300);
+}
+
+.card:active {
+  transform: scale(0.995);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--action-focus-ring);
+  outline-offset: 2px;
 }
 
 /* Acima de 1024px o container fica largo o bastante pra caber 3 no min-width
@@ -26,6 +68,11 @@
   object-fit: cover;
   object-position: top;
   background: var(--gray-200);
+  transition: transform var(--dur-base) var(--ease-out-quart);
+}
+
+.card:hover .image {
+  transform: scale(1.04);
 }
 
 .content {
@@ -52,6 +99,11 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-300);
+  transition: color var(--dur-instant) var(--ease-out-quart);
+}
+
+.card:hover .title {
+  color: var(--primary-600);
 }
 
 .lockedBadge {
@@ -95,8 +147,19 @@
   margin-top: var(--space-400);
   font-size: var(--font-subtitle);
   color: var(--content-secondary);
+  transition: color var(--dur-instant) var(--ease-out-quart);
 }
 
 .card:hover .link {
   color: var(--content-primary);
+}
+
+/* a seta "→" não tem classe própria no JSX (span[aria-hidden] cru dentro
+   de .link) — seleciono por atributo em vez de mudar o markup. */
+.link span[aria-hidden="true"] {
+  transition: transform var(--dur-fast) var(--ease-out-expo);
+}
+
+.card:hover .link span[aria-hidden="true"] {
+  transform: translateX(6px);
 }

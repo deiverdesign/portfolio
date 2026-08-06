@@ -7,6 +7,33 @@
   background:
     linear-gradient(199deg, var(--alpha-secondary-30) 2.46%, var(--alpha-secondary-0) 30.79%),
     var(--background-primary);
+  /* borda transparente em repouso (em vez de sem borda) pra trocar só a cor
+     no hover sem deslocar o conteúdo — box-sizing:border-box (global) já
+     reserva esse 1px. */
+  border: 1px solid transparent;
+  /* entrada no viewport (Passo 6, item 3): opacity + translateY(16px), com
+     stagger via --reveal-delay (setado inline por card pelo componente).
+     .card não tem outro uso de transform (diferente do CaseCardLarge, que
+     também escala no :active), então dá pra usar --dur-slow aqui sem
+     conflito de velocidade com nenhuma outra interação. */
+  opacity: 0;
+  transform: translateY(16px);
+  /* delay só nas propriedades de entrada (opacity/transform) — se fosse
+     transition-delay solto, ia atrasar o hover do border-color também,
+     proporcional ao índice do card. */
+  transition:
+    border-color var(--dur-fast) var(--ease-out-quart),
+    opacity var(--dur-slow) var(--ease-out-quart) var(--reveal-delay, 0ms),
+    transform var(--dur-slow) var(--ease-out-quart) var(--reveal-delay, 0ms);
+}
+
+.card.isVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card:hover {
+  border-color: var(--border-primary-on-dark-subtle);
 }
 
 .top {
@@ -20,6 +47,11 @@
   font-size: var(--font-body);
   color: var(--content-muted);
   opacity: 0.7;
+  transition: color var(--dur-instant) var(--ease-out-quart);
+}
+
+.card:hover .number {
+  color: var(--primary-500);
 }
 
 .title {
@@ -29,6 +61,11 @@
   text-transform: uppercase;
   color: var(--content-on-dark-primary);
   padding-top: var(--space-400);
+  transition: transform var(--dur-fast) var(--ease-out-expo);
+}
+
+.card:hover .title {
+  transform: translateX(4px);
 }
 
 .description {

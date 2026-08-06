@@ -5,17 +5,37 @@
   font-size: var(--font-subtitle);
   font-weight: 500;
   text-decoration: none;
-  transition: opacity 0.15s ease;
+  transition: color var(--dur-instant) var(--ease-out-quart);
 }
 
-.link:hover {
-  opacity: 0.75;
+/* seta: sempre o segundo filho (svg cru, sem classe) — sem sublinhado
+   animado (decisão: .link é inline-flex com gap, um ::after sublinharia
+   texto + seta juntos de forma torta; mexer nisso pediria mudar o JSX). */
+.link svg {
+  transition: transform var(--dur-fast) var(--ease-out-expo);
+}
+
+.link:hover svg {
+  transform: translateX(4px);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--action-focus-ring);
+  outline-offset: 2px;
 }
 
 .light {
   color: var(--action-tertiary-content);
 }
 
+.light:hover {
+  color: var(--content-primary);
+}
+
 .dark {
   color: var(--content-on-dark-primary);
+}
+
+.dark:hover {
+  color: var(--content-accent-on-dark);
 }

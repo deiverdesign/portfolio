@@ -81,8 +81,8 @@ export function WorkContent({ locale }: { locale: Locale }) {
 
         <section className={homeStyles.workSection}>
           <div className={homeStyles.workGrid}>
-            {cases.map((c) => (
-              <CaseCardLarge key={c.number} imageAlt={c.title} locale={locale} {...c} />
+            {cases.map((c, index) => (
+              <CaseCardLarge key={c.number} imageAlt={c.title} locale={locale} revealIndex={index} {...c} />
             ))}
           </div>
         </section>

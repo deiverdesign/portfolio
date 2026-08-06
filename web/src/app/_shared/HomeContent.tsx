@@ -4,6 +4,7 @@ import { Button } from "@/components/Button/Button";
 import { CaseCardLarge } from "@/components/CaseCardLarge/CaseCardLarge";
 import { CapabilityCard } from "@/components/CapabilityCard/CapabilityCard";
 import { LinkTertiary } from "@/components/LinkTertiary/LinkTertiary";
+import { RevealMask } from "@/components/RevealMask/RevealMask";
 import { Footer } from "@/components/Footer/Footer";
 import { buildCapabilitiesCopy } from "./CapabilitiesContent";
 import { ABOUT_COPY } from "./AboutContent";
@@ -308,10 +309,12 @@ export function HomeContent({ locale }: { locale: Locale }) {
         </section>
 
         <section id="work" className={styles.workSection}>
-          <h2>{t.workHeading}</h2>
+          <h2>
+            <RevealMask>{t.workHeading}</RevealMask>
+          </h2>
           <div className={styles.workGrid}>
-            {featuredCases.map((c) => (
-              <CaseCardLarge key={c.number} imageAlt={c.title} locale={locale} {...c} />
+            {featuredCases.map((c, index) => (
+              <CaseCardLarge key={c.number} imageAlt={c.title} locale={locale} revealIndex={index} {...c} />
             ))}
           </div>
           <LinkTertiary context="light" href={workHref}>
@@ -320,11 +323,13 @@ export function HomeContent({ locale }: { locale: Locale }) {
         </section>
 
         <section className={styles.workSection}>
-          <span className={styles.sectionEyebrow}>{t.capabilitiesPreview.eyebrow}</span>
-          <h2>{t.capabilitiesPreview.title}</h2>
+          <RevealMask className={styles.sectionEyebrow}>{t.capabilitiesPreview.eyebrow}</RevealMask>
+          <h2>
+            <RevealMask delayMs={80}>{t.capabilitiesPreview.title}</RevealMask>
+          </h2>
           <p className={styles.sectionIntro}>{capabilities.intro}</p>
           <div className={styles.capabilitiesGrid}>
-            {previewCapabilities.map((cap) => (
+            {previewCapabilities.map((cap, index) => (
               <CapabilityCard
                 key={cap.number}
                 number={cap.number}
@@ -333,6 +338,7 @@ export function HomeContent({ locale }: { locale: Locale }) {
                 tags={cap.tags}
                 linkLabel={t.capabilitiesPreview.cardLinkLabel}
                 href={capabilitiesHref}
+                revealIndex={index}
               />
             ))}
           </div>
@@ -342,7 +348,7 @@ export function HomeContent({ locale }: { locale: Locale }) {
         </section>
 
         <section className={styles.workSection}>
-          <span className={styles.sectionEyebrow}>{t.aboutPreview.eyebrow}</span>
+          <RevealMask className={styles.sectionEyebrow}>{t.aboutPreview.eyebrow}</RevealMask>
           <blockquote className={styles.aboutQuote}>{about.bioParagraphs[0]}</blockquote>
           <LinkTertiary context="light" href={aboutHref}>
             {t.aboutPreview.linkLabel}
@@ -351,8 +357,10 @@ export function HomeContent({ locale }: { locale: Locale }) {
 
         <section className={styles.finalCta}>
           <div className={styles.finalCtaInner}>
-            <span className={styles.eyebrow}>{t.finalCta.eyebrow}</span>
-            <h2 className={styles.finalCtaTitle}>{t.finalCta.title}</h2>
+            <RevealMask className={styles.eyebrow}>{t.finalCta.eyebrow}</RevealMask>
+            <h2 className={styles.finalCtaTitle}>
+              <RevealMask delayMs={80}>{t.finalCta.title}</RevealMask>
+            </h2>
             <p className={styles.finalCtaAvailability}>{about.contactBody[0]}</p>
             <div className={styles.finalCtaActions}>
               <Button variant="primary" context="dark" icon="arrow-right" href="mailto:deiverbrito@gmail.com">

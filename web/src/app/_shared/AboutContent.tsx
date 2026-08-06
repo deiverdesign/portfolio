@@ -2,6 +2,7 @@ import { NavBar } from "@/components/NavBar/NavBar";
 import { RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "@/components/NavBar/constants";
 import { Button } from "@/components/Button/Button";
 import { Footer } from "@/components/Footer/Footer";
+import { RevealMask } from "@/components/RevealMask/RevealMask";
 import styles from "./about.module.css";
 
 type Row =
@@ -225,8 +226,10 @@ export function AboutContent({ locale }: { locale: Locale }) {
         </section>
 
         <section id={contactId} className={styles.contactSection}>
-          <span className={styles.eyebrow}>{t.eyebrowContact}</span>
-          <h2 className={styles.contactTitle}>{t.contactTitle}</h2>
+          <RevealMask className={styles.eyebrow}>{t.eyebrowContact}</RevealMask>
+          <h2 className={styles.contactTitle}>
+            <RevealMask delayMs={80}>{t.contactTitle}</RevealMask>
+          </h2>
           {t.contactBody.map((p) => (
             <p key={p}>{p}</p>
           ))}

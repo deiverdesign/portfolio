@@ -9,7 +9,15 @@
   border: 1px solid transparent;
   cursor: pointer;
   position: relative;
-  transition: opacity 0.15s ease;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    color var(--dur-fast) var(--ease-out-quart),
+    opacity var(--dur-fast) var(--ease-out-quart),
+    transform var(--dur-instant) var(--ease-out-quart);
+}
+
+.button:not(:disabled):active {
+  transform: scale(0.98);
 }
 
 .button:focus-visible {
@@ -22,14 +30,18 @@
   cursor: not-allowed;
 }
 
-/* uma camada extra em cima do botão pra hover/pressed, igual ao componente no Figma */
-.button:not(:disabled):hover::after,
-.button:not(:disabled):active::after {
+/* uma camada extra em cima do botão pra hover/pressed, igual ao componente no
+   Figma. Sempre presente (não só em :hover) pra poder fazer transition de
+   background-color — um ::after que só existe condicionalmente no seletor
+   não tem estado anterior pra animar a partir dele. */
+.button:not(:disabled)::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
+  background: transparent;
+  transition: background-color var(--dur-fast) var(--ease-out-quart);
 }
 
 .button:not(:disabled):hover::after {
@@ -90,4 +102,9 @@
 
 .icon {
   flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease-out-expo);
+}
+
+.button:not(:disabled):hover .icon {
+  transform: translateX(4px);
 }

@@ -1,5 +1,9 @@
+"use client";
+
+import type { CSSProperties } from "react";
 import { Tag } from "@/components/Tag/Tag";
 import { LinkTertiary } from "@/components/LinkTertiary/LinkTertiary";
+import { useInView } from "@/hooks/useInView";
 import styles from "./CapabilityCard.module.css";
 
 export interface CapabilityCardProps {
@@ -9,6 +13,8 @@ export interface CapabilityCardProps {
   tags: string[];
   linkLabel: string;
   href: string;
+  /** Posição do card na grid — só usada pro stagger de entrada no viewport (70ms por item). */
+  revealIndex?: number;
 }
 
 export function CapabilityCard({
@@ -18,9 +24,17 @@ export function CapabilityCard({
   tags,
   linkLabel,
   href,
+  revealIndex,
 }: CapabilityCardProps) {
+  const { ref, isInView } = useInView<HTMLDivElement>();
+  const classes = [styles.card, isInView && styles.isVisible].filter(Boolean).join(" ");
+
   return (
-    <div className={styles.card}>
+    <div
+      ref={ref}
+      className={classes}
+      style={revealIndex !== undefined ? ({ "--reveal-delay": `${revealIndex * 70}ms` } as CSSProperties) : undefined}
+    >
       <div className={styles.top}>
         <span className={styles.number}>{number}</span>
         <h3 className={styles.title}>{title}</h3>

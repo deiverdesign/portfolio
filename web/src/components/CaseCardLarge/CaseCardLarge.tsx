@@ -1,4 +1,8 @@
+"use client";
+
+import { useState, type CSSProperties, type TransitionEvent } from "react";
 import { Tag } from "@/components/Tag/Tag";
+import { useInView } from "@/hooks/useInView";
 import styles from "./CaseCardLarge.module.css";
 
 export type CaseCardLocale = "pt" | "en";
@@ -45,6 +49,8 @@ export interface CaseCardLargeProps {
   locale?: CaseCardLocale;
   /** Ponto da imagem que fica visível quando ela é cortada pra caber nos 260px de altura. "top" (padrão) funciona bem pra screenshots de produto, onde o conteúdo importante fica no topo; "center" evita cortar imagens com um elemento centralizado (ex: ícone/ilustração), como a capa do ASTER. */
   imagePosition?: "top" | "center";
+  /** Posição do card na grid — só usada pro stagger de entrada no viewport (70ms por item). */
+  revealIndex?: number;
 }
 
 export function CaseCardLarge({
@@ -61,16 +67,35 @@ export function CaseCardLarge({
   locked = false,
   locale = "pt",
   imagePosition = "top",
+  revealIndex,
 }: CaseCardLargeProps) {
   const t = STRINGS[locale];
   const visibleTags = tags.slice(0, maxVisibleTags);
   const hiddenCount = tags.length - visibleTags.length;
+  const { ref, isInView } = useInView<HTMLAnchorElement>();
+  const [hasEntered, setHasEntered] = useState(false);
+  const classes = [styles.card, isInView && styles.isVisible, hasEntered && styles.hasEntered]
+    .filter(Boolean)
+    .join(" ");
+
+  const handleTransitionEnd = (event: TransitionEvent<HTMLAnchorElement>) => {
+    if (event.target === event.currentTarget && event.propertyName === "opacity") {
+      setHasEntered(true);
+    }
+  };
 
   return (
     <a
+      ref={ref}
       href={href}
-      className={styles.card}
-      style={maxWidth ? { maxWidth } : undefined}
+      className={classes}
+      style={
+        {
+          ...(maxWidth ? { maxWidth } : undefined),
+          ...(revealIndex !== undefined ? { "--reveal-delay": `${revealIndex * 70}ms` } : undefined),
+        } as CSSProperties
+      }
+      onTransitionEnd={handleTransitionEnd}
       aria-label={`${t.viewCase}: ${title}${locked ? t.passwordProtectedSuffix : ""}`}
     >
       {imageSrc ? (

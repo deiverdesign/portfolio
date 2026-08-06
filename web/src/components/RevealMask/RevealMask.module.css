@@ -1,0 +1,14 @@
+.mask {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.inner {
+  display: inline-block;
+  transform: translateY(100%);
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+}
+
+.inner.isVisible {
+  transform: translateY(0);
+}
