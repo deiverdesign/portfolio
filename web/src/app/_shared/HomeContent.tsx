@@ -1,3 +1,4 @@
+import { Fragment, type CSSProperties } from "react";
 import { NavBar } from "@/components/NavBar/NavBar";
 import { RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "@/components/NavBar/constants";
 import { Button } from "@/components/Button/Button";
@@ -273,6 +274,11 @@ export function HomeContent({ locale }: { locale: Locale }) {
   const featuredCases = buildCasesCopy(locale).slice(0, 2);
   const workHref = locale === "pt" ? "/pt/work" : "/work";
 
+  /* Entrada do hero estilo julius.fm: eyebrow -> cada palavra do título ->
+     parágrafo -> botões, 60ms de atraso a mais que o anterior. */
+  const heroRevealStep = 60;
+  const titleWords = t.title.split(" ");
+
   return (
     <>
       <NavBar context="dark" locale={locale} otherLocaleHref={otherLocaleHref} />
@@ -287,10 +293,32 @@ export function HomeContent({ locale }: { locale: Locale }) {
               <img src="/images/hero-photo.png" alt={t.heroPhotoAlt} className={styles.heroPhoto} />
             </div>
             <div className={styles.heroText}>
-              <span className={styles.eyebrow}>{t.eyebrow}</span>
-              <h1 className={styles.heroTitle}>{t.title}</h1>
-              <p className={styles.heroIntro}>{t.intro}</p>
-              <div className={styles.heroActions}>
+              <span className={`${styles.eyebrow} ${styles.heroReveal}`} style={{ "--reveal-delay": "0ms" } as CSSProperties}>
+                {t.eyebrow}
+              </span>
+              <h1 className={styles.heroTitle}>
+                {titleWords.map((word, i) => (
+                  <Fragment key={i}>
+                    {i > 0 ? " " : null}
+                    <span
+                      className={styles.heroTitleWord}
+                      style={{ "--reveal-delay": `${heroRevealStep * (i + 1)}ms` } as CSSProperties}
+                    >
+                      {word}
+                    </span>
+                  </Fragment>
+                ))}
+              </h1>
+              <p
+                className={`${styles.heroIntro} ${styles.heroReveal}`}
+                style={{ "--reveal-delay": `${heroRevealStep * (titleWords.length + 1)}ms` } as CSSProperties}
+              >
+                {t.intro}
+              </p>
+              <div
+                className={`${styles.heroActions} ${styles.heroReveal}`}
+                style={{ "--reveal-delay": `${heroRevealStep * (titleWords.length + 2)}ms` } as CSSProperties}
+              >
                 <Button variant="primary" context="dark" href="#work">
                   {t.ctaPrimary}
                 </Button>

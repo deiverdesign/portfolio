@@ -15,6 +15,7 @@
   --dur-fast: 240ms; /* hover de elementos pequenos */
   --dur-base: 380ms; /* hover de cards */
   --dur-slow: 700ms; /* entrada em viewport */
+  --dur-hero-reveal: 600ms; /* replica o timing exato do julius.fm */
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -23,6 +24,7 @@
     --dur-fast: 1ms;
     --dur-base: 1ms;
     --dur-slow: 1ms;
+    --dur-hero-reveal: 1ms;
   }
   *,
   *::before,

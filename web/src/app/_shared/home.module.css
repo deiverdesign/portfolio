@@ -93,6 +93,37 @@
   margin-top: var(--space-300);
 }
 
+/* Entrada do hero (estilo julius.fm): opacity + translateY(14px), --dur-hero-reveal
+   (600ms, igual ao original), --ease-out-quart. Cada bloco entra 60ms depois
+   do anterior via --reveal-delay (setado inline por elemento em HomeContent).
+   Só o hero usa esse padrão — o resto do site usa o reveal-por-scroll da Fase 1. */
+@keyframes heroReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heroReveal {
+  opacity: 0;
+  animation: heroReveal var(--dur-hero-reveal) var(--ease-out-quart) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+/* palavra do título — precisa de inline-block pra transform funcionar, com
+   um espaço de verdade (texto solto) entre os spans pra manter a quebra de
+   linha normal do título. */
+.heroTitleWord {
+  display: inline-block;
+  opacity: 0;
+  animation: heroReveal var(--dur-hero-reveal) var(--ease-out-quart) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
 /* 1152px, não 1280 — todas as seções do corpo da Home no Figma Site usam
    max-w-6xl (1152px) de forma uniforme (trabalho, additional experience,
    competências, sobre). Só o Hero usa uma largura própria, diferente. */

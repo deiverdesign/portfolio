@@ -317,9 +317,13 @@
   color: var(--content-heading);
 }
 
+/* minmax calibrado pra garantir 3 colunas no desktop (720px de seção,
+   48px de padding, 20px de gap = 672px úteis) — o valor antigo (220px)
+   só permitia 2. Conferido também no breakpoint de tablet (666px úteis,
+   22px de gap) — 200px continua garantindo 3 lá também. */
 .testGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--space-600);
 }
 
