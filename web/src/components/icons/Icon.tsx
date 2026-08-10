@@ -5,7 +5,9 @@ export type IconName =
   | "arrow-right"
   | "menu"
   | "close"
-  | "external-link";
+  | "external-link"
+  | "play"
+  | "pause";
 
 export interface IconProps extends Omit<SVGProps<SVGSVGElement>, "name"> {
   name: IconName;
@@ -52,6 +54,13 @@ export function Icon({ name, size = 14, ...rest }: IconProps) {
           <path d="M7.58333 0.583333L0.583333 7.58333" />
           <path d="M0.583333 0.583333L7.58333 7.58333" />
         </g>
+      )}
+      {name === "play" && <path d="M4.5 3.5L10.5 7L4.5 10.5V3.5Z" fill="currentColor" stroke="none" />}
+      {name === "pause" && (
+        <>
+          <rect x="4" y="3" width="2" height="8" rx="0.5" fill="currentColor" stroke="none" />
+          <rect x="8" y="3" width="2" height="8" rx="0.5" fill="currentColor" stroke="none" />
+        </>
       )}
       {name === "external-link" && (
         <>

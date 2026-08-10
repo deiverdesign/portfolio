@@ -1,0 +1,143 @@
+.section {
+  width: 100%;
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: var(--space-layout-100) var(--space-700) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-600);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+/* Mesmo estilo do h2 das outras seções (.workSection h2) — pedido
+   explícito do Deiver pra bater com o resto do site. */
+.title {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
+  font-size: var(--font-h2-section-title);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--content-heading);
+}
+
+.caption {
+  font-size: var(--font-caption);
+  color: var(--content-muted-on-light);
+  max-width: 480px;
+}
+
+.controlButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--content-primary);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out-quart),
+    color var(--dur-fast) var(--ease-out-quart);
+}
+
+.controlButton:hover {
+  border-color: var(--content-primary);
+}
+
+.controlButton:focus-visible {
+  outline: 2px solid var(--action-focus-ring);
+  outline-offset: 2px;
+}
+
+/* linha com overflow escondido — o track é 2x mais largo que ela e roda por baixo */
+.row {
+  width: 100%;
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: var(--space-layout-100);
+  width: max-content;
+  animation: brandsMarquee 40s linear infinite;
+}
+
+.track.paused {
+  animation-play-state: paused;
+}
+
+.track.playing {
+  animation-play-state: running;
+}
+
+/* a lista de marcas está duplicada no track (ver BrandsSection.tsx) — andar
+   exatamente -50% termina bem na hora em que a 2ª cópia começa, sem emenda
+   visível nem salto. */
+@keyframes brandsMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.logo {
+  flex: 0 0 auto;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoImage {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: 140px;
+  object-fit: contain;
+}
+
+.logoPlaceholder {
+  font-size: var(--font-subtitle);
+  font-weight: 600;
+  color: var(--content-muted-on-light);
+  white-space: nowrap;
+}
+
+/* fecha a seção — mesma linha fina usada como separador em .section
+   (cases.module.css), só que como elemento próprio já que essa seção
+   não é seguida direto pelo padrão border-top de outra seção. */
+.divider {
+  width: 100%;
+  border-top: 1px solid var(--border-default);
+}
+
+/* sem movimento: para a animação de vez (não só "devagar") e some com o
+   botão, já que não sobra nada pra pausar/rodar. */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+    transform: none;
+  }
+
+  .controlButton {
+    display: none;
+  }
+}

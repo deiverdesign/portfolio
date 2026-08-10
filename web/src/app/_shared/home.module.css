@@ -152,6 +152,19 @@
   gap: var(--space-600);
 }
 
+/* Título + botão "ver tudo" na mesma linha, lados opostos — usado no
+   heading do Work e do Capabilities (Figma: node 538-2277 / 542-6005). */
+.sectionHeadingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-600);
+  flex-wrap: wrap;
+}
+
+/* A fileira de marcas virou o componente BrandsSection (precisa de estado
+   de play/pause) — CSS próprio em BrandsSection.module.css. */
+
 .sectionEyebrow {
   font-size: var(--font-eyebrow);
   letter-spacing: 0.08em;

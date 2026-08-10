@@ -6,6 +6,7 @@ import { CaseCardLarge } from "@/components/CaseCardLarge/CaseCardLarge";
 import { CapabilityCard } from "@/components/CapabilityCard/CapabilityCard";
 import { LinkTertiary } from "@/components/LinkTertiary/LinkTertiary";
 import { RevealMask } from "@/components/RevealMask/RevealMask";
+import { BrandsSection, type Brand } from "@/components/BrandsSection/BrandsSection";
 import { Footer } from "@/components/Footer/Footer";
 import { buildCapabilitiesCopy } from "./CapabilitiesContent";
 import { ABOUT_COPY } from "./AboutContent";
@@ -34,6 +35,12 @@ interface HomeCopy {
   ctaSecondary: string;
   workHeading: string;
   viewAllCasesLabel: string;
+  brands: {
+    eyebrow: string;
+    caption: string;
+    playLabel: string;
+    pauseLabel: string;
+  };
   capabilitiesPreview: {
     eyebrow: string;
     title: string;
@@ -62,6 +69,12 @@ const COPY: Record<Locale, HomeCopy> = {
     ctaSecondary: "Baixar currículo",
     workHeading: "Trabalho",
     viewAllCasesLabel: "Ver todos os trabalhos",
+    brands: {
+      eyebrow: "MARCAS COM QUE JÁ TRABALHEI",
+      caption: "Trabalho entregue em atuação de agência e in-house.",
+      playLabel: "Retomar a rolagem dos logos",
+      pauseLabel: "Pausar a rolagem dos logos",
+    },
     capabilitiesPreview: {
       eyebrow: "COMPETÊNCIAS",
       title: "Explore o trabalho por competência",
@@ -88,6 +101,12 @@ const COPY: Record<Locale, HomeCopy> = {
     ctaSecondary: "Download resume",
     workHeading: "Work",
     viewAllCasesLabel: "See all work",
+    brands: {
+      eyebrow: "BRANDS I'VE WORKED WITH",
+      caption: "Work delivered across agency and in-house product design roles.",
+      playLabel: "Resume logo scroll",
+      pauseLabel: "Pause logo scroll",
+    },
     capabilitiesPreview: {
       eyebrow: "CAPABILITIES",
       title: "Explore the work by capability",
@@ -105,6 +124,28 @@ const COPY: Record<Locale, HomeCopy> = {
     },
   },
 };
+
+/**
+ * Marcas com quem já trabalhei (agência + in-house) — nomes/logos não mudam
+ * por idioma. Dimensões = viewBox real de cada SVG exportado do Figma
+ * (/ExportLogosPortfolio), pra manter a proporção correta em altura fixa.
+ * NSC não tinha arquivo exportado ainda — fica como wordmark de texto até
+ * o Deiver me passar o logo.
+ */
+const BRANDS: Brand[] = [
+  { name: "HP", src: "/images/brands/hp.svg", width: 38, height: 38 },
+  { name: "Intuit", src: "/images/brands/intuit.svg", width: 94, height: 18, scale: 0.8 },
+  { name: "McCormick", src: "/images/brands/mccormick.svg", width: 47, height: 39 },
+  { name: "Softplan", src: "/images/brands/softplan.svg", width: 117, height: 26 },
+  { name: "Unimed", src: "/images/brands/unimed.svg", width: 110, height: 16 },
+  { name: "Track & Field", src: "/images/brands/track-and-field.svg", width: 55, height: 30 },
+  { name: "CURE", src: "/images/brands/cure.svg", width: 60, height: 32 },
+  { name: "Theodoor", src: "/images/brands/theodoor.svg", width: 114, height: 36 },
+  { name: "Cirrus", src: "/images/brands/cirrus.svg", width: 134, height: 26 },
+  { name: "HSS", src: "/images/brands/hss.svg", width: 41, height: 41 },
+  { name: "Lightship", src: "/images/brands/lightship.svg", width: 122, height: 48 },
+  { name: "NSC", width: 60, height: 40 },
+];
 
 /**
  * Todos os 5 cases — fonte única compartilhada pela Home (mostra só os 2
@@ -336,25 +377,40 @@ export function HomeContent({ locale }: { locale: Locale }) {
           </div>
         </section>
 
+        <BrandsSection
+          eyebrow={t.brands.eyebrow}
+          caption={t.brands.caption}
+          brands={BRANDS}
+          playLabel={t.brands.playLabel}
+          pauseLabel={t.brands.pauseLabel}
+        />
+
         <section id="work" className={styles.workSection}>
-          <h2>
-            <RevealMask>{t.workHeading}</RevealMask>
-          </h2>
+          <div className={styles.sectionHeadingRow}>
+            <h2>
+              <RevealMask>{t.workHeading}</RevealMask>
+            </h2>
+            <Button variant="secondary" context="light" icon="arrow-right" href={workHref}>
+              {t.viewAllCasesLabel}
+            </Button>
+          </div>
           <div className={styles.workGrid}>
             {featuredCases.map((c, index) => (
               <CaseCardLarge key={c.number} imageAlt={c.title} locale={locale} revealIndex={index} {...c} />
             ))}
           </div>
-          <LinkTertiary context="light" href={workHref}>
-            {t.viewAllCasesLabel}
-          </LinkTertiary>
         </section>
 
         <section className={styles.workSection}>
           <RevealMask className={styles.sectionEyebrow}>{t.capabilitiesPreview.eyebrow}</RevealMask>
-          <h2>
-            <RevealMask delayMs={80}>{t.capabilitiesPreview.title}</RevealMask>
-          </h2>
+          <div className={styles.sectionHeadingRow}>
+            <h2>
+              <RevealMask delayMs={80}>{t.capabilitiesPreview.title}</RevealMask>
+            </h2>
+            <Button variant="secondary" context="light" icon="arrow-right" href={capabilitiesHref}>
+              {t.capabilitiesPreview.viewAllLabel}
+            </Button>
+          </div>
           <p className={styles.sectionIntro}>{capabilities.intro}</p>
           <div className={styles.capabilitiesGrid}>
             {previewCapabilities.map((cap, index) => (
@@ -370,9 +426,6 @@ export function HomeContent({ locale }: { locale: Locale }) {
               />
             ))}
           </div>
-          <LinkTertiary context="light" href={capabilitiesHref}>
-            {t.capabilitiesPreview.viewAllLabel}
-          </LinkTertiary>
         </section>
 
         <section className={styles.workSection}>
