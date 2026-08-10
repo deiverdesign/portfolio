@@ -32,9 +32,11 @@
   color: var(--content-heading);
 }
 
+/* DM Sans 400/14px, cor --content-secondary (#746f6b) — mesma combinação
+   já usada em CaseCardLarge .summary, conferido no DevTools. */
 .caption {
-  font-size: var(--font-caption);
-  color: var(--content-muted-on-light);
+  font-size: var(--font-subtitle);
+  color: var(--content-secondary);
   max-width: 480px;
 }
 
