@@ -52,16 +52,20 @@ export function Footer({ locale }: FooterProps) {
             <span>{t.role}</span>
           </a>
           <nav className={styles.links}>
-            {t.navLinks.map((link) => (
-              <a key={link.label} href={link.href} className={styles.navLink}>
-                {link.label}
-              </a>
-            ))}
-            {t.actions.map((action) => (
-              <Button key={action.label} variant="secondary" context="light" href={action.href} download={action.download}>
-                {action.label}
-              </Button>
-            ))}
+            <div className={styles.navLinks}>
+              {t.navLinks.map((link) => (
+                <a key={link.label} href={link.href} className={styles.navLink}>
+                  {link.label}
+                </a>
+              ))}
+            </div>
+            <div className={styles.actionButtons}>
+              {t.actions.map((action) => (
+                <Button key={action.label} variant="secondary" context="light" href={action.href} download={action.download}>
+                  {action.label}
+                </Button>
+              ))}
+            </div>
           </nav>
         </div>
         <p className={styles.copyright}>{t.copyright}</p>

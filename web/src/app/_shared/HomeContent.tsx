@@ -7,6 +7,7 @@ import { CapabilityCard } from "@/components/CapabilityCard/CapabilityCard";
 import { LinkTertiary } from "@/components/LinkTertiary/LinkTertiary";
 import { RevealMask } from "@/components/RevealMask/RevealMask";
 import { BrandsSection, type Brand } from "@/components/BrandsSection/BrandsSection";
+import { LensBlurGlow } from "@/components/LensBlurGlow/LensBlurGlow";
 import { Footer } from "@/components/Footer/Footer";
 import { buildCapabilitiesCopy } from "./CapabilitiesContent";
 import { ABOUT_COPY } from "./AboutContent";
@@ -327,9 +328,9 @@ export function HomeContent({ locale }: { locale: Locale }) {
       <main>
         <section className={styles.hero}>
           <div className={styles.heroInner}>
-            <div className={styles.heroVisual}>
+            <div className={styles.heroVisual} data-glow-hover-target>
               <div className={styles.glowTeal} />
-              <div className={styles.glowOrange} />
+              <LensBlurGlow />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/images/hero-photo.png" alt={t.heroPhotoAlt} className={styles.heroPhoto} />
             </div>

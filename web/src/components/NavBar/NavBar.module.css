@@ -101,6 +101,13 @@
   outline-offset: 2px;
 }
 
+/* nome completo (Português/English) só existe pro menu mobile aberto —
+   em todo o resto (desktop, e o próprio painel mobile fechado) mostra
+   só a sigla PT/EN, como sempre foi. */
+.langFull {
+  display: none;
+}
+
 /* Botão hambúrguer: só existe na versão mobile.
    Padding calibrado pra dar 44x44px de área de toque (ícone de 20px + 12px
    de cada lado) — mínimo recomendado pra toque confiável no polegar. */
@@ -142,5 +149,42 @@
 
   .mobilePanel[data-open="true"] {
     display: flex;
+  }
+}
+
+/* Seletor de idioma do menu mobile (Figma node 548-6585) — vira uma
+   dupla de abas: nome completo, centralizada, área de toque bem maior
+   (min 44px) e uma barrinha embaixo do idioma selecionado. Só no mobile
+   de verdade (<=599px) — no tablet o painel mobile continua com PT/EN. */
+@media (max-width: 599px) {
+  .mobilePanel .langSwitch {
+    justify-content: center;
+    gap: var(--space-700);
+  }
+
+  .mobilePanel .langShort {
+    display: none;
+  }
+
+  .mobilePanel .langFull {
+    display: inline-flex;
+  }
+
+  .mobilePanel .langCurrent,
+  .mobilePanel .langSwitch a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: var(--space-300) var(--space-400);
+    font-family: var(--font-dm-mono);
+    font-size: var(--font-eyebrow);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid transparent;
+  }
+
+  .mobilePanel .langCurrent {
+    border-bottom-color: currentColor;
   }
 }

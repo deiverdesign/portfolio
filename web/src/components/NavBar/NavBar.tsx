@@ -38,6 +38,15 @@ const NAV_ITEMS: Record<Locale, Array<{ label: string; href: string }>> = {
   ],
 };
 
+/** "short" é o que sempre apareceu (desktop, e mobile fechado): PT/EN.
+    "full" só aparece no menu mobile aberto (nome completo, estilo aba —
+    Figma node 548-6585). Nome sempre no idioma nativo (Português/English),
+    não traduzido pro idioma atual da página. */
+const LANG_LABELS: Record<Locale, { short: string; full: string }> = {
+  pt: { short: "PT", full: "Português" },
+  en: { short: "EN", full: "English" },
+};
+
 const STRINGS: Record<Locale, {
   resume: string;
   contact: string;
@@ -91,13 +100,18 @@ export function NavBar({ context = "light", locale, otherLocaleHref }: NavBarPro
     </div>
   );
 
+  const currentLang = LANG_LABELS[locale];
+  const otherLang = LANG_LABELS[locale === "pt" ? "en" : "pt"];
+
   const langSwitch = (
     <div className={styles.langSwitch}>
       <span aria-current="true" aria-label={t.currentLangLabel} className={styles.langCurrent}>
-        {locale === "pt" ? "PT" : "EN"}
+        <span className={styles.langShort}>{currentLang.short}</span>
+        <span className={styles.langFull}>{currentLang.full}</span>
       </span>
       <a href={otherLocaleHref} aria-label={t.switchLangLabel}>
-        {locale === "pt" ? "EN" : "PT"}
+        <span className={styles.langShort}>{otherLang.short}</span>
+        <span className={styles.langFull}>{otherLang.full}</span>
       </a>
     </div>
   );

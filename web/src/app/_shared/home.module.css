@@ -37,18 +37,8 @@
   background-repeat: no-repeat;
 }
 
-.glowOrange {
-  /* posição/tamanho exatos do Figma: dot em x=-30.74,y=160.2, 202.98x202.98,
-     dentro de um container de imagem 490x452 */
-  position: absolute;
-  left: -6.27%;
-  top: 35.44%;
-  width: 41.42%;
-  height: 44.91%;
-  background: radial-gradient(circle, #f95021, #3a0809);
-  filter: blur(44px);
-  border-radius: 50%;
-}
+/* .glowOrange virou o componente LensBlurGlow (WebGL/shader, precisa de
+   JS) — CSS próprio em LensBlurGlow.module.css. */
 
 .heroPhoto {
   position: relative;
@@ -91,6 +81,15 @@
   flex-wrap: wrap;
   gap: var(--space-400);
   margin-top: var(--space-300);
+}
+
+/* Mobile (Figma node 548-6024): os 2 CTAs do Hero ocupam a largura toda,
+   empilhados — em vez de lado a lado do tamanho do próprio texto. */
+@media (max-width: 599px) {
+  .heroActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 /* Entrada do hero (estilo julius.fm): opacity + translateY(14px), --dur-hero-reveal

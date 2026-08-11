@@ -1,0 +1,19 @@
+/* Container 40% maior que o slot original do Figma (-6.27%/35.44%,
+   41.42%x44.91%), mantendo o mesmo centro — o círculo agora é maior e
+   flutua, então precisa de espaço extra pra não cortar nas bordas do
+   canvas (WebGL não "vaza" fora do próprio canvas como um filter:blur
+   normal vazaria fora de uma div). */
+.canvasContainer {
+  position: absolute;
+  left: -14.55%;
+  top: 26.46%;
+  width: 57.99%;
+  height: 62.87%;
+  pointer-events: none;
+}
+
+.canvasContainer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
