@@ -85,10 +85,13 @@ const fragmentShader = /* glsl */ `
     vec3 colorEdge = vec3(0.2275, 0.0314, 0.0353); /* #3a0809 */
     vec3 color = mix(colorEdge, colorCore, max(sdf, particles));
 
-    /* alpha separado por elemento: bola principal a 80%, partículas a
-       30% — o degradê de cor acima usa a cobertura cheia (senão o miolo
-       fica achatado), só o canal de transparência final é limitado. */
-    float alpha = max(sdf * 0.8, particles * 0.3);
+    /* alpha da bola principal também segue "proximity": 50% com o mouse
+       longe, sobe suave até 80% quando o mouse chega em cima — mesma
+       máscara que já controla o blur da borda, então os dois efeitos
+       (borrão + opacidade) crescem juntos. Partículas ficam fixas em 30%,
+       não reagem ao mouse. */
+    float mainAlpha = mix(0.5, 0.8, proximity);
+    float alpha = max(sdf * mainAlpha, particles * 0.3);
 
     gl_FragColor = vec4(color, alpha);
   }

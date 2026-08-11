@@ -157,6 +157,19 @@
    (min 44px) e uma barrinha embaixo do idioma selecionado. Só no mobile
    de verdade (<=599px) — no tablet o painel mobile continua com PT/EN. */
 @media (max-width: 599px) {
+  /* Work/Capabilities/About/Resume no menu mobile aberto — área de toque
+     de pelo menos 44px de altura e mais espaço entre eles (deixa o menu
+     mais alto, é o esperado/desejado). */
+  .mobilePanel .navLinks {
+    gap: var(--space-700);
+  }
+
+  .mobilePanel .navLinks a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
   .mobilePanel .langSwitch {
     justify-content: center;
     gap: var(--space-700);

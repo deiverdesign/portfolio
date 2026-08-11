@@ -93,12 +93,17 @@
     gap: var(--space-200);
   }
 
+  /* DM Sans 500/18px, cor --content-primary (#1a1814) — conferido no
+     DevTools. Nenhum token de tamanho bate exato em 18px, então é valor
+     fixo mesmo (a cor já usa o token, que resolve pro mesmo #1a1814). */
   .navLink {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 44px;
     text-align: center;
+    font-size: 18px;
+    font-weight: 500;
   }
 
   .actionButtons {
