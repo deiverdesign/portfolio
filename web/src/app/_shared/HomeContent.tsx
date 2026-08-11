@@ -25,6 +25,12 @@ export interface CaseCopy {
   locked?: boolean;
   maxWidth?: number;
   imagePosition?: "top" | "center";
+  /** Logo do cliente — aparece no lugar do número quando existe.
+      Sem isso, o card continua mostrando o número normal. */
+  logoSrc?: string;
+  logoAlt?: string;
+  /** Ajuste manual de tamanho pra esse logo específico (1 = tamanho normal). */
+  logoScale?: number;
 }
 
 interface HomeCopy {
@@ -130,22 +136,20 @@ const COPY: Record<Locale, HomeCopy> = {
  * Marcas com quem já trabalhei (agência + in-house) — nomes/logos não mudam
  * por idioma. Dimensões = viewBox real de cada SVG exportado do Figma
  * (/ExportLogosPortfolio), pra manter a proporção correta em altura fixa.
- * NSC não tinha arquivo exportado ainda — fica como wordmark de texto até
- * o Deiver me passar o logo.
  */
 const BRANDS: Brand[] = [
   { name: "HP", src: "/images/brands/hp.svg", width: 38, height: 38 },
-  { name: "Intuit", src: "/images/brands/intuit.svg", width: 94, height: 18, scale: 0.8 },
+  { name: "Intuit", src: "/images/brands/intuit.svg", width: 94, height: 18, scale: 0.56 },
   { name: "McCormick", src: "/images/brands/mccormick.svg", width: 47, height: 39 },
-  { name: "Softplan", src: "/images/brands/softplan.svg", width: 117, height: 26 },
-  { name: "Unimed", src: "/images/brands/unimed.svg", width: 110, height: 16 },
+  { name: "Softplan", src: "/images/brands/softplan.svg", width: 117, height: 26, scale: 0.7 },
+  { name: "Unimed", src: "/images/brands/unimed.svg", width: 110, height: 16, scale: 0.7 },
   { name: "Track & Field", src: "/images/brands/track-and-field.svg", width: 55, height: 30 },
   { name: "CURE", src: "/images/brands/cure.svg", width: 60, height: 32 },
   { name: "Theodoor", src: "/images/brands/theodoor.svg", width: 114, height: 36 },
   { name: "Cirrus", src: "/images/brands/cirrus.svg", width: 134, height: 26 },
   { name: "HSS", src: "/images/brands/hss.svg", width: 41, height: 41 },
   { name: "Lightship", src: "/images/brands/lightship.svg", width: 122, height: 48 },
-  { name: "NSC", width: 60, height: 40 },
+  { name: "NSC", src: "/images/brands/nsc.svg", width: 46, height: 38 },
 ];
 
 /**
@@ -167,6 +171,8 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
         href: `${prefix}/cure`,
         imageSrc: "/images/cure.png",
         imagePosition: "center" as const,
+        logoSrc: "/images/brands/cure.svg",
+        logoAlt: "CURE",
       },
       {
         number: "02",
@@ -177,6 +183,8 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
         tags: ["Subscription UX", "Connected products", "Hardware service"],
         href: `${prefix}/hp`,
         imageSrc: "/images/hp.png",
+        logoSrc: "/images/brands/hp.svg",
+        logoAlt: "HP",
       },
       {
         number: "03",
@@ -187,6 +195,8 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
         tags: ["Accessibility", "Mobile", "Physical-digital UX"],
         href: `${prefix}/theodoor`,
         imageSrc: "/images/theodoor.png",
+        logoSrc: "/images/brands/theodoor.svg",
+        logoAlt: "Theodoor",
       },
       {
         number: "04",
@@ -197,6 +207,9 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
         tags: ["Product Discovery", "Financial education", "Design Systems"],
         href: `${prefix}/intuit`,
         imageSrc: "/images/intuit.png",
+        logoSrc: "/images/brands/intuit.svg",
+        logoAlt: "Intuit",
+        logoScale: 0.595, /* 30% menor (0.7) + mais 15% em cima = 0.7*0.85 */
       },
       {
         number: "05",
@@ -211,6 +224,8 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
         locked: true,
         maxWidth: 600,
         imagePosition: "center" as const,
+        logoSrc: "/images/brands/aster.svg",
+        logoAlt: "ASTER",
       },
     ];
   }
@@ -226,6 +241,8 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
       href: `${prefix}/cure`,
       imageSrc: "/images/cure.png",
       imagePosition: "center" as const,
+      logoSrc: "/images/brands/cure.svg",
+      logoAlt: "CURE",
     },
     {
       number: "02",
@@ -236,6 +253,8 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
       tags: ["UX de assinatura", "Produtos conectados", "Serviço com hardware"],
       href: `${prefix}/hp`,
       imageSrc: "/images/hp.png",
+      logoSrc: "/images/brands/hp.svg",
+      logoAlt: "HP",
     },
     {
       number: "03",
@@ -246,6 +265,8 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
       tags: ["Acessibilidade", "Mobile", "UX físico-digital"],
       href: `${prefix}/theodoor`,
       imageSrc: "/images/theodoor.png",
+      logoSrc: "/images/brands/theodoor.svg",
+      logoAlt: "Theodoor",
     },
     {
       number: "04",
@@ -256,6 +277,9 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
       tags: ["Discovery de produto", "Educação financeira", "Design Systems"],
       href: `${prefix}/intuit`,
       imageSrc: "/images/intuit.png",
+      logoSrc: "/images/brands/intuit.svg",
+      logoAlt: "Intuit",
+      logoScale: 0.7,
     },
     {
       number: "05",
@@ -270,6 +294,8 @@ export function buildCasesCopy(locale: Locale): CaseCopy[] {
       locked: true,
       maxWidth: 600,
       imagePosition: "center" as const,
+      logoSrc: "/images/brands/aster.svg",
+      logoAlt: "ASTER",
     },
   ];
 }

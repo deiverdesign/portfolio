@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Icon } from "@/components/icons/Icon";
 import { RevealMask } from "@/components/RevealMask/RevealMask";
 import styles from "./BrandsSection.module.css";
@@ -23,15 +23,95 @@ export interface BrandsSectionProps {
   pauseLabel: string;
 }
 
+const SLOT_COUNT = 6;
+/* Valores derivados do mecanismo real do client-list da instrument.com/services
+   (lido no bundle: ClientListRotator.js) — lá cada slot fixo troca de logo a
+   cada 2500ms, com fade de 300ms (igual pra entrar/sair) e um atraso de
+   col*100ms por coluna pra não trocar tudo no mesmo instante. Pedido do
+   Deiver: sumiço 25% mais rápido (300 * 0.75) e cada logo fica 20% mais
+   tempo em tela (2500 * 1.2) do que naquele site. */
+const HOLD_MS = 3000;
+const FADE_IN_MS = 300;
+const FADE_OUT_MS = 225;
+const STAGGER_MS = 100;
+
+/** Reparte a lista em N grupos por posição (0,6,12... -> slot 0; 1,7,13... -> slot 1...), igual ao "e % 6" da instrument.com. */
+function groupIntoSlots(brands: Brand[], slotCount: number): Brand[][] {
+  const slots: Brand[][] = Array.from({ length: slotCount }, () => []);
+  brands.forEach((brand, i) => slots[i % slotCount].push(brand));
+  return slots;
+}
+
+interface LogoSlotProps {
+  logos: Brand[];
+  columnIndex: number;
+  isPlaying: boolean;
+}
+
 /**
- * Fileira de marcas com scroll contínuo (estilo arctouch.com) — a lista
- * de logos aparece duas vezes seguidas no track; andar exatamente -50%
- * fecha o loop sem emenda visível. Pausa via animation-play-state (não
- * para/reinicia o CSS, só congela o quadro atual).
+ * Um slot fixo: todas as logos daquela coluna ficam empilhadas na mesma
+ * posição (position:absolute), e só a marca "ativa" fica com opacity:1 —
+ * nada se move de lado, uma marca some enquanto a próxima aparece por cima.
  */
+function LogoSlot({ logos, columnIndex, isPlaying }: LogoSlotProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (!isPlaying || logos.length <= 1) return;
+    /* sem movimento: a marca fica parada na primeira da lista, em vez de
+       trocar sozinha de tempos em tempos (mesmo congelando via CSS, o
+       conteúdo mudando de tempos em tempos ainda seria "movimento"). */
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const advance = () => setActiveIndex((prev) => (prev + 1) % logos.length);
+
+    /* o atraso por coluna precisa se repetir em TODA troca, não só na
+       primeira — é o que faz a esquerda sempre sumir antes da direita, a
+       cada ciclo (não só uma vez no começo). Por isso "tick" (que agenda
+       o advance com esse atraso) roda de novo a cada HOLD_MS, em vez de
+       um setInterval chamando advance direto. */
+    let swapTimeout: number;
+    const tick = () => {
+      swapTimeout = window.setTimeout(advance, columnIndex * STAGGER_MS);
+    };
+    tick();
+    const cycleInterval = window.setInterval(tick, HOLD_MS);
+
+    return () => {
+      window.clearTimeout(swapTimeout);
+      window.clearInterval(cycleInterval);
+    };
+  }, [isPlaying, logos.length, columnIndex]);
+
+  return (
+    <div
+      className={styles.slot}
+      style={{ "--fade-in": `${FADE_IN_MS}ms`, "--fade-out": `${FADE_OUT_MS}ms` } as CSSProperties}
+    >
+      {logos.map((brand, i) => (
+        <span key={brand.name} className={`${styles.slotLogo} ${i === activeIndex ? styles.slotLogoActive : ""}`}>
+          {brand.src ? (
+            // eslint-disable-next-line @next/next/no-img-element -- logo de marca, tamanho fixo pequeno
+            <img
+              src={brand.src}
+              alt={brand.name}
+              width={brand.width}
+              height={brand.height}
+              className={styles.logoImage}
+              style={brand.scale ? { transform: `scale(${brand.scale})` } : undefined}
+            />
+          ) : (
+            <span className={styles.logoPlaceholder}>{brand.name}</span>
+          )}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function BrandsSection({ eyebrow, caption, brands, playLabel, pauseLabel }: BrandsSectionProps) {
   const [isPlaying, setIsPlaying] = useState(true);
-  const track = [...brands, ...brands];
+  const slots = groupIntoSlots(brands, SLOT_COUNT);
 
   return (
     <section className={styles.section}>
@@ -53,26 +133,10 @@ export function BrandsSection({ eyebrow, caption, brands, playLabel, pauseLabel 
         </button>
       </div>
 
-      <div className={styles.row}>
-        <div className={`${styles.track} ${isPlaying ? styles.playing : styles.paused}`}>
-          {track.map((brand, i) => (
-            <span key={`${brand.name}-${i}`} className={styles.logo} aria-hidden={i >= brands.length}>
-              {brand.src ? (
-                // eslint-disable-next-line @next/next/no-img-element -- logo de marca, tamanho fixo pequeno
-                <img
-                  src={brand.src}
-                  alt={brand.name}
-                  width={brand.width}
-                  height={brand.height}
-                  className={styles.logoImage}
-                  style={brand.scale ? { transform: `scale(${brand.scale})` } : undefined}
-                />
-              ) : (
-                <span className={styles.logoPlaceholder}>{brand.name}</span>
-              )}
-            </span>
-          ))}
-        </div>
+      <div className={styles.slots}>
+        {slots.map((logos, columnIndex) => (
+          <LogoSlot key={columnIndex} logos={logos} columnIndex={columnIndex} isPlaying={isPlaying} />
+        ))}
       </div>
 
       <div className={styles.divider} />

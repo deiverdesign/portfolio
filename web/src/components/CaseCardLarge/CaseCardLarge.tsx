@@ -51,6 +51,12 @@ export interface CaseCardLargeProps {
   imagePosition?: "top" | "center";
   /** Posição do card na grid — só usada pro stagger de entrada no viewport (70ms por item). */
   revealIndex?: number;
+  /** Logo do cliente (mesmos arquivos da seção de marcas) — aparece no
+      lugar do número quando existe. Sem isso, mostra o número normal. */
+  logoSrc?: string;
+  logoAlt?: string;
+  /** Ajuste manual de tamanho pra esse logo específico (1 = tamanho normal). */
+  logoScale?: number;
 }
 
 export function CaseCardLarge({
@@ -68,6 +74,9 @@ export function CaseCardLarge({
   locale = "pt",
   imagePosition = "top",
   revealIndex,
+  logoSrc,
+  logoAlt,
+  logoScale,
 }: CaseCardLargeProps) {
   const t = STRINGS[locale];
   const visibleTags = tags.slice(0, maxVisibleTags);
@@ -110,7 +119,17 @@ export function CaseCardLarge({
         <div className={styles.image} role="img" aria-label={imageAlt} />
       )}
       <div className={styles.content}>
-        <span className={styles.number}>{number}</span>
+        {logoSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element -- logo pequeno, mesmo padrão da fileira de marcas
+          <img
+            src={logoSrc}
+            alt={logoAlt ?? ""}
+            className={styles.logo}
+            style={logoScale ? { transform: `scale(${logoScale})`, transformOrigin: "left center" } : undefined}
+          />
+        ) : (
+          <span className={styles.number}>{number}</span>
+        )}
         <h3 className={styles.title}>
           {title}
           {locked && (

@@ -66,53 +66,58 @@
   outline-offset: 2px;
 }
 
-/* linha com overflow escondido — o track é 2x mais largo que ela e roda por baixo */
-.row {
+/* Grade de slots fixos (estilo instrument.com/services) — 6 colunas no
+   desktop, 3 no tablet/mobile (reflow via grid, sem perder nenhuma marca:
+   diferente do site de referência, que reagrupa as marcas por breakpoint,
+   aqui os mesmos 6 slots só quebram em 2 linhas de 3 no telas estreitas). */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-700) var(--space-600);
   width: 100%;
-  overflow: hidden;
 }
 
-.track {
-  display: flex;
-  align-items: center;
-  gap: var(--space-layout-100);
-  width: max-content;
-  animation: brandsMarquee 40s linear infinite;
-}
-
-.track.paused {
-  animation-play-state: paused;
-}
-
-.track.playing {
-  animation-play-state: running;
-}
-
-/* a lista de marcas está duplicada no track (ver BrandsSection.tsx) — andar
-   exatamente -50% termina bem na hora em que a 2ª cópia começa, sem emenda
-   visível nem salto. */
-@keyframes brandsMarquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
+@media (max-width: 1023px) {
+  .slots {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.logo {
-  flex: 0 0 auto;
+/* cada slot empilha (position:absolute) todas as marcas daquela coluna —
+   só a marca "ativa" tem opacity:1, então elas se revezam no mesmo lugar
+   em vez de deslizar de lado. */
+.slot {
+  position: relative;
   height: 40px;
+}
+
+/* Tempos calculados a partir do mecanismo real da instrument.com/services
+   (lido no bundle JS: ClientListRotator, sem esse número em nenhum lugar
+   público) — lá: 2500ms de exibição, 300ms de fade simétrico (entra/sai
+   igual). Pedido do Deiver: sumiço 25% mais rápido (300 * 0.75 = 225ms) e
+   cada marca fica 20% mais tempo em tela (2500 * 1.2 = 3000ms, ver
+   BrandsSection.tsx). Por isso a saída (regra de baixo, sem .slotLogoActive)
+   e a entrada (.slotLogoActive) têm durações diferentes. */
+.slotLogo {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  transition: opacity var(--fade-out, 225ms) ease-in-out;
+}
+
+.slotLogo.slotLogoActive {
+  opacity: 1;
+  transition: opacity var(--fade-in, 300ms) ease-in-out;
 }
 
 .logoImage {
   display: block;
   width: auto;
   height: 100%;
-  max-width: 140px;
+  max-width: 100%;
   object-fit: contain;
 }
 
@@ -131,14 +136,10 @@
   border-top: 1px solid var(--border-default);
 }
 
-/* sem movimento: para a animação de vez (não só "devagar") e some com o
-   botão, já que não sobra nada pra pausar/rodar. */
+/* sem movimento: a troca de marca por slot já para no JS (ver
+   BrandsSection.tsx); o botão de play/pause some, já que não sobra nada
+   pra pausar/rodar. */
 @media (prefers-reduced-motion: reduce) {
-  .track {
-    animation: none;
-    transform: none;
-  }
-
   .controlButton {
     display: none;
   }

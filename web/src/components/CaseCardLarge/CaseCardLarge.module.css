@@ -88,6 +88,17 @@
   color: var(--content-secondary);
 }
 
+/* logo do cliente no lugar do número — mesma altura pequena, largura livre
+   (cada logo tem sua própria proporção, igual na fileira de marcas). */
+.logo {
+  display: block;
+  height: 20px;
+  width: auto;
+  max-width: 100px;
+  object-fit: contain;
+  object-position: left center;
+}
+
 .title {
   font-family: var(--font-boldonse);
   font-size: var(--font-h2-section-title);
