@@ -50,8 +50,15 @@
    marcando onde a seção acaba). Sem scroll hijacking: é só CSS, o
    scroll do navegador continua 100% nativo. */
 .left {
+  --capability-sticky-gap: var(--space-500);
   position: sticky;
-  top: var(--space-layout-100);
+  /* Header fixo (NavBar.tsx) pode aparecer por cima da página inteira ao
+     rolar — sem esse offset, os ~69px dele cobrem o número/começo das
+     tags do bloco sticky. --sticky-header-height vem medido de verdade
+     via ResizeObserver (não é um valor chutado), então o espaço fica
+     certo em qualquer largura de desktop/tablet, mesmo se a altura do
+     header mudar entre breakpoints. */
+  top: calc(var(--sticky-header-height, 69px) + var(--capability-sticky-gap));
   display: flex;
   flex-direction: column;
   gap: var(--space-500);

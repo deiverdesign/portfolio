@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/Button/Button";
 import { Icon } from "@/components/icons/Icon";
@@ -76,8 +76,21 @@ const STRINGS: Record<Locale, {
   },
 };
 
-export function NavBar({ context = "light", locale, otherLocaleHref }: NavBarProps) {
-  const [open, setOpen] = useState(false);
+interface NavBarBodyProps {
+  context: NavBarContext;
+  locale: Locale;
+  otherLocaleHref: string;
+  open: boolean;
+  onToggle: () => void;
+}
+
+/**
+ * Conteúdo de dentro do `<nav>` — extraído pra ser renderizado duas vezes
+ * (header original no fluxo + duplicata fixa que aparece ao rolar) sem
+ * duplicar JSX/lógica de links, idioma, menu mobile etc. As duas instâncias
+ * têm seu próprio estado `open` (painéis mobile independentes).
+ */
+function NavBarBody({ context, locale, otherLocaleHref, open, onToggle }: NavBarBodyProps) {
   const pathname = usePathname();
   const t = STRINGS[locale];
   const items = NAV_ITEMS[locale];
@@ -117,7 +130,7 @@ export function NavBar({ context = "light", locale, otherLocaleHref }: NavBarPro
   );
 
   return (
-    <nav className={`${styles.navbar} ${styles[context]}`}>
+    <>
       <div className={styles.topRow}>
         <a href={HOME_HREF[locale]} className={styles.identity}>
           <strong>Deiver Brito</strong>
@@ -139,7 +152,7 @@ export function NavBar({ context = "light", locale, otherLocaleHref }: NavBarPro
           className={styles.menuToggle}
           aria-expanded={open}
           aria-label={open ? t.closeMenu : t.openMenu}
-          onClick={() => setOpen((v) => !v)}
+          onClick={onToggle}
         >
           {open ? <Icon name="close" size={20} /> : <Icon name="menu" size={20} />}
         </button>
@@ -152,6 +165,97 @@ export function NavBar({ context = "light", locale, otherLocaleHref }: NavBarPro
         </Button>
         {langSwitch}
       </div>
-    </nav>
+    </>
+  );
+}
+
+export function NavBar({ context = "light", locale, otherLocaleHref }: NavBarProps) {
+  const [open, setOpen] = useState(false);
+  const [fixedOpen, setFixedOpen] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const fixedNavRef = useRef<HTMLElement>(null);
+
+  /* Expõe a altura real do header fixo como uma CSS var global
+     (--sticky-header-height), pra qualquer outro componente com conteúdo
+     sticky (hoje: CapabilitySection) poder abrir espaço suficiente pra
+     não ficar embaixo dele. Medido via ResizeObserver em vez de um valor
+     fixo porque essa altura muda de breakpoint pra breakpoint (nav
+     desktop vs. o toggle mobile têm alturas diferentes) e com font
+     loading. useLayoutEffect (não useEffect) pra medir antes do
+     navegador pintar a primeira vez, evitando um salto visível. */
+  useLayoutEffect(() => {
+    const node = fixedNavRef.current;
+    if (!node) return;
+
+    const setHeightVar = (height: number) => {
+      document.documentElement.style.setProperty("--sticky-header-height", `${height}px`);
+    };
+    setHeightVar(node.getBoundingClientRect().height);
+
+    const observer = new ResizeObserver(([entry]) => setHeightVar(entry.borderBoxSize[0].blockSize));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  /* Sentinela em vez de observar a nav em si: fica sempre exatamente na
+     borda de baixo do header original (último filho dele), então o
+     header fixo verde aparece assim que essa borda passa do topo da
+     viewport — funciona igual mesmo se o header original mudar de
+     altura (menu mobile aberto, por exemplo), sem precisar de um valor
+     de distância de scroll fixo. */
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isRevealed = !entry.isIntersecting;
+        setRevealed(isRevealed);
+        /* Se o menu mobile da duplicata ficou aberto e o header original
+           volta a aparecer (duplicata some), fecha o painel — evita
+           reabrir "sujo" da próxima vez que ela reaparecer. */
+        if (!isRevealed) setFixedOpen(false);
+      },
+      { threshold: 0 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <>
+      <nav ref={navRef} className={`${styles.navbar} ${styles[context]}`}>
+        <NavBarBody
+          context={context}
+          locale={locale}
+          otherLocaleHref={otherLocaleHref}
+          open={open}
+          onToggle={() => setOpen((v) => !v)}
+        />
+        <div ref={sentinelRef} className={styles.sentinel} aria-hidden="true" />
+      </nav>
+
+      {/* Duplicata fixa — sempre no estilo "dark" (verde) da Home, em
+          qualquer página, independente do context do header original.
+          inert some ela de vez (teclado + leitor de tela) enquanto
+          escondida; aria-hidden é redundante com inert mas mantido por
+          compatibilidade mais ampla. */}
+      <nav
+        ref={fixedNavRef}
+        className={`${styles.navbar} ${styles.dark} ${styles.fixedReveal} ${revealed ? styles.fixedRevealVisible : ""}`}
+        aria-hidden={!revealed}
+        inert={!revealed}
+      >
+        <NavBarBody
+          context="dark"
+          locale={locale}
+          otherLocaleHref={otherLocaleHref}
+          open={fixedOpen}
+          onToggle={() => setFixedOpen((v) => !v)}
+        />
+      </nav>
+    </>
   );
 }

@@ -4,6 +4,40 @@
   font-size: var(--font-ui-medium);
 }
 
+/* Marca a borda de baixo do header original — o header fixo (abaixo)
+   aparece assim que essa marca sai da viewport pelo topo. Sem altura
+   nem espaço próprio, só um ponto de observação. */
+.sentinel {
+  height: 0;
+}
+
+/* Duplicata fixa do header, sempre no estilo verde (.dark) — some/aparece
+   deslizando de cima com fade, sem empurrar conteúdo (position:fixed não
+   participa do fluxo normal). safe-area-inset-top soma um respiro extra
+   no topo pra não ficar embaixo do notch/ilha dinâmica em iOS.
+   pointer-events:none reforça o inert (ver NavBar.tsx) durante a
+   transição de saída, pra nunca ficar clicável enquanto invisível. */
+.fixedReveal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding-top: env(safe-area-inset-top, 0px);
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--dur-fast) var(--ease-out-quart),
+    opacity var(--dur-fast) var(--ease-out-quart);
+}
+
+.fixedRevealVisible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .topRow {
   display: flex;
   align-items: center;

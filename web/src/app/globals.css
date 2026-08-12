@@ -16,6 +16,11 @@
   --dur-base: 380ms; /* hover de cards */
   --dur-slow: 700ms; /* entrada em viewport */
   --dur-hero-reveal: 600ms; /* replica o timing exato do julius.fm */
+
+  /* Altura real do header fixo (NavBar.tsx mede via ResizeObserver e
+     sobrescreve esse valor assim que monta) — o fallback aqui é só pro
+     primeiro paint antes do JS rodar, evita um "calc(undefined)". */
+  --sticky-header-height: 69px;
 }
 
 @media (prefers-reduced-motion: reduce) {
