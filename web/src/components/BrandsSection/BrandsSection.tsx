@@ -28,9 +28,9 @@ const SLOT_COUNT = 6;
    (lido no bundle: ClientListRotator.js) — lá cada slot fixo troca de logo a
    cada 2500ms, com fade de 300ms (igual pra entrar/sair) e um atraso de
    col*100ms por coluna pra não trocar tudo no mesmo instante. Pedido do
-   Deiver: sumiço 25% mais rápido (300 * 0.75) e cada logo fica 20% mais
-   tempo em tela (2500 * 1.2) do que naquele site. */
-const HOLD_MS = 3000;
+   Deiver: sumiço 25% mais rápido (300 * 0.75) que aquele site; tempo em tela
+   ajustado manualmente pra 5000ms. */
+const HOLD_MS = 5000;
 const FADE_IN_MS = 300;
 const FADE_OUT_MS = 225;
 const STAGGER_MS = 100;
