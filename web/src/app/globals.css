@@ -40,10 +40,22 @@ html {
   scroll-behavior: smooth;
 }
 
+/* overflow-x: clip em vez de hidden — hidden (em qualquer eixo) força o
+   OUTRO eixo (overflow-y, que fica "visible" por padrão) a computar como
+   "auto" (regra da spec: se um eixo não é visible e o outro é, o visible
+   vira auto). Isso transformava html E body em contêineres de scroll
+   verticais de verdade (confirmado via getComputedStyle: overflow
+   "hidden auto" nos dois) — com dois contêineres de scroll aninhados,
+   position:sticky nas capabilities parava de funcionar (o elemento
+   sticky gruda no contêiner de scroll mais próximo, que virou um dos
+   dois errados). clip corta o overflow horizontal igual a hidden, mas
+   está explicitamente isento dessa regra da spec — não upgrade o
+   overflow-y, então html/body voltam a ser só a rolagem nativa da
+   página (um contêiner só), e sticky funciona. */
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {

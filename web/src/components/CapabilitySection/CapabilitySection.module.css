@@ -1,0 +1,210 @@
+/* Cada capability é uma seção editorial grande — número, tags e título
+   gigante numa coluna, texto + projetos relacionados na outra.
+
+   Colunas em grid com largura FIXA (46%/54%), não flex — com flex, o
+   flex-basis é só um "ponto de partida": o item ainda cresce pro seu
+   min-content quando o título é comprido, então o título de cada seção
+   acabava definindo uma largura de coluna diferente (medido: 448px a
+   1232px entre seções, a "Documentation and handoff" chegou a quebrar
+   pra duas linhas). grid-template-columns com minmax(0, %) trava a
+   largura de cada coluna em exatamente 46%/54% sempre, e o texto do
+   título quebra (overflow-wrap) DENTRO da coluna em vez de esticá-la.
+
+   min-height: 100svh — cada capability ocupa pelo menos a viewport
+   inteira (svh = "small viewport height", já desconta a barra de
+   endereço do mobile). Se o conteúdo precisar de mais espaço que isso
+   (títulos de 3 linhas + muitos tiles), a seção cresce normalmente —
+   min-height nunca corta conteúdo, só garante um mínimo.
+
+   align-items: start — sem isso, a coluna .left (grid item) esticaria
+   pra ocupar a mesma altura que .right (comportamento padrão do grid,
+   align-items:stretch), o que anularia o position:sticky do título: um
+   elemento sticky só "viaja" dentro do espaço vertical que sobra acima
+   dele no próprio container, e se o container já estica pra 100% da
+   altura da seção, não sobra espaço nenhum pra ele se mover. */
+.section {
+  --col-left: 46%;
+  --col-right: 54%;
+  display: grid;
+  grid-template-columns: minmax(0, var(--col-left)) minmax(0, var(--col-right));
+  /* sem isso, a única linha do grid encolhe pro conteúdo mais curto
+     (.right, ~241px) em vez de esticar até a altura real da seção
+     (900px+, por causa do min-height) — e o "container" de sticky do
+     .left é exatamente essa linha, não a seção inteira. Com a linha
+     curta, o .left descolava (sticky) por uns 100px só e "soltava" bem
+     antes da seção realmente terminar. 1fr faz a linha ocupar toda a
+     altura disponível do grid, dando ao sticky o percurso certo. */
+  grid-template-rows: 1fr;
+  align-items: start;
+  gap: var(--space-layout-100);
+  min-height: 100svh;
+  padding: var(--space-layout-200) 0;
+  border-bottom: 1px solid var(--border-default);
+}
+
+/* Título fica fixo na tela enquanto o conteúdo da direita rola por
+   baixo dele — mesmo modelo estrutural do koto.com/services (número +
+   tags + título grudam no topo durante o scroll daquela capability, e
+   soltam quando a PRÓXIMA seção empurra, porque o sticky só "gruda"
+   dentro dos limites do próprio .section, que tem border-bottom
+   marcando onde a seção acaba). Sem scroll hijacking: é só CSS, o
+   scroll do navegador continua 100% nativo. */
+.left {
+  position: sticky;
+  top: var(--space-layout-100);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+  min-width: 0;
+}
+
+.number {
+  font-size: var(--font-caption);
+  color: var(--content-secondary);
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-300);
+}
+
+/* Alguns tags (ex: "Engineering collaboration") são compridos demais pra
+   caber numa pill sem quebrar no mobile — Tag.module.css usa white-space:
+   nowrap (correto pro caso comum, tags curtas). O Tag aceita `className`
+   extra (ver Tag.tsx), então passo essa classe local só pra sobrescrever
+   esse comportamento aqui, sem mexer no componente compartilhado. */
+.tagOverride {
+  white-space: normal;
+}
+
+/* Título gigante, o elemento mais forte da seção — clamp() em vez de um
+   token fixo porque nenhum token do design system chega perto desse
+   tamanho (o maior, --font-hero-title, é 32px). Escala com a viewport pra
+   nunca estourar em telas estreitas. Mesma regra fluida pra todo título
+   (nenhum título tem tamanho individual).
+
+   overflow-wrap/word-break/hyphens: normal/normal/none — só pode quebrar
+   em espaço ou hífen já existente no texto (ex: "AI-assisted"), nunca no
+   meio de uma palavra. "Documentation" e "Accessibility" (13 letras, as
+   palavras mais compridas de todos os títulos) precisam caber inteiras
+   na coluna de 46% nesse tamanho de fonte — testado no navegador. */
+.title {
+  font-family: var(--font-boldonse);
+  font-weight: 400;
+  font-synthesis: none;
+  font-size: clamp(1.85rem, 1.3rem + 2.6vw, 3rem);
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--content-heading);
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  max-width: 100%;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+  min-width: 0;
+}
+
+.description {
+  font-size: var(--font-body-large-intro);
+  line-height: 1.6;
+  color: var(--content-primary);
+  max-width: 640px;
+}
+
+.divider {
+  border-top: 1px solid var(--border-default);
+}
+
+/* Duas colunas de grupo SEMPRE (mesmo com só 1 grupo existindo) — é o
+   que garante que os tiles tenham o mesmo tamanho em toda seção. Antes,
+   uma seção com só "related case studies" deixava esse grupo (e os
+   tiles dentro dele) ocupar a coluna INTEIRA da direita (54%), enquanto
+   uma seção com os 2 grupos dividia em metades — o mesmo tile aparecia
+   com tamanhos diferentes dependendo da seção. Com grid-template-columns
+   fixo em 1fr 1fr, se um grupo não existe o espaço dele fica vazio (não
+   é redistribuído pro outro), então o grupo que existe nunca estica.
+
+   O divisor vertical usa ::before em vez de border-right/padding-right
+   num dos grupos — border/padding tirava largura só do primeiro grupo,
+   deixando os tiles dele mais estreitos que os do segundo. Como
+   ::before é posicionado (position:absolute) exatamente no meio do
+   gap, não consome largura de nenhuma das duas colunas — as duas ficam
+   sempre exatamente iguais (1fr = 1fr), com ou sem divisor visível.
+   :has() só desenha o divisor quando os 2 grupos existem de verdade. */
+.groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-700);
+  position: relative;
+}
+
+.groups:has(.group:nth-child(2))::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--border-default);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+  min-width: 0;
+}
+
+.groupLabel {
+  font-family: var(--font-dm-mono);
+  font-size: var(--font-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--content-muted-on-light);
+}
+
+/* 2 slots sempre, mesmo com só 1 tile — o segundo slot fica vazio (grid
+   não redistribui a largura pro item sozinho), então um tile nunca
+   estica pra preencher o espaço do slot vizinho ausente. */
+.tileGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-400);
+}
+
+@media (max-width: 599px) {
+  /* Sticky só faz sentido com 2 colunas lado a lado — no mobile
+     (empilhado) ele é desligado (position:static) pra não sobrepor o
+     conteúdo. min-height:100svh continua valendo (cada capability ocupa
+     ao menos a tela), mas cresce à vontade se o conteúdo for maior. */
+  .section {
+    grid-template-columns: 1fr;
+    gap: var(--space-600);
+    padding: var(--space-layout-100) 0;
+  }
+
+  .left {
+    position: static;
+  }
+
+  .groups {
+    grid-template-columns: 1fr;
+    gap: var(--space-600);
+  }
+
+  .groups:has(.group:nth-child(2))::before {
+    display: none;
+  }
+
+  .group:not(:last-child) {
+    padding-bottom: var(--space-600);
+    border-bottom: 1px solid var(--border-default);
+  }
+}

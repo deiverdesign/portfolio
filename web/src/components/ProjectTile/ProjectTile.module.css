@@ -1,0 +1,38 @@
+/* O SVG já vem com fundo colorido + logo compostos (112x75, exportado do
+   Figma) — a proporção do tile é travada nessa razão, então a imagem
+   sempre preenche exatamente o espaço, em qualquer largura de coluna. */
+.tile {
+  display: block;
+  width: 100%;
+  aspect-ratio: 112 / 75;
+  border: 1px solid var(--border-default);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Só o tile de case study (que é um <a>) recebe affordance de clique —
+   o estático ("other relevant work") fica com cursor padrão, sem hover. */
+a.tile {
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+a.tile:hover {
+  border-color: var(--border-strong);
+  transform: scale(1.02);
+}
+
+a.tile:focus-visible {
+  outline: 2px solid var(--action-focus-ring);
+  outline-offset: 2px;
+}

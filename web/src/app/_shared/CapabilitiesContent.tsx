@@ -1,98 +1,66 @@
-import Link from "next/link";
 import { NavBar, type Locale } from "@/components/NavBar/NavBar";
-import { Tag } from "@/components/Tag/Tag";
+import { CapabilitySection, type CaseStudyTile, type OtherWorkTile } from "@/components/CapabilitySection/CapabilitySection";
 import { Footer } from "@/components/Footer/Footer";
 import styles from "./capabilities.module.css";
-
-interface RelatedWork {
-  title: string;
-  summary: string;
-  href: string;
-}
 
 export interface Capability {
   number: string;
   title: string;
   tags: string[];
   description: string;
-  relatedWork: RelatedWork[];
+  caseStudies: CaseStudyTile[];
+  otherWork: OtherWorkTile[];
 }
 
 interface CapabilitiesCopy {
   eyebrow: string;
   title: string;
   intro: string;
-  relatedEyebrow: string;
+  caseStudiesLabel: string;
+  otherWorkLabel: string;
   capabilities: Capability[];
 }
 
+/**
+ * Os 8 tiles de projeto usados nas seções de capability — cada SVG já vem
+ * com o fundo colorido da marca embutido (exportado do Figma pronto,
+ * 112x75), então aqui só precisamos do caminho do arquivo.
+ */
+const LOGO: Record<string, string> = {
+  cure: "/images/capabilities/cure.svg",
+  hp: "/images/capabilities/hp.svg",
+  theodoor: "/images/capabilities/theodoor.svg",
+  intuit: "/images/capabilities/intuit.svg",
+  aster: "/images/capabilities/aster.svg",
+  cirrus: "/images/capabilities/cirrus.svg",
+  softplan: "/images/capabilities/softplan.svg",
+  lightship: "/images/capabilities/lightship.svg",
+};
+
 export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
   const prefix = locale === "pt" ? "/pt/cases" : "/cases";
+  const viewCase = locale === "pt" ? "Ver case" : "See case";
 
-  const cure: RelatedWork =
-    locale === "pt"
-      ? {
-          title: "Cure Intelligence / SCRIOO",
-          summary: "Plataforma de inteligência de riscos em supply chain com IA.",
-          href: `${prefix}/cure`,
-        }
-      : {
-          title: "Cure Intelligence / SCRIOO",
-          summary: "AI-powered supply chain risk intelligence platform.",
-          href: `${prefix}/cure`,
-        };
+  const caseStudy = (key: keyof typeof LOGO, name: string, slug: string): CaseStudyTile => ({
+    name,
+    logoSrc: LOGO[key],
+    href: `${prefix}/${slug}`,
+    ariaLabel: `${viewCase}: ${name}`,
+  });
 
-  const hp: RelatedWork =
-    locale === "pt"
-      ? {
-          title: "HP Subscription Onboarding",
-          summary: "Configuração guiada para um modelo de assinatura com impressora incluída.",
-          href: `${prefix}/hp`,
-        }
-      : {
-          title: "HP Subscription Onboarding",
-          summary: "Guided setup for a printer-inclusive subscription model.",
-          href: `${prefix}/hp`,
-        };
+  const otherWork = (key: keyof typeof LOGO, name: string): OtherWorkTile => ({
+    name,
+    logoSrc: LOGO[key],
+  });
 
-  const theodoor: RelatedWork =
-    locale === "pt"
-      ? {
-          title: "Theodoor",
-          summary: "App acessível para automação de portas inteligentes.",
-          href: `${prefix}/theodoor`,
-        }
-      : {
-          title: "Theodoor",
-          summary: "Accessible app for smart door automation.",
-          href: `${prefix}/theodoor`,
-        };
-
-  const intuit: RelatedWork =
-    locale === "pt"
-      ? {
-          title: "Intuit for Education",
-          summary: "Experiência de educação financeira para estudantes.",
-          href: `${prefix}/intuit`,
-        }
-      : {
-          title: "Intuit for Education",
-          summary: "Financial education experience for students.",
-          href: `${prefix}/intuit`,
-        };
-
-  const aster: RelatedWork =
-    locale === "pt"
-      ? {
-          title: "ASTER",
-          summary: "Explorando IA como colaboradora clínica em consultas de alto risco.",
-          href: `${prefix}/aster`,
-        }
-      : {
-          title: "ASTER",
-          summary: "Exploring AI as a clinical collaborator in high-risk consultations.",
-          href: `${prefix}/aster`,
-        };
+  const cure = caseStudy("cure", "CURE Intelligence / SCRIOO", "cure");
+  const hp = caseStudy("hp", "HP Subscription Onboarding", "hp");
+  const theodoor = caseStudy("theodoor", "Theodoor", "theodoor");
+  const intuit = caseStudy("intuit", "Intuit for Education", "intuit");
+  const aster = caseStudy("aster", "ASTER", "aster");
+  const cirrus = otherWork("cirrus", "Cirrus");
+  const softplan = otherWork("softplan", "Softplan");
+  const lightship = otherWork("lightship", "Lightship");
 
   if (locale === "en") {
     return {
@@ -100,79 +68,89 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
       title: "Capabilities",
       intro:
         "Different projects show different parts of my practice — from complex systems and design systems to AI-assisted prototyping, accessibility, data-heavy UX, and interaction design.",
-      relatedEyebrow: "RELATED WORK",
+      caseStudiesLabel: "RELATED CASE STUDIES",
+      otherWorkLabel: "OTHER RELEVANT WORK",
       capabilities: [
         {
           number: "01",
           title: "Complex systems",
-          tags: ["Complex systems", "Enterprise UX", "Operational users"],
+          tags: ["Enterprise UX", "Operational users", "Connected products"],
           description:
-            "My core practice is making sense of complexity — not flattening it artificially, but creating interfaces and systems where dense logic becomes usable. I work with end-to-end flows, multi-state components, operational workflows, and contexts where the product logic itself is part of the design challenge.",
-          relatedWork: [cure, hp, aster],
+            "I turn dense product logic into interfaces people can understand and operate—across multi-state workflows, connected systems, and decisions where hiding complexity would make the product less useful.",
+          caseStudies: [cure, hp],
+          otherWork: [cirrus, softplan],
         },
         {
           number: "02",
           title: "Research and discovery",
-          tags: ["Discovery", "User research", "Usability testing"],
+          tags: ["User research", "Product discovery", "Usability testing"],
           description:
-            "Before I design the solution, I need to understand the problem. I run user interviews, discovery workshops with the client, and usability tests to validate hypotheses before committing weeks of UI work. I use low-fidelity wireframes not as a deliverable, but as a conversation tool — to align business rules with the client before they turn into code.",
-          relatedWork: [intuit, cure],
+            "I use interviews, workshops, low-fidelity prototypes, and focused usability tests to clarify the problem, expose risky assumptions, and align teams before expensive UI work begins.",
+          caseStudies: [intuit, cure],
+          otherWork: [],
         },
         {
           number: "03",
           title: "Design Systems",
-          tags: ["Design Systems", "Web platform"],
+          tags: ["Components", "Tokens", "Governance"],
           description:
-            "Design systems are a means to an end: product coherence at scale. I've worked inside established enterprise systems and helped build systems from scratch — writing component documentation, defining token structures, collaborating with engineering on implementation, and building the governance layer that keeps the system alive.",
-          relatedWork: [cure, hp, intuit],
+            "I build systems that keep products coherent as they grow—combining reusable components, token structures, documentation, engineering collaboration, and practical governance.",
+          caseStudies: [intuit, theodoor],
+          otherWork: [lightship],
         },
         {
           number: "04",
           title: "AI-assisted prototyping",
-          tags: ["AI", "Prototyping"],
+          tags: ["AI workflows", "Behavioral prototypes", "Edge cases"],
           description:
-            "I use AI tools not as a shortcut, but as thinking partners in my workflow — to simulate edge cases, generate realistic test content, rapidly prototype interaction logic, and explore behavior variations that would take weeks to build manually. This accelerates the work without replacing design judgment; here AI serves my process, not the product itself.",
-          relatedWork: [cure, theodoor],
+            "I use AI to prototype behavior, simulate edge cases, and produce realistic test content faster—expanding exploration without outsourcing design judgment.",
+          caseStudies: [theodoor],
+          otherWork: [],
         },
         {
           number: "05",
           title: "Designing for AI systems",
-          tags: ["AI", "Trust and error", "Human decision"],
+          tags: ["Trust", "Error recovery", "Human decision"],
           description:
-            "AI systems fail, and design has to deal with that, not hide it. I design interfaces that communicate a prediction's confidence level, make model error visible and recoverable, and make clear where the final decision still belongs to a person. Here AI isn't a tool in my process — it's the system I'm designing.",
-          relatedWork: [aster, cure],
+            "I design AI interfaces that communicate confidence, expose uncertainty, support recovery, and keep people in control when automated outputs affect important decisions.",
+          caseStudies: [aster, cure],
+          otherWork: [],
         },
         {
           number: "06",
           title: "Accessibility and inclusive UX",
-          tags: ["Accessibility", "Inclusive UX", "Mobile"],
+          tags: ["Inclusive UX", "Multimodal feedback", "Mobile"],
           description:
-            "Accessibility is not a checklist. I design for real people using assistive technology, working in constrained environments, or facing situations where the interface needs to work harder. This includes multimodal feedback systems, touch and keyboard navigation, WCAG compliance, and edge cases that matter most to people at the highest risk of exclusion.",
-          relatedWork: [theodoor],
+            "I design for people, devices, and contexts where visual feedback alone is not enough—using accessible interaction patterns, multimodal feedback, and resilient states.",
+          caseStudies: [theodoor, intuit],
+          otherWork: [],
         },
         {
           number: "07",
           title: "Motion and interaction",
-          tags: ["Motion / Interaction", "Interaction design"],
+          tags: ["System feedback", "State transitions", "Prototyping"],
           description:
-            "Motion in product design serves communication. I use transitions, feedback states, and animations to signal what the system is doing, confirm user actions, and reduce cognitive load — not to add visual decoration. The right interaction detail can eliminate an entire tooltip or error message.",
-          relatedWork: [theodoor],
+            "I use motion and interaction to explain state, confirm actions, and make system behavior easier to understand—especially when a digital interface controls something physical.",
+          caseStudies: [theodoor, hp],
+          otherWork: [cirrus, lightship],
         },
         {
           number: "08",
           title: "Data-heavy UX",
-          tags: ["Data-heavy UX", "Enterprise", "Complex systems"],
+          tags: ["Dashboards", "Enterprise", "Progressive disclosure"],
           description:
-            "Some product contexts demand density. Dashboards, supply-chain tables, legal-process timelines, and risk matrices are not interfaces that can be reduced to three clean cards. The design challenge is making density usable: hierarchy, progressive disclosure, filters, and clear state communication.",
-          relatedWork: [cure, hp],
+            "I make dense interfaces usable through hierarchy, filtering, comparison, and progressive disclosure—preserving the information people need without overwhelming the first view.",
+          caseStudies: [cure, intuit],
+          otherWork: [cirrus, softplan],
         },
         {
           number: "09",
           title: "Documentation and handoff",
-          tags: ["Design Systems", "Complex flows"],
+          tags: ["Specifications", "Edge cases", "Engineering collaboration"],
           description:
-            "Design doesn't end at the mockup. I write edge-case specifications, annotate interaction behaviors, document component states, and create handoff artifacts that let engineering build without guessing. This practice reduces back-and-forth, lowers implementation risk, and creates a shared vocabulary between design and engineering.",
-          relatedWork: [cure, hp],
+            "I document flows, states, edge cases, and interaction rules so engineering and QA can build with less ambiguity, rework, and interpretation debt.",
+          caseStudies: [cure, hp],
+          otherWork: [lightship, softplan],
         },
       ],
     };
@@ -183,79 +161,89 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
     title: "Competências",
     intro:
       "Projetos diferentes mostram partes diferentes da minha prática — de sistemas complexos e design systems a prototipação assistida por IA, acessibilidade, UX denso em dados e design de interação.",
-    relatedEyebrow: "TRABALHOS RELACIONADOS",
+    caseStudiesLabel: "CASES RELACIONADOS",
+    otherWorkLabel: "OUTROS TRABALHOS RELEVANTES",
     capabilities: [
       {
         number: "01",
         title: "Sistemas complexos",
-        tags: ["Sistemas complexos", "UX enterprise", "Usuários operacionais"],
+        tags: ["UX enterprise", "Usuários operacionais", "Produtos conectados"],
         description:
-          "Minha prática principal é dar sentido à complexidade — não simplificá-la artificialmente, mas criar interfaces e sistemas em que lógicas densas se tornam utilizáveis. Trabalho com fluxos ponta a ponta, componentes com múltiplos estados, workflows operacionais e contextos em que a própria lógica do produto faz parte do desafio de design.",
-        relatedWork: [cure, hp, aster],
+          "Transformo lógicas de produto densas em interfaces que as pessoas conseguem entender e operar — em workflows com múltiplos estados, sistemas conectados e decisões em que esconder a complexidade tornaria o produto menos útil.",
+        caseStudies: [cure, hp],
+        otherWork: [cirrus, softplan],
       },
       {
         number: "02",
         title: "Pesquisa e discovery",
-        tags: ["Pesquisa", "Discovery", "Testes de usabilidade"],
+        tags: ["Pesquisa com usuários", "Product discovery", "Testes de usabilidade"],
         description:
-          "Antes de desenhar a solução, preciso entender o problema. Conduzo entrevistas com usuários, workshops de discovery com o cliente e testes de usabilidade para validar hipóteses antes de comprometer semanas de trabalho de UI. Uso wireframes de baixa fidelidade não como entregável, mas como ferramenta de conversa — para alinhar regras de negócio com o cliente antes que virem código.",
-        relatedWork: [intuit, cure],
+          "Uso entrevistas, workshops, protótipos de baixa fidelidade e testes de usabilidade focados para esclarecer o problema, expor hipóteses arriscadas e alinhar times antes de começar o trabalho caro de UI.",
+        caseStudies: [intuit, cure],
+        otherWork: [],
       },
       {
         number: "03",
         title: "Design Systems",
-        tags: ["Design Systems", "Plataforma web"],
+        tags: ["Componentes", "Tokens", "Governança"],
         description:
-          "Design systems são um meio para um fim: coerência de produto em escala. Já trabalhei dentro de sistemas enterprise estabelecidos e ajudei a criar sistemas do zero, escrevendo documentação de componentes, definindo estruturas de tokens, colaborando com engenharia na implementação e construindo a camada de governança que mantém o sistema vivo.",
-        relatedWork: [cure, hp, intuit],
+          "Construo sistemas que mantêm os produtos coerentes conforme crescem — combinando componentes reutilizáveis, estruturas de tokens, documentação, colaboração com engenharia e governança prática.",
+        caseStudies: [intuit, theodoor],
+        otherWork: [lightship],
       },
       {
         number: "04",
         title: "Prototipação assistida por IA",
-        tags: ["IA", "Prototipação"],
+        tags: ["Workflows de IA", "Protótipos comportamentais", "Edge cases"],
         description:
-          "Uso ferramentas de IA não como atalho, mas como parceiras de raciocínio no meu processo de trabalho — para simular edge cases, gerar conteúdo realista de teste, prototipar rapidamente lógica de interação e explorar variações de comportamento que levariam semanas para construir manualmente. Isso acelera o trabalho sem substituir o julgamento de design; aqui a IA está a serviço do meu processo, não do produto final.",
-        relatedWork: [cure, theodoor],
+          "Uso IA para prototipar comportamento, simular edge cases e produzir conteúdo de teste realista mais rápido — ampliando a exploração sem terceirizar o julgamento de design.",
+        caseStudies: [theodoor],
+        otherWork: [],
       },
       {
         number: "05",
         title: "Design para sistemas de IA",
-        tags: ["IA", "Confiança e erro", "Decisão humana"],
+        tags: ["Confiança", "Recuperação de erro", "Decisão humana"],
         description:
-          "Sistemas de IA erram, e o design precisa lidar com isso, não escondê-lo. Desenho interfaces que comunicam o nível de confiança de uma previsão, tornam o erro do modelo visível e recuperável, e deixam claro onde a decisão final continua sendo de uma pessoa. Aqui a IA não é uma ferramenta do meu processo — é o próprio sistema que estou desenhando.",
-        relatedWork: [aster, cure],
+          "Desenho interfaces de IA que comunicam nível de confiança, expõem incerteza, apoiam a recuperação de erros e mantêm as pessoas no controle quando resultados automatizados afetam decisões importantes.",
+        caseStudies: [aster, cure],
+        otherWork: [],
       },
       {
         number: "06",
         title: "Acessibilidade e UX inclusiva",
-        tags: ["Acessibilidade", "UX inclusiva", "Mobile"],
+        tags: ["UX inclusiva", "Feedback multimodal", "Mobile"],
         description:
-          "Acessibilidade não é uma checklist. Eu desenho para pessoas reais usando tecnologias assistivas, trabalhando em ambientes com restrições ou enfrentando situações em que a interface precisa trabalhar mais. Isso inclui sistemas de feedback multimodal, navegação por toque e teclado, conformidade com WCAG e edge cases que importam mais para as pessoas com maior risco de exclusão.",
-        relatedWork: [theodoor],
+          "Desenho para pessoas, dispositivos e contextos em que só o feedback visual não basta — usando padrões de interação acessíveis, feedback multimodal e estados resilientes.",
+        caseStudies: [theodoor, intuit],
+        otherWork: [],
       },
       {
         number: "07",
         title: "Motion e interação",
-        tags: ["Motion / Interação", "Design de interação"],
+        tags: ["Feedback do sistema", "Transições de estado", "Prototipação"],
         description:
-          "Motion em product design serve à comunicação. Uso transições, estados de feedback e animações para sinalizar o que o sistema está fazendo, confirmar ações do usuário e reduzir carga cognitiva — não para adicionar enfeite visual. O detalhe certo de interação pode eliminar um tooltip ou uma mensagem de erro inteira.",
-        relatedWork: [theodoor],
+          "Uso motion e interação para explicar estado, confirmar ações e tornar o comportamento do sistema mais fácil de entender — especialmente quando uma interface digital controla algo físico.",
+        caseStudies: [theodoor, hp],
+        otherWork: [cirrus, lightship],
       },
       {
         number: "08",
         title: "UX denso em dados",
-        tags: ["UX denso em dados", "Enterprise", "Sistemas complexos"],
+        tags: ["Dashboards", "Enterprise", "Progressive disclosure"],
         description:
-          "Alguns contextos de produto exigem densidade. Dashboards, tabelas de supply chain, linhas do tempo de processos jurídicos e matrizes de risco não são interfaces que podem ser reduzidas a três cards limpos. O desafio de design é tornar a densidade utilizável: hierarquia, progressive disclosure, filtros e comunicação clara de estados.",
-        relatedWork: [cure, hp],
+          "Torno interfaces densas utilizáveis por meio de hierarquia, filtros, comparação e progressive disclosure — preservando a informação que as pessoas precisam sem sobrecarregar a primeira visualização.",
+        caseStudies: [cure, intuit],
+        otherWork: [cirrus, softplan],
       },
       {
         number: "09",
         title: "Documentação e handoff",
-        tags: ["Design Systems", "Fluxos complexos"],
+        tags: ["Especificações", "Edge cases", "Colaboração com engenharia"],
         description:
-          "Design não termina no mockup. Escrevo especificações de edge cases, anoto comportamentos de interação, documento estados de componentes e crio artefatos de handoff que permitem que engenharia construa sem adivinhar. Essa prática reduz idas e vindas, diminui risco de implementação e cria um vocabulário compartilhado entre design e engenharia.",
-        relatedWork: [cure, hp],
+          "Documento fluxos, estados, edge cases e regras de interação para que engenharia e QA consigam construir com menos ambiguidade, retrabalho e dívida de interpretação.",
+        caseStudies: [cure, hp],
+        otherWork: [lightship, softplan],
       },
     ],
   };
@@ -278,33 +266,17 @@ export function CapabilitiesContent({ locale }: { locale: Locale }) {
 
         <div className={styles.rows}>
           {t.capabilities.map((cap) => (
-            <div className={styles.row} key={cap.number}>
-              <div className={styles.rowLabel}>
-                <span className={styles.number}>{cap.number}</span>
-                <h2>{cap.title}</h2>
-                <div className={styles.tagRow}>
-                  {cap.tags.map((tag) => (
-                    <Tag key={tag} context="light">
-                      {tag}
-                    </Tag>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.rowContent}>
-                <p>{cap.description}</p>
-
-                <span className={styles.relatedEyebrow}>{t.relatedEyebrow}</span>
-                <div className={styles.relatedGrid}>
-                  {cap.relatedWork.map((work) => (
-                    <Link className={styles.relatedCard} href={work.href} key={work.title}>
-                      <span className={styles.relatedTitle}>{work.title}</span>
-                      <span className={styles.relatedSummary}>{work.summary}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <CapabilitySection
+              key={cap.number}
+              number={cap.number}
+              title={cap.title}
+              tags={cap.tags}
+              description={cap.description}
+              caseStudiesLabel={t.caseStudiesLabel}
+              otherWorkLabel={t.otherWorkLabel}
+              caseStudies={cap.caseStudies}
+              otherWork={cap.otherWork}
+            />
           ))}
         </div>
       </main>
