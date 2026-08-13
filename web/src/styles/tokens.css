@@ -12,6 +12,8 @@
   --primary-700: #1c5550;
   --primary-800: #133f3b;
   --primary-900: #0b2825;
+  --primary-850: #0c4444;
+  --primary-950: #021313;
   --secondary-100: #f5f2e5;
   --secondary-200: #e8e2c6;
   --secondary-300: #c8bb83;
@@ -61,6 +63,13 @@
   --muted-700: #777152;
   --muted-800: #5a563d;
   --muted-900: #3d3a29;
+  /* sand — neutro terracota do tema escuro (~30-39° de matiz), distinto
+     de muted (oliva/khaki, ~42-46°). Só 2 pontos: só existem 2
+     consumidores hoje (--content-primary/--content-muted-on-light e
+     --content-secondary no bloco [data-theme="dark"]), sem preencher a
+     rampa 100…900 inteira à toa. */
+  --sand-400: #c8ab8c;
+  --sand-500: #b1a794;
   --alpha-secondary-0: #ca9c5200;
   --alpha-secondary-30: #ca9c524d;
 
@@ -82,6 +91,15 @@
   --border-default: #e5e3e1;
   --border-subtle: #f8f7f7;
   --border-strong: #bab7b2;
+  /* Tokens novos pra borda/sombra dos tiles de logo (ProjectTile) — no
+     claro resolvem pro mesmo valor que o tile já usava antes (border-
+     default/border-strong, sem sombra), então não mudam nada aqui. Só o
+     bloco [data-theme="dark"] (mais abaixo) dá um valor diferente pra
+     eles — o componente não sabe que tema escuro existe, só pede o token. */
+  --border-container-graphics: var(--border-default);
+  --border-container-graphics-hover: var(--border-strong);
+  --shadow-raised: none;
+  --shadow-raised-hover: none;
   --border-tag: #c5c0aa;
   --border-tag-on-dark: #e7e5db;
   --border-primary-default: #389991;
@@ -140,6 +158,60 @@
   --font-body-large-intro: 16px;
   --font-caption: 12px;
   --font-subtitle: 14px;
+}
+
+/* Tema escuro por atributo (não classe) — pra poder ser aplicado em
+   qualquer contêiner e, futuramente, aninhado. Mesmo padrão de
+   re-apontar tokens semânticos que .aster-theme já usa (ver
+   aster-theme.module.css), só que com [data-theme="dark"] em vez de
+   uma classe. Usado hoje só no <main> da página Capabilities — nav,
+   footer, body e html ficam de fora por serem irmãos de <main>, não
+   ancestrais, então não entram no escopo do seletor.
+
+   Valores do frame 603:2385 do Figma, auditados camada a camada contra
+   as duas pontas do gradiente de fundo (--primary-850 #0c4444 no topo,
+   --primary-950 #021313 embaixo) — os comentários de contraste abaixo
+   são sempre contra #0c4444, o lado mais difícil dos dois. */
+[data-theme="dark"] {
+  /* texto — paleta quente sobre verde, conforme o Figma. Referencia
+     primitivo (não hex cru): hex direto na camada semântica era
+     exatamente o tipo de aliasing que este design system evita — o modo
+     Dark do Figma foi montado apontando pra primitivos, os dois lados
+     (Figma e código) precisam ficar estruturalmente iguais. */
+  --content-heading: var(--gray-0); /* #ffffff  10.90:1  headings */
+  --content-primary: var(--sand-500); /* #b1a794   4.58:1  descrições / corpo */
+  /* TODO: nome não reflete o uso — renomear para --content-label na reforma de taxonomia */
+  --content-muted-on-light: var(--sand-500); /* #b1a794   4.58:1  eyebrows / labels */
+  /* Figma pintou #a8876c pros step numbers (01, 02…), mas dá 3.30:1 —
+     reprova WCAG AA pra texto de 12px (exige 4.5:1). sand-400 mantém a
+     mesma família de cor e passa em 5.02:1. */
+  --content-secondary: var(--sand-400); /* #c8ab8c   5.02:1  step numbers (01, 02…) */
+  --content-accent: var(--muted-400); /* #c5c0aa   5.97:1  texto das tags */
+
+  /* foco */
+  --action-focus-ring: var(--primary-400); /* #68c2bb   5.20:1 */
+
+  /* Estes continuam com valor direto — alpha não deriva de primitivo.
+     Bordas: Figma pintou #174e4e (hex fixo) pra borda dos cards, mas um
+     hex fixo varia de contraste conforme a posição no gradiente (1.74x
+     entre topo e base); rgba com alpha se mantém constante nos dois
+     pontos, então a borda usa branco translúcido em vez do hex do Figma. */
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.3);
+
+  /* tiles de logo (tokens em tokens.css :root, ver ProjectTile.module.css) */
+  --border-container-graphics: rgba(255, 255, 255, 0.2);
+  --border-container-graphics-hover: rgba(255, 255, 255, 0.38);
+  --shadow-raised: 0 14px 24px rgba(0, 0, 0, 0.15);
+  --shadow-raised-hover: 0 18px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* O gradiente de fundo vai no próprio <main>, não no body — quem carrega
+   --background-canvas é o body, que fica fora do escopo do tema escuro
+   (nav acima e footer abaixo continuam claros, então o body claro é o
+   comportamento correto, inclusive no overscroll do iOS). */
+main[data-theme="dark"] {
+  background: linear-gradient(to bottom, var(--primary-850), var(--primary-950));
 }
 
 /* Tablet: até 1024px */

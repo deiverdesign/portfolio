@@ -1,11 +1,20 @@
 /* O SVG já vem com fundo colorido + logo compostos (112x75, exportado do
    Figma) — a proporção do tile é travada nessa razão, então a imagem
    sempre preenche exatamente o espaço, em qualquer largura de coluna. */
+/* Borda mantida de propósito (o desenho do Figma pro tema escuro tira a
+   borda) — cirrus.svg (#2F2F2F) e softplan.svg (#1F222C) têm fundo
+   escuro de sangria total dentro do próprio SVG, com contraste de
+   1.23:1 e 1.20:1 contra o fundo escuro da página: sem borda, os dois
+   tiles somem visualmente contra o gradiente, e como o SVG é opaco e
+   cobre o tile inteiro, nenhum preenchimento atrás resolve isso. Volta
+   a tirar a borda quando esses dois assets forem refeitos com fundo
+   claro. */
 .tile {
   display: block;
   width: 100%;
   aspect-ratio: 112 / 75;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-container-graphics);
+  box-shadow: var(--shadow-raised);
   overflow: hidden;
   color: inherit;
   text-decoration: none;
@@ -24,11 +33,13 @@ a.tile {
   cursor: pointer;
   transition:
     border-color var(--dur-fast) var(--ease-out-quart),
-    transform var(--dur-fast) var(--ease-out-quart);
+    transform var(--dur-fast) var(--ease-out-quart),
+    box-shadow var(--dur-fast) var(--ease-out-quart);
 }
 
 a.tile:hover {
-  border-color: var(--border-strong);
+  border-color: var(--border-container-graphics-hover);
+  box-shadow: var(--shadow-raised-hover);
   transform: scale(1.02);
 }
 

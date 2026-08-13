@@ -257,7 +257,7 @@ export function CapabilitiesContent({ locale }: { locale: Locale }) {
     <>
       <NavBar context="light" locale={locale} otherLocaleHref={otherLocaleHref} />
 
-      <main>
+      <main data-theme="dark">
         <section className={styles.header}>
           <span className={styles.eyebrow}>{t.eyebrow}</span>
           <h1 className={styles.title}>{t.title}</h1>
