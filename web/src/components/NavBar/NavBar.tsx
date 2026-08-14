@@ -27,7 +27,7 @@ export interface NavBarProps {
 
 const NAV_ITEMS: Record<Locale, Array<{ label: string; href: string }>> = {
   pt: [
-    { label: "Trabalho", href: "/pt/work" },
+    { label: "Projetos", href: "/pt/work" },
     { label: "Competências", href: "/pt/competencias" },
     { label: "Sobre", href: "/pt/sobre" },
   ],

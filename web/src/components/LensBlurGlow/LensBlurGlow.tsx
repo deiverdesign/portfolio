@@ -85,12 +85,12 @@ const fragmentShader = /* glsl */ `
     vec3 colorEdge = vec3(0.2275, 0.0314, 0.0353); /* #3a0809 */
     vec3 color = mix(colorEdge, colorCore, max(sdf, particles));
 
-    /* alpha da bola principal também segue "proximity": 50% com o mouse
-       longe, sobe suave até 80% quando o mouse chega em cima — mesma
+    /* alpha da bola principal também segue "proximity": 70% com o mouse
+       longe, sobe suave até 90% quando o mouse chega em cima — mesma
        máscara que já controla o blur da borda, então os dois efeitos
        (borrão + opacidade) crescem juntos. Partículas ficam fixas em 30%,
        não reagem ao mouse. */
-    float mainAlpha = mix(0.5, 0.8, proximity);
+    float mainAlpha = mix(0.7, 0.9, proximity);
     float alpha = max(sdf * mainAlpha, particles * 0.3);
 
     gl_FragColor = vec4(color, alpha);
@@ -103,17 +103,29 @@ const vertexShader = /* glsl */ `
   }
 `;
 
-export function LensBlurGlow() {
+export interface LensBlurGlowProps {
+  /** Qual composição do Hero este orb pertence — controla só o gate de
+      viewport (qual media query decide se o WebGL liga) e a classe CSS
+      de tamanho/posição do canvas. Cor, flutuação, partículas e todo o
+      resto do shader são idênticos nas duas variantes — só muda a
+      escala (ver LensBlurGlow.module.css). */
+  variant?: "desktop" | "mobile";
+}
+
+export function LensBlurGlow({ variant = "desktop" }: LensBlurGlowProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    /* .heroVisual (o pai) já é display:none abaixo de 1024px (ver
-       responsive-rules.md) — sem essa checagem, o WebGL context ainda
-       seria criado e ficaria renderizando à toa, escondido, gastando
-       bateria/GPU no mobile por nada. */
-    if (!window.matchMedia("(min-width: 1025px)").matches) return;
+    /* Cada variante só liga dentro da própria faixa de viewport — desktop
+       (heroVisual, display:none abaixo de 1024px) ou mobile (heroVisualMobile,
+       display:none acima de 767px). Entre 768-1024px nenhuma das duas bate,
+       de propósito (pendência de design registrada no PR do hero mobile).
+       Sem essa checagem, o WebGL context seria criado fora da faixa certa
+       e ficaria renderizando à toa, escondido, gastando bateria/GPU por nada. */
+    const viewportQuery = variant === "desktop" ? "(min-width: 1025px)" : "(max-width: 767px)";
+    if (!window.matchMedia(viewportQuery).matches) return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     /* área de hover maior que o glow em si — do jeito que já era com o
@@ -181,6 +193,7 @@ export function LensBlurGlow() {
     hoverTarget.addEventListener("pointermove", handleMove);
 
     let raf = 0;
+    let looping = false;
     let lastTime = performance.now() * 0.001;
     const clockStart = lastTime;
 
@@ -198,10 +211,29 @@ export function LensBlurGlow() {
       renderer.render(scene, camera);
       raf = requestAnimationFrame(tick);
     };
-    tick();
+
+    /* Pausa o loop de render quando o Hero sai da viewport por scroll (ex:
+       usuário já rolou pra ver Work/Capabilities) — sem isso o RAF+WebGL
+       ficava rodando pra sempre em background, gastando GPU/bateria à toa
+       assim que montado, mesmo fora de tela. Retoma sozinho ao voltar. */
+    const start = () => {
+      if (looping) return;
+      looping = true;
+      lastTime = performance.now() * 0.001;
+      tick();
+    };
+    const stop = () => {
+      looping = false;
+      cancelAnimationFrame(raf);
+    };
+    const visibilityObserver = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()), {
+      threshold: 0,
+    });
+    visibilityObserver.observe(container);
 
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
+      visibilityObserver.disconnect();
       resizeObserver.disconnect();
       hoverTarget.removeEventListener("pointerenter", handleEnter);
       hoverTarget.removeEventListener("pointerleave", handleLeave);
@@ -211,7 +243,10 @@ export function LensBlurGlow() {
       quad.geometry.dispose();
       renderer.dispose();
     };
-  }, []);
+  }, [variant]);
 
-  return <div ref={containerRef} className={styles.canvasContainer} aria-hidden="true" />;
+  const className =
+    variant === "mobile" ? `${styles.canvasContainer} ${styles.canvasContainerMobile}` : styles.canvasContainer;
+
+  return <div ref={containerRef} className={className} aria-hidden="true" />;
 }

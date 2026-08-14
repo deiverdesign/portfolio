@@ -15,7 +15,7 @@ const CONTENT: Record<Locale, {
   pt: {
     role: "Product Designer Sênior · Floripa · Brasil",
     navLinks: [
-      { label: "Trabalho", href: "/pt" },
+      { label: "Projetos", href: "/pt" },
       { label: "Competências", href: "/pt/competencias" },
       { label: "Sobre", href: "/pt/sobre" },
     ],

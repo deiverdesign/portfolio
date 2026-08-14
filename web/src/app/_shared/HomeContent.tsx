@@ -360,6 +360,16 @@ export function HomeContent({ locale }: { locale: Locale }) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/images/hero-photo.png" alt={t.heroPhotoAlt} className={styles.heroPhoto} />
             </div>
+            {/* Composição mobile (≤767px, Figma 617:7769) — só 2 elementos,
+                sem foto: glow verde (asset estático, node 617:8058) + orb
+                laranja (mesmo LensBlurGlow do desktop, só reescalado via
+                CSS). Decorativo: aria-hidden + pointer-events:none no
+                wrapper inteiro, pra nunca interceptar toque nos CTAs. */}
+            <div className={styles.heroVisualMobile} aria-hidden="true" data-glow-hover-target>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/hero-glow-mobile.png" alt="" className={styles.heroGlowMobile} />
+              <LensBlurGlow variant="mobile" />
+            </div>
             <div className={styles.heroText}>
               <span className={`${styles.eyebrow} ${styles.heroReveal}`} style={{ "--reveal-delay": "0ms" } as CSSProperties}>
                 {t.eyebrow}

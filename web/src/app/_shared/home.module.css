@@ -1,4 +1,12 @@
 .hero {
+  /* position:relative sozinho (sem z-index) NÃO cria um contexto de
+     empilhamento próprio — o z-index:-1 do .heroVisualMobile "escapava"
+     pra raiz da página em vez de ficar contido aqui dentro, e desenhava
+     atrás de tudo (até do próprio gradiente de fundo). z-index:0 junto
+     com position:relative é o que de fato torna .hero um contexto de
+     empilhamento, contendo o z-index negativo do glow só dentro dele. */
+  position: relative;
+  z-index: 0;
   background: linear-gradient(135deg, #0e3933 0%, #001824 100%);
   padding: var(--space-layout-200) var(--space-700);
 }
@@ -23,6 +31,42 @@
 @media (max-width: 1024px) {
   .heroVisual {
     display: none;
+  }
+}
+
+/* Composição mobile do Hero (Figma 617:7769, frame 414px) — camada de
+   fundo decorativa, fora do fluxo (position:absolute) e atrás do texto
+   (z-index negativo). Só existe em ≤767px: entre 768-1024px fica sem
+   nenhum desenho de propósito (o Figma só especifica 414px; aplicar
+   esses valores em 1024 deixaria o orb com ~500px — pendência de design,
+   ver PR). Acima de 767 o desktop (.heroVisual) assume, sem mudança. */
+.heroVisualMobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .heroVisualMobile {
+    display: block;
+    position: absolute;
+    left: -9.18%; /* -38 / 414 (Container 617:8056 relativo à Section) */
+    top: -13px;
+    width: 118.36%; /* 490 / 414 */
+    aspect-ratio: 490 / 362.375;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Glow verde (asset estático exportado do Figma, node 617:8058) —
+     posição relativa ao Container acima, valores do node "Image"
+     (617:8057). Sem borda/filtro nenhum: o asset já vem com toda a
+     sangria de blur embutida (por isso é PNG, não SVG — ver commit). */
+  .heroGlowMobile {
+    display: block;
+    position: absolute;
+    left: 2.86%; /* 14 / 490 */
+    top: 5.52%; /* 20 / 362.375 */
+    width: 90.2%; /* 442 / 490 */
+    height: auto;
   }
 }
 
@@ -89,6 +133,42 @@
   .heroActions {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+/* Espaçamento do Hero mobile (Figma 617:7769, frame 414px) — a Section
+   cresce pra abrir espaço pro glow: os primeiros 199px do Hero passam a
+   ser só o glow, sem texto (valor sem token — é ele que abre o espaço
+   pedido, não é pra arredondar pra um --space-layout-* menor).
+
+   overflow-x: clip (não hidden) no Section — .heroVisualMobile vai de
+   x=-38 a x=452 num viewport de 414 (estoura 38px de cada lado); clip
+   corta esse vazamento horizontal sem criar um novo contêiner de scroll
+   (hidden em só um eixo faria o outro eixo computar como "auto" — ver
+   nota em globals.css sobre esse mesmo problema com o sticky das
+   capabilities). Só horizontal: o -13px de top do glow (sangria vertical
+   pequena, de propósito, encostando no header) continua visível.
+
+   --space-800 e --space-500 já escalam sozinhos por breakpoint (a versão
+   mobile do token, ≤599px, resolve pra 40px/20px — maior que os valores
+   exatos medidos no Figma, 32px/15px). Decisão do Deiver: fixar os
+   valores literais do Figma aqui em vez de usar os tokens, pra bater
+   exato com o desenho (números "mágicos" deliberados, não os tokens
+   "errados" pro contexto). */
+@media (max-width: 767px) {
+  .hero {
+    padding-top: 199px;
+    padding-bottom: 32px; /* medido 33.6px — ruído de arredondamento */
+    overflow-x: clip;
+  }
+
+  .heroText {
+    gap: 32px;
+  }
+
+  .heroActions {
+    margin-top: 0;
+    gap: 15px;
   }
 }
 
