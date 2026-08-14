@@ -12,16 +12,18 @@
   pointer-events: none;
 }
 
-/* Versão mobile (heroVisualMobile, ≤767px) — valores exatos do Figma
-   (node 617:8060, relativo ao Container 617:8056), sem o aumento de 40%
-   que a versão desktop tem: aqui já é o tamanho pretendido pelo design,
-   não precisa compensar corte de borda de um float maior que o slot
-   original. Mesma cor/flutuação/partículas do shader — só a caixa muda. */
+/* Versão mobile (heroVisualMobile, ≤767px) — base é o valor exato do
+   Figma (node 617:8060, relativo ao Container 617:8056: left 57.55%,
+   top 3.69%, width 41.43%, height 56.01%, sem o aumento de 40% que a
+   versão desktop tem), depois reduzido mais 25% a pedido do Deiver,
+   mantendo o mesmo centro (cx 78.27%, cy 31.70%) — senão encolher só
+   width/height desloca o círculo pro canto em vez de encolher no lugar.
+   Mesma cor/flutuação/partículas do shader — só a caixa muda. */
 .canvasContainerMobile {
-  left: 57.55%;
-  top: 3.69%;
-  width: 41.43%;
-  height: 56.01%;
+  left: 62.7%;
+  top: 10.68%;
+  width: 31.07%;
+  height: 42.01%;
 }
 
 .canvasContainer canvas {

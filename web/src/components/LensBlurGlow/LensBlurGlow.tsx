@@ -118,130 +118,159 @@ export function LensBlurGlow({ variant = "desktop" }: LensBlurGlowProps) {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+
     /* Cada variante só liga dentro da própria faixa de viewport — desktop
        (heroVisual, display:none abaixo de 1024px) ou mobile (heroVisualMobile,
        display:none acima de 767px). Entre 768-1024px nenhuma das duas bate,
        de propósito (pendência de design registrada no PR do hero mobile).
-       Sem essa checagem, o WebGL context seria criado fora da faixa certa
-       e ficaria renderizando à toa, escondido, gastando bateria/GPU por nada. */
+
+       matchMedia().addEventListener('change', ...) em vez de checar só uma
+       vez no mount: um celular de verdade carrega a página já no tamanho
+       final e nunca muda, mas emular um device no DevTools (ou redimensionar
+       a janela do desktop) troca o viewport SEM remontar o componente — só
+       checar uma vez deixava o WebGL preso pra sempre no estado de quando a
+       página carregou (bug real relatado: reproduzia só via "Inspect >
+       simulate a phone" no Chrome desktop, não num Android real, porque lá
+       a página já nasce no tamanho certo). Agora o gate liga/desliga o
+       WebGL ao vivo conforme o viewport realmente muda. */
     const viewportQuery = variant === "desktop" ? "(min-width: 1025px)" : "(max-width: 767px)";
-    if (!window.matchMedia(viewportQuery).matches) return;
+    const mediaQuery = window.matchMedia(viewportQuery);
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    /* área de hover maior que o glow em si — do jeito que já era com o
-       glow decorativo antigo, ele fica parcialmente atrás da foto, então
-       o alvo do hover é o conjunto foto+glow (.heroVisual), não só o canvas. */
-    const hoverTarget = container.closest<HTMLElement>("[data-glow-hover-target]") ?? container;
+    let cleanupScene: (() => void) | null = null;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
-    camera.position.z = 1;
+    const setup = () => {
+      if (cleanupScene) return; // já montado, não duplica
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setClearColor(0x000000, 0);
-    container.appendChild(renderer.domElement);
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      /* área de hover maior que o glow em si — do jeito que já era com o
+         glow decorativo antigo, ele fica parcialmente atrás da foto, então
+         o alvo do hover é o conjunto foto+glow (.heroVisual), não só o canvas. */
+      const hoverTarget = container.closest<HTMLElement>("[data-glow-hover-target]") ?? container;
 
-    const resolution = new THREE.Vector2();
-    const vMouse = new THREE.Vector2();
-    const vMouseDamp = new THREE.Vector2();
-    const hover = { current: 0, target: 0 };
-    let canvasRect = container.getBoundingClientRect();
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+      camera.position.z = 1;
 
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      transparent: true,
-      uniforms: {
-        u_resolution: { value: resolution },
-        u_mouse: { value: vMouseDamp },
-        u_pixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
-        u_hoverAmount: { value: 0 },
-        u_time: { value: 0 },
-      },
-    });
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setClearColor(0x000000, 0);
+      container.appendChild(renderer.domElement);
 
-    const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
-    scene.add(quad);
+      const resolution = new THREE.Vector2();
+      const vMouse = new THREE.Vector2();
+      const vMouseDamp = new THREE.Vector2();
+      const hover = { current: 0, target: 0 };
+      let canvasRect = container.getBoundingClientRect();
 
-    const resize = () => {
-      canvasRect = container.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio, 2);
-      renderer.setSize(canvasRect.width, canvasRect.height);
-      renderer.setPixelRatio(dpr);
-      resolution.set(canvasRect.width, canvasRect.height).multiplyScalar(dpr);
-      material.uniforms.u_pixelRatio.value = dpr;
+      const material = new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader,
+        transparent: true,
+        uniforms: {
+          u_resolution: { value: resolution },
+          u_mouse: { value: vMouseDamp },
+          u_pixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+          u_hoverAmount: { value: 0 },
+          u_time: { value: 0 },
+        },
+      });
+
+      const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+      scene.add(quad);
+
+      const resize = () => {
+        canvasRect = container.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio, 2);
+        renderer.setSize(canvasRect.width, canvasRect.height);
+        renderer.setPixelRatio(dpr);
+        resolution.set(canvasRect.width, canvasRect.height).multiplyScalar(dpr);
+        material.uniforms.u_pixelRatio.value = dpr;
+      };
+      resize();
+
+      const resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(container);
+
+      const handleEnter = () => {
+        hover.target = 1;
+      };
+      const handleLeave = () => {
+        hover.target = 0;
+      };
+      /* posição do mouse relativa ao canvas (não à página, diferente do
+         demo original) — é o que os uniforms u_resolution/u_pixelRatio
+         esperam pra essa forma específica. */
+      const handleMove = (e: PointerEvent) => {
+        vMouse.set(e.clientX - canvasRect.left, e.clientY - canvasRect.top);
+      };
+      hoverTarget.addEventListener("pointerenter", handleEnter);
+      hoverTarget.addEventListener("pointerleave", handleLeave);
+      hoverTarget.addEventListener("pointermove", handleMove);
+
+      let raf = 0;
+      let looping = false;
+      let lastTime = performance.now() * 0.001;
+      const clockStart = lastTime;
+
+      const tick = () => {
+        const now = performance.now() * 0.001;
+        const dt = now - lastTime;
+        lastTime = now;
+
+        hover.current = THREE.MathUtils.damp(hover.current, hover.target, 6, dt);
+        material.uniforms.u_hoverAmount.value = hover.current;
+        vMouseDamp.x = THREE.MathUtils.damp(vMouseDamp.x, vMouse.x, 8, dt);
+        vMouseDamp.y = THREE.MathUtils.damp(vMouseDamp.y, vMouse.y, 8, dt);
+        material.uniforms.u_time.value = prefersReducedMotion ? 0 : now - clockStart;
+
+        renderer.render(scene, camera);
+        raf = requestAnimationFrame(tick);
+      };
+
+      /* Pausa o loop de render quando o Hero sai da viewport por scroll (ex:
+         usuário já rolou pra ver Work/Capabilities) — sem isso o RAF+WebGL
+         ficava rodando pra sempre em background, gastando GPU/bateria à toa
+         assim que montado, mesmo fora de tela. Retoma sozinho ao voltar. */
+      const start = () => {
+        if (looping) return;
+        looping = true;
+        lastTime = performance.now() * 0.001;
+        tick();
+      };
+      const stop = () => {
+        looping = false;
+        cancelAnimationFrame(raf);
+      };
+      const visibilityObserver = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()), {
+        threshold: 0,
+      });
+      visibilityObserver.observe(container);
+
+      cleanupScene = () => {
+        stop();
+        visibilityObserver.disconnect();
+        resizeObserver.disconnect();
+        hoverTarget.removeEventListener("pointerenter", handleEnter);
+        hoverTarget.removeEventListener("pointerleave", handleLeave);
+        hoverTarget.removeEventListener("pointermove", handleMove);
+        container.removeChild(renderer.domElement);
+        material.dispose();
+        quad.geometry.dispose();
+        renderer.dispose();
+      };
     };
-    resize();
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
-
-    const handleEnter = () => {
-      hover.target = 1;
-    };
-    const handleLeave = () => {
-      hover.target = 0;
-    };
-    /* posição do mouse relativa ao canvas (não à página, diferente do
-       demo original) — é o que os uniforms u_resolution/u_pixelRatio
-       esperam pra essa forma específica. */
-    const handleMove = (e: PointerEvent) => {
-      vMouse.set(e.clientX - canvasRect.left, e.clientY - canvasRect.top);
-    };
-    hoverTarget.addEventListener("pointerenter", handleEnter);
-    hoverTarget.addEventListener("pointerleave", handleLeave);
-    hoverTarget.addEventListener("pointermove", handleMove);
-
-    let raf = 0;
-    let looping = false;
-    let lastTime = performance.now() * 0.001;
-    const clockStart = lastTime;
-
-    const tick = () => {
-      const now = performance.now() * 0.001;
-      const dt = now - lastTime;
-      lastTime = now;
-
-      hover.current = THREE.MathUtils.damp(hover.current, hover.target, 6, dt);
-      material.uniforms.u_hoverAmount.value = hover.current;
-      vMouseDamp.x = THREE.MathUtils.damp(vMouseDamp.x, vMouse.x, 8, dt);
-      vMouseDamp.y = THREE.MathUtils.damp(vMouseDamp.y, vMouse.y, 8, dt);
-      material.uniforms.u_time.value = prefersReducedMotion ? 0 : now - clockStart;
-
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(tick);
+    const teardown = () => {
+      cleanupScene?.();
+      cleanupScene = null;
     };
 
-    /* Pausa o loop de render quando o Hero sai da viewport por scroll (ex:
-       usuário já rolou pra ver Work/Capabilities) — sem isso o RAF+WebGL
-       ficava rodando pra sempre em background, gastando GPU/bateria à toa
-       assim que montado, mesmo fora de tela. Retoma sozinho ao voltar. */
-    const start = () => {
-      if (looping) return;
-      looping = true;
-      lastTime = performance.now() * 0.001;
-      tick();
-    };
-    const stop = () => {
-      looping = false;
-      cancelAnimationFrame(raf);
-    };
-    const visibilityObserver = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()), {
-      threshold: 0,
-    });
-    visibilityObserver.observe(container);
+    if (mediaQuery.matches) setup();
+    const handleQueryChange = (e: MediaQueryListEvent) => (e.matches ? setup() : teardown());
+    mediaQuery.addEventListener("change", handleQueryChange);
 
     return () => {
-      stop();
-      visibilityObserver.disconnect();
-      resizeObserver.disconnect();
-      hoverTarget.removeEventListener("pointerenter", handleEnter);
-      hoverTarget.removeEventListener("pointerleave", handleLeave);
-      hoverTarget.removeEventListener("pointermove", handleMove);
-      container.removeChild(renderer.domElement);
-      material.dispose();
-      quad.geometry.dispose();
-      renderer.dispose();
+      mediaQuery.removeEventListener("change", handleQueryChange);
+      teardown();
     };
   }, [variant]);
 
