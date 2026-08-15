@@ -43,8 +43,3 @@ export async function unlockAster(
 
   return { error: null };
 }
-
-export async function lockAster(): Promise<void> {
-  const store = await cookies();
-  store.delete({ name: ASTER_SESSION_COOKIE, path: ASTER_COOKIE_PATH });
-}

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ExternalLink } from "./ExternalLink";
-import { LockButton } from "../LockButton";
 import { ASTER_PROTOTYPE_URL } from "./links";
 import { Tag } from "@/components/Tag/Tag";
 import type { Locale } from "@/components/NavBar/NavBar";
@@ -63,7 +62,6 @@ export function Hero({ locale }: { locale: Locale }) {
           <Link href={t.homeHref} className={styles.back}>
             <span aria-hidden="true">←</span> {t.back}
           </Link>
-          <LockButton locale={locale} context="dark" />
         </div>
 
         <div className={styles.text}>
