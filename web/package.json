@@ -9,7 +9,8 @@
     "lint": "eslint",
     "check-i18n": "node scripts/check-i18n.mjs",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -31,6 +32,7 @@
     "@types/three": "^0.185.4",
     "@vitest/browser-playwright": "^4.1.10",
     "@vitest/coverage-v8": "^4.1.10",
+    "chromatic": "^18.2.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
     "eslint-plugin-storybook": "^10.5.4",
