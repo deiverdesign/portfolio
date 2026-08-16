@@ -100,7 +100,7 @@
   font-family: var(--font-boldonse);
   font-weight: 400;
   font-synthesis: none;
-  font-size: clamp(1.85rem, 1.3rem + 2.6vw, 3rem);
+  font-size: var(--font-huge-title);
   line-height: 1.5;
   text-transform: uppercase;
   letter-spacing: 0.01em;

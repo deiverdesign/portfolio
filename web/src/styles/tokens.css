@@ -147,6 +147,7 @@
   --space-layout-500: 96px;
 
   /* Fonts — modo Desktop (padrão) */
+  --font-huge-title: 48px;
   --font-eyebrow: 11px;
   --font-h1-page-title: 26px;
   --font-hero-title: 32px;
@@ -231,6 +232,7 @@ main[data-theme="dark"] {
   --space-layout-300: 72px;
   --space-layout-400: 90px;
   --space-layout-500: 108px;
+  --font-huge-title: 40px;
   --font-eyebrow: 12.5px;
   --font-h1-page-title: 26px;
   --font-hero-title: 32px;
@@ -262,6 +264,7 @@ main[data-theme="dark"] {
   --space-layout-300: 80px;
   --space-layout-400: 100px;
   --space-layout-500: 120px;
+  --font-huge-title: 34px;
   --font-eyebrow: 14px;
   --font-h1-page-title: 22.1px;
   --font-hero-title: 27.2px;
