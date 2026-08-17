@@ -215,8 +215,8 @@ main[data-theme="dark"] {
   background: linear-gradient(to bottom, var(--primary-850), var(--primary-950));
 }
 
-/* Tablet: até 1024px */
-@media (max-width: 1024px) {
+/* Tablet: 600px–1023px. Desktop começa exatamente em 1024px. */
+@media (max-width: 1023px) {
   :root {
   --space-100: 2px;
   --space-200: 4px;
@@ -264,7 +264,7 @@ main[data-theme="dark"] {
   --space-layout-300: 80px;
   --space-layout-400: 100px;
   --space-layout-500: 120px;
-  --font-huge-title: 34px;
+  --font-huge-title: 30px;
   --font-eyebrow: 14px;
   --font-h1-page-title: 22.1px;
   --font-hero-title: 27.2px;

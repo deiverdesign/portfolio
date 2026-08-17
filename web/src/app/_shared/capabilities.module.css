@@ -34,7 +34,11 @@
 
 .rows {
   width: 100%;
-  max-width: 1280px;
+  /* O conteúdo das capabilities chega a 1422px no desktop: é o espaço
+     necessário para as 2 colunas principais e para os 2 grupos de
+     projetos caberem lado a lado quando houver largura disponível. O
+     padding horizontal continua sendo o token do site. */
+  max-width: 1470px;
   margin: 0 auto;
   padding: 0 var(--space-700) var(--space-layout-200);
   display: flex;

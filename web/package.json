@@ -9,6 +9,7 @@
     "lint": "eslint",
     "check-i18n": "node scripts/check-i18n.mjs",
     "check-tokens": "node scripts/check-tokens.mjs",
+    "check-overflow": "node scripts/check-overflow.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "chromatic"
