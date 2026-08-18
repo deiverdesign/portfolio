@@ -45,15 +45,6 @@
   gap: var(--space-300);
 }
 
-/* Alguns tags (ex: "Engineering collaboration") são compridos demais pra
-   caber numa pill sem quebrar no mobile — Tag.module.css usa white-space:
-   nowrap (correto pro caso comum, tags curtas). O Tag aceita `className`
-   extra (ver Tag.tsx), então passo essa classe local só pra sobrescrever
-   esse comportamento aqui, sem mexer no componente compartilhado. */
-.tagOverride {
-  white-space: normal;
-}
-
 /* Título mais forte da seção. Display/Large preserva a calibração da
    Boldonse nos três modos: 48px Desktop, 40px Tablet e 30px Mobile.
 

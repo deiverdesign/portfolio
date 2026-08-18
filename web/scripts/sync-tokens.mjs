@@ -72,6 +72,10 @@ function cssVarName(variable) {
   return variable.name.toLowerCase().replace(/[\s/]+/g, "-");
 }
 
+function pxToRem(value) {
+  return `${Number((value / 16).toFixed(6))}rem`;
+}
+
 function resolveValue(variableId, modeId, variablesById, visited = new Set()) {
   if (visited.has(variableId)) return null; // proteção contra ciclo de alias
   visited.add(variableId);
@@ -92,14 +96,17 @@ function resolveValue(variableId, modeId, variablesById, visited = new Set()) {
   return null;
 }
 
-function breakpointValue(variableId, variable, modeId, variablesById) {
+function breakpointValue(variableId, variable, modeId, variablesById, useRem = false) {
   const raw = variable.valuesByMode[modeId] ?? Object.values(variable.valuesByMode)[0];
   if (raw && typeof raw === "object" && raw.type === "VARIABLE_ALIAS") {
     const target = variablesById[raw.id];
     if (target) return { css: `var(--${cssVarName(target)})`, unit: "" };
   }
   const resolved = resolveValue(variableId, modeId, variablesById);
-  return resolved ? { css: resolved.css, unit: "px" } : null;
+  if (!resolved) return null;
+  return useRem
+    ? { css: pxToRem(resolved.css), unit: "" }
+    : { css: resolved.css, unit: "px" };
 }
 
 export function buildCss({ variables, variableCollections }) {
@@ -121,11 +128,12 @@ export function buildCss({ variables, variableCollections }) {
       const variable = variables[variableId];
       if (!variable) continue;
       const name = cssVarName(variable);
+      const useRem = collectionName === "Font size";
 
       if (isBreakpointCollection) {
-        const desktop = breakpointValue(variableId, variable, modesByName.Desktop, variables);
-        const tablet = breakpointValue(variableId, variable, modesByName.Tablet, variables);
-        const mobile = breakpointValue(variableId, variable, modesByName.Mobile, variables);
+        const desktop = breakpointValue(variableId, variable, modesByName.Desktop, variables, useRem);
+        const tablet = breakpointValue(variableId, variable, modesByName.Tablet, variables, useRem);
+        const mobile = breakpointValue(variableId, variable, modesByName.Mobile, variables, useRem);
         if (desktop) lines.root.push(`  --${name}: ${desktop.css}${desktop.unit};`);
         if (tablet) lines.tablet.push(`  --${name}: ${tablet.css}${tablet.unit};`);
         if (mobile) lines.mobile.push(`  --${name}: ${mobile.css}${mobile.unit};`);
@@ -151,7 +159,7 @@ export function buildCss({ variables, variableCollections }) {
 ${lines.root.join("\n")}
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   :root {
 ${lines.tablet.join("\n")}
   }
