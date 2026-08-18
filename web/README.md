@@ -14,7 +14,7 @@ practice, three roles cover almost everything:
 
 | Role | Token | Desktop size | Example |
 |---|---|---|---|
-| Paragraph you're meant to actually **read** (case study body copy, bio, capability description) | `--font-size-body-large` | 16px | `<p>` inside a case study section |
+| Paragraph you're meant to actually **read** (case study body copy, bio, capability description) | `--font-size-body-large` | 1rem (16px at the default browser setting) | `<p>` inside a case study section |
 | Secondary/supporting text (card preview blurb, photo caption, meta label like "Duration") | `--font-size-body-medium`, `--font-size-data-medium` or `--font-size-caption-medium` | 12–14px | `.metaValue`, `.caption`, card `.description` |
 | UI label (nav link, button) | `--font-size-label-large` | 14px | NavBar links, `<Button>` |
 
@@ -32,6 +32,10 @@ to `--font-size-body-large`, matching what ASTER already did — see
 `sobre/page.module.css`. `--font-size-data-medium` and
 `--font-size-caption-medium` stay reserved
 for genuinely secondary/small text, not full paragraphs.
+
+Only the primitive scale stores a CSS unit. It uses `rem` so browser text-size
+preferences can scale the typography; semantic roles and component styles keep
+referencing the same token names.
 
 This isn't in Storybook yet — there's no "Typography" story showing
 the scale, since these are page-level CSS Module styles, not a

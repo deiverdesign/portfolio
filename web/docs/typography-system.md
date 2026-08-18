@@ -10,7 +10,7 @@ fundido ou reaplicado a outro elemento.
 
 ## Fundação de tamanho
 
-| Scale | Desktop | Tablet | Mobile |
+| Scale | Desktop (px) | Tablet (px) | Mobile (px) |
 | --- | ---: | ---: | ---: |
 | `Scale/100` | 8 | 9 | 10 |
 | `Scale/200` | 11 | 12.5 | 14 |
@@ -25,6 +25,18 @@ fundido ou reaplicado a outro elemento.
 Os degraus são uma infraestrutura numérica. Eles não dizem que Boldonse, DM Sans e DM Mono
 têm o mesmo tamanho óptico quando recebem o mesmo número. Essa decisão pertence ao Text Style,
 que registra a família e deve ser calibrado visualmente.
+
+### Unidade no Figma e no código
+
+O Figma preserva os números de referência em pixels. Na saída CSS, apenas os nove primitivos
+de tamanho são convertidos para `rem`, usando a base padrão do navegador (`1rem = 16px`).
+Assim, `Scale/600 = 16` vira `1rem` e `Scale/900 = 48` vira `3rem`.
+
+Em 100% os valores renderizados permanecem idênticos ao Figma. Se a pessoa aumenta a fonte
+raiz do navegador, a escala inteira acompanha a preferência. Os papéis semânticos continuam
+aliases e nenhum dos 113 consumidores precisa conhecer a unidade usada pelo primitivo.
+
+Não definir um `font-size` fixo em `html`: isso anularia o motivo de usar `rem`.
 
 ## Migração 1:1
 
@@ -82,7 +94,7 @@ Todos começam com line-height de 150% e letter-spacing de 0%, seguindo o padrã
 ## Invariantes da migração
 
 - Os 12 estilos existentes continuam sendo 12 e preservam seus IDs.
-- Os valores Desktop, Tablet e Mobile permanecem idênticos.
+- Os valores Desktop, Tablet e Mobile permanecem visualmente idênticos em 100%; a saída CSS usa `rem`.
 - A quantidade de usos de cada token no código permanece idêntica após a troca de nome.
 - Nenhum Text Style novo é aplicado automaticamente.
 - Nenhuma família, peso, line-height, letter-spacing ou transformação existente é alterada.

@@ -147,15 +147,15 @@
   --space-layout-500: 96px;
 
   /* Font size — escala responsiva, modo Desktop (padrão) */
-  --font-size-scale-100: 8px;
-  --font-size-scale-200: 11px;
-  --font-size-scale-300: 12px;
-  --font-size-scale-400: 13px;
-  --font-size-scale-500: 14px;
-  --font-size-scale-600: 16px;
-  --font-size-scale-700: 26px;
-  --font-size-scale-800: 32px;
-  --font-size-scale-900: 48px;
+  --font-size-scale-100: 0.5rem;
+  --font-size-scale-200: 0.6875rem;
+  --font-size-scale-300: 0.75rem;
+  --font-size-scale-400: 0.8125rem;
+  --font-size-scale-500: 0.875rem;
+  --font-size-scale-600: 1rem;
+  --font-size-scale-700: 1.625rem;
+  --font-size-scale-800: 2rem;
+  --font-size-scale-900: 3rem;
 
   /* Font size — papéis semânticos. Boldonse, DM Sans e DM Mono podem
      compartilhar um valor numérico sem terem o mesmo tamanho óptico; a família, o peso,
@@ -250,15 +250,15 @@ main[data-theme="dark"] {
   --space-layout-300: 72px;
   --space-layout-400: 90px;
   --space-layout-500: 108px;
-  --font-size-scale-100: 9px;
-  --font-size-scale-200: 12.5px;
-  --font-size-scale-300: 13.5px;
-  --font-size-scale-400: 14.5px;
-  --font-size-scale-500: 16px;
-  --font-size-scale-600: 18px;
-  --font-size-scale-700: 26px;
-  --font-size-scale-800: 32px;
-  --font-size-scale-900: 40px;
+  --font-size-scale-100: 0.5625rem;
+  --font-size-scale-200: 0.78125rem;
+  --font-size-scale-300: 0.84375rem;
+  --font-size-scale-400: 0.90625rem;
+  --font-size-scale-500: 1rem;
+  --font-size-scale-600: 1.125rem;
+  --font-size-scale-700: 1.625rem;
+  --font-size-scale-800: 2rem;
+  --font-size-scale-900: 2.5rem;
   }
 }
 
@@ -279,14 +279,14 @@ main[data-theme="dark"] {
   --space-layout-300: 80px;
   --space-layout-400: 100px;
   --space-layout-500: 120px;
-  --font-size-scale-100: 10px;
-  --font-size-scale-200: 14px;
-  --font-size-scale-300: 15px;
-  --font-size-scale-400: 16px;
-  --font-size-scale-500: 17.5px;
-  --font-size-scale-600: 20px;
-  --font-size-scale-700: 22.1px;
-  --font-size-scale-800: 27.2px;
-  --font-size-scale-900: 30px;
+  --font-size-scale-100: 0.625rem;
+  --font-size-scale-200: 0.875rem;
+  --font-size-scale-300: 0.9375rem;
+  --font-size-scale-400: 1rem;
+  --font-size-scale-500: 1.09375rem;
+  --font-size-scale-600: 1.25rem;
+  --font-size-scale-700: 1.38125rem;
+  --font-size-scale-800: 1.7rem;
+  --font-size-scale-900: 1.875rem;
   }
 }

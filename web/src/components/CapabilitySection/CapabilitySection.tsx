@@ -44,7 +44,7 @@ export function CapabilitySection({
         <span className={styles.number}>{number}</span>
         <div className={styles.tagRow}>
           {tags.map((tag) => (
-            <Tag key={tag} context="light" className={styles.tagOverride}>
+            <Tag key={tag} context="light">
               {tag}
             </Tag>
           ))}

@@ -110,9 +110,13 @@ function spacingBlock(mode) {
   return Object.entries(spacing).map(([k, v]) => `  --${k}: ${v[mode]}px;`).join('\n');
 }
 
+function pxToRem(value) {
+  return `${Number((value / 16).toFixed(6))}rem`;
+}
+
 function fontScaleBlock(mode) {
   return Object.entries(fontScale)
-    .map(([k, v]) => `  --font-size-scale-${k}: ${v[mode]}px;`)
+    .map(([k, v]) => `  --font-size-scale-${k}: ${pxToRem(v[mode])};`)
     .join('\n');
 }
 

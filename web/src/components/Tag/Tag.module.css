@@ -5,7 +5,8 @@
   border: 1px solid transparent;
   border-radius: 0;
   font-size: var(--font-size-caption-medium);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .light {
