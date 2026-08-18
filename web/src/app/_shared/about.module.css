@@ -9,7 +9,7 @@
 }
 
 .eyebrow {
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   letter-spacing: 0.08em;
   color: var(--content-muted-on-light);
 }
@@ -30,7 +30,7 @@
 
 .aboutName {
   font-family: var(--font-boldonse);
-  font-size: var(--font-h1-page-title);
+  font-size: var(--font-size-heading-large);
   font-weight: 400;
   font-synthesis: none;
   text-transform: uppercase;
@@ -39,7 +39,7 @@
 }
 
 .aboutText p {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-primary);
 }
@@ -63,7 +63,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-200);
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--content-secondary);
 }
 
@@ -88,13 +88,13 @@
 }
 
 .rowLabel .number {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--content-secondary);
 }
 
 .rowLabel h2 {
   font-family: var(--font-boldonse);
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -109,7 +109,7 @@
 }
 
 .rowContent p {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-primary);
 }
@@ -141,13 +141,13 @@
 }
 
 .valueItem h3 {
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
   font-weight: 600;
   color: var(--content-heading);
 }
 
 .valueItem p {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-secondary);
   margin-top: var(--space-200);
@@ -165,7 +165,7 @@
 
 .contactTitle {
   font-family: var(--font-boldonse);
-  font-size: var(--font-h1-page-title);
+  font-size: var(--font-size-heading-large);
   font-weight: 400;
   font-synthesis: none;
   text-transform: uppercase;
@@ -175,7 +175,7 @@
 }
 
 .contactSection p {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-primary);
   max-width: 560px;

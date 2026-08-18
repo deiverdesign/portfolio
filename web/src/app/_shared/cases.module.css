@@ -35,7 +35,7 @@
   align-items: center;
   gap: var(--space-300);
   color: var(--content-secondary);
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
 }
 
 .backLink:hover {
@@ -120,7 +120,7 @@
 .heroTitle {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-h1-page-title);
+  font-size: var(--font-size-heading-large);
   text-transform: uppercase;
   letter-spacing: 0.02em;
   color: var(--content-heading);
@@ -128,7 +128,7 @@
 }
 
 .heroSubtitle {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   color: var(--content-secondary);
 }
 
@@ -149,7 +149,7 @@
 
 .metaLabel {
   font-family: var(--font-dm-mono);
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--content-secondary);
@@ -158,7 +158,7 @@
 
 .metaValue {
   margin: 0;
-  font-size: var(--font-body);
+  font-size: var(--font-size-data-medium);
   color: var(--content-primary);
 }
 
@@ -222,20 +222,20 @@
    de cada seção agora vem do componente SectionHeader. */
 .eyebrow {
   font-family: var(--font-dm-mono);
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--content-accent);
 }
 
 .subheading {
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
   font-weight: 600;
   color: var(--content-heading);
 }
 
 .section p {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-primary);
 }
@@ -245,13 +245,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-300);
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-primary);
 }
 
 .caption {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--content-secondary);
   font-style: italic;
 }
@@ -304,7 +304,7 @@
    deles (número, título, texto), que o Card não sabe sobre. */
 .approachNumber {
   font-family: var(--font-dm-mono);
-  font-size: var(--font-step-number);
+  font-size: var(--font-size-editorial-step-number);
   font-weight: 700;
   color: var(--content-accent);
 }
@@ -313,7 +313,7 @@
    si não assume nada sobre o conteúdo, então isso fica explícito na
    marcação (className="cardTitle" no h3), não implícito por posição. */
 .cardTitle {
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
   color: var(--content-heading);
 }
 
@@ -329,7 +329,7 @@
 
 .testTitle {
   font-family: var(--font-dm-mono);
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--content-accent);
@@ -342,7 +342,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-300);
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-primary);
 }
@@ -397,7 +397,7 @@
 .nextCaseTitle {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-h2-section-title);
+  font-size: var(--font-size-heading-small);
   text-transform: uppercase;
   color: #f6f4ee;
 }

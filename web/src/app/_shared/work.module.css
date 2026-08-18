@@ -9,14 +9,14 @@
 }
 
 .eyebrow {
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   letter-spacing: 0.08em;
   color: var(--content-muted-on-light);
 }
 
 .title {
   font-family: var(--font-boldonse);
-  font-size: var(--font-h1-page-title);
+  font-size: var(--font-size-heading-large);
   font-weight: 400;
   font-synthesis: none;
   text-transform: uppercase;
@@ -25,7 +25,7 @@
 }
 
 .intro {
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
   color: var(--content-primary);
   max-width: 640px;
   margin-top: var(--space-200);
