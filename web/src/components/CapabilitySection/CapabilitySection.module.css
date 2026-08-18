@@ -94,22 +94,27 @@
   border-top: 1px solid var(--border-default);
 }
 
-/* Cada grupo diminui até 308.5px. Se os dois grupos + o gap de 8px não
-   couberem, o segundo desce inteiro para a próxima linha. Essa é a mesma
-   regra de wrap usada no frame de teste do Figma. */
+/* Distância fixa de 48px entre "related case studies" e "other relevant
+   work" quando cabem lado a lado. Se os dois grupos + o gap não couberem,
+   o segundo desce inteiro para a próxima linha (row-gap 32px). */
 .groups {
   display: flex;
   flex-wrap: wrap;
-  column-gap: 8px;
+  column-gap: 48px;
   row-gap: 32px;
 }
 
+/* 252px = largura real do conteúdo (tileGrid de 2 colunas de 120px + gap
+   de 12px). Sem max-width, o grupo cresce (flex-grow) além do conteúdo
+   pra preencher a linha, e essa sobra vira um gap gigante e variável
+   entre os dois grupos — por isso flex-grow fica em 0 aqui. */
 .group {
   display: flex;
   flex-direction: column;
   gap: var(--space-400);
-  flex: 1 1 308.5px;
-  min-width: min(100%, 308.5px);
+  flex: 0 1 252px;
+  min-width: min(100%, 252px);
+  max-width: 252px;
 }
 
 .groupLabel {
@@ -120,12 +125,14 @@
   color: var(--content-muted-on-light);
 }
 
-/* Os 2 slots mantêm a medida do Figma (142.3203125 × 95.296875px) mesmo
-   quando o grupo cresce. O segundo slot continua reservado quando só há
-   1 projeto, então um tile isolado não estica. */
+/* Reduzido de 142.3203125px (medida original do Figma) pra 120px — os
+   tiles de logo estavam grandes demais no desktop. Altura acompanha
+   sozinha via aspect-ratio no .tile (ProjectTile.module.css). O segundo
+   slot continua reservado quando só há 1 projeto, então um tile isolado
+   não estica. */
 .tileGrid {
   display: grid;
-  grid-template-columns: repeat(2, 142.3203125px);
+  grid-template-columns: repeat(2, 120px);
   gap: 12px;
 }
 
