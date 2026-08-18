@@ -64,6 +64,23 @@ tarefa aqui no repo, pode perguntar se quero trazer algo de lá.
 - Se eu pedir algo ambíguo, pergunte com um exemplo do que você entendeu,
   em vez de assumir.
 
+## Como responder quando eu peço uma investigação
+
+Quando eu pedir pra investigar/entender alguma coisa (um bug, um
+comportamento, uma decisão técnica), a resposta começa com um resumo,
+nessa ordem:
+
+1. **O problema em 30–45 segundos** — o que está acontecendo, direto,
+   sem rodeio.
+2. **Um modelo visual**, quando fizer sentido — diagrama, antes/depois,
+   tabela — mostrando o mecanismo, não só descrevendo em texto.
+3. **As decisões que eu preciso tomar** — só o que exige minha escolha,
+   listado com clareza.
+
+Só depois disso, se for necessário, vem a versão completa/detalhada.
+Esse resumo no topo não é um adendo — é o que eu uso pra navegar o
+resto da resposta.
+
 ## Autorizações permanentes (não precisa perguntar antes)
 
 - Pode sempre rodar `git add` / `git commit` / `git push` para `main`
