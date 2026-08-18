@@ -69,18 +69,37 @@ const spacing = {
   "space-layout-500": { Desktop: 96, Tablet: 108, Mobile: 120 },
 };
 
-const fonts = {
-  "eyebrow": { Desktop: 11, Tablet: 12.5, Mobile: 14 },
-  "h1-page-title": { Desktop: 26, Tablet: 26, Mobile: 22.1 },
-  "hero-title": { Desktop: 32, Tablet: 32, Mobile: 27.2 },
-  "h2-section-title": { Desktop: 13, Tablet: 14.5, Mobile: 16 },
-  "step-number": { Desktop: 8, Tablet: 9, Mobile: 10 },
-  "ui-medium": { Desktop: 14, Tablet: 16, Mobile: 17.5 },
-  "body": { Desktop: 12, Tablet: 13.5, Mobile: 15 },
-  "body-emphasis": { Desktop: 12, Tablet: 13.5, Mobile: 15 },
-  "body-large-intro": { Desktop: 16, Tablet: 18, Mobile: 20 },
-  "caption": { Desktop: 12, Tablet: 13.5, Mobile: 15 },
-  "subtitle": { Desktop: 14, Tablet: 16, Mobile: 17.5 },
+const fontScale = {
+  "100": { Desktop: 8, Tablet: 9, Mobile: 10 },
+  "200": { Desktop: 11, Tablet: 12.5, Mobile: 14 },
+  "300": { Desktop: 12, Tablet: 13.5, Mobile: 15 },
+  "400": { Desktop: 13, Tablet: 14.5, Mobile: 16 },
+  "500": { Desktop: 14, Tablet: 16, Mobile: 17.5 },
+  "600": { Desktop: 16, Tablet: 18, Mobile: 20 },
+  "700": { Desktop: 26, Tablet: 26, Mobile: 22.1 },
+  "800": { Desktop: 32, Tablet: 32, Mobile: 27.2 },
+  "900": { Desktop: 48, Tablet: 40, Mobile: 30 },
+};
+
+// Os 12 papéis existentes continuam 1:1; os cinco adicionais começam sem uso.
+const fontRoles = {
+  "display-large": "900",
+  "display-medium": "800",
+  "heading-large": "700",
+  "heading-medium": "600",
+  "heading-small": "400",
+  "body-large": "600",
+  "body-medium": "500",
+  "body-medium-emphasis": "500",
+  "body-small": "300",
+  "label-large": "500",
+  "label-medium": "300",
+  "label-small": "200",
+  "data-medium": "300",
+  "data-medium-emphasis": "300",
+  "caption-medium": "300",
+  "editorial-eyebrow": "200",
+  "editorial-step-number": "100",
 };
 
 function block(obj, fn) {
@@ -91,8 +110,16 @@ function spacingBlock(mode) {
   return Object.entries(spacing).map(([k, v]) => `  --${k}: ${v[mode]}px;`).join('\n');
 }
 
-function fontsBlock(mode) {
-  return Object.entries(fonts).map(([k, v]) => `  --font-${k}: ${v[mode]}px;`).join('\n');
+function fontScaleBlock(mode) {
+  return Object.entries(fontScale)
+    .map(([k, v]) => `  --font-size-scale-${k}: ${v[mode]}px;`)
+    .join('\n');
+}
+
+function fontRolesBlock() {
+  return Object.entries(fontRoles)
+    .map(([role, scale]) => `  --font-size-${role}: var(--font-size-scale-${scale});`)
+    .join('\n');
 }
 
 const css = `/* Gerado a partir do Figma (fileKey zpaQNzgjhG5ZKafe2cxnkm) por scripts/generate-tokens.mjs */
@@ -109,15 +136,18 @@ ${block(semantic, v => v)}
   /* Spacing — modo Desktop (padrão) */
 ${spacingBlock('Desktop')}
 
-  /* Fonts — modo Desktop (padrão) */
-${fontsBlock('Desktop')}
+  /* Font size — escala responsiva, modo Desktop (padrão) */
+${fontScaleBlock('Desktop')}
+
+  /* Font size — papéis semânticos */
+${fontRolesBlock()}
 }
 
-/* Tablet: até 1024px */
-@media (max-width: 1024px) {
+/* Tablet: 600px–1023px. Desktop começa exatamente em 1024px. */
+@media (max-width: 1023px) {
   :root {
 ${spacingBlock('Tablet')}
-${fontsBlock('Tablet')}
+${fontScaleBlock('Tablet')}
   }
 }
 
@@ -125,7 +155,7 @@ ${fontsBlock('Tablet')}
 @media (max-width: 599px) {
   :root {
 ${spacingBlock('Mobile')}
-${fontsBlock('Mobile')}
+${fontScaleBlock('Mobile')}
   }
 }
 `;

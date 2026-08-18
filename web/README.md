@@ -1,8 +1,10 @@
 ## Typography — which font-size token to use
 
-`src/styles/tokens.css` defines a scale of named font-size tokens
-(`--font-body`, `--font-subtitle`, `--font-body-large-intro`, etc.),
-generated from Figma. Nothing in the app should ever use a hardcoded
+`src/styles/tokens.css` defines a numeric scale plus named font-size roles
+(`--font-size-body-large`, `--font-size-body-medium`,
+`--font-size-caption-medium`, etc.), generated from Figma. The complete
+mapping is documented in [`docs/typography-system.md`](docs/typography-system.md).
+Nothing in the app should ever use a hardcoded
 `font-size: 14px` — always reference one of these tokens, so the whole
 site stays in sync if the scale changes in Figma.
 
@@ -12,20 +14,23 @@ practice, three roles cover almost everything:
 
 | Role | Token | Desktop size | Example |
 |---|---|---|---|
-| Paragraph you're meant to actually **read** (case study body copy, bio, capability description) | `--font-body-large-intro` | 16px | `<p>` inside a case study section |
-| Secondary/supporting text (card preview blurb, photo caption, meta label like "Duration") | `--font-body` or `--font-caption` | 12px | `.metaValue`, `.caption`, card `.description` |
-| UI label (nav link, button, tag) | `--font-ui-medium` / `--font-subtitle` | 14–16px | NavBar links, `<Tag>` |
+| Paragraph you're meant to actually **read** (case study body copy, bio, capability description) | `--font-size-body-large` | 16px | `<p>` inside a case study section |
+| Secondary/supporting text (card preview blurb, photo caption, meta label like "Duration") | `--font-size-body-medium`, `--font-size-data-medium` or `--font-size-caption-medium` | 12–14px | `.metaValue`, `.caption`, card `.description` |
+| UI label (nav link, button) | `--font-size-label-large` | 14px | NavBar links, `<Button>` |
 
-Before this pass, the ASTER case used `--font-body-large-intro` for
+Before this pass, the ASTER case used the token now called
+`--font-size-body-large` for
 its section paragraphs, but Capabilities, About, and the 4 other case
-studies (Cure/HP/Theodoor/Intuit) used `--font-body` or
-`--font-subtitle` (12–14px desktop) for the same kind of reading text
+studies (Cure/HP/Theodoor/Intuit) used the tokens now called
+`--font-size-data-medium` or `--font-size-body-medium` (12–14px desktop)
+for the same kind of reading text
 — same visual role, three different tokens, so the site read as
 inconsistent page to page even though each page individually used
 tokens correctly. Fixed by moving every "reading paragraph" selector
-to `--font-body-large-intro`, matching what ASTER already did — see
+to `--font-size-body-large`, matching what ASTER already did — see
 `cases.module.css`, `competencias/page.module.css`, and
-`sobre/page.module.css`. `--font-body`/`--font-caption` stay reserved
+`sobre/page.module.css`. `--font-size-data-medium` and
+`--font-size-caption-medium` stay reserved
 for genuinely secondary/small text, not full paragraphs.
 
 This isn't in Storybook yet — there's no "Typography" story showing

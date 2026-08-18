@@ -4,7 +4,7 @@
 .keyStatement {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
   line-height: 1.5;
   color: var(--aster-forest);
   border-left: 3px solid var(--aster-coral);
@@ -14,7 +14,7 @@
 .keyStatementOnDark {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
   line-height: 1.5;
   color: var(--aster-cream-on-dark);
   border-left: 3px solid var(--aster-sage);
@@ -48,13 +48,13 @@
 }
 
 .caption {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--aster-sage-text);
   font-style: italic;
 }
 
 .captionOnDark {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--aster-sage);
   font-style: italic;
 }

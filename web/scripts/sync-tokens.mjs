@@ -19,7 +19,7 @@ import { fileURLToPath } from "url";
 const FILE_KEY = process.env.FIGMA_FILE_KEY || "zpaQNzgjhG5ZKafe2cxnkm";
 const TOKEN = process.env.FIGMA_TOKEN;
 const TOKENS_CSS_PATH = fileURLToPath(new URL("../src/styles/tokens.css", import.meta.url));
-const COLLECTIONS_TO_EXPORT = ["Primitives", "Semantic", "Spacing", "Fonts"];
+const COLLECTIONS_TO_EXPORT = ["Primitives", "Semantic", "Spacing", "Font size"];
 const BREAKPOINT_MODES = ["Desktop", "Tablet", "Mobile"];
 
 function fail(message) {
@@ -63,10 +63,13 @@ function rgbToCss(c) {
   return `#${toHex(c.r)}${toHex(c.g)}${toHex(c.b)}`;
 }
 
-function cssVarName(variableName) {
-  // "primary/primary-500" -> "primary-primary-500"; slash vira traço, sem mais lógica.
-  // Verboso de propósito: automação confiável importa mais aqui que nome curto.
-  return variableName.toLowerCase().replace(/\s+/g, "-").replace(/\//g, "-");
+function cssVarName(variable) {
+  // Code Syntax é o contrato explícito entre Figma e código. O fallback só
+  // atende coleções antigas que ainda não receberam esse metadado.
+  const webSyntax = variable.codeSyntax?.WEB;
+  const syntaxMatch = webSyntax?.match(/^var\((--[^)]+)\)$/);
+  if (syntaxMatch) return syntaxMatch[1].slice(2);
+  return variable.name.toLowerCase().replace(/[\s/]+/g, "-");
 }
 
 function resolveValue(variableId, modeId, variablesById, visited = new Set()) {
@@ -89,6 +92,16 @@ function resolveValue(variableId, modeId, variablesById, visited = new Set()) {
   return null;
 }
 
+function breakpointValue(variableId, variable, modeId, variablesById) {
+  const raw = variable.valuesByMode[modeId] ?? Object.values(variable.valuesByMode)[0];
+  if (raw && typeof raw === "object" && raw.type === "VARIABLE_ALIAS") {
+    const target = variablesById[raw.id];
+    if (target) return { css: `var(--${cssVarName(target)})`, unit: "" };
+  }
+  const resolved = resolveValue(variableId, modeId, variablesById);
+  return resolved ? { css: resolved.css, unit: "px" } : null;
+}
+
 export function buildCss({ variables, variableCollections }) {
   const collectionsByName = Object.fromEntries(
     Object.values(variableCollections).map((c) => [c.name, c])
@@ -107,17 +120,15 @@ export function buildCss({ variables, variableCollections }) {
     for (const variableId of collection.variableIds) {
       const variable = variables[variableId];
       if (!variable) continue;
-      const name = cssVarName(variable.name);
+      const name = cssVarName(variable);
 
       if (isBreakpointCollection) {
-        const desktop = resolveValue(variableId, modesByName.Desktop, variables);
-        const tablet = resolveValue(variableId, modesByName.Tablet, variables);
-        const mobile = resolveValue(variableId, modesByName.Mobile, variables);
-        const unit = collectionName === "Fonts" ? "px" : "px";
-        const prefix = collectionName === "Fonts" ? "font-" : "";
-        if (desktop) lines.root.push(`  --${prefix}${name}: ${desktop.css}${unit};`);
-        if (tablet) lines.tablet.push(`  --${prefix}${name}: ${tablet.css}${unit};`);
-        if (mobile) lines.mobile.push(`  --${prefix}${name}: ${mobile.css}${unit};`);
+        const desktop = breakpointValue(variableId, variable, modesByName.Desktop, variables);
+        const tablet = breakpointValue(variableId, variable, modesByName.Tablet, variables);
+        const mobile = breakpointValue(variableId, variable, modesByName.Mobile, variables);
+        if (desktop) lines.root.push(`  --${name}: ${desktop.css}${desktop.unit};`);
+        if (tablet) lines.tablet.push(`  --${name}: ${tablet.css}${tablet.unit};`);
+        if (mobile) lines.mobile.push(`  --${name}: ${mobile.css}${mobile.unit};`);
       } else {
         const modeId = collection.modes[0].modeId;
         const resolved = resolveValue(variableId, modeId, variables);

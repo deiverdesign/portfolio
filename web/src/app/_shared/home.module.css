@@ -100,14 +100,14 @@
 }
 
 .eyebrow {
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   letter-spacing: 0.08em;
   color: var(--content-muted);
 }
 
 .heroTitle {
   font-family: var(--font-boldonse);
-  font-size: var(--font-hero-title);
+  font-size: var(--font-size-display-medium);
   font-weight: 400;
   font-synthesis: none;
   color: var(--content-on-dark-primary);
@@ -116,7 +116,7 @@
 }
 
 .heroIntro {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   color: var(--content-muted);
 }
 
@@ -219,7 +219,7 @@
 .workSection h2 {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-h2-section-title);
+  font-size: var(--font-size-heading-small);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--content-heading);
@@ -245,13 +245,13 @@
    de play/pause) — CSS próprio em BrandsSection.module.css. */
 
 .sectionEyebrow {
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   letter-spacing: 0.08em;
   color: var(--content-muted-on-light);
 }
 
 .sectionIntro {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-secondary);
   max-width: 720px;
@@ -272,7 +272,7 @@
 .additionalTitle {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-h2-section-title);
+  font-size: var(--font-size-heading-small);
   text-transform: uppercase;
   letter-spacing: 0.02em;
   color: var(--content-heading);
@@ -282,7 +282,7 @@
    não o card inteiro, pra linha de texto não ficar cansativa mesmo
    com o card ocupando a largura toda do grid. */
 .additionalDescription {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-primary);
   max-width: 42rem;
@@ -295,7 +295,7 @@
 }
 
 .additionalBadge {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--content-secondary);
   font-style: italic;
 }
@@ -311,7 +311,7 @@
   border-left: 3px solid var(--content-accent);
   padding-left: var(--space-600);
   margin: 0;
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   line-height: 1.6;
   color: var(--content-heading);
   max-width: 720px;
@@ -334,14 +334,14 @@
 .finalCtaTitle {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-h1-page-title);
+  font-size: var(--font-size-heading-large);
   text-transform: uppercase;
   letter-spacing: 0.02em;
   color: var(--content-on-dark-primary);
 }
 
 .finalCtaAvailability {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   color: var(--content-muted);
 }
 

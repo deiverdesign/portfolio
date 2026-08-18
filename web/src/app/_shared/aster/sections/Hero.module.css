@@ -32,7 +32,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-200);
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--aster-sage);
 }
 
@@ -62,14 +62,14 @@
 .wordmark {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--aster-sage);
 }
 
 .eyebrow {
-  font-size: var(--font-eyebrow);
+  font-size: var(--font-size-editorial-eyebrow);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--aster-sage);
@@ -78,7 +78,7 @@
 .title {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-hero-title);
+  font-size: var(--font-size-display-medium);
   line-height: 1.35;
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -86,7 +86,7 @@
 }
 
 .subtitle {
-  font-size: var(--font-body-large-intro);
+  font-size: var(--font-size-body-large);
   color: var(--aster-mint);
   line-height: 1.6;
   max-width: 52ch;
@@ -111,7 +111,7 @@
 }
 
 .metaBox dt {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--aster-sage);
@@ -119,7 +119,7 @@
 }
 
 .metaBox dd {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--aster-cream-on-dark);
   margin: 0;
 }

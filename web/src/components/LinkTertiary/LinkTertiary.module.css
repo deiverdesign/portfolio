@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
   font-weight: 500;
   text-decoration: none;
   transition: color var(--dur-instant) var(--ease-out-quart);

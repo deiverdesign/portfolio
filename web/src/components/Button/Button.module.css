@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   font-family: inherit;
-  font-size: var(--font-ui-medium);
+  font-size: var(--font-size-label-large);
   font-weight: 500;
   border-radius: 4px;
   border: 1px solid transparent;

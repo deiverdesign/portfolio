@@ -14,7 +14,7 @@
 .decisionTitle {
   font-family: var(--font-boldonse);
   font-weight: 400;
-  font-size: var(--font-subtitle);
+  font-size: var(--font-size-body-medium);
   text-transform: uppercase;
   letter-spacing: 0.02em;
   color: var(--content-heading);
@@ -41,7 +41,7 @@
 
 .plainCaption,
 .factualCaption {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--aster-sage-text);
   line-height: 1.5;
 }
@@ -61,20 +61,20 @@
 
 .mockLabel {
   font-family: var(--font-dm-mono);
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--aster-lavender-text);
 }
 
 .mockContext {
-  font-size: var(--font-body);
+  font-size: var(--font-size-data-medium);
   color: var(--aster-ink);
   font-style: italic;
 }
 
 .mockReason {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--aster-sage-text);
 }
 
@@ -86,7 +86,7 @@
 }
 
 .mockStatus {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   padding: 2px var(--space-300);
   border-radius: 999px;
   background: var(--aster-mint);
@@ -94,7 +94,7 @@
 }
 
 .mockDirection {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--aster-sage-text);
 }
 
@@ -132,13 +132,13 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-body);
+  font-size: var(--font-size-data-medium);
 }
 
 .tableCaption {
   text-align: left;
   padding: var(--space-400) var(--space-500);
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   color: var(--aster-sage-text);
   background: var(--aster-cream);
 }
@@ -151,7 +151,7 @@
 }
 
 .table th {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--aster-forest);

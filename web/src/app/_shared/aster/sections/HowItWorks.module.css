@@ -12,7 +12,7 @@
 }
 
 .reconstructionCaption {
-  font-size: var(--font-body);
+  font-size: var(--font-size-data-medium);
   color: var(--aster-forest);
   background: var(--aster-mint);
   border-radius: 4px;
@@ -37,7 +37,7 @@
 }
 
 .flowNode {
-  font-size: var(--font-caption);
+  font-size: var(--font-size-caption-medium);
   font-weight: 600;
   color: var(--aster-forest);
   background: var(--aster-stone);
