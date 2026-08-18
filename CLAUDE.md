@@ -46,6 +46,15 @@ componentes reais (Button, Tag, Card, etc.). A ideia é eventualmente
 conectar isso ao código aqui via Code Connect. Se for relevante pra uma
 tarefa aqui no repo, pode perguntar se quero trazer algo de lá.
 
+## Mapa do repositório (leia antes de explorar)
+
+- `web/` — o site de verdade (Next.js), o que está publicado em produção.
+- `.github/` — workflows de CI.
+- Qualquer outro arquivo ou pasta na raiz fora dessa lista **não é do
+  site**. Pode ser configuração de ferramenta (`.claude/`), lixo local
+  (`.DS_Store`), ou algo que caiu aqui por engano — não precisa investigar
+  de novo pra descobrir isso, já é sabido.
+
 ## Como trabalhar comigo neste repo
 
 - Antes de mudanças grandes ou arriscadas, me explique o plano em
