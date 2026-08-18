@@ -55,6 +55,17 @@ tarefa aqui no repo, pode perguntar se quero trazer algo de lá.
   (`.DS_Store`), ou algo que caiu aqui por engano — não precisa investigar
   de novo pra descobrir isso, já é sabido.
 
+## Documento de continuidade — fonte única local
+
+- Antes de propor a próxima etapa do projeto, leia
+  `/Users/deiverbrito/portfolio/NORTE.md`, se o arquivo existir.
+- Esse é o único Norte canônico. Edite-o diretamente no mesmo caminho;
+  nunca gere uma nova versão em Downloads, Desktop ou Google Drive.
+- Releia o arquivo imediatamente antes de alterá-lo e trabalhe com apenas
+  um agente por vez, para evitar sobrescrever mudanças recentes.
+- `NORTE.md` contém contexto pessoal e está excluído localmente do Git.
+  Não tente adicioná-lo ao repositório público.
+
 ## Como trabalhar comigo neste repo
 
 - Antes de mudanças grandes ou arriscadas, me explique o plano em
