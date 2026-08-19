@@ -21,14 +21,14 @@
   gap: var(--space-200);
 }
 
-/* Mesmo estilo do h2 das outras seções (.workSection h2) — pedido
-   explícito do Deiver pra bater com o resto do site. */
+/* Mesmo estilo compacto dos outros h2: DM Sans Bold em caixa alta. */
 .title {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-heading-small);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-heading-compact);
+  font-size: var(--font-size-heading-compact-large);
+  line-height: var(--line-height-heading-compact-large);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--letter-spacing-heading-compact-large);
   color: var(--content-heading);
 }
 
@@ -36,6 +36,7 @@
    já usada em CaseCardLarge .summary, conferido no DevTools. */
 .caption {
   font-size: var(--font-size-body-medium);
+  line-height: var(--line-height-body-medium);
   color: var(--content-secondary);
   max-width: 480px;
 }
@@ -124,6 +125,7 @@
 .logoPlaceholder {
   font-size: var(--font-size-body-medium);
   font-weight: 600;
+  line-height: var(--line-height-body-medium);
   color: var(--content-muted-on-light);
   white-space: nowrap;
 }

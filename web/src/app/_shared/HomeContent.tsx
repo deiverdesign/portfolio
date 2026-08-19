@@ -9,6 +9,7 @@ import { RevealMask } from "@/components/RevealMask/RevealMask";
 import { BrandsSection, type Brand } from "@/components/BrandsSection/BrandsSection";
 import { LensBlurGlow } from "@/components/LensBlurGlow/LensBlurGlow";
 import { Footer } from "@/components/Footer/Footer";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import { buildCapabilitiesCopy } from "./CapabilitiesContent";
 import { ABOUT_COPY } from "./AboutContent";
 import styles from "./home.module.css";
@@ -374,7 +375,9 @@ export function HomeContent({ locale }: { locale: Locale }) {
               <span className={`${styles.eyebrow} ${styles.heroReveal}`} style={{ "--reveal-delay": "0ms" } as CSSProperties}>
                 {t.eyebrow}
               </span>
-              <h1 className={styles.heroTitle}>
+              <h1
+                className={`${styles.heroTitle} ${styles.heroTitleLong} ${locale === "pt" ? styles.heroTitlePt : ""}`}
+              >
                 {titleWords.map((word, i) => (
                   <Fragment key={i}>
                     {i > 0 ? " " : null}
@@ -382,7 +385,7 @@ export function HomeContent({ locale }: { locale: Locale }) {
                       className={styles.heroTitleWord}
                       style={{ "--reveal-delay": `${heroRevealStep * (i + 1)}ms` } as CSSProperties}
                     >
-                      {word}
+                      <DisplayText variant={i === 0 ? "mixed" : "remainder"}>{word}</DisplayText>
                     </span>
                   </Fragment>
                 ))}
@@ -477,7 +480,7 @@ export function HomeContent({ locale }: { locale: Locale }) {
           <div className={styles.finalCtaInner}>
             <RevealMask className={styles.eyebrow}>{t.finalCta.eyebrow}</RevealMask>
             <h2 className={styles.finalCtaTitle}>
-              <RevealMask delayMs={80}>{t.finalCta.title}</RevealMask>
+              <RevealMask delayMs={80}><DisplayText>{t.finalCta.title}</DisplayText></RevealMask>
             </h2>
             <p className={styles.finalCtaAvailability}>{about.contactBody[0]}</p>
             <div className={styles.finalCtaActions}>

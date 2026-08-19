@@ -6,13 +6,14 @@ import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
 import { Icon } from "@/components/icons/Icon";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import { getNextCase, getCaseNavigation } from "./HomeContent";
 import styles from "./cases.module.css";
 
 const COPY = {
   en: {
     backLink: "← Back to work",
-    heroTitle: "Intuit for Education",
+    heroTitle: "Intuit for education",
     heroSubtitle: "Financial education experience for students.",
     tags: ["Product Discovery", "Financial education", "Design Systems", "UI concepts", "Gen Z", "Visual direction"],
     meta: [
@@ -108,7 +109,7 @@ const COPY = {
   },
   pt: {
     backLink: "← Voltar ao trabalho",
-    heroTitle: "Intuit for Education",
+    heroTitle: "Intuit for education",
     heroSubtitle: "Experiência de educação financeira para estudantes.",
     tags: ["Discovery de produto", "Educação financeira", "Design Systems", "Conceitos de UI", "Gen Z", "Direção visual"],
     meta: [
@@ -297,7 +298,7 @@ export function IntuitContent({ locale }: { locale: Locale }) {
               ))}
             </div>
 
-            <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
+            <h1 className={styles.heroTitle}><DisplayText>{t.heroTitle}</DisplayText></h1>
             <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
           </div>
 

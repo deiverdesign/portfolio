@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Mono, Boldonse } from "next/font/google";
+import { DM_Sans, DM_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
 import "../globals.css";
 
@@ -10,14 +11,16 @@ const dmSans = DM_Sans({
 
 const dmMono = DM_Mono({
   variable: "--font-dm-mono",
-  weight: "400",
+  weight: ["400", "500"],
   subsets: ["latin"],
 });
 
-const boldonse = Boldonse({
-  variable: "--font-boldonse",
+const renamor = localFont({
+  src: "../fonts/Renamor.otf",
+  variable: "--font-renamor",
   weight: "400",
-  subsets: ["latin"],
+  style: "normal",
+  display: "swap",
   adjustFontFallback: false,
 });
 
@@ -36,7 +39,7 @@ export default function EnRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${dmMono.variable} ${boldonse.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${dmMono.variable} ${renamor.variable}`}>
       <body>
         {children}
         <Analytics />

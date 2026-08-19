@@ -12,7 +12,9 @@
 }
 
 .reconstructionCaption {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-data-medium);
+  line-height: var(--line-height-data);
   color: var(--aster-forest);
   background: var(--aster-mint);
   border-radius: 4px;
@@ -37,8 +39,10 @@
 }
 
 .flowNode {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
-  font-weight: 600;
+  font-weight: var(--font-weight-data-emphasis);
+  line-height: var(--line-height-caption);
   color: var(--aster-forest);
   background: var(--aster-stone);
   padding: var(--space-200) var(--space-400);

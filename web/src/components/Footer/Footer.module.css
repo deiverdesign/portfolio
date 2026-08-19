@@ -35,8 +35,12 @@
 }
 
 .identity span {
+  font-family: var(--font-family-data);
   color: var(--content-secondary);
   font-size: var(--font-size-caption-medium);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-caption);
 }
 
 .links {
@@ -103,7 +107,8 @@
     min-height: 44px;
     text-align: center;
     font-size: var(--font-size-label-large);
-    font-weight: 500;
+    font-weight: var(--font-weight-label);
+    line-height: var(--line-height-label);
   }
 
   .actionButtons {
@@ -116,5 +121,9 @@
   padding-top: var(--space-700);
   border-top: 1px solid var(--border-default);
   color: var(--content-secondary);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-caption);
 }

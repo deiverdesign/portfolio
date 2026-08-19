@@ -1,5 +1,6 @@
 import { Tag } from "@/components/Tag/Tag";
 import { ProjectTile } from "@/components/ProjectTile/ProjectTile";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import styles from "./CapabilitySection.module.css";
 
 export interface CaseStudyTile {
@@ -49,7 +50,7 @@ export function CapabilitySection({
             </Tag>
           ))}
         </div>
-        <h2 className={styles.title}>{title}</h2>
+        <h2 className={styles.title}><DisplayText>{title}</DisplayText></h2>
       </div>
 
       <div className={styles.right}>

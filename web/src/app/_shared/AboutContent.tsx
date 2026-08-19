@@ -3,6 +3,7 @@ import { RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "@/components/Nav
 import { Button } from "@/components/Button/Button";
 import { Footer } from "@/components/Footer/Footer";
 import { RevealMask } from "@/components/RevealMask/RevealMask";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import styles from "./about.module.css";
 
 type Row =
@@ -180,7 +181,7 @@ export function AboutContent({ locale }: { locale: Locale }) {
 
           <div className={styles.aboutIntro}>
             <div className={styles.aboutText}>
-              <h1 className={styles.aboutName}>{t.name}</h1>
+              <h1 className={styles.aboutName}><DisplayText>{t.name}</DisplayText></h1>
               {t.bioParagraphs.map((p) => (
                 <p key={p}>{p}</p>
               ))}
@@ -228,7 +229,7 @@ export function AboutContent({ locale }: { locale: Locale }) {
         <section id={contactId} className={styles.contactSection}>
           <RevealMask className={styles.eyebrow}>{t.eyebrowContact}</RevealMask>
           <h2 className={styles.contactTitle}>
-            <RevealMask delayMs={80}>{t.contactTitle}</RevealMask>
+            <RevealMask delayMs={80}><DisplayText>{t.contactTitle}</DisplayText></RevealMask>
           </h2>
           {t.contactBody.map((p) => (
             <p key={p}>{p}</p>

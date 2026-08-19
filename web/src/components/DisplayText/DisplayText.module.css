@@ -1,0 +1,14 @@
+.initial {
+  text-transform: uppercase;
+}
+
+.remainder {
+  text-transform: lowercase;
+}
+
+.brand {
+  /* Renamor desenha lowercase com a caixa sans e reserva uppercase para os
+     glifos cursivos. Mantemos o texto original no DOM e normalizamos apenas
+     a apresentação visual de siglas/marcas compostas. */
+  text-transform: lowercase;
+}

@@ -6,7 +6,7 @@
   flex-direction: column;
   gap: var(--space-400);
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-heading);
   max-width: 720px;
 }

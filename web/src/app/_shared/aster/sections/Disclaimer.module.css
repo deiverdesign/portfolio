@@ -6,7 +6,8 @@
 .disclaimer p {
   max-width: 960px;
   margin: 0 auto;
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
-  line-height: 1.6;
+  line-height: var(--line-height-caption);
   color: var(--aster-ink);
 }

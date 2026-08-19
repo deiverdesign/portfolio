@@ -9,8 +9,12 @@
 }
 
 .eyebrow {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-editorial-eyebrow);
-  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-editorial-eyebrow);
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
+  text-transform: uppercase;
   color: var(--content-muted-on-light);
 }
 
@@ -29,18 +33,18 @@
 }
 
 .aboutName {
-  font-family: var(--font-boldonse);
-  font-size: var(--font-size-heading-large);
-  font-weight: 400;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-display-page);
+  font-weight: var(--font-weight-display);
   font-synthesis: none;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  line-height: var(--line-height-display-medium);
+  letter-spacing: var(--letter-spacing-display);
   color: var(--content-heading);
 }
 
 .aboutText p {
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-primary);
 }
 
@@ -64,6 +68,10 @@
   flex-direction: column;
   gap: var(--space-200);
   font-size: var(--font-size-caption-medium);
+  font-family: var(--font-family-data);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-caption);
   color: var(--content-secondary);
 }
 
@@ -88,16 +96,20 @@
 }
 
 .rowLabel .number {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-caption);
   color: var(--content-secondary);
 }
 
 .rowLabel h2 {
-  font-family: var(--font-boldonse);
-  font-size: var(--font-size-editorial-eyebrow);
-  font-weight: 400;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-heading-compact-large);
+  font-weight: var(--font-weight-heading-compact);
+  line-height: var(--line-height-heading-compact-large);
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--letter-spacing-heading-compact-large);
   color: var(--content-heading);
 }
 
@@ -110,7 +122,7 @@
 
 .rowContent p {
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-primary);
 }
 
@@ -143,12 +155,13 @@
 .valueItem h3 {
   font-size: var(--font-size-body-medium);
   font-weight: 600;
+  line-height: var(--line-height-body-medium);
   color: var(--content-heading);
 }
 
 .valueItem p {
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-secondary);
   margin-top: var(--space-200);
 }
@@ -164,19 +177,19 @@
 }
 
 .contactTitle {
-  font-family: var(--font-boldonse);
-  font-size: var(--font-size-heading-large);
-  font-weight: 400;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-display-page);
+  font-weight: var(--font-weight-display);
   font-synthesis: none;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  line-height: var(--line-height-display-medium);
+  letter-spacing: var(--letter-spacing-display);
   color: var(--content-heading);
   margin-bottom: var(--space-300);
 }
 
 .contactSection p {
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-primary);
   max-width: 560px;
 }

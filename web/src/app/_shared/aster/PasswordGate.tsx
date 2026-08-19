@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { unlockAster, type UnlockAsterState } from "./actions";
 import type { Locale } from "@/components/NavBar/NavBar";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import theme from "./aster-theme.module.css";
 import styles from "./PasswordGate.module.css";
 
@@ -56,7 +57,7 @@ export function PasswordGate({ locale }: { locale: Locale }) {
     <div className={`${theme.theme} ${styles.gate}`}>
       <div className={styles.card}>
         <p className={styles.wordmark}>ASTER</p>
-        <h1 className={styles.title}>{t.title}</h1>
+        <h1 className={styles.title}><DisplayText>{t.title}</DisplayText></h1>
         <p className={styles.description}>{t.description}</p>
 
         <form action={formAction} className={styles.form} noValidate>

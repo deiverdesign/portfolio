@@ -6,13 +6,14 @@ import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
 import { Icon } from "@/components/icons/Icon";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import { getNextCase, getCaseNavigation } from "./HomeContent";
 import styles from "./cases.module.css";
 
 const COPY = {
   en: {
     backLink: "← Back to work",
-    heroTitle: "CURE Intelligence / SCRIOO",
+    heroTitle: "CURE intelligence / SCRIOO",
     heroSubtitle: "AI-powered supply chain risk intelligence platform.",
     tags: ["Complex systems", "AI", "Data-heavy UX", "Enterprise", "Web platform", "Design Systems"],
     meta: [
@@ -148,7 +149,7 @@ const COPY = {
   },
   pt: {
     backLink: "← Voltar ao trabalho",
-    heroTitle: "CURE Intelligence / SCRIOO",
+    heroTitle: "CURE intelligence / SCRIOO",
     heroSubtitle: "Plataforma de inteligência de riscos em supply chain com IA.",
     tags: ["Sistemas complexos", "IA", "UX denso em dados", "Enterprise", "Plataforma web", "Design Systems"],
     meta: [
@@ -366,7 +367,9 @@ export function CureContent({ locale }: { locale: Locale }) {
               ))}
             </div>
 
-            <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
+            <h1 className={styles.heroTitle}>
+              <DisplayText variant="brand">{t.heroTitle}</DisplayText>
+            </h1>
             <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
           </div>
 

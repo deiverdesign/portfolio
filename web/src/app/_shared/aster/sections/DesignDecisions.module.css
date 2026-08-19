@@ -12,11 +12,12 @@
 }
 
 .decisionTitle {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-body-medium);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-heading-compact);
+  font-size: var(--font-size-heading-compact-medium);
+  line-height: var(--line-height-heading-compact-medium);
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--letter-spacing-heading-compact-medium);
   color: var(--content-heading);
 }
 
@@ -41,9 +42,10 @@
 
 .plainCaption,
 .factualCaption {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
   color: var(--aster-sage-text);
-  line-height: 1.5;
+  line-height: var(--line-height-caption);
 }
 
 /* Mock de Insight. */
@@ -60,21 +62,26 @@
 }
 
 .mockLabel {
-  font-family: var(--font-dm-mono);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--aster-lavender-text);
 }
 
 .mockContext {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-data-medium);
+  line-height: var(--line-height-data);
   color: var(--aster-ink);
   font-style: italic;
 }
 
 .mockReason {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   color: var(--aster-sage-text);
 }
 
@@ -86,7 +93,9 @@
 }
 
 .mockStatus {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   padding: 2px var(--space-300);
   border-radius: 999px;
   background: var(--aster-mint);
@@ -94,7 +103,9 @@
 }
 
 .mockDirection {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   color: var(--aster-sage-text);
 }
 
@@ -130,15 +141,19 @@
 }
 
 .table {
+  font-family: var(--font-family-data);
   width: 100%;
   border-collapse: collapse;
   font-size: var(--font-size-data-medium);
+  line-height: var(--line-height-data);
 }
 
 .tableCaption {
+  font-family: var(--font-family-data);
   text-align: left;
   padding: var(--space-400) var(--space-500);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   color: var(--aster-sage-text);
   background: var(--aster-cream);
 }
@@ -151,7 +166,9 @@
 }
 
 .table th {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--aster-forest);

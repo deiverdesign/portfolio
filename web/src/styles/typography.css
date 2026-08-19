@@ -1,0 +1,116 @@
+/*
+ * Camada tipográfica autoral, importada depois de tokens.css.
+ *
+ * tokens.css é gerado a partir do Figma e guarda a escala numérica bruta.
+ * Este arquivo guarda os Text Styles completos e as compensações ópticas
+ * específicas de Renamor, DM Sans e DM Mono, sem alterar a fonte gerada.
+ */
+
+:root {
+  /* Famílias por função */
+  --font-family-display: var(--font-renamor);
+  --font-family-body: var(--font-dm-sans);
+  --font-family-data: var(--font-dm-mono);
+
+  /* Pesos por função */
+  --font-weight-display: 400;
+  --font-weight-body: 400;
+  --font-weight-body-emphasis: 500;
+  --font-weight-heading-compact: 700;
+  --font-weight-label: 500;
+  --font-weight-data: 400;
+  --font-weight-data-emphasis: 500;
+
+  /* Conversão óptica Boldonse → Renamor.
+   * Referência validada no Hero: 32px → 72px = 2.25× (+125%).
+   * Os três degraus abaixo são a conversão exata dos antigos papéis que
+   * continuam usando fonte display; títulos compactos migraram para DM Sans. */
+  --font-size-renamor-from-boldonse-900: 6.75rem; /* 48px × 2.25 = 108px */
+  --font-size-renamor-from-boldonse-800: 4.5rem; /* 32px × 2.25 = 72px */
+  --font-size-renamor-from-boldonse-700: 3.65625rem; /* 26px × 2.25 = 58.5px */
+
+  /* Papéis display — todos partem dos degraus convertidos acima. */
+  --font-size-display-hero: var(--font-size-renamor-from-boldonse-800);
+  --font-size-display-hero-long: var(--font-size-display-hero);
+  --font-size-display-hero-localized-long: var(--font-size-display-hero-long);
+  --font-size-display-cta: 4.5rem; /* exceção Figma: 72px, base convertida seria 58.5px */
+  --font-size-display-capability: min(
+    var(--font-size-renamor-from-boldonse-900),
+    5.75rem
+  ); /* exceção Figma desktop: limita 108px a 92px */
+  --font-size-display-page: var(--font-size-renamor-from-boldonse-700);
+  --font-size-display-case-hero: var(--font-size-renamor-from-boldonse-800);
+  --font-size-display-case-hero-long: var(--font-size-display-case-hero);
+  --line-height-display-hero: 0.72;
+  --line-height-display-large: 0.8;
+  --line-height-display-medium: 0.9;
+  --letter-spacing-display: 0;
+
+  /* Headings funcionais */
+  --font-size-heading-compact-large: 1.125rem;
+  --font-size-heading-compact-medium: 1rem;
+  --font-size-heading-case-card: 1.125rem;
+  --line-height-heading-compact-large: 1.2;
+  --line-height-heading-compact-medium: 1.21875;
+  --line-height-heading-case-card: 1.083333;
+  --letter-spacing-heading-compact-large: 0.02em;
+  --letter-spacing-heading-compact-medium: 0;
+  --letter-spacing-heading-case-card: -0.055556em;
+
+  /* Corpo e interface */
+  --line-height-body-large: 1.6;
+  --line-height-body-medium: 1.5;
+  --line-height-body-small: 1.5;
+  --line-height-label: 1.25;
+  --letter-spacing-body: 0;
+  --letter-spacing-label: 0;
+
+  /* Dados e contexto editorial */
+  --line-height-data: 1.5;
+  --line-height-caption: 1.5;
+  --line-height-editorial-eyebrow: 1.4;
+  --line-height-editorial-step-number: 1.4;
+  --letter-spacing-data: 0;
+  --letter-spacing-caption: 0;
+  --letter-spacing-editorial-eyebrow: 0.08em;
+  --letter-spacing-editorial-step-number: 0;
+}
+
+/* Tablet: a mesma conversão 2.25× aplicada aos valores do modo Tablet. */
+@media (min-width: 600px) and (max-width: 1023px) {
+  :root {
+    --font-size-renamor-from-boldonse-900: 5.625rem; /* 40px × 2.25 = 90px */
+    --font-size-renamor-from-boldonse-800: 4.5rem; /* 32px × 2.25 = 72px */
+    --font-size-renamor-from-boldonse-700: 3.65625rem; /* 26px × 2.25 = 58.5px */
+    --font-size-display-cta: var(--font-size-renamor-from-boldonse-700);
+    --font-size-heading-compact-large: 1.125rem;
+    --font-size-heading-compact-medium: 1rem;
+    --font-size-heading-case-card: 1.125rem;
+  }
+}
+
+/*
+ * Mobile preserva os aliases Role → Scale definidos no Figma. Somente os
+ * papéis contextuais que ainda não existem naquela coleção recebem aliases
+ * próprios aqui; assim o código não vira uma segunda fonte de verdade.
+ */
+@media (max-width: 599px) {
+  :root {
+    /* Conversão exata dos três degraus do modo Mobile. */
+    --font-size-renamor-from-boldonse-900: 4.21875rem; /* 30px × 2.25 = 67.5px */
+    --font-size-renamor-from-boldonse-800: 3.825rem; /* 27.2px × 2.25 = 61.2px */
+    --font-size-renamor-from-boldonse-700: 3.1078125rem; /* 22.1px × 2.25 = 49.725px */
+
+    /* Exceções de composição mobile. Os degraus convertidos permanecem acima
+       como referência; somente papéis com textos longos ou coluna estreita
+       recebem um tamanho contextual comum. */
+    --font-size-display-hero-long: 3rem;
+    --font-size-display-hero-localized-long: 2.625rem;
+    --font-size-display-case-hero-long: 3rem;
+    --font-size-display-capability: 3.375rem;
+    --font-size-display-cta: var(--font-size-renamor-from-boldonse-700);
+    --font-size-heading-compact-large: 1.125rem;
+    --font-size-heading-compact-medium: 1.125rem;
+    --font-size-heading-case-card: 1.125rem;
+  }
+}

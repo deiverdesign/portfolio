@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ExternalLink } from "./ExternalLink";
 import { ASTER_PROTOTYPE_URL } from "./links";
 import { Tag } from "@/components/Tag/Tag";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import type { Locale } from "@/components/NavBar/NavBar";
 import styles from "./Hero.module.css";
 
@@ -20,7 +21,7 @@ const COPY: Record<Locale, {
     back: "Back to portfolio",
     homeHref: "/",
     eyebrow: "AMBIENT AI FOR CLINICAL CONSULTATIONS",
-    title: "ASTER HELPS PHYSICIANS LISTEN, REMEMBER AND DOCUMENT — WITHOUT DECIDING FOR THEM.",
+    title: "ASTER helps physicians listen, remember and document — without deciding for them.",
     subtitle:
       "A small device worn by the physician captures the consultation. The workspace identifies the patient, builds a live transcript, brings relevant context into view and prepares draft notes for review.",
     tags: ["AI interaction", "Healthcare", "Clinical workflows", "Trust and safety", "Human-in-the-loop", "Prototype"],
@@ -37,7 +38,7 @@ const COPY: Record<Locale, {
     back: "Voltar ao portfólio",
     homeHref: "/pt",
     eyebrow: "IA AMBIENTE PARA CONSULTAS CLÍNICAS",
-    title: "O ASTER AJUDA MÉDICOS A OUVIR, LEMBRAR E DOCUMENTAR — SEM DECIDIR POR ELES.",
+    title: "O ASTER ajuda médicos a ouvir, lembrar e documentar — sem decidir por eles.",
     subtitle:
       "Um pequeno dispositivo usado pelo médico captura a consulta. O workspace identifica o paciente, constrói uma transcrição ao vivo, traz contexto relevante à vista e prepara notas de rascunho para revisão.",
     tags: ["Interação com IA", "Saúde", "Fluxos clínicos", "Confiança e segurança", "Decisão humana", "Protótipo"],
@@ -68,7 +69,7 @@ export function Hero({ locale }: { locale: Locale }) {
           <p className={styles.wordmark}>ASTER</p>
           <p className={styles.eyebrow}>{t.eyebrow}</p>
           <h1 id="aster-hero-heading" className={styles.title}>
-            {t.title}
+            <DisplayText>{t.title}</DisplayText>
           </h1>
           <p className={styles.subtitle}>{t.subtitle}</p>
           <div className={styles.tagRow}>
