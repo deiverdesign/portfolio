@@ -32,7 +32,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-200);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   color: var(--aster-sage);
 }
 
@@ -60,35 +62,38 @@
 }
 
 .wordmark {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-caption-medium);
+  font-family: var(--font-family-body);
+  font-weight: 700;
+  font-size: var(--font-size-label-medium);
+  line-height: var(--line-height-label);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--aster-sage);
 }
 
 .eyebrow {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-editorial-eyebrow);
-  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-editorial-eyebrow);
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
   text-transform: uppercase;
   color: var(--aster-sage);
 }
 
 .title {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-display-medium);
-  line-height: 1.35;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--font-size-display-case-hero-long);
+  line-height: var(--line-height-display-large);
+  letter-spacing: var(--letter-spacing-display);
   color: var(--content-on-dark-primary);
 }
 
 .subtitle {
   font-size: var(--font-size-body-large);
   color: var(--aster-mint);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   max-width: 52ch;
 }
 
@@ -111,15 +116,19 @@
 }
 
 .metaBox dt {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
   color: var(--aster-sage);
   margin-bottom: 4px;
 }
 
 .metaBox dd {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   color: var(--aster-cream-on-dark);
   margin: 0;
 }
@@ -152,4 +161,3 @@
   outline: 3px solid var(--aster-mint);
   outline-offset: 4px;
 }
-

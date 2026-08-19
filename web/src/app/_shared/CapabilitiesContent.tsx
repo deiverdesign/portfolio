@@ -1,6 +1,7 @@
 import { NavBar, type Locale } from "@/components/NavBar/NavBar";
 import { CapabilitySection, type CaseStudyTile, type OtherWorkTile } from "@/components/CapabilitySection/CapabilitySection";
 import { Footer } from "@/components/Footer/Footer";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import styles from "./capabilities.module.css";
 
 export interface Capability {
@@ -91,7 +92,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
         },
         {
           number: "03",
-          title: "Design Systems",
+          title: "Design systems",
           tags: ["Components", "Tokens", "Governance"],
           description:
             "I build systems that keep products coherent as they grow—combining reusable components, token structures, documentation, engineering collaboration, and practical governance.",
@@ -184,7 +185,7 @@ export function buildCapabilitiesCopy(locale: Locale): CapabilitiesCopy {
       },
       {
         number: "03",
-        title: "Design Systems",
+        title: "Design systems",
         tags: ["Componentes", "Tokens", "Governança"],
         description:
           "Construo sistemas que mantêm os produtos coerentes conforme crescem — combinando componentes reutilizáveis, estruturas de tokens, documentação, colaboração com engenharia e governança prática.",
@@ -260,7 +261,7 @@ export function CapabilitiesContent({ locale }: { locale: Locale }) {
       <main data-theme="dark">
         <section className={styles.header}>
           <span className={styles.eyebrow}>{t.eyebrow}</span>
-          <h1 className={styles.title}>{t.title}</h1>
+          <h1 className={styles.title}><DisplayText>{t.title}</DisplayText></h1>
           <p className={styles.intro}>{t.intro}</p>
         </section>
 

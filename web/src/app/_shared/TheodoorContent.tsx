@@ -6,6 +6,7 @@ import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
 import { Icon } from "@/components/icons/Icon";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import { getNextCase, getCaseNavigation } from "./HomeContent";
 import styles from "./cases.module.css";
 
@@ -304,7 +305,7 @@ export function TheodoorContent({ locale }: { locale: Locale }) {
               ))}
             </div>
 
-            <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
+            <h1 className={styles.heroTitle}><DisplayText>{t.heroTitle}</DisplayText></h1>
             <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
           </div>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Mono, Boldonse } from "next/font/google";
+import { DM_Sans, DM_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
 import "../globals.css";
 
@@ -11,15 +12,17 @@ const dmSans = DM_Sans({
 // Fonte usada no Figma pra números/labels pequenos (eyebrow, "01", legendas).
 const dmMono = DM_Mono({
   variable: "--font-dm-mono",
-  weight: "400",
+  weight: ["400", "500"],
   subsets: ["latin"],
 });
 
-// Fonte de título/destaque usada no Figma (Case Study Title, headings de seção).
-const boldonse = Boldonse({
-  variable: "--font-boldonse",
+// Fonte display licenciada pela Envato para títulos de maior expressão.
+const renamor = localFont({
+  src: "../fonts/Renamor.otf",
+  variable: "--font-renamor",
   weight: "400",
-  subsets: ["latin"],
+  style: "normal",
+  display: "swap",
   adjustFontFallback: false,
 });
 
@@ -38,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${dmSans.variable} ${dmMono.variable} ${boldonse.variable}`}>
+    <html lang="pt-BR" className={`${dmSans.variable} ${dmMono.variable} ${renamor.variable}`}>
       <body>
         {children}
         <Analytics />

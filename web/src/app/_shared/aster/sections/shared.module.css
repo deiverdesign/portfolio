@@ -2,20 +2,20 @@
    de card/grid/lista em vários arquivos CSS diferentes. */
 
 .keyStatement {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
+  font-family: var(--font-family-body);
+  font-weight: 700;
   font-size: var(--font-size-body-medium);
-  line-height: 1.5;
+  line-height: var(--line-height-body-medium);
   color: var(--aster-forest);
   border-left: 3px solid var(--aster-coral);
   padding-left: var(--space-500);
 }
 
 .keyStatementOnDark {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
+  font-family: var(--font-family-body);
+  font-weight: 700;
   font-size: var(--font-size-body-medium);
-  line-height: 1.5;
+  line-height: var(--line-height-body-medium);
   color: var(--aster-cream-on-dark);
   border-left: 3px solid var(--aster-sage);
   padding-left: var(--space-500);
@@ -48,13 +48,17 @@
 }
 
 .caption {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   color: var(--aster-sage-text);
   font-style: italic;
 }
 
 .captionOnDark {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   color: var(--aster-sage);
   font-style: italic;
 }

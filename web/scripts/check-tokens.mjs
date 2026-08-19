@@ -12,17 +12,22 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const RAIZ = "src";
-const ARQUIVO_TOKENS = "src/styles/tokens.css";
+const ARQUIVOS_TOKENS = [
+  "src/styles/tokens.css",
+  "src/styles/typography.css",
+];
 
 // Aqui os valores crus são corretos — é onde os tokens nascem.
-const IGNORAR = [ARQUIVO_TOKENS];
+const IGNORAR = ARQUIVOS_TOKENS;
 
 // Valores que não são tamanho, então não precisam de token.
 const PERMITIDOS = ["inherit", "initial", "unset", "0"];
 
 const tokensDefinidos = new Set(
-  [...readFileSync(ARQUIVO_TOKENS, "utf8").matchAll(/^\s*(--font-size-[a-z0-9-]+):/gm)]
+  ARQUIVOS_TOKENS.flatMap((arquivo) =>
+    [...readFileSync(arquivo, "utf8").matchAll(/^\s*(--font-size-[a-z0-9-]+):/gm)]
     .map((match) => match[1])
+  )
 );
 
 function listarCss(dir) {

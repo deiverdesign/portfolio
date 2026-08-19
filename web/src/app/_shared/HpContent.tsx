@@ -6,13 +6,14 @@ import { Card } from "@/components/Card/Card";
 import { Quote } from "@/components/Quote/Quote";
 import { Tag } from "@/components/Tag/Tag";
 import { Icon } from "@/components/icons/Icon";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import { getNextCase, getCaseNavigation } from "./HomeContent";
 import styles from "./cases.module.css";
 
 const COPY = {
   en: {
     backLink: "← Back to work",
-    heroTitle: "HP Subscription Onboarding",
+    heroTitle: "HP subscription onboarding",
     heroSubtitle: "Guided setup for a printer inclusive subscription model.",
     tags: ["Subscription UX", "Connected products", "Hardware service", "Design Systems", "Enterprise", "Complex flows"],
     meta: [
@@ -94,7 +95,7 @@ const COPY = {
   },
   pt: {
     backLink: "← Voltar ao trabalho",
-    heroTitle: "HP Subscription Onboarding",
+    heroTitle: "HP subscription onboarding",
     heroSubtitle: "Configuração guiada para um modelo de assinatura com impressora incluída.",
     tags: ["UX de assinatura", "Produtos conectados", "Serviço com hardware", "Design Systems", "Enterprise", "Fluxos complexos"],
     meta: [
@@ -269,7 +270,7 @@ export function HpContent({ locale }: { locale: Locale }) {
               ))}
             </div>
 
-            <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
+            <h1 className={styles.heroTitle}><DisplayText>{t.heroTitle}</DisplayText></h1>
             <p className={styles.heroSubtitle}>{t.heroSubtitle}</p>
           </div>
 

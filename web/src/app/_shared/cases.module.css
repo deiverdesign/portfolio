@@ -36,6 +36,7 @@
   gap: var(--space-300);
   color: var(--content-secondary);
   font-size: var(--font-size-body-medium);
+  line-height: var(--line-height-body-medium);
 }
 
 .backLink:hover {
@@ -118,17 +119,18 @@
 }
 
 .heroTitle {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-heading-large);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--font-size-display-page);
+  line-height: var(--line-height-display-medium);
+  letter-spacing: var(--letter-spacing-display);
   color: var(--content-heading);
   margin-bottom: var(--space-500);
 }
 
 .heroSubtitle {
   font-size: var(--font-size-body-large);
+  line-height: var(--line-height-body-large);
   color: var(--content-secondary);
 }
 
@@ -148,10 +150,12 @@
 }
 
 .metaLabel {
-  font-family: var(--font-dm-mono);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-editorial-eyebrow);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-editorial-eyebrow);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
   color: var(--content-secondary);
   margin-bottom: var(--space-200);
 }
@@ -159,6 +163,10 @@
 .metaValue {
   margin: 0;
   font-size: var(--font-size-data-medium);
+  font-family: var(--font-family-data);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-data);
+  letter-spacing: var(--letter-spacing-data);
   color: var(--content-primary);
 }
 
@@ -221,22 +229,25 @@
 /* Usado só no label solto do card "next case" — o par eyebrow+título
    de cada seção agora vem do componente SectionHeader. */
 .eyebrow {
-  font-family: var(--font-dm-mono);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-editorial-eyebrow);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-editorial-eyebrow);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
   color: var(--content-accent);
 }
 
 .subheading {
   font-size: var(--font-size-body-medium);
   font-weight: 600;
+  line-height: var(--line-height-body-medium);
   color: var(--content-heading);
 }
 
 .section p {
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-primary);
 }
 
@@ -246,12 +257,16 @@
   flex-direction: column;
   gap: var(--space-300);
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-primary);
 }
 
 .caption {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-caption);
   color: var(--content-secondary);
   font-style: italic;
 }
@@ -303,9 +318,11 @@
    isso aqui é só o que sobrou de estilo específico de conteúdo dentro
    deles (número, título, texto), que o Card não sabe sobre. */
 .approachNumber {
-  font-family: var(--font-dm-mono);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-editorial-step-number);
-  font-weight: 700;
+  font-weight: var(--font-weight-data-emphasis);
+  line-height: var(--line-height-editorial-step-number);
+  letter-spacing: var(--letter-spacing-editorial-step-number);
   color: var(--content-accent);
 }
 
@@ -314,6 +331,7 @@
    marcação (className="cardTitle" no h3), não implícito por posição. */
 .cardTitle {
   font-size: var(--font-size-body-medium);
+  line-height: var(--line-height-body-medium);
   color: var(--content-heading);
 }
 
@@ -328,12 +346,13 @@
 }
 
 .testTitle {
-  font-family: var(--font-dm-mono);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-editorial-eyebrow);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  line-height: var(--line-height-editorial-eyebrow);
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
   color: var(--content-accent);
-  font-weight: 700;
+  font-weight: var(--font-weight-data-emphasis);
 }
 
 .outcomeList {
@@ -343,7 +362,7 @@
   flex-direction: column;
   gap: var(--space-300);
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-primary);
 }
 
@@ -395,10 +414,12 @@
 }
 
 .nextCaseTitle {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-heading-small);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-heading-compact);
+  font-size: var(--font-size-heading-compact-large);
+  line-height: var(--line-height-heading-compact-large);
   text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-heading-compact-large);
   color: #f6f4ee;
 }
 

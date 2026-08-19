@@ -34,9 +34,11 @@
 }
 
 .tag {
-  font-family: var(--font-dm-mono);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
-  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
   text-transform: uppercase;
   color: var(--aster-coral-deep);
   border: 1px solid var(--aster-coral-deep);
@@ -48,12 +50,15 @@
   font-weight: 600;
   color: var(--aster-forest);
   font-size: var(--font-size-body-medium);
+  line-height: var(--line-height-body-medium);
 }
 
 .specs {
   display: flex;
   gap: var(--space-500);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
 }
 
 .specs dt {
@@ -61,13 +66,15 @@
 }
 
 .specs dd {
-  font-family: var(--font-dm-mono);
+  font-family: var(--font-family-data);
   color: var(--aster-ink);
   margin: 0;
 }
 
 .altNote {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   color: var(--aster-sage-text);
   font-style: italic;
 }

@@ -25,10 +25,10 @@
 }
 
 .statement {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-heading-compact);
   font-size: var(--font-size-body-large);
-  line-height: 1.5;
+  line-height: var(--line-height-body-large);
   text-transform: uppercase;
   letter-spacing: 0.02em;
   color: var(--aster-cream-on-dark);
@@ -82,7 +82,9 @@
   align-items: center;
   gap: var(--space-200);
   color: var(--aster-sage);
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  line-height: var(--line-height-caption);
   width: fit-content;
 }
 

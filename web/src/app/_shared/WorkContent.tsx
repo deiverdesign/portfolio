@@ -3,6 +3,7 @@ import type { Locale } from "@/components/NavBar/constants";
 import { CaseCardLarge } from "@/components/CaseCardLarge/CaseCardLarge";
 import { Tag } from "@/components/Tag/Tag";
 import { Footer } from "@/components/Footer/Footer";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import { buildCasesCopy } from "./HomeContent";
 import homeStyles from "./home.module.css";
 import styles from "./work.module.css";
@@ -75,7 +76,7 @@ export function WorkContent({ locale }: { locale: Locale }) {
       <main>
         <section className={styles.header}>
           <span className={styles.eyebrow}>{t.eyebrow}</span>
-          <h1 className={styles.title}>{t.title}</h1>
+          <h1 className={styles.title}><DisplayText>{t.title}</DisplayText></h1>
           <p className={styles.intro}>{t.intro}</p>
         </section>
 

@@ -4,7 +4,11 @@
   padding: var(--space-100) var(--space-300);
   border: 1px solid transparent;
   border-radius: 0;
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-caption);
   white-space: normal;
   overflow-wrap: anywhere;
 }

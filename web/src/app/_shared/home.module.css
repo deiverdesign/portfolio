@@ -100,23 +100,44 @@
 }
 
 .eyebrow {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-editorial-eyebrow);
-  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-editorial-eyebrow);
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
+  text-transform: uppercase;
   color: var(--content-muted);
 }
 
 .heroTitle {
-  font-family: var(--font-boldonse);
-  font-size: var(--font-size-display-medium);
-  font-weight: 400;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-display-hero);
+  font-weight: var(--font-weight-display);
   font-synthesis: none;
   color: var(--content-on-dark-primary);
-  line-height: 1.5;
-  text-transform: uppercase;
+  line-height: var(--line-height-display-hero);
+  letter-spacing: var(--letter-spacing-display);
+  max-width: 480px;
+}
+
+/* A medida de 480px reproduz a composição inglesa do Figma, mas é curta
+   demais para as palavras mais longas do título em português. A variante PT
+   usa toda a coluna de texto para evitar três linhas consecutivas de uma só
+   palavra, sem reduzir o tamanho óptico da Renamor. Em telas menores, a
+   largura continua limitada naturalmente pelo próprio contêiner. */
+.heroTitleLong {
+  font-size: var(--font-size-display-hero-long);
+}
+
+.heroTitlePt {
+  font-size: var(--font-size-display-hero-localized-long);
+  max-width: 40rem;
+  text-wrap: balance;
 }
 
 .heroIntro {
   font-size: var(--font-size-body-large);
+  line-height: var(--line-height-body-large);
   color: var(--content-muted);
 }
 
@@ -217,11 +238,12 @@
 }
 
 .workSection h2 {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-heading-small);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-heading-compact);
+  font-size: var(--font-size-heading-compact-large);
+  line-height: var(--line-height-heading-compact-large);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--letter-spacing-heading-compact-large);
   color: var(--content-heading);
 }
 
@@ -245,14 +267,18 @@
    de play/pause) — CSS próprio em BrandsSection.module.css. */
 
 .sectionEyebrow {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-editorial-eyebrow);
-  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-editorial-eyebrow);
+  letter-spacing: var(--letter-spacing-editorial-eyebrow);
+  text-transform: uppercase;
   color: var(--content-muted-on-light);
 }
 
 .sectionIntro {
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-secondary);
   max-width: 720px;
 }
@@ -270,11 +296,12 @@
 }
 
 .additionalTitle {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-heading-small);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-heading-compact);
+  font-size: var(--font-size-heading-compact-large);
+  line-height: var(--line-height-heading-compact-large);
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--letter-spacing-heading-compact-large);
   color: var(--content-heading);
 }
 
@@ -283,7 +310,7 @@
    com o card ocupando a largura toda do grid. */
 .additionalDescription {
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-primary);
   max-width: 42rem;
 }
@@ -295,7 +322,11 @@
 }
 
 .additionalBadge {
+  font-family: var(--font-family-data);
   font-size: var(--font-size-caption-medium);
+  font-weight: var(--font-weight-data);
+  line-height: var(--line-height-caption);
+  letter-spacing: var(--letter-spacing-caption);
   color: var(--content-secondary);
   font-style: italic;
 }
@@ -312,7 +343,7 @@
   padding-left: var(--space-600);
   margin: 0;
   font-size: var(--font-size-body-large);
-  line-height: 1.6;
+  line-height: var(--line-height-body-large);
   color: var(--content-heading);
   max-width: 720px;
 }
@@ -323,7 +354,8 @@
 }
 
 .finalCtaInner {
-  max-width: 720px;
+  width: 100%;
+  max-width: 1152px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -332,16 +364,20 @@
 }
 
 .finalCtaTitle {
-  font-family: var(--font-boldonse);
-  font-weight: 400;
-  font-size: var(--font-size-heading-large);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--font-size-display-cta);
+  line-height: var(--line-height-display-large);
+  letter-spacing: var(--letter-spacing-display);
   color: var(--content-on-dark-primary);
 }
 
+/* Calibração óptica testada no Figma (824:3398). O papel Display/CTA chega
+   a 72px em desktop e volta à escala Display/Medium nos modos menores. */
+
 .finalCtaAvailability {
   font-size: var(--font-size-body-large);
+  line-height: var(--line-height-body-large);
   color: var(--content-muted);
 }
 

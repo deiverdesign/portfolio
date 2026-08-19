@@ -17,7 +17,8 @@ de tamanho do texto, não como garantia automática de acessibilidade.
 ## Migração
 
 - Os 27 valores da escala (`9 degraus × 3 modos`) foram convertidos por `px ÷ 16`.
-- Os 17 papéis semânticos e os 113 usos existentes permaneceram inalterados.
+- Os aliases `Role → Scale` existentes permaneceram inalterados.
+- Papéis ópticos adicionais ficam em `typography.css`, fora do arquivo gerado.
 - `generate-tokens.mjs` e `sync-tokens.mjs` agora emitem `rem` somente para a coleção `Font size`.
 - `html` continua sem `font-size` fixo.
 
@@ -45,7 +46,9 @@ Essas regras não alteram a composição quando o conteúdo cabe em 100%.
 - Comparação de produção em `px` contra local em `rem`: **36 de 36 valores renderizados idênticos** nos limites 599, 600, 1023 e 1024px.
 - Auditoria automatizada final: **zero perda detectada em 100% e zero em 200%**.
 - Inspeção visual representativa: Home, Capabilities, About, Work e Cure em 360px/200%, sem corte ou sobreposição persistente.
-- Em 200%, títulos Boldonse podem quebrar no meio de uma palavra quando a palavra inteira não cabe. Isso preserva o conteúdo como último recurso; em 100% a composição original permanece.
+- Em 200%, títulos Renamor podem quebrar no meio de uma palavra quando a palavra inteira não cabe. Isso preserva o conteúdo como último recurso; em 100% a composição original permanece.
+- A auditoria foi repetida depois da consolidação de família, peso, entrelinha e tracking:
+  zero overflow e zero perda de conteúdo continuaram válidos.
 
 ## Como executar
 

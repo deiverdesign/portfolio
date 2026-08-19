@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { DisplayText } from "@/components/DisplayText/DisplayText";
 import styles from "./Section.module.css";
 
 export type SectionTone = "cream" | "stone" | "forestDeep";
@@ -25,7 +26,7 @@ export function Section({ id, number, eyebrow, title, tone = "cream", image, chi
           {eyebrow}
         </p>
         <h2 id={`${id}-heading`} className={styles.title}>
-          {title}
+          <DisplayText>{title}</DisplayText>
         </h2>
         <div className={styles.body}>{children}</div>
       </div>
