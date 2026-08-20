@@ -152,20 +152,50 @@
   display: none;
 }
 
-/* Botão hambúrguer: só existe na versão mobile.
-   Padding calibrado pra dar 44x44px de área de toque (ícone de 20px + 12px
-   de cada lado) — mínimo recomendado pra toque confiável no polegar. */
+/* Botão hambúrguer: só existe na versão mobile/tablet.
+   O export do Figma já é um controle de 50x50px com o vetor posicionado
+   opticamente dentro dele; não acrescentar padding, pois isso mudaria tanto
+   a caixa quanto o alinhamento do desenho. O ícone de fechar usa a mesma
+   caixa de controle para não haver salto quando o estado muda. */
 .menuToggle {
   display: none;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: var(--nav-menu-toggle-control-size);
+  height: var(--nav-menu-toggle-control-size);
   background: none;
   border: none;
-  color: inherit;
   cursor: pointer;
-  padding: var(--space-400);
+  padding: 0;
 }
 
-.menuToggle svg {
+.light .menuToggle {
+  color: var(--nav-menu-toggle-content-on-light);
+}
+
+.dark .menuToggle {
+  color: var(--nav-menu-toggle-content-on-dark);
+}
+
+.menuToggle:focus-visible {
+  outline: 2px solid var(--action-focus-ring);
+  outline-offset: 2px;
+}
+
+.menuOpenIcon,
+.menuCloseIcon {
   display: block;
+}
+
+.menuOpenIcon {
+  width: var(--nav-menu-toggle-open-icon-size);
+  height: var(--nav-menu-toggle-open-icon-size);
+}
+
+.menuCloseIcon {
+  width: var(--nav-menu-toggle-close-icon-size);
+  height: var(--nav-menu-toggle-close-icon-size);
 }
 
 /* Painel de menu mobile, some por padrão, JS controla via [data-open] */

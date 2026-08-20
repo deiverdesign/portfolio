@@ -1,0 +1,17 @@
+/*
+ * Tokens específicos de componentes.
+ *
+ * Esta camada fica separada de tokens.css porque aquele arquivo é gerado
+ * automaticamente a partir das collections do Figma. Os aliases abaixo
+ * registram decisões do componente NavBar sem misturar valores crus no CSS
+ * local do componente.
+ */
+
+:root {
+  /* NavBar / Menu toggle — Figma 836:10943 + export "Button - Open menu.svg". */
+  --nav-menu-toggle-control-size: 50px;
+  --nav-menu-toggle-open-icon-size: 50px;
+  --nav-menu-toggle-close-icon-size: 20px;
+  --nav-menu-toggle-content-on-light: var(--content-primary);
+  --nav-menu-toggle-content-on-dark: #dbd4c9;
+}

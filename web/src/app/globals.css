@@ -1,4 +1,5 @@
 @import "../styles/tokens.css";
+@import "../styles/component-tokens.css";
 @import "../styles/typography.css";
 
 /* Tokens de motion (Fase 1) — não vêm do Figma, então ficam aqui em vez de

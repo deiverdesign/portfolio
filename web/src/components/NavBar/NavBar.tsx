@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/Button/Button";
 import { Icon } from "@/components/icons/Icon";
+import { MenuOpenIcon } from "@/components/icons/MenuOpenIcon";
 import { HOME_HREF, RESUME_DOWNLOAD_NAME, RESUME_HREF, type Locale } from "./constants";
 import styles from "./NavBar.module.css";
 
@@ -154,7 +155,11 @@ function NavBarBody({ context, locale, otherLocaleHref, open, onToggle }: NavBar
           aria-label={open ? t.closeMenu : t.openMenu}
           onClick={onToggle}
         >
-          {open ? <Icon name="close" size={20} /> : <Icon name="menu" size={20} />}
+          {open ? (
+            <Icon name="close" className={styles.menuCloseIcon} />
+          ) : (
+            <MenuOpenIcon className={styles.menuOpenIcon} />
+          )}
         </button>
       </div>
 
