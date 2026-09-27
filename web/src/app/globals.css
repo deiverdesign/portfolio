@@ -1,6 +1,7 @@
 @import "../styles/tokens.css";
 @import "../styles/component-tokens.css";
 @import "../styles/typography.css";
+@import "../styles/tokens-v3.css";
 
 /* Tokens de motion (Fase 1) — não vêm do Figma, então ficam aqui em vez de
    tokens.css: aquele arquivo é sobrescrito inteiro pelo script de sync de

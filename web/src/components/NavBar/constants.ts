@@ -9,7 +9,9 @@
  * que usam essas constantes (Home, About, Footer) importam as duas daqui.
  */
 
-export type Locale = "pt" | "en";
+import type { Locale } from "@/content/i18n";
+
+export type { Locale } from "@/content/i18n";
 
 /** Currículo é o mesmo PDF pra quem já fala português ou inglês — só o conteúdo do arquivo muda por idioma. */
 export const RESUME_HREF: Record<Locale, string> = {

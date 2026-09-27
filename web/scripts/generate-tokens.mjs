@@ -1,7 +1,9 @@
-// Gera src/styles/tokens.css a partir dos valores reais lidos do Figma.
-// Rodar de novo sempre que os tokens do Figma mudarem: node scripts/generate-tokens.mjs
+// Gerador estático legado. Produz somente um candidato para inspeção.
+// A fonte atual do Figma é scripts/sync-tokens.mjs.
 
-import { writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const primitives = {
   "primary-100": "#eef7f6", "primary-200": "#dbeeec", "primary-300": "#aadad6",
@@ -164,5 +166,10 @@ ${fontScaleBlock('Mobile')}
 }
 `;
 
-writeFileSync(new URL('../src/styles/tokens.css', import.meta.url), css);
-console.log('tokens.css gerado com sucesso.');
+const outputPath = fileURLToPath(
+  new URL('../tmp/token-sync/tokens.static.candidate.css', import.meta.url)
+);
+mkdirSync(dirname(outputPath), { recursive: true });
+writeFileSync(outputPath, css);
+console.log(`Candidato estático legado salvo em ${outputPath}.`);
+console.log('src/styles/tokens.css não foi alterado.');

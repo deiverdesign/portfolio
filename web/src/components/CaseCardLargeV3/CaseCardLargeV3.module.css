@@ -1,0 +1,256 @@
+/* Posições conferidas via get_design_context em vários nodes reais do
+   componente "Cases Cards" (fileKey zpaQNzgjhG5ZKafe2cxnkm): SCRIOO
+   (2167:6206, 27/09), e depois HP/Theodoor/Intuit/Aster (nodes da grade
+   "Desktop/Tablet" em nodes 2262 e 2264, 27/09 — não são aproximação.
+
+   Achado importante do dia 27/09: os 5 cases NÃO têm o mesmo tamanho no
+   Desktop/Tablet. SCRIOO é 742×480 (card "destaque"); os outros 4 são
+   472×480 — mais quadrado, não é a mesma proporção encolhida. Os dois
+   tamanhos compartilham a MESMA altura (480) e as MESMAS margens fixas em
+   px (24px de borda externa, 32px dentro do painel de hover) — só a
+   largura muda. Por isso quase tudo abaixo usa inset de bordas opostas
+   (ex.: left+right, não left+width) em px: assim o mesmo CSS serve pros
+   dois tamanhos sem precisar duplicar valores. Só o que é genuinamente
+   bespoke por case (a imagem de "devices") precisa de override por
+   instância — ver prop `devicesStyle` no componente. */
+
+.root {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  overflow: hidden;
+  /* radius/sm (8px) — não radius/lg como eu tinha usado antes. */
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  height: 480px;
+  text-decoration: none;
+  transition: transform var(--dur-base) var(--ease-out-quart);
+}
+
+.large {
+  width: 742px;
+}
+
+.small {
+  width: 472px;
+}
+
+.root:hover {
+  transform: translateY(-4px);
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--color-border-brand-default);
+  outline-offset: 2px;
+}
+
+.decorative {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  /* ~150/742 no Figma — uma caixa pequena no canto, não a altura inteira
+     do card (esse era meu erro antes: height:100%). Só usado pela SCRIOO
+     até agora, por isso continua em % do card grande — se outro case
+     ganhar um grafismo assim, conferir de novo, não presumir. */
+  width: 20%;
+  height: auto;
+  pointer-events: none;
+  /* O PNG em si tem margem transparente à esquerda. Medido linha a linha
+     (não um único ponto): ~92% das linhas começam exatamente em x=27 de
+     716px (3.77%) — um scan anterior baseado só no pixel mais extremo da
+     imagem inteira (x=11) subestimou isso. */
+  transform: translateX(-3.77%);
+}
+
+.logo {
+  position: absolute;
+  z-index: 1;
+  top: var(--space-700); /* 24px, fixo nos dois tamanhos */
+  left: var(--space-700); /* 24px, fixo nos dois tamanhos */
+  /* height vem inline (prop `logoType`) — varia por tipo de logo, ver
+     --logo-height-mark/--logo-height-wordmark em tokens-v3.css. */
+  width: auto;
+}
+
+.lockBadge {
+  position: absolute;
+  z-index: 1;
+  top: var(--space-700); /* 24px — mesmo canto do logo, lado oposto */
+  right: var(--space-700);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  /* Confirmado no Figma (node 2264:72142, case Aster protegido/
+     confidencial) — não é aproximação de olho. */
+  background: var(--color-overlay-neutral-strong);
+}
+
+/* IconV3 crava a cor no SVG (#303735, ver limitação documentada no
+   componente) — inverter é a mesma aproximação já usada no NavBarV3/
+   FooterV3 pro logo de identidade em fundo escuro, até existir um SVG
+   com currentColor. */
+.lockIcon {
+  filter: invert(1) brightness(1.6);
+}
+
+.secondDevice {
+  position: absolute;
+  z-index: 0; /* atrás de .devices — só usado pela Aster (background/foreground) */
+  height: auto;
+}
+
+.devices {
+  position: absolute;
+  z-index: 1;
+  /* Posição/tamanho reais divergem MUITO por case (SCRIOO/HP encostam na
+     direita e sangram por cima; Theodoor centraliza; Intuit ancora à
+     esquerda) — não dá pra generalizar um valor default único e confiável
+     sem checar cada um. Por isso este componente não fixa `right`/`width`
+     aqui: cada instância passa a posição via prop `devicesStyle`, medida
+     no Figma daquele case específico. */
+  height: auto;
+}
+
+.title {
+  position: absolute;
+  z-index: 1;
+  left: var(--space-700); /* 24px, fixo nos dois tamanhos */
+  right: var(--space-700);
+  bottom: 25px; /* (480 - 455), height-relativo, vale nos dois tamanhos */
+  max-width: 380px; /* teto de segurança — quebra de linha já é manual via titleLines */
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-heading-section);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading-section);
+  color: var(--color-foreground-neutral-strong);
+}
+
+.hoverPanel {
+  position: absolute;
+  z-index: 2;
+  top: var(--space-700); /* 24px */
+  left: var(--space-700); /* 24px — antes era 3.23%, só válido pro card de 742 */
+  right: var(--space-700); /* 24px — inset de borda oposta em vez de width fixo:
+    assim o painel ocupa (largura do card - 48px) nos dois tamanhos, sem
+    precisar de uma % diferente por tamanho. */
+  bottom: var(--space-700);
+  overflow: hidden;
+  border-radius: 5px; /* valor solto no Figma, não bate com a escala de radius */
+  background: var(--color-surface-neutral-strong);
+  backdrop-filter: blur(5.5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-out-quart);
+}
+
+.root:hover .hoverPanel,
+.root:focus-visible .hoverPanel {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* .hoverGlow removido a pedido do Deiver em 27/09 — a aproximação por
+   radial-gradient (sem o asset original "Ellipse 13") não convenceu
+   visualmente. Vai ser repensado na v3.2; não reimplementar sem pedido
+   novo. Valores antigos, caso sirvam de ponto de partida depois: posição
+   left -95px, top 268px, tamanho 290px, radial-gradient circular na cor
+   verde da SCRIOO, opacity 0.35, blur 24px. (Guardados aqui em prosa, não
+   como bloco CSS comentado, pra não repetir o bug do dia: o fechamento de
+   comentário do CSS dentro do texto de outro comentário encerra ele mais
+   cedo do que deveria.) */
+
+.hoverQuote {
+  position: absolute;
+  z-index: 1;
+  left: 32px;
+  right: 32px; /* inset de borda oposta — antes width:51.58%, só válido pro painel de 694px */
+  top: 214px;
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+  color: var(--color-foreground-neutral-default);
+}
+
+.hoverTitle {
+  position: absolute;
+  z-index: 1;
+  left: 32px;
+  right: 32px; /* idem — antes width:53.89%, calibrado só pro painel grande */
+  top: 150px;
+  margin: 0;
+  font-family: var(--font-family-editorial);
+  font-weight: var(--font-weight-editorial-regular);
+  font-size: var(--font-size-display-statement);
+  line-height: var(--line-height-display-statement);
+  color: #1a1814;
+}
+
+.hoverTags {
+  position: absolute;
+  z-index: 1;
+  left: 32px;
+  bottom: 32px; /* medido de novo em HP/Theodoor/Aster: sempre ~32px do rodapé do painel, não um top fixo */
+  display: flex;
+  gap: var(--space-400);
+}
+
+.hoverButton {
+  position: absolute;
+  z-index: 1;
+  /* Confirmado nos 4 cases (HP/Theodoor/Intuit/Aster), painel de 424px:
+     right-margin e bottom-margin batem em 32px cravado — mesma grade dos
+     outros elementos do painel, e por ser px fixo funciona nos dois
+     tamanhos sem conversão. */
+  right: 32px;
+  bottom: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--color-border-neutral-stronger);
+  border-radius: var(--radius-xs);
+}
+
+.hoverLockBadge {
+  position: absolute;
+  z-index: 1;
+  /* Frame124 no Figma (node 2262:60987, Aster): right/top-margin de 32px
+     dentro do painel — mesma grade dos outros elementos. */
+  right: 32px;
+  top: 32px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-overlay-neutral-strong);
+  color: white;
+}
+
+/* Mobile ainda não foi implementado como variante própria (conteúdo
+   default some, painel de hover não existe — no mobile o conteúdo do
+   "hover" já aparece direto). O Deiver confirmou (27/09) que todos os 5
+   cases têm o MESMO tamanho no mobile (322px) — diferente do
+   Desktop/Tablet, que bifurca large/small. As regras abaixo são um
+   ponto de partida herdado da versão antiga do componente, não a
+   variante mobile real; não confiar nelas sem conferir o Figma mobile
+   antes de implementar de verdade. */
+@media (max-width: 599px) {
+  .title {
+    max-width: 55%;
+    font-size: var(--font-size-heading-card);
+    line-height: var(--line-height-heading-card);
+  }
+
+  .decorative {
+    width: 32%;
+  }
+}

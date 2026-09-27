@@ -1,0 +1,131 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-300);
+  border-radius: var(--radius-xs);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-ui-action);
+  font-weight: var(--font-weight-ui-action);
+  line-height: var(--line-height-ui-action);
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    border-color var(--dur-fast) var(--ease-out-quart),
+    opacity var(--dur-fast) var(--ease-out-quart);
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-border-brand-default);
+  outline-offset: 2px;
+}
+
+.large {
+  padding: var(--space-400) var(--space-600);
+}
+
+.medium {
+  padding: var(--space-200) var(--space-400);
+}
+
+/* ---- Primary ---- */
+
+.primary.default {
+  background: var(--color-surface-neutral-inverse-default);
+  color: var(--color-foreground-neutral-inverse-default);
+}
+
+.primary.default:not(:disabled):hover {
+  background: var(--color-surface-neutral-inverse-subtle);
+}
+
+.primary.default:not(:disabled):active {
+  background: var(--color-surface-neutral-inverse-strong);
+}
+
+.primary.inverted {
+  background: var(--color-surface-neutral-default);
+  color: var(--color-foreground-neutral-default);
+}
+
+/* Hover/pressed do Primary/Inverted ainda não conferidos individualmente —
+   ver nota no componente. */
+.primary.inverted:not(:disabled):hover {
+  background: var(--color-surface-neutral-subtle);
+}
+
+.primary.inverted:not(:disabled):active {
+  background: var(--color-surface-neutral-strong);
+}
+
+/* ---- Secondary ---- */
+
+.secondary {
+  background: transparent;
+}
+
+.secondary.default {
+  color: var(--color-foreground-neutral-stronger);
+  border-color: var(--color-border-neutral-stronger);
+}
+
+.secondary.default:not(:disabled):hover {
+  background: var(--color-overlay-neutral-subtle);
+}
+
+.secondary.default:not(:disabled):active {
+  background: var(--color-overlay-neutral-default);
+}
+
+.secondary.inverted {
+  color: var(--color-foreground-neutral-inverse-default);
+  border-color: var(--color-border-neutral-overlay-light-default);
+}
+
+.secondary.inverted:not(:disabled):hover {
+  background: var(--color-overlay-neutral-subtle);
+}
+
+.secondary.inverted:not(:disabled):active {
+  background: var(--color-overlay-neutral-default);
+}
+
+/* ---- Tertiary ---- */
+
+.tertiary {
+  background: transparent;
+  border-color: transparent;
+}
+
+.tertiary.default {
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.tertiary.default:not(:disabled):hover {
+  background: var(--color-overlay-neutral-subtle);
+}
+
+.tertiary.default:not(:disabled):active {
+  background: var(--color-overlay-neutral-default);
+}
+
+.tertiary.inverted {
+  color: var(--color-foreground-neutral-inverse-default);
+}
+
+.tertiary.inverted:not(:disabled):hover {
+  background: var(--color-overlay-neutral-subtle);
+}
+
+.tertiary.inverted:not(:disabled):active {
+  background: var(--color-overlay-neutral-default);
+}

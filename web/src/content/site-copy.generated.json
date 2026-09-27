@@ -1,0 +1,3271 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "file": "site-copy.xlsx",
+    "sha256": "b73f10257c58f7ef1f30cb966cf4f9b583901f9640e67536957c427f06ff8b0e",
+    "entryCount": 362,
+    "ignoredRows": [
+      73
+    ]
+  },
+  "entries": {
+    "shared.nav.home": {
+      "en": "Home",
+      "pt": "Início",
+      "page": "Shared",
+      "section": "Nav",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Em todas as páginas o 1º item da nav é \"Home\" (página Cases não existe mais; decisão de 25/09)."
+    },
+    "shared.nav.about": {
+      "en": "About me",
+      "pt": "Sobre mim",
+      "page": "Shared",
+      "section": "Nav",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "No rodapé o mesmo link aparece como \"About\" (ver shared.footer.about)."
+    },
+    "shared.nav.contact": {
+      "en": "Contact",
+      "pt": "Contato",
+      "page": "Shared",
+      "section": "Nav",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.nav.resume": {
+      "en": "Resume",
+      "pt": "Currículo",
+      "page": "Shared",
+      "section": "Nav",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.nav.language": {
+      "en": "EN",
+      "pt": "PT",
+      "page": "Shared",
+      "section": "Nav",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Seletor de idioma: mostra o idioma atual."
+    },
+    "home.hero.location.city": {
+      "en": "floripa",
+      "pt": "floripa",
+      "page": "Home",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Minúsculas são estilo do design."
+    },
+    "home.hero.location.state": {
+      "en": "santa catarina",
+      "pt": "santa catarina",
+      "page": "Home",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.hero.location.country": {
+      "en": "brazil",
+      "pt": "brasil",
+      "page": "Home",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.hero.title": {
+      "en": "Clarity for complex\ndigital products",
+      "pt": "Clareza para produtos\ndigitais complexos",
+      "page": "Home",
+      "section": "Hero",
+      "status": "decidir",
+      "figma": "abrir",
+      "note": "Site atual usa \"Design para simplificar produtos complexos\". A nova versão acompanha o EN e o rodapé."
+    },
+    "home.hero.subtitle": {
+      "en": "I help teams turn ambiguity and fragmented user journeys into clear product logic, scalable interfaces, and buildable experiences.",
+      "pt": "Ajudo times a transformar ambiguidade e jornadas fragmentadas em lógica de produto clara, interfaces escaláveis e experiências construíveis.",
+      "page": "Home",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Vírgula removida."
+    },
+    "home.hero.cta": {
+      "en": "View cases",
+      "pt": "Ver projetos",
+      "page": "Home",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.work.title": {
+      "en": "Selected work",
+      "pt": "Trabalhos selecionados",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.work.counter": {
+      "en": "01 / 05",
+      "pt": "01 / 05",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Número, não traduz."
+    },
+    "home.work.intuit.description": {
+      "en": "Financial education for everyday student life.",
+      "pt": "Educação financeira para o dia a dia do estudante.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.work.theodoor.description": {
+      "en": "Accessible app for smart door automation.",
+      "pt": "App acessível para automação de portas inteligentes.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.work.scrioo.description": {
+      "en": "AI-powered supply chain risk intelligence platform.",
+      "pt": "Plataforma de inteligência de riscos em supply chain com IA.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "PT igual ao site atual."
+    },
+    "home.work.hp.description": {
+      "en": "Guided setup for a printer-included subscription.",
+      "pt": "Configuração guiada para uma assinatura com impressora incluída.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Termo unificado com o case HP: \"printer-included\"."
+    },
+    "home.work.aster.description": {
+      "en": "Ambient AI for clinical consultations.",
+      "pt": "IA ambiente para consultas clínicas.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.brands.title": {
+      "en": "Brands I’ve worked with",
+      "pt": "Marcas com que já trabalhei",
+      "page": "Home",
+      "section": "Brands",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "PT igual ao site atual."
+    },
+    "home.brands.subtitle": {
+      "en": "Work delivered across agency and in-house product design roles.",
+      "pt": "Trabalho entregue como product designer em agência e in-house.",
+      "page": "Home",
+      "section": "Brands",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.capabilities.title": {
+      "en": "Capabilities",
+      "pt": "Competências",
+      "page": "Shared",
+      "section": "Capabilities",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.capabilities.intro": {
+      "en": "Different projects show different parts of my practice. These three run through almost all of them.",
+      "pt": "Cada projeto mostra uma parte diferente da minha prática. Estas três atravessam quase todos.",
+      "page": "Shared",
+      "section": "Capabilities",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.capabilities.complex.title": {
+      "en": "Complex systems",
+      "pt": "Sistemas complexos",
+      "page": "Shared",
+      "section": "Capabilities",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.capabilities.complex.body": {
+      "en": "I turn dense product logic into interfaces people understand and operate—across multi-state workflows, connected systems, and complex decisions.",
+      "pt": "Transformo lógicas de produto densas em interfaces que as pessoas entendem e operam — em fluxos com múltiplos estados, sistemas conectados e decisões complexas.",
+      "page": "Shared",
+      "section": "Capabilities",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.capabilities.research.title": {
+      "en": "Research and discovery",
+      "pt": "Pesquisa e discovery",
+      "page": "Shared",
+      "section": "Capabilities",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.capabilities.research.body": {
+      "en": "I use interviews, workshops, prototypes, and usability tests to clarify problems, expose risky assumptions, and align teams before expensive UI work.",
+      "pt": "Uso entrevistas, workshops, protótipos e testes de usabilidade para esclarecer problemas, expor premissas arriscadas e alinhar times antes do investimento pesado em UI.",
+      "page": "Shared",
+      "section": "Capabilities",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.capabilities.ds.title": {
+      "en": "Design systems",
+      "pt": "Design systems",
+      "page": "Shared",
+      "section": "Capabilities",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Termo mantido em inglês."
+    },
+    "shared.capabilities.ds.body": {
+      "en": "I build design systems that keep products coherent as they scale—combining components, tokens, documentation, dev collaboration, and practical governance.",
+      "pt": "Construo design systems que mantêm os produtos coerentes enquanto crescem — unindo componentes, tokens, documentação, colaboração com devs e governança prática.",
+      "page": "Shared",
+      "section": "Capabilities",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.about.eyebrow": {
+      "en": "ABOUT",
+      "pt": "SOBRE",
+      "page": "Home",
+      "section": "About",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.about.body1": {
+      "en": "I'm a Senior Product Designer based in Brazil, with experience in enterprise products, legal tech, accessibility, AI platforms, subscriptions, and design systems.",
+      "pt": "Sou Product Designer Sênior no Brasil, com experiência em produtos enterprise, legal tech, acessibilidade, plataformas com IA, assinaturas e design systems.",
+      "page": "Home",
+      "section": "About",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "PT igual ao site atual."
+    },
+    "home.about.body2": {
+      "en": "My best work happens where product complexity, technical constraints, and user needs meet.",
+      "pt": "Meu melhor trabalho acontece onde a complexidade do produto, as restrições técnicas e as necessidades das pessoas se encontram.",
+      "page": "Home",
+      "section": "About",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "home.about.badge": {
+      "en": "Available to work",
+      "pt": "Disponível para trabalho",
+      "page": "Home",
+      "section": "About",
+      "status": "decidir",
+      "figma": "abrir",
+      "note": "No Figma é vetor (texto em contorno): precisa de uma versão PT desenhada. Confirmar o texto EN exato."
+    },
+    "shared.cta.eyebrow": {
+      "en": "LET'S WORK TOGETHER",
+      "pt": "VAMOS TRABALHAR JUNTOS",
+      "page": "Shared",
+      "section": "Let's build",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.cta.title": {
+      "en": "Let’s build better digital products.",
+      "pt": "Vamos construir produtos digitais melhores.",
+      "page": "Shared",
+      "section": "Let's build",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Site atual: \"Vamos construir produtos mais claros.\""
+    },
+    "shared.cta.button": {
+      "en": "Contact me",
+      "pt": "Fale comigo",
+      "page": "Shared",
+      "section": "Let's build",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "PT igual ao site atual."
+    },
+    "shared.footer.home": {
+      "en": "Home",
+      "pt": "Início",
+      "page": "Shared",
+      "section": "Footer",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.footer.about": {
+      "en": "About",
+      "pt": "Sobre",
+      "page": "Shared",
+      "section": "Footer",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Na nav é \"About me\". Unificar?"
+    },
+    "shared.footer.resume": {
+      "en": "Resume",
+      "pt": "Currículo",
+      "page": "Shared",
+      "section": "Footer",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Não aparece no rodapé da About (oculto?)."
+    },
+    "shared.footer.linkedin": {
+      "en": "LinkedIn",
+      "pt": "LinkedIn",
+      "page": "Shared",
+      "section": "Footer",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome próprio."
+    },
+    "shared.footer.location": {
+      "en": "Floripa · Brazil",
+      "pt": "Floripa · Brasil",
+      "page": "Shared",
+      "section": "Footer",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": ""
+    },
+    "shared.footer.copyright": {
+      "en": "© 2026 Deiver Brito · Designing clarity for complex digital products.",
+      "pt": "© 2026 Deiver Brito · Projetando clareza para produtos digitais complexos.",
+      "page": "Shared",
+      "section": "Footer",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "PT igual ao site atual."
+    },
+    "shared.footer.tagline": {
+      "en": "Design from Spark to Finish",
+      "pt": "Design da ideia à entrega",
+      "page": "Shared",
+      "section": "Footer",
+      "status": "decidir",
+      "figma": "abrir",
+      "note": "Tagline: traduzir ou manter em inglês nas duas versões?"
+    },
+    "about.hero.line1": {
+      "en": "Complex products ask for effort.",
+      "pt": "Produtos complexos exigem esforço.",
+      "page": "About",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.hero.line2": {
+      "en": "Confusing ones waste it.",
+      "pt": "Os confusos jogam esse esforço fora.",
+      "page": "About",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Alternativa mais literal: \"Os confusos o desperdiçam.\""
+    },
+    "about.hero.line3": {
+      "en": "I make sure your users' effort pays off.",
+      "pt": "Eu faço o esforço dos seus usuários valer a pena.",
+      "page": "About",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.hero.name": {
+      "en": "DEIVER BRITO",
+      "pt": "DEIVER BRITO",
+      "page": "About",
+      "section": "Hero",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome próprio."
+    },
+    "about.hero.city": {
+      "en": "FLORIPA",
+      "pt": "FLORIPA",
+      "page": "About",
+      "section": "Hero",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.hero.country": {
+      "en": "BRAZIL",
+      "pt": "BRASIL",
+      "page": "About",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.hero.timezone": {
+      "en": "UTC−3",
+      "pt": "UTC−3",
+      "page": "About",
+      "section": "Hero",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.facts.experience.label": {
+      "en": "EXPERIENCE",
+      "pt": "EXPERIÊNCIA",
+      "page": "About",
+      "section": "Facts",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.facts.experience.years": {
+      "en": "10+ years in design",
+      "pt": "10+ anos em design",
+      "page": "About",
+      "section": "Facts",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.facts.experience.product": {
+      "en": "7 as a product designer",
+      "pt": "7 como product designer",
+      "page": "About",
+      "section": "Facts",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.facts.clients.label": {
+      "en": "WORKED WITH",
+      "pt": "TRABALHEI COM",
+      "page": "About",
+      "section": "Facts",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.facts.clients.list": {
+      "en": "Intuit · HP · Lightship · Cirrus\nTrack & Field · Softplan",
+      "pt": "Intuit · HP · Lightship · Cirrus\nTrack & Field · Softplan",
+      "page": "About",
+      "section": "Facts",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Espaços do fim das linhas removidos."
+    },
+    "about.facts.languages.label": {
+      "en": "LANGUAGES",
+      "pt": "IDIOMAS",
+      "page": "About",
+      "section": "Facts",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.facts.languages.pt": {
+      "en": "Portuguese (native)",
+      "pt": "Português (nativo)",
+      "page": "About",
+      "section": "Facts",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.facts.languages.en": {
+      "en": "English (fluent)",
+      "pt": "Inglês (fluente)",
+      "page": "About",
+      "section": "Facts",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.process.title": {
+      "en": "I join the conversation before handoff, not at it.",
+      "pt": "Entro na conversa antes do handoff, não na hora dele.",
+      "page": "About",
+      "section": "How I work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Espaço duplo removido."
+    },
+    "about.process.subtitle": {
+      "en": "Complex, data-heavy products.",
+      "pt": "Produtos complexos e densos em dados.",
+      "page": "About",
+      "section": "How I work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.process.body": {
+      "en": "I work with PMs and engineers from the start, while product logic, data constraints and feasibility are still open. Design that arrives after those decisions are closed can only decorate them.\n\nWhen the team is unsure, I test. Interviews, workshops, low-fidelity prototypes and focused usability sessions — scoped to the riskiest assumption, not to everything.\n\nI document flows, states and interaction rules so engineering and QA can build without guessing. Ambiguity is expensive, and most of it is avoidable before a single component is written.",
+      "pt": "Trabalho com PMs e engenharia desde o início, enquanto a lógica do produto, as restrições de dados e a viabilidade ainda estão em aberto. Design que chega depois dessas decisões fechadas só consegue decorá-las.\n\nQuando o time está em dúvida, eu testo. Entrevistas, workshops, protótipos de baixa fidelidade e sessões de usabilidade focadas, no escopo da premissa mais arriscada, não de tudo.\n\nDocumento fluxos, estados e regras de interação para que engenharia e QA construam sem adivinhar. Ambiguidade custa caro, e a maior parte dela pode ser evitada antes de escrever um único componente.",
+      "page": "About",
+      "section": "How I work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Pode virar 3 chaves (um parágrafo cada) se o código precisar."
+    },
+    "about.process.tag.research": {
+      "en": "User research",
+      "pt": "Pesquisa com usuários",
+      "page": "About",
+      "section": "How I work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Tags iguais ao site atual."
+    },
+    "about.process.tag.discovery": {
+      "en": "Product discovery",
+      "pt": "Product discovery",
+      "page": "About",
+      "section": "How I work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.process.tag.usability": {
+      "en": "Usability testing",
+      "pt": "Testes de usabilidade",
+      "page": "About",
+      "section": "How I work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.process.tag.specs": {
+      "en": "Specifications",
+      "pt": "Especificações",
+      "page": "About",
+      "section": "How I work",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.beliefs.title": {
+      "en": "What I believe",
+      "pt": "No que eu acredito",
+      "page": "About",
+      "section": "What I believe",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.beliefs.1.title": {
+      "en": "Complexity should be navigable, not hidden.",
+      "pt": "Complexidade deve ser navegável, não escondida.",
+      "page": "About",
+      "section": "What I believe",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.beliefs.1.body": {
+      "en": "Some products can't be simplified without becoming useless. The work is to make the structure legible, not to pretend it's simple.",
+      "pt": "Alguns produtos não podem ser simplificados sem perder a utilidade. O trabalho é tornar a estrutura legível, não fingir que ela é simples.",
+      "page": "About",
+      "section": "What I believe",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.beliefs.2.title": {
+      "en": "Edge cases are the design.",
+      "pt": "Os edge cases são o design.",
+      "page": "About",
+      "section": "What I believe",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Decidido: manter \"edge cases\" (25/09)."
+    },
+    "about.beliefs.2.body": {
+      "en": "What happens when something is missing, late, or wrong is where an interface either holds or falls apart.",
+      "pt": "É quando algo falta, atrasa ou dá errado que uma interface se sustenta ou desmorona.",
+      "page": "About",
+      "section": "What I believe",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.beliefs.3.title": {
+      "en": "Patterns beat screens.",
+      "pt": "Padrões valem mais que telas.",
+      "page": "About",
+      "section": "What I believe",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "about.beliefs.3.body": {
+      "en": "A component that solves a class of problems is worth more than a screen that solves one.",
+      "pt": "Um componente que resolve uma classe de problemas vale mais do que uma tela que resolve um só.",
+      "page": "About",
+      "section": "What I believe",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.back": {
+      "en": "Back to Home",
+      "pt": "Voltar ao início",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Decidido (25/09). Corrigido no Figma (25/09). (SCRIOO, HP, Theodoor, Intuit; na SCRIOO Desktop-Large foi no componente HERO-SCRIOO). · Aster também corrigido (25/09)."
+    },
+    "shared.case.other": {
+      "en": "Other Cases",
+      "pt": "Outros projetos",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "\"case\" → \"projeto\" em todo o PT, igual ao \"Ver projetos\" da Home."
+    },
+    "shared.case.context.eyebrow": {
+      "en": "CONTEXT",
+      "pt": "CONTEXTO",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.role.label": {
+      "en": "My Role",
+      "pt": "Meu papel",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.collab.label": {
+      "en": "Collaboration",
+      "pt": "Colaboração",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.decisions.eyebrow": {
+      "en": "Decisions",
+      "pt": "Decisões",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Decidido (25/09): unificado como \"Decisions\" em todos os cases. Corrigido no Figma (SCRIOO)."
+    },
+    "shared.case.decision.problem": {
+      "en": "Problem:",
+      "pt": "Problema:",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "No Figma o rótulo está dentro do mesmo texto. Separei em chave própria para o código."
+    },
+    "shared.case.decision.proposal": {
+      "en": "Proposal:",
+      "pt": "Proposta:",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.decision.argument": {
+      "en": "Argument:",
+      "pt": "Argumento:",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.validation.eyebrow": {
+      "en": "Usability validation",
+      "pt": "Validação de usabilidade",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.validation.question": {
+      "en": "Question",
+      "pt": "Pergunta",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.validation.test": {
+      "en": "Test",
+      "pt": "Teste",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.validation.changed": {
+      "en": "What changed",
+      "pt": "O que mudou",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.outcome.eyebrow": {
+      "en": "Outcome",
+      "pt": "Resultado",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.reflection.eyebrow": {
+      "en": "Reflection",
+      "pt": "Reflexão",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.next": {
+      "en": "Next case",
+      "pt": "Próximo projeto",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Site atual: \"Próximo case\"."
+    },
+    "shared.tags.design-systems": {
+      "en": "Design Systems",
+      "pt": "Design systems",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.ai": {
+      "en": "AI",
+      "pt": "IA",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.data-heavy-ux": {
+      "en": "Data-heavy UX",
+      "pt": "UX denso em dados",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Igual ao site atual."
+    },
+    "shared.cases.hp.name": {
+      "en": "HP",
+      "pt": "HP",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Espaço sobrando removido."
+    },
+    "shared.cases.hp.summary": {
+      "en": "Printer subscription management, from usage to delivery",
+      "pt": "Gestão de assinatura de impressora, do uso à entrega",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.hero.title": {
+      "en": "SCRIOO",
+      "pt": "SCRIOO",
+      "page": "SCRIOO",
+      "section": "Hero",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome próprio."
+    },
+    "scrioo.hero.summary": {
+      "en": "Supply chain risk, for teams who are legally accountable for it. I redesigned how the platform shows risk — what the map says first, and what waits until you ask.",
+      "pt": "Risco em supply chain para times que respondem legalmente por ele. Redesenhei como a plataforma mostra o risco: o que o mapa diz primeiro e o que espera até você perguntar.",
+      "page": "SCRIOO",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.context.title": {
+      "en": "Everything Competed for the First Layer",
+      "pt": "Tudo disputava a primeira camada",
+      "page": "SCRIOO",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Títulos em PT em caixa de frase (só a 1ª maiúscula), padrão do português."
+    },
+    "scrioo.context.p1": {
+      "en": "SCRIOO is a supply chain risk platform used by procurement, business development and sustainability teams. Its users are companies subject to the European Supply Chain Due Diligence Act — which makes them accountable for human rights and environmental risk inside their own supply chains.",
+      "pt": "A SCRIOO é uma plataforma de risco em supply chain usada por times de compras, desenvolvimento de negócios e sustentabilidade. Seus usuários são empresas sujeitas ao European Supply Chain Due Diligence Act, que as responsabiliza por riscos ambientais e de direitos humanos dentro das próprias cadeias de suprimentos.",
+      "page": "SCRIOO",
+      "section": "Context",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Decidido (25/09): manter \"European Supply Chain Due Diligence Act\"; no PT o nome da lei fica em inglês."
+    },
+    "scrioo.context.p2": {
+      "en": "The platform monitors 180 million sources across 60 risk categories. All of it had to reach one map without the first glance becoming unreadable.",
+      "pt": "A plataforma monitora 180 milhões de fontes em 60 categorias de risco. Tudo isso precisava chegar a um único mapa sem que o primeiro olhar ficasse ilegível.",
+      "page": "SCRIOO",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.context.p3": {
+      "en": "We also had no direct access to the people who would use it.",
+      "pt": "Também não tínhamos acesso direto às pessoas que iriam usá-la.",
+      "page": "SCRIOO",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.context.role": {
+      "en": "·Product Designer\n·Individual contributor",
+      "pt": "·Product Designer\n·Contribuidor individual",
+      "page": "SCRIOO",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Espaço duplo removido. No código, melhor virar lista em vez de \"·\" digitado."
+    },
+    "scrioo.context.collab": {
+      "en": "Product, engineering, and client stakeholders",
+      "pt": "Produto, engenharia e stakeholders do cliente",
+      "page": "SCRIOO",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Igual ao site atual."
+    },
+    "scrioo.decisions.title": {
+      "en": "Deciding What the Map Says First",
+      "pt": "Decidindo o que o mapa diz primeiro",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "decidir",
+      "figma": "abrir",
+      "note": "Título novo, sugerido por mim e já aplicado no Figma (o anterior era do HP). Ecoa o hero: \"what the map says first\". Confirme ou troque."
+    },
+    "scrioo.decisions.1.title": {
+      "en": "Simplify Risk Markers on the Map",
+      "pt": "Simplificar os marcadores de risco no mapa",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.decisions.1.problem": {
+      "en": "The risk map showed many markers at once, and each one tried to say several things at the same time.",
+      "pt": "O mapa de risco mostrava muitos marcadores ao mesmo tempo, e cada um tentava comunicar várias informações de uma vez.",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN novo aplicado no Figma (25/09), baseado no site atual. O anterior era do HP."
+    },
+    "scrioo.decisions.1.proposal": {
+      "en": "Simplify the markers so the first layer shows the most important risk signal first, with detail available progressively. Severity uses color plus a second cue, never color alone.",
+      "pt": "Simplificar os marcadores para que a primeira camada mostre primeiro o sinal de risco mais importante, com o detalhe disponível aos poucos. A severidade usa cor e uma segunda pista visual, nunca só a cor.",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN novo aplicado no Figma (25/09), baseado no site atual. O anterior era do HP."
+    },
+    "scrioo.decisions.1.argument": {
+      "en": "The map's main job was to direct attention. Showing less up front led to faster decisions.",
+      "pt": "A função principal do mapa era direcionar a atenção. Mostrar menos de início ajudava a decidir mais rápido.",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN novo aplicado no Figma (25/09), baseado no site atual. O anterior era do HP."
+    },
+    "scrioo.decisions.2.title": {
+      "en": "Compare Supplier Risk Over Time",
+      "pt": "Comparar o risco de fornecedores ao longo do tempo",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.decisions.2.problem": {
+      "en": "Incidents were read as isolated events. There was no way to see whether a supplier was getting better or worse.",
+      "pt": "Os incidentes eram lidos como eventos isolados. Não havia como ver se um fornecedor estava melhorando ou piorando.",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Sem o rótulo \"Problem:\" (ver shared.case.decision.problem). Vale para todos os problem/proposal/argument."
+    },
+    "scrioo.decisions.2.proposal": {
+      "en": "Incident Through Time — comparing incidents from two or more suppliers across a selected period.",
+      "pt": "Incident Through Time: comparação de incidentes de dois ou mais fornecedores em um período selecionado.",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Nome da funcionalidade mantido em inglês, como no site atual."
+    },
+    "scrioo.decisions.2.argument": {
+      "en": "It supported the decision that actually gets made: keep the supplier, replace them, or watch them more closely.",
+      "pt": "Apoiava a decisão que de fato é tomada: manter o fornecedor, substituí-lo ou acompanhá-lo mais de perto.",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.decisions.3.title": {
+      "en": "Use Progressive Disclosure for Dense Information",
+      "pt": "Usar progressive disclosure para informação densa",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.decisions.3.problem": {
+      "en": "The same question came back in every view: how much detail belongs on the first screen?",
+      "pt": "A mesma pergunta voltava em todas as telas: quanto detalhe cabe na primeira tela?",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.decisions.3.proposal": {
+      "en": "One sequence, applied across map, analytics and insights — identify what deserves attention, understand why it matters, then reach for supporting detail.",
+      "pt": "Uma sequência só, aplicada ao mapa, a analytics e a insights: identificar o que merece atenção, entender por que importa e só então buscar o detalhe de apoio.",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.decisions.3.argument": {
+      "en": "The product could stay dense without the first layer being dense. The complexity was still there — it just wasn't all at once.",
+      "pt": "O produto podia continuar denso sem que a primeira camada fosse densa. A complexidade continuava lá, só não aparecia toda de uma vez.",
+      "page": "SCRIOO",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.title": {
+      "en": "Validating Clarity Without Access to the People Who Would Use It",
+      "pt": "Validando clareza sem acesso às pessoas que iriam usar o produto",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.body": {
+      "en": "I ran focused tests with external participants. The goal was never to validate domain expertise. They had none. It was to check whether someone seeing the interface for the first time could find the structure, follow the main flows and complete specific tasks. We tested only the areas where the team was most uncertain.",
+      "pt": "Fiz testes focados com participantes externos. O objetivo nunca foi validar conhecimento de domínio. Eles não tinham nenhum. O objetivo era verificar se alguém vendo a interface pela primeira vez conseguia encontrar a estrutura, seguir os fluxos principais e concluir tarefas específicas. Testamos só as áreas onde o time tinha mais incerteza.",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Espaço duplo removido."
+    },
+    "scrioo.validation.1.name": {
+      "en": "Map Scanning",
+      "pt": "Escaneamento do mapa",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.1.question": {
+      "en": "Could people identify the most important risks on a dense map?",
+      "pt": "As pessoas conseguiam identificar os riscos mais importantes em um mapa denso?",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.1.test": {
+      "en": "Multiple risk markers in a simplified scenario.",
+      "pt": "Vários marcadores de risco em um cenário simplificado.",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.1.changed": {
+      "en": "Simpler marker hierarchy and clearer severity cues.",
+      "pt": "Hierarquia de marcadores mais simples e sinais de severidade mais claros.",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.2.name": {
+      "en": "Supplier Comparison",
+      "pt": "Comparação de fornecedores",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.2.question": {
+      "en": "Could people compare supplier incidents over time?",
+      "pt": "As pessoas conseguiam comparar incidentes de fornecedores ao longo do tempo?",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.2.test": {
+      "en": "Incident Through Time with two or more suppliers.",
+      "pt": "Incident Through Time com dois ou mais fornecedores.",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.2.changed": {
+      "en": "Chart hierarchy, labels, and comparison flow.",
+      "pt": "Hierarquia do gráfico, rótulos e fluxo de comparação.",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.3.name": {
+      "en": "Progressive Detail",
+      "pt": "Detalhe progressivo",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.3.question": {
+      "en": "Could people move from overview to detail without overload?",
+      "pt": "As pessoas conseguiam ir da visão geral ao detalhe sem sobrecarga?",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.3.test": {
+      "en": "Task moving from map overview to supporting detail.",
+      "pt": "Tarefa indo da visão geral do mapa ao detalhe de apoio.",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.3.changed": {
+      "en": "Lighter first layer with progressive access to detail.",
+      "pt": "Primeira camada mais leve, com acesso progressivo ao detalhe.",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.validation.conclusion": {
+      "en": "This moved the team from internal debate to evidence-informed decisions, without pretending the evidence was more than it was.",
+      "pt": "Isso levou o time do debate interno a decisões informadas por evidência, sem fingir que a evidência era maior do que era.",
+      "page": "SCRIOO",
+      "section": "Usability validation",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.outcome.title": {
+      "en": "Shipped, and Documented to Stay that Way",
+      "pt": "Lançado, e documentado para continuar assim",
+      "page": "SCRIOO",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.outcome.body": {
+      "en": "SCRIOO went live as a responsive web platform. Design system foundations, theme tokens and documented states supported implementation across light and dark modes.",
+      "pt": "A SCRIOO foi lançada como uma plataforma web responsiva. Fundações de design system, tokens de tema e estados documentados apoiaram a implementação nos modos claro e escuro.",
+      "page": "SCRIOO",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.outcome.1": {
+      "en": "A simplified first layer on the map, with access to deeper detail preserved",
+      "pt": "Uma primeira camada simplificada no mapa, sem perder o acesso aos detalhes mais profundos",
+      "page": "SCRIOO",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Espaços do fim removidos nos 4 itens."
+    },
+    "scrioo.outcome.2": {
+      "en": "Incident Through Time, for comparing supplier risk across a period",
+      "pt": "Incident Through Time, para comparar o risco de fornecedores ao longo de um período",
+      "page": "SCRIOO",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.outcome.3": {
+      "en": "Flows, states and interaction rules documented for implementation",
+      "pt": "Fluxos, estados e regras de interação documentados para a implementação",
+      "page": "SCRIOO",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.outcome.4": {
+      "en": "A team that moved from internal debate to evidence-informed decisions",
+      "pt": "Um time que passou do debate interno a decisões informadas por evidência",
+      "page": "SCRIOO",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.reflection.title": {
+      "en": "A Designer's Takeaway",
+      "pt": "O que levo deste projeto",
+      "page": "SCRIOO",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Menos literal que \"O aprendizado de um designer\", que soa estranho em PT."
+    },
+    "scrioo.reflection.lead": {
+      "en": "This project reinforced an important lesson:",
+      "pt": "Este projeto reforçou uma lição importante:",
+      "page": "SCRIOO",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "scrioo.reflection.quote": {
+      "en": "in complex products, the first design challenge isn't the screen. It's understanding what decision the interface needs to support.",
+      "pt": "em produtos complexos, o primeiro desafio de design não é a tela. É entender qual decisão a interface precisa apoiar.",
+      "page": "SCRIOO",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Igual ao site atual."
+    },
+    "scrioo.reflection.close": {
+      "en": "Once that was clear, UI decisions became easier to explain, test, and document.",
+      "pt": "Com isso claro, as decisões de UI ficaram mais fáceis de explicar, testar e documentar.",
+      "page": "SCRIOO",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.open-questions.eyebrow": {
+      "en": "Open questions",
+      "pt": "Perguntas em aberto",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.validation.why": {
+      "en": "Why it mattered",
+      "pt": "Por que importava",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Na HP substitui \"Test\" na tabela."
+    },
+    "shared.tags.service-ux": {
+      "en": "Service UX",
+      "pt": "UX de serviço",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.subscription-ux": {
+      "en": "Subscription UX",
+      "pt": "UX de assinatura",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Igual ao site atual."
+    },
+    "shared.tags.connected-products": {
+      "en": "Connected products",
+      "pt": "Produtos conectados",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Igual ao site atual."
+    },
+    "shared.cases.theodoor.name": {
+      "en": "Theodoor",
+      "pt": "Theodoor",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome próprio."
+    },
+    "shared.cases.theodoor.summary": {
+      "en": "Accessible app for smart door automation.",
+      "pt": "App acessível para automação de portas inteligentes.",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Mesmo texto de home.work.theodoor.description. No código as duas podem virar uma chave só."
+    },
+    "hp.hero.title": {
+      "en": "All-In Plan for HP",
+      "pt": "All-In Plan da HP",
+      "page": "HP",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Nome do produto mantido em inglês."
+    },
+    "hp.hero.summary": {
+      "en": "The subscription already delivered ink and paper. This one delivered the printer. I worked out what that changed inside the account, and surfaced the questions nobody had answered yet.",
+      "pt": "A assinatura já entregava tinta e papel. Esta passou a entregar a impressora. Descobri o que isso mudava dentro da conta e trouxe à tona as perguntas que ninguém tinha respondido ainda.",
+      "page": "HP",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.context.title": {
+      "en": "The Plan Gained Something That Could Break",
+      "pt": "O plano ganhou algo que podia quebrar",
+      "page": "HP",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.context.p1": {
+      "en": "HP Instant Ink already delivered ink, toner and paper to millions of subscribers. The printer knows its own levels, tells HP, and supplies arrive before they run out. A consumable service, running quietly for years.",
+      "pt": "O HP Instant Ink já entregava tinta, toner e papel para milhões de assinantes. A impressora sabe os próprios níveis, avisa a HP, e os suprimentos chegam antes de acabar. Um serviço de consumíveis, funcionando em silêncio havia anos.",
+      "page": "HP",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.context.p2": {
+      "en": "The All-In Plan added the printer itself. The customer no longer buys the hardware — they subscribe to it, closer to a utility company's equipment than to a purchase.",
+      "pt": "O All-In Plan incluiu a própria impressora. O cliente não compra mais o hardware: ele assina, numa relação mais parecida com o equipamento de uma concessionária do que com uma compra.",
+      "page": "HP",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.context.p3": {
+      "en": "That changes what the account has to represent. A supplies plan has a balance, a cycle and a shipment. This one also has an object in someone's home: it ships, it prints, it breaks, it gets replaced, and eventually it has to come back. Every one of those is a state the interface has to be able to show.",
+      "pt": "Isso muda o que a conta precisa representar. Um plano de suprimentos tem saldo, ciclo e envio. Este também tem um objeto na casa de alguém: ele é enviado, imprime, quebra, é substituído e, um dia, precisa voltar. Cada um desses é um estado que a interface precisa conseguir mostrar.",
+      "page": "HP",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.context.p4": {
+      "en": "The model was past its first MVP but still in testing, and several service rules hadn't been decided yet. The design work kept arriving at them before the business did.",
+      "pt": "O modelo já tinha passado do primeiro MVP, mas ainda estava em teste, e várias regras do serviço não tinham sido decididas. O trabalho de design chegava a elas antes do negócio.",
+      "page": "HP",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.context.role": {
+      "en": "·Product Designer\n·Individual contributor on an agency team",
+      "pt": "·Product Designer\n·Contribuidor individual em um time de agência",
+      "page": "HP",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Espaço duplo removido."
+    },
+    "hp.context.collab": {
+      "en": "HP product, engineering, and QA",
+      "pt": "Produto, engenharia e QA da HP",
+      "page": "HP",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.decisions.title": {
+      "en": "Adapting a Supply Flow to an Object",
+      "pt": "Adaptando um fluxo de suprimentos a um objeto",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Este título é do HP (a SCRIOO tem uma cópia dele por engano)."
+    },
+    "hp.decisions.1.title": {
+      "en": "Put the Printer in the Same List as the Supplies",
+      "pt": "Colocar a impressora na mesma lista dos suprimentos",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.decisions.1.problem": {
+      "en": "The customer had a mental model built over years of Instant Ink: things arrive when the printer says so. Introducing the hardware as a separate concept would have split that model in two.",
+      "pt": "O cliente tinha um modelo mental construído em anos de Instant Ink: as coisas chegam quando a impressora avisa. Apresentar o hardware como um conceito separado dividiria esse modelo em dois.",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.decisions.1.proposal": {
+      "en": "The printer appears as a shipment item alongside Black, Cyan, Magenta, Yellow and Paper — one tracking view, one place to look, whether what's moving is a cartridge or the machine itself.",
+      "pt": "A impressora aparece como um item de envio ao lado de Black, Cyan, Magenta, Yellow e Paper: uma visão de rastreamento, um lugar para olhar, seja um cartucho ou a própria máquina a caminho.",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Decidido (25/09): nomes dos itens ficam em inglês (rótulos da interface)."
+    },
+    "hp.decisions.1.argument": {
+      "en": "The promise of the service is that the customer never has to think about logistics. Inheriting the existing pattern kept that promise intact for a category of thing it was never designed for.",
+      "pt": "A promessa do serviço é que o cliente nunca precise pensar em logística. Herdar o padrão existente manteve essa promessa para um tipo de coisa para o qual ele nunca foi pensado.",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.decisions.2.title": {
+      "en": "Give the Hardware the States a Consumable Never Needed",
+      "pt": "Dar ao hardware os estados de que um consumível nunca precisou",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.decisions.2.problem": {
+      "en": "A cartridge has two meaningful states: on its way, and here. A subscribed printer also has being set up, in use, failing, being replaced, and going back — and the account had nothing to represent the second half of that list.",
+      "pt": "Um cartucho tem dois estados que importam: a caminho e entregue. Uma impressora por assinatura também tem em instalação, em uso, com defeito, em substituição e em devolução, e a conta não tinha como representar a segunda metade dessa lista.",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.decisions.2.proposal": {
+      "en": "I extended the delivery pattern into a lifecycle: each hardware state carries what it means and what the customer's next step is, rather than leaving the end of the term as a gap.",
+      "pt": "Transformei o padrão de entrega em um ciclo de vida: cada estado do hardware diz o que significa e qual é o próximo passo do cliente, em vez de deixar o fim do contrato como um vazio.",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.decisions.2.argument": {
+      "en": "A consumable that never arrives is an annoyance. An object the customer doesn't own and can't account for is a dispute. The states exist to stop the account going silent exactly when the stakes are highest.",
+      "pt": "Um consumível que não chega é um incômodo. Um objeto que o cliente não possui e do qual não consegue prestar contas é uma disputa. Os estados existem para que a conta não fique muda justamente quando mais importa.",
+      "page": "HP",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.title": {
+      "en": "The Printer Has to Come Back",
+      "pt": "A impressora precisa voltar",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.body": {
+      "en": "Ink and paper were adapted from a service that already worked. The hardware was new territory, and designing the account kept running into rules that didn't exist yet — because an object that has to be returned raises questions a consumable never does. We took each one to HP as it came up.",
+      "pt": "Tinta e papel foram adaptados de um serviço que já funcionava. O hardware era território novo, e desenhar a conta esbarrava o tempo todo em regras que ainda não existiam, porque um objeto que precisa ser devolvido levanta perguntas que um consumível nunca levanta. Levamos cada uma para a HP assim que apareceu.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.1.name": {
+      "en": "Return",
+      "pt": "Devolução",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.1.question": {
+      "en": "What the account shows between the end of the term and the hardware leaving the house, and what the customer is expected to do.",
+      "pt": "O que a conta mostra entre o fim do contrato e a saída do hardware da casa, e o que se espera que o cliente faça.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.1.why": {
+      "en": "The customer never bought the printer. The plan ends, but the object is still in the house.",
+      "pt": "O cliente nunca comprou a impressora. O plano termina, mas o objeto continua na casa.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.1.changed": {
+      "en": "Return states carrying a visible next step.",
+      "pt": "Estados de devolução com um próximo passo visível.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.2.name": {
+      "en": "Damage",
+      "pt": "Dano",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.2.question": {
+      "en": "If it comes back broken, who pays — and how that gets established between customer, carrier and HP.",
+      "pt": "Se ela volta quebrada, quem paga, e como isso se define entre cliente, transportadora e HP.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.2.why": {
+      "en": "Liability sits between customer, carrier and HP before any screen can say anything.",
+      "pt": "A responsabilidade fica entre cliente, transportadora e HP antes que qualquer tela possa dizer algo.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.2.changed": {
+      "en": "Handoff notes where the rule was still undecided.",
+      "pt": "Notas de handoff onde a regra ainda não estava decidida.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.3.name": {
+      "en": "Evidence",
+      "pt": "Evidência",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.3.question": {
+      "en": "What, if anything, the interface is expected to capture, and at what moment.",
+      "pt": "O que a interface deve registrar, se é que deve, e em que momento.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.3.why": {
+      "en": "Without a record, every disputed return falls back on support.",
+      "pt": "Sem registro, toda devolução contestada cai no suporte.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.3.changed": {
+      "en": "Named states instead of assumptions.",
+      "pt": "Estados nomeados em vez de suposições.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.questions.conclusion": {
+      "en": "Some rules came back defined. Others came back as still being decided, and not in scope — which drew the line between what was ours to design and what was HP's to settle.\n\nAsking early is what turned a gap into a decision instead of an assumption.",
+      "pt": "Algumas regras voltaram definidas. Outras voltaram como ainda em decisão e fora do escopo, o que marcou a linha entre o que cabia a nós desenhar e o que cabia à HP resolver.\n\nPerguntar cedo foi o que transformou uma lacuna em decisão, e não em suposição.",
+      "page": "HP",
+      "section": "Open questions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.outcome.title": {
+      "en": "It Shipped, Printer and All",
+      "pt": "Foi lançado, com impressora e tudo",
+      "page": "HP",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.outcome.body": {
+      "en": "The printer-included plan went live. Ink, toner, paper and the printer itself now move through one account: one shipment list, one usage view, one plan.",
+      "pt": "O plano com impressora incluída foi lançado. Tinta, toner, papel e a própria impressora agora passam por uma única conta: uma lista de envios, uma visão de uso, um plano.",
+      "page": "HP",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Termo unificado com a Home: \"printer-included\"."
+    },
+    "hp.outcome.1": {
+      "en": "A tracking view where the printer is a shipment item alongside every consumable",
+      "pt": "Uma visão de rastreamento em que a impressora é um item de envio ao lado de todos os consumíveis",
+      "page": "HP",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.outcome.2": {
+      "en": "Hardware states carried through the account rather than ending at delivery",
+      "pt": "Estados do hardware que seguem pela conta toda, em vez de terminarem na entrega",
+      "page": "HP",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.outcome.3": {
+      "en": "Open service rules turned into named states instead of assumptions",
+      "pt": "Regras de serviço em aberto transformadas em estados nomeados, em vez de suposições",
+      "page": "HP",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.outcome.4": {
+      "en": "Handoff notes for engineering and QA where a rule was still being decided",
+      "pt": "Notas de handoff para engenharia e QA onde uma regra ainda estava em decisão",
+      "page": "HP",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.reflection.title": {
+      "en": "What the Screens Made Visible",
+      "pt": "O que as telas tornaram visível",
+      "page": "HP",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.reflection.lead": {
+      "en": "UI work can surface product questions nobody has answered yet.",
+      "pt": "O trabalho de UI pode trazer à tona perguntas de produto que ninguém respondeu ainda.",
+      "page": "HP",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "hp.reflection.body": {
+      "en": "When a subscription includes physical operations, the interface isn't organizing choices. It's making the service logic explicit — often before the business has.",
+      "pt": "Quando uma assinatura inclui operações físicas, a interface não está organizando escolhas. Está tornando explícita a lógica do serviço, muitas vezes antes do próprio negócio.",
+      "page": "HP",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09). Grafia americana."
+    },
+    "shared.case.scenario.label": {
+      "en": "Scenario",
+      "pt": "Cenário",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09): o 3º card estava \"scenario\" em minúscula."
+    },
+    "shared.case.settle.label": {
+      "en": "What it had to settle",
+      "pt": "O que precisava resolver",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.became.label": {
+      "en": "Became",
+      "pt": "Virou",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Alternativa: \"O que virou\"."
+    },
+    "shared.tags.accessibility": {
+      "en": "Accessibility",
+      "pt": "Acessibilidade",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.physical-digital-ux": {
+      "en": "Physical-digital UX",
+      "pt": "UX físico-digital",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.motion": {
+      "en": "Motion",
+      "pt": "Motion",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Termo mantido em inglês (uso comum em design). Alternativa: \"Animação\"."
+    },
+    "shared.cases.intuit.name": {
+      "en": "Intuit",
+      "pt": "Intuit",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome próprio."
+    },
+    "shared.cases.intuit.summary": {
+      "en": "Financial education for everyday student life.",
+      "pt": "Educação financeira para o dia a dia do estudante.",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Mesmo texto de home.work.intuit.description."
+    },
+    "theodoor.hero.title": {
+      "en": "Theodoor for Doorbotics",
+      "pt": "Theodoor para a Doorbotics",
+      "page": "Theodoor",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.hero.summary": {
+      "en": "A portable opener that makes an ordinary swing door automatic. I designed the app for a pre-MVP build — for people whose hands can't open the door in the first place.",
+      "pt": "Um abridor portátil que deixa automática uma porta de giro comum. Desenhei o app para uma versão pré-MVP, pensada para pessoas que não conseguem abrir a porta com as próprias mãos.",
+      "page": "Theodoor",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.context.title": {
+      "en": "The Hands That Can't Open the Door Also Hold the Phone",
+      "pt": "As mãos que não abrem a porta também seguram o celular",
+      "page": "Theodoor",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.context.p1": {
+      "en": "Theodoor makes an existing swing door automatic without drilling, rewiring or modifying the home. Its users are people for whom a door is a daily obstacle: wheelchair users, people recovering from a stroke, and people living with arthritis, MS, cerebral palsy or ALS.",
+      "pt": "O Theodoor deixa automática uma porta de giro já existente, sem furar, mexer na fiação ou modificar a casa. Seus usuários são pessoas para quem uma porta é um obstáculo diário: usuários de cadeira de rodas, pessoas se recuperando de um AVC e pessoas que convivem com artrite, esclerose múltipla, paralisia cerebral ou ELA.",
+      "page": "Theodoor",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.context.p2": {
+      "en": "That sets the constraint the interface has to meet. Reaching a door is one problem; gripping and holding is another. The same reduced strength and unsteady hands that make a door hard to open make a phone screen hard to operate, and the app had to work for exactly those hands.",
+      "pt": "Isso define a restrição que a interface precisa atender. Alcançar uma porta é um problema; agarrar e segurar é outro. A mesma força reduzida e as mesmas mãos instáveis que dificultam abrir uma porta dificultam operar a tela de um celular, e o app precisava funcionar exatamente para essas mãos.",
+      "page": "Theodoor",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.context.p3": {
+      "en": "The engagement was short and the goal was a pre-MVP build: a prototype finished enough to be tested and validated internally, and clear enough for a development team to work from. No hardware existed on my side, and several product decisions were still being made while the screens were being drawn.",
+      "pt": "O projeto foi curto e o objetivo era uma versão pré-MVP: um protótipo acabado o suficiente para ser testado e validado internamente, e claro o suficiente para um time de desenvolvimento trabalhar a partir dele. Eu não tinha o hardware, e várias decisões de produto ainda estavam sendo tomadas enquanto as telas eram desenhadas.",
+      "page": "Theodoor",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.context.role": {
+      "en": "·Product Designer\n·Individual contributor on an agency team",
+      "pt": "·Product Designer\n·Contribuidor individual em um time de agência",
+      "page": "Theodoor",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Igual ao HP."
+    },
+    "theodoor.context.collab": {
+      "en": "Doorbotics founders, QA and engineering",
+      "pt": "Fundadores da Doorbotics, QA e engenharia",
+      "page": "Theodoor",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.decisions.title": {
+      "en": "Designing for a Door You Can't See From the Screen",
+      "pt": "Desenhando para uma porta que não se vê pela tela",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.decisions.1.title": {
+      "en": "Let the Door Do Part of the Talking",
+      "pt": "Deixar a própria porta dar parte do recado",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.decisions.1.problem": {
+      "en": "In a review, the team is arguing about what a button should say and what the screen should show while the door opens — with no door. Four people reasoning about a physical object none of us could watch. That risks two failures at once: settling on behavior that wouldn't survive contact with the real hardware, or over-building the interface to compensate for a door nobody could see.",
+      "pt": "Em uma revisão, o time discute o que um botão deveria dizer e o que a tela deveria mostrar enquanto a porta abre, sem porta nenhuma. Quatro pessoas raciocinando sobre um objeto físico que nenhuma de nós podia ver. Isso arrisca duas falhas ao mesmo tempo: fechar um comportamento que não sobreviveria ao hardware real, ou construir interface demais para compensar uma porta que ninguém via.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN corrigido para grafia americana no Figma (behaviour → behavior)."
+    },
+    "theodoor.decisions.1.caption": {
+      "en": "Prototype\nDoor visual feedback",
+      "pt": "Protótipo\nFeedback visual da porta",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Legenda de imagem."
+    },
+    "theodoor.decisions.1.proposal": {
+      "en": "I built the door into the prototype — a skeuomorphic door that opened on the same timing the real one would, so the door was present in every conversation. Designer, PM, QA and client could watch the same thing happen and argue about what they saw rather than about what they imagined.",
+      "pt": "Coloquei a porta dentro do protótipo: uma porta skeuomórfica que abria no mesmo tempo da real, para que ela estivesse presente em toda conversa. Designer, PM, QA e cliente podiam ver a mesma coisa acontecer e discutir sobre o que viam, e não sobre o que imaginavam.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.decisions.1.argument": {
+      "en": "It made the team faster and more certain, and it returned something we hadn't planned for: watching the simulated door made it obvious that for someone who can see the door, the door opening is the confirmation. The interface only has to carry what the room doesn't.",
+      "pt": "Isso deixou o time mais rápido e mais seguro, e trouxe algo que não tínhamos planejado: ver a porta simulada deixou óbvio que, para quem consegue ver a porta, a porta abrindo é a confirmação. A interface só precisa carregar o que o ambiente não mostra.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.decisions.2.title": {
+      "en": "Treat Audio as a Channel, Not an Accessory",
+      "pt": "Tratar o áudio como canal, não como acessório",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.decisions.2.problem": {
+      "en": "For a product whose users may have low vision, or whose attention is on the doorway rather than the phone, feedback that only exists on screen isn't feedback at all.",
+      "pt": "Num produto em que os usuários podem ter baixa visão, ou em que a atenção está na porta e não no celular, um feedback que só existe na tela não é feedback.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.decisions.2.proposal": {
+      "en": "I designed the system's states to be legible without the screen, and the simulated door carried sound as well as motion — so the same prototype that let the team watch the door also let them stop watching it. We checked it the simplest way available: in a review with the client, everyone looked away from the phone and followed what the system was doing by sound alone.",
+      "pt": "Desenhei os estados do sistema para serem compreensíveis sem a tela, e a porta simulada tinha som além de movimento. Assim, o mesmo protótipo que deixava o time ver a porta também deixava parar de olhar para ela. Verificamos do jeito mais simples possível: numa revisão com o cliente, todo mundo desviou o olhar do celular e acompanhou o que o sistema fazia só pelo som.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.decisions.2.argument": {
+      "en": "It was an informal check, not a study — but it answered the only question that mattered at that stage: whether the non-visual layer carried enough on its own to be worth refining.",
+      "pt": "Foi uma checagem informal, não um estudo, mas respondeu à única pergunta que importava naquele momento: se a camada não visual se sustentava sozinha o bastante para valer a pena refinar.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.eyebrow": {
+      "en": "Behavioral prototyping",
+      "pt": "Prototipagem de comportamento",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.caption": {
+      "en": "Vibecoding\nTwo days to a behaving prototype",
+      "pt": "Vibecoding\nDois dias até um protótipo que se comporta",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Legenda de imagem. Corrigido no Figma (25/09): quebra de linha sobrando no fim."
+    },
+    "theodoor.prototyping.title": {
+      "en": "Making a Door Fail, Safely, Before It Existed",
+      "pt": "Fazendo uma porta falhar, com segurança, antes de ela existir",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.body": {
+      "en": "Doorbotics brought the scenarios: what should happen when the door meets an obstacle, when it can't complete its path, when the connection drops. Static screens couldn't settle any of them. So I built a prototype simulator that played the system's behavior over time — timing, transitions and failure, not just screens — and turned it into a Figma blueprint for handoff.",
+      "pt": "A Doorbotics trouxe os cenários: o que deveria acontecer quando a porta encontra um obstáculo, quando não consegue completar o percurso, quando a conexão cai. Telas estáticas não resolviam nenhum deles. Então construí um simulador de protótipo que reproduzia o comportamento do sistema ao longo do tempo (tempo, transições e falhas, não só telas) e o transformei em um blueprint no Figma para o handoff.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.1.name": {
+      "en": "Obstruction and pinch protection",
+      "pt": "Obstrução e proteção contra esmagamento",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.1.scenario": {
+      "en": "The door meets a body or an object mid-movement and the hardware stops.",
+      "pt": "A porta encontra um corpo ou um objeto no meio do movimento e o hardware para.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.1.settle": {
+      "en": "Whether the interface reads the stop as the safety system working or as a failure.",
+      "pt": "Se a interface lê a parada como o sistema de segurança funcionando ou como uma falha.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.1.became": {
+      "en": "Distinct states for a protective stop and a genuine error, with different recovery paths.",
+      "pt": "Estados diferentes para uma parada de proteção e um erro de verdade, com caminhos de recuperação diferentes.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.2.name": {
+      "en": "Path blocked and partial open",
+      "pt": "Percurso bloqueado e abertura parcial",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.2.scenario": {
+      "en": "The door starts to open and cannot complete the movement.",
+      "pt": "A porta começa a abrir e não consegue completar o movimento.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.2.settle": {
+      "en": "What the app shows when the physical outcome is partial rather than success or failure.",
+      "pt": "O que o app mostra quando o resultado físico é parcial, e não sucesso ou falha.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.2.became": {
+      "en": "An in-between state with a visible next action instead of an ambiguous spinner.",
+      "pt": "Um estado intermediário com uma próxima ação visível, em vez de um spinner ambíguo.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.3.name": {
+      "en": "Offline and out of range",
+      "pt": "Offline e fora de alcance",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.3.scenario": {
+      "en": "The phone loses the Bluetooth connection while the user is in front of the door.",
+      "pt": "O celular perde a conexão Bluetooth enquanto a pessoa está em frente à porta.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.3.settle": {
+      "en": "What the app can honestly claim about a door it can no longer reach.",
+      "pt": "O que o app pode afirmar com honestidade sobre uma porta que não alcança mais.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.3.became": {
+      "en": "Connection state separated from door state, so the app stops reporting on what it can't see.",
+      "pt": "Estado da conexão separado do estado da porta, para o app parar de relatar o que não consegue ver.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.prototyping.conclusion": {
+      "en": "There was no hardware to try any of it on. Simulating behavior is how a physical product gets discussed before it can be touched.",
+      "pt": "Não havia hardware para testar nada disso. Simular o comportamento é o jeito de discutir um produto físico antes que ele possa ser tocado.",
+      "page": "Theodoor",
+      "section": "Behavioral prototyping",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN corrigido para grafia americana no Figma."
+    },
+    "theodoor.outcome.title": {
+      "en": "A Pre-MVP the Team Could Build From",
+      "pt": "Um pré-MVP pronto para o time construir",
+      "page": "Theodoor",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.outcome.body": {
+      "en": "The prototype was delivered as planned, and the development team is building the pre-MVP from it. One interface direction now holds what had been several competing ideas on the client side, within the technical constraints of a short build.",
+      "pt": "O protótipo foi entregue como planejado, e o time de desenvolvimento está construindo o pré-MVP a partir dele. Uma única direção de interface agora reúne o que eram várias ideias concorrentes do lado do cliente, dentro das restrições técnicas de um projeto curto.",
+      "page": "Theodoor",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.outcome.1": {
+      "en": "Door, connection and error states mapped into one behavioral model",
+      "pt": "Estados da porta, da conexão e de erro mapeados em um único modelo de comportamento",
+      "page": "Theodoor",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.outcome.2": {
+      "en": "Feedback designed to work without the screen, not only on it",
+      "pt": "Feedback desenhado para funcionar sem a tela, não só nela",
+      "page": "Theodoor",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.outcome.3": {
+      "en": "Edge cases played out in a simulator and translated into a Figma blueprint for handoff",
+      "pt": "Edge cases reproduzidos em um simulador e traduzidos em um blueprint no Figma para o handoff",
+      "page": "Theodoor",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.outcome.4": {
+      "en": "Motion refined into Lottie output, with reusable UI foundations for setup, errors and recovery",
+      "pt": "Motion refinado em Lottie, com fundações de UI reutilizáveis para configuração, erros e recuperação",
+      "page": "Theodoor",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.reflection.title": {
+      "en": "A Designer's Takeaway",
+      "pt": "O que levo deste projeto",
+      "page": "Theodoor",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Mesmo título da SCRIOO."
+    },
+    "theodoor.reflection.lead": {
+      "en": "When an interface controls something physical, feedback isn't a layer on top of the product.",
+      "pt": "Quando uma interface controla algo físico, o feedback não é uma camada por cima do produto.",
+      "page": "Theodoor",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "theodoor.reflection.body": {
+      "en": "It's the part of the product the user is actually reading — and the screen is only one of the places they can read it.",
+      "pt": "É a parte do produto que o usuário de fato está lendo, e a tela é só um dos lugares onde ele pode ler.",
+      "page": "Theodoor",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.research": {
+      "en": "Research",
+      "pt": "Pesquisa",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.financial-education": {
+      "en": "Financial education",
+      "pt": "Educação financeira",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.cases.aster.name": {
+      "en": "Aster",
+      "pt": "Aster",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome próprio."
+    },
+    "shared.cases.aster.summary": {
+      "en": "Ambient AI for clinical consultations.",
+      "pt": "IA ambiente para consultas clínicas.",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Mesmo texto de home.work.aster.description."
+    },
+    "intuit.hero.title": {
+      "en": "Intuit for Education",
+      "pt": "Intuit for Education",
+      "page": "Intuit",
+      "section": "Hero",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome do produto."
+    },
+    "intuit.hero.summary": {
+      "en": "A financial education product for college students. I built the design system before the product direction was settled, and ran the research that informed which visual direction the team took forward.",
+      "pt": "Um produto de educação financeira para universitários. Construí o design system antes de a direção do produto estar definida e conduzi a pesquisa que orientou qual direção visual o time levou adiante.",
+      "page": "Intuit",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.context.title": {
+      "en": "The Foundations Came Before the Answers",
+      "pt": "As fundações vieram antes das respostas",
+      "page": "Intuit",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.context.p1": {
+      "en": "Intuit for Education was meant to help college students relate to money through three connected modules: Track for everyday awareness, Plan for future goals, Learn for financial concepts delivered in context.",
+      "pt": "O Intuit for Education queria ajudar universitários a se relacionar com o dinheiro por meio de três módulos conectados: Track, para a consciência do dia a dia; Plan, para metas futuras; e Learn, para conceitos financeiros apresentados no contexto.",
+      "page": "Intuit",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Nomes dos módulos mantidos em inglês."
+    },
+    "intuit.context.p2": {
+      "en": "I joined before the Design Lead, which meant building the system while the product was still deciding what it was. Tokens, color functions, typographic scales, light and dark themes, font scaling — foundations for a product whose direction, tone and visual identity were all still open.",
+      "pt": "Entrei antes do Design Lead, o que significou construir o sistema enquanto o produto ainda decidia o que era. Tokens, funções de cor, escalas tipográficas, temas claro e escuro, escalonamento de fonte: fundações para um produto cuja direção, tom e identidade visual ainda estavam em aberto.",
+      "page": "Intuit",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN corrigido para grafia americana no Figma (colour → color)."
+    },
+    "intuit.context.p3": {
+      "en": "That is the constraint the whole project ran on. A system built too tightly around an unsettled direction breaks the moment the direction moves. Built too loosely, it stops being a system at all.",
+      "pt": "Essa foi a restrição sobre a qual o projeto inteiro rodou. Um sistema amarrado demais a uma direção indefinida quebra no momento em que a direção muda. Solto demais, ele deixa de ser um sistema.",
+      "page": "Intuit",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.context.role": {
+      "en": "·Product Designer\n·Design system and research, alongside a Design Lead",
+      "pt": "·Product Designer\n·Design system e pesquisa, ao lado de um Design Lead",
+      "page": "Intuit",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.context.collab": {
+      "en": "Design Lead, PM, and Intuit stakeholders",
+      "pt": "Design Lead, PM e stakeholders da Intuit",
+      "page": "Intuit",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.decisions.title": {
+      "en": "Building a System for a Product Still Deciding What It Was",
+      "pt": "Construindo um sistema para um produto que ainda decidia o que era",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.decisions.1.title": {
+      "en": "Build the Foundations Before the Direction Was Settled",
+      "pt": "Construir as fundações antes de a direção estar definida",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.decisions.1.problem": {
+      "en": "The team needed a stable base to design against, but every visual and tonal question the base would normally answer was still open. Waiting meant designing screens with no system; committing early meant hard-coding a direction that hadn't been chosen.",
+      "pt": "O time precisava de uma base estável para desenhar, mas todas as questões visuais e de tom que essa base normalmente responderia ainda estavam em aberto. Esperar significava desenhar telas sem sistema; se comprometer cedo significava cravar uma direção que ainda não tinha sido escolhida.",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.decisions.1.proposal": {
+      "en": "I built the layer that doesn't depend on the answer: tokens and color functions rather than colors, typographic scales rather than type choices, theme and font-scaling structure rather than a theme. The decisions that were still open stayed open, as values the system could take.",
+      "pt": "Construí a camada que não depende da resposta: tokens e funções de cor em vez de cores, escalas tipográficas em vez de escolhas de fonte, estrutura de tema e de escalonamento de fonte em vez de um tema. As decisões em aberto continuaram em aberto, como valores que o sistema podia receber.",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN corrigido para grafia americana no Figma."
+    },
+    "intuit.decisions.1.argument": {
+      "en": "A design system's job in an unsettled project isn't to decide — it's to hold the shape of the decision until it's made. That is what let the product absorb a visual direction it hadn't chosen, months later, without rebuilding.",
+      "pt": "O papel de um design system num projeto indefinido não é decidir, é segurar o formato da decisão até ela ser tomada. Foi isso que permitiu ao produto absorver, meses depois, uma direção visual que ele não tinha escolhido, sem reconstruir nada.",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.decisions.2.title": {
+      "en": "Design Three Modules as One Experience",
+      "pt": "Desenhar três módulos como uma experiência só",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.decisions.2.problem": {
+      "en": "Track, Plan and Learn were three different intents — what happened today, what you want later, and what you need to understand. Designed separately they would read as three products sharing a login.",
+      "pt": "Track, Plan e Learn eram três intenções diferentes: o que aconteceu hoje, o que você quer para depois e o que você precisa entender. Desenhados separadamente, pareceriam três produtos dividindo um login.",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.decisions.2.proposal": {
+      "en": "I designed across all three against the same system, so spending in Track could surface a goal in Plan, and a goal could surface the Learn moment relevant to it — a single hierarchy rather than three navigations.",
+      "pt": "Desenhei os três sobre o mesmo sistema, para que um gasto no Track pudesse trazer à tona uma meta no Plan, e uma meta pudesse trazer o momento do Learn ligado a ela: uma única hierarquia em vez de três navegações.",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.decisions.2.argument": {
+      "en": "The students the product was for don't experience money in modules. Splitting the interface along the team's internal structure would have handed them the organization chart instead of the product.",
+      "pt": "Os estudantes para quem o produto existia não vivem o dinheiro em módulos. Dividir a interface pela estrutura interna do time teria entregado a eles o organograma no lugar do produto.",
+      "page": "Intuit",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN corrigido para grafia americana no Figma (organisation → organization)."
+    },
+    "intuit.research.eyebrow": {
+      "en": "Research",
+      "pt": "Pesquisa",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.title": {
+      "en": "The Direction the Team Expected to Win Didn't",
+      "pt": "A direção que o time esperava que vencesse não venceu",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.caption": {
+      "en": "In-Depth Interviews + Perception Mapping\nCentering the student voice",
+      "pt": "Entrevistas em profundidade + mapeamento de percepção\nA voz do estudante no centro",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Legenda de imagem. Corrigido no Figma (25/09): quebras de linha sobrando no fim."
+    },
+    "intuit.research.body": {
+      "en": "We interviewed Gen Z college students, course coordinators and financial aid staff to understand everyday money stress and planning needs. Then, instead of arguing about visual direction internally, we tested it. Several designers each produced a distinct direction, and I ran the comparison in Maze — writing the script, piloting the script itself to check people understood what was being asked, running the study, analyzing it and presenting the results internally.",
+      "pt": "Entrevistamos universitários da Geração Z, coordenadores de curso e equipes de auxílio financeiro para entender o estresse do dia a dia com dinheiro e as necessidades de planejamento. Depois, em vez de discutir a direção visual internamente, testamos. Vários designers produziram direções diferentes, e eu conduzi a comparação no Maze: escrevi o roteiro, fiz um piloto do próprio roteiro para checar se as pessoas entendiam o que estava sendo perguntado, rodei o estudo, analisei e apresentei os resultados internamente.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN corrigido para grafia americana no Figma (analysing → analyzing)."
+    },
+    "intuit.research.1.name": {
+      "en": "Which direction lands with students",
+      "pt": "Qual direção conquista os estudantes",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.1.question": {
+      "en": "Four visual directions — from brutalist to calm and quiet — tested for the line between institutional trust and student authenticity.",
+      "pt": "Quatro direções visuais, do brutalista ao calmo e silencioso, testadas na fronteira entre confiança institucional e autenticidade estudantil.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.1.test": {
+      "en": "Unmoderated desirability test in Maze with 18-to-20-year-old college students.",
+      "pt": "Teste de desejabilidade não moderado no Maze com universitários de 18 a 20 anos.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.1.changed": {
+      "en": "The bold option read as “fake.” The calmer direction won, described as “simple” and “chill.”",
+      "pt": "A opção ousada soou “falsa”. A direção mais calma venceu, descrita como “simples” e “tranquila”.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Citações do estudo: “chill” virou “tranquila”; alternativa mais jovem: “de boa”."
+    },
+    "intuit.research.2.name": {
+      "en": "Whether the study itself was sound",
+      "pt": "Se o próprio estudo era confiável",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.2.question": {
+      "en": "Would participants read the questions the way we intended?",
+      "pt": "Os participantes leriam as perguntas do jeito que pretendíamos?",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.2.test": {
+      "en": "I piloted the script before running the study.",
+      "pt": "Fiz um piloto do roteiro antes de rodar o estudo.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.2.changed": {
+      "en": "Wording corrected first, so the result measured the direction rather than the phrasing.",
+      "pt": "Redação corrigida primeiro, para que o resultado medisse a direção e não a forma de perguntar.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.3.name": {
+      "en": "How the product performed in use",
+      "pt": "Como o produto se saiu no uso",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.3.question": {
+      "en": "Whether the flows held up once the UI existed.",
+      "pt": "Se os fluxos se sustentavam quando a UI já existia.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.3.test": {
+      "en": "Usability testing in Maze, scripted, run and analyzed in-house.",
+      "pt": "Testes de usabilidade no Maze, com roteiro, execução e análise feitos internamente.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.3.changed": {
+      "en": "Findings taken back into the flows and presented to the team.",
+      "pt": "Descobertas levadas de volta para os fluxos e apresentadas ao time.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.research.conclusion": {
+      "en": "The direction changed after it was chosen. A new brand identity arrived from elsewhere in the program. Two more designers joined for visual and motion work; I took the flows and UI. The foundations took the change without being rebuilt.",
+      "pt": "A direção mudou depois de escolhida. Uma nova identidade de marca chegou de outra parte do programa. Mais dois designers entraram para o visual e o motion; eu fiquei com os fluxos e a UI. As fundações absorveram a mudança sem precisar ser reconstruídas.",
+      "page": "Intuit",
+      "section": "Research",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN corrigido para grafia americana no Figma (programme → program)."
+    },
+    "intuit.outcome.title": {
+      "en": "A System That Survived a Direction It Didn't Choose",
+      "pt": "Um sistema que sobreviveu a uma direção que não escolheu",
+      "page": "Intuit",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.outcome.body": {
+      "en": "The design scope was delivered in full and handed off to engineering. A late change of brand direction was absorbed into the existing foundations rather than restarting them.",
+      "pt": "O escopo de design foi entregue por completo e passado para a engenharia. Uma mudança tardia na direção da marca foi absorvida pelas fundações existentes, sem recomeçá-las.",
+      "page": "Intuit",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.outcome.1": {
+      "en": "Design system foundations built before the direction was settled: tokens, color functions, typographic scales, light and dark themes, font scaling",
+      "pt": "Fundações de design system construídas antes de a direção estar definida: tokens, funções de cor, escalas tipográficas, temas claro e escuro, escalonamento de fonte",
+      "page": "Intuit",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.outcome.2": {
+      "en": "The majority of product screens across Track, Plan and Learn, designed against that system",
+      "pt": "A maior parte das telas do produto em Track, Plan e Learn, desenhadas sobre esse sistema",
+      "page": "Intuit",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.outcome.3": {
+      "en": "A visual direction chosen by evidence from the target audience rather than by internal preference",
+      "pt": "Uma direção visual escolhida por evidências do público-alvo, e não por preferência interna",
+      "page": "Intuit",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.outcome.4": {
+      "en": "A production file structure — master, default, dark mode, font scaling — organized for engineering handoff",
+      "pt": "Uma estrutura de arquivos de produção (master, default, dark mode, font scaling) organizada para o handoff com a engenharia",
+      "page": "Intuit",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Nomes das páginas do arquivo mantidos em inglês."
+    },
+    "intuit.reflection.title": {
+      "en": "A Designer's Takeaway",
+      "pt": "O que levo deste projeto",
+      "page": "Intuit",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Mesmo título da SCRIOO e da Theodoor."
+    },
+    "intuit.reflection.lead": {
+      "en": "Early design system work decides how much later change costs.",
+      "pt": "O trabalho inicial de design system decide quanto vai custar mudar depois.",
+      "page": "Intuit",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "intuit.reflection.body": {
+      "en": "Building foundations before the direction is settled takes judgment calls you can't validate yet — and the test of those calls only arrives when the direction moves.",
+      "pt": "Construir fundações antes de a direção estar definida exige escolhas que você ainda não consegue validar, e o teste dessas escolhas só chega quando a direção muda.",
+      "page": "Intuit",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.decision.limitation": {
+      "en": "Remaining limitation:",
+      "pt": "Limitação que ficou:",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "No Figma está dentro do texto do Argument. Separei em chave própria."
+    },
+    "shared.case.missing.label": {
+      "en": "What was missing",
+      "pt": "O que faltou",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.case.status.label": {
+      "en": "Status",
+      "pt": "Situação",
+      "page": "Shared",
+      "section": "Case template",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.ai-interaction": {
+      "en": "AI interaction",
+      "pt": "Interação com IA",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.healthcare": {
+      "en": "Healthcare",
+      "pt": "Saúde",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.tags.trust-safety": {
+      "en": "Trust and safety",
+      "pt": "Confiança e segurança",
+      "page": "Shared",
+      "section": "Tags",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "shared.cases.scrioo.name": {
+      "en": "SCRIOO",
+      "pt": "SCRIOO",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome próprio."
+    },
+    "shared.cases.scrioo.summary": {
+      "en": "AI-powered supply chain risk intelligence platform.",
+      "pt": "Plataforma de inteligência de riscos em supply chain com IA.",
+      "page": "Shared",
+      "section": "Next case card",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Mesmo texto de home.work.scrioo.description."
+    },
+    "aster.hero.title": {
+      "en": "Aster",
+      "pt": "Aster",
+      "page": "Aster",
+      "section": "Hero",
+      "status": "aprovado",
+      "figma": "abrir",
+      "note": "Nome próprio."
+    },
+    "aster.hero.summary": {
+      "en": "Ambient AI for clinical consultations. A device worn by the physician captures the visit; the workspace identifies the patient, builds a transcript and prepares notes for review. I designed the interaction model — and where it had to hold back.",
+      "pt": "IA ambiente para consultas clínicas. Um dispositivo usado pelo médico capta a consulta; o workspace identifica o paciente, monta a transcrição e prepara notas para revisão. Desenhei o modelo de interação, e onde ele precisava se conter.",
+      "page": "Aster",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.hero.disclaimer": {
+      "en": "Aster is a portfolio reconstruction using fictional data",
+      "pt": "O Aster é uma reconstrução para portfólio, com dados fictícios",
+      "page": "Aster",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.context.title": {
+      "en": "The Hard Part Wasn't Making the AI Do More",
+      "pt": "A parte difícil não era fazer a IA fazer mais",
+      "page": "Aster",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.context.p1": {
+      "en": "During the consultation, Aster keeps three things visible at once: what is known about the patient, what is being said, and what is being documented. The device captures, the patient is confirmed, the transcript builds, context and Insights appear, and the physician reviews the notes.",
+      "pt": "Durante a consulta, o Aster mantém três coisas visíveis ao mesmo tempo: o que se sabe sobre o paciente, o que está sendo dito e o que está sendo documentado. O dispositivo capta, o paciente é confirmado, a transcrição se forma, contexto e Insights aparecem, e o médico revisa as notas.",
+      "page": "Aster",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "\"Insights\" mantido como nome da funcionalidade."
+    },
+    "aster.context.p2": {
+      "en": "Every useful capability created another risk. If Aster could identify a patient, what happened when it identified the wrong one? If it surfaced an Insight, how would we stop a possibility from looking like medical advice? If it drafted notes, how would the physician know what the AI wrote and what they wrote themselves?",
+      "pt": "Cada capacidade útil criava outro risco. Se o Aster conseguia identificar um paciente, o que acontecia quando identificava o errado? Se trazia um Insight, como evitar que uma possibilidade parecesse conselho médico? Se rascunhava notas, como o médico saberia o que a IA escreveu e o que ele mesmo escreveu?",
+      "page": "Aster",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.context.p3": {
+      "en": "Viability here was never just technical. It also meant workflow fit, clinical safety, day-to-day operation, and who would be accountable if something went wrong — and design could only speak directly to some of those. The work became less about what to add, and more about deciding when more would become too much.",
+      "pt": "Viabilidade aqui nunca foi só técnica. Também significava encaixe no fluxo de trabalho, segurança clínica, operação no dia a dia e quem responderia se algo desse errado, e o design só podia falar diretamente de parte disso. O trabalho passou a ser menos sobre o que adicionar e mais sobre decidir quando mais viraria demais.",
+      "page": "Aster",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.context.role": {
+      "en": "·Product Designer\n·Only designer, alongside a PM, three engineers and QA",
+      "pt": "·Product Designer\n·Único designer, ao lado de um PM, três engenheiros e QA",
+      "page": "Aster",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09): espaço sobrando no fim da 1ª linha."
+    },
+    "aster.context.collab": {
+      "en": "Product, engineering and QA",
+      "pt": "Produto, engenharia e QA",
+      "page": "Aster",
+      "section": "Context",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.title": {
+      "en": "Deciding When the System Should Hold Back",
+      "pt": "Decidindo quando o sistema deve se conter",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.1.title": {
+      "en": "Better No Patient Than the Wrong Patient",
+      "pt": "Melhor nenhum paciente do que o paciente errado",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.1.problem": {
+      "en": "Identifying the wrong patient is worse than not identifying one at all. A misattributed record doesn't announce itself — it silently frames everything that follows.",
+      "pt": "Identificar o paciente errado é pior do que não identificar nenhum. Um prontuário atribuído à pessoa errada não se anuncia: ele enquadra em silêncio tudo o que vem depois.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.1.proposal": {
+      "en": "When identity is uncertain, Aster withholds patient history rather than risk presenting the wrong record. The physician continues the consultation without patient context and resolves identity separately. Three states: Known Patient, Unknown Patient, Ambiguous Match.",
+      "pt": "Quando a identidade é incerta, o Aster retém o histórico do paciente em vez de arriscar mostrar o prontuário errado. O médico continua a consulta sem o contexto do paciente e resolve a identidade à parte. Três estados: Known Patient, Unknown Patient e Ambiguous Match.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.1.argument": {
+      "en": "An empty context slot is visibly empty. A wrong one looks exactly like a right one. Where the failure is invisible, the safer default is to show nothing.",
+      "pt": "Um espaço de contexto vazio está visivelmente vazio. Um errado parece exatamente um certo. Onde a falha é invisível, o padrão mais seguro é não mostrar nada.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.1.limitation": {
+      "en": "real identification would depend on integration and operational validation this project didn't reach.",
+      "pt": "a identificação real dependeria de integração e de validação operacional que este projeto não alcançou.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.2.title": {
+      "en": "A Suggestion Should Look Like a Suggestion",
+      "pt": "Uma sugestão deve parecer uma sugestão",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.2.problem": {
+      "en": "A surfaced possibility can read as a diagnosis if it isn't handled carefully — and in a clinical setting that misreading has consequences.",
+      "pt": "Uma possibilidade trazida à tona pode ser lida como diagnóstico se não for tratada com cuidado, e num contexto clínico essa leitura errada tem consequências.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.2.proposal": {
+      "en": "Insights are reviewable, not authoritative. They don't interrupt the consultation, they explain why they appeared, and they wait for physician review.",
+      "pt": "Os Insights são revisáveis, não autoritativos. Não interrompem a consulta, explicam por que apareceram e esperam a revisão do médico.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.2.argument": {
+      "en": "Authority in an interface is communicated by placement, timing and tone long before anyone reads the words. A suggestion that arrives like an alert has already claimed more than it should.",
+      "pt": "Numa interface, a autoridade é comunicada por posição, momento e tom muito antes de alguém ler as palavras. Uma sugestão que chega como um alerta já reivindicou mais do que deveria.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.2.limitation": {
+      "en": "A sources-and-confidence indicator remained a planned direction, not something built.",
+      "pt": "um indicador de fontes e confiança ficou como direção planejada, não foi construído.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN: aqui \"A\" está maiúsculo depois de \"Remaining limitation:\"; no card 1 está minúsculo (\"real\"). Vale padronizar."
+    },
+    "aster.decisions.3.title": {
+      "en": "AI Draft Is Not My Notes",
+      "pt": "AI Draft não é My Notes",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Nomes da interface (AI Draft, My Notes, Known Patient…) mantidos em inglês, como nos outros cases."
+    },
+    "aster.decisions.3.problem": {
+      "en": "Merging AI-generated and physician-authored content would blur who is accountable for what — the one thing a medical record cannot afford to be ambiguous about.",
+      "pt": "Misturar conteúdo gerado pela IA com conteúdo escrito pelo médico embaralharia quem responde pelo quê, a única coisa sobre a qual um prontuário não pode ser ambíguo.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.3.proposal": {
+      "en": "Two separated surfaces: AI Draft, structured from the consultation and held for review, and My Notes, written by the physician and private to the session.",
+      "pt": "Duas superfícies separadas: AI Draft, estruturado a partir da consulta e mantido para revisão, e My Notes, escrito pelo médico e privado à sessão.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.3.argument": {
+      "en": "Combining them would make the interface simpler and authorship less clear. Where a record can be read back in a dispute, separation is worth the extra surface.",
+      "pt": "Juntar as duas deixaria a interface mais simples e a autoria menos clara. Onde um prontuário pode ser relido numa disputa, a separação vale a superfície extra.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.decisions.3.limitation": {
+      "en": "Pause and correction-provenance behavior remained design directions, not built features.",
+      "pt": "o comportamento de pausa e o rastreio da origem das correções ficaram como direções de design, não como funcionalidades construídas.",
+      "page": "Aster",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09): título em Title Case (\"is not\" → \"Is Not\") e behaviour → behavior."
+    },
+    "aster.limits.eyebrow": {
+      "en": "What this case cannot claim",
+      "pt": "O que este projeto não pode afirmar",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "\"case\" → \"projeto\", como no resto do PT."
+    },
+    "aster.limits.title": {
+      "en": "The Limits Aren't Footnotes",
+      "pt": "Os limites não são notas de rodapé",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.body": {
+      "en": "The business needed one of two useful outcomes: evidence that the concept could work, or an early and inexpensive reason to stop. Neither was reached during my involvement, and naming why is part of the case. These are the limits of what this exploration can responsibly claim.",
+      "pt": "O negócio precisava de um de dois resultados úteis: evidência de que o conceito podia funcionar, ou um motivo cedo e barato para parar. Nenhum dos dois foi alcançado durante a minha participação, e dizer por quê faz parte do projeto. Estes são os limites do que esta exploração pode afirmar com responsabilidade.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.1.name": {
+      "en": "No Hard No criteria",
+      "pt": "Sem critérios de Hard No",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "\"Hard No\" mantido como termo. Alternativa: \"Sem critérios de parada\"."
+    },
+    "aster.limits.1.missing": {
+      "en": "Conditions that, if met, meant stopping regardless of momentum or sunk cost.",
+      "pt": "Condições que, se atingidas, significariam parar, independentemente do embalo ou do custo já investido.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.1.why": {
+      "en": "Without them a project can only be validated, never stopped — and in clinical AI that asymmetry is the risk.",
+      "pt": "Sem elas, um projeto só pode ser validado, nunca interrompido, e em IA clínica essa assimetria é o risco.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.1.status": {
+      "en": "Never formally defined or tested during my involvement.",
+      "pt": "Nunca foram definidas formalmente nem testadas durante a minha participação.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.2.name": {
+      "en": "No testing with physicians",
+      "pt": "Sem testes com médicos",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.2.missing": {
+      "en": "The work did not reach testing with physicians or other end users.",
+      "pt": "O trabalho não chegou a testes com médicos ou outros usuários finais.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.2.why": {
+      "en": "Every decision above is an argument about clinical behavior, and those are settled by clinicians.",
+      "pt": "Cada decisão acima é um argumento sobre comportamento clínico, e quem resolve isso são os clínicos.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09): behaviour → behavior."
+    },
+    "aster.limits.2.status": {
+      "en": "I did not participate in, and did not receive evidence of, any clinical validation.",
+      "pt": "Não participei de nenhuma validação clínica nem recebi evidência de que tenha acontecido.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.3.name": {
+      "en": "Simulations proposed, not run",
+      "pt": "Simulações propostas, não realizadas",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.3.missing": {
+      "en": "Before the device arrived, I proposed scripted internal simulations to expose interaction failures early.",
+      "pt": "Antes de o dispositivo chegar, propus simulações internas roteirizadas para expor falhas de interação cedo.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.3.why": {
+      "en": "They were the cheapest way to find where the interaction model broke before anyone built it.",
+      "pt": "Eram o jeito mais barato de descobrir onde o modelo de interação quebrava antes de alguém construí-lo.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.3.status": {
+      "en": "Not executed during my involvement.",
+      "pt": "Não foram executadas durante a minha participação.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.limits.statement": {
+      "en": "It can demonstrate interaction behavior. It cannot prove safety.",
+      "pt": "Ele pode demonstrar o comportamento da interação. Não pode provar segurança.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Corrigido no Figma (25/09): behaviour → behavior."
+    },
+    "aster.limits.footnote.lead": {
+      "en": "Illustrative of the criteria that were missing, not validated thresholds:",
+      "pt": "Exemplos dos critérios que faltaram, não limites validados:",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "No Figma o texto termina com espaço (deixei, porque parece encostar no texto seguinte)."
+    },
+    "aster.limits.footnote.list": {
+      "en": "a wrong-patient context influencing an output without confirmation; a clinically consequential suggestion no one can trace back to its source; correcting the AI taking more effort than it saves.",
+      "pt": "o contexto do paciente errado influenciando um resultado sem confirmação; uma sugestão com consequência clínica que ninguém consegue rastrear até a fonte; corrigir a IA dar mais trabalho do que ela economiza.",
+      "page": "Aster",
+      "section": "Limits",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.outcome.title": {
+      "en": "A Prototype You Can Actually Use",
+      "pt": "Um protótipo que dá para usar de verdade",
+      "page": "Aster",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.outcome.body": {
+      "en": "I later rebuilt Aster as a functional portfolio prototype, so the interaction model could be experienced rather than only described. Fictional data, no clinical backend, and not the original client interface.",
+      "pt": "Depois, reconstruí o Aster como um protótipo funcional de portfólio, para que o modelo de interação pudesse ser experimentado, e não só descrito. Dados fictícios, sem backend clínico e sem ser a interface original do cliente.",
+      "page": "Aster",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.outcome.1": {
+      "en": "One complete Known Patient scenario, plus selectable representations of Unknown Patient and Ambiguous Match",
+      "pt": "Um cenário completo de Known Patient, além de representações selecionáveis de Unknown Patient e Ambiguous Match",
+      "page": "Aster",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.outcome.2": {
+      "en": "Live transcript playback, restrained Insights, AI Draft and physician-authored notes",
+      "pt": "Reprodução da transcrição ao vivo, Insights contidos, AI Draft e notas escritas pelo médico",
+      "page": "Aster",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.outcome.3": {
+      "en": "Autosave, delete and undo, and notes preserved after restart",
+      "pt": "Salvamento automático, excluir e desfazer, e notas preservadas depois de reiniciar",
+      "page": "Aster",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.outcome.4": {
+      "en": "A discovery framework covering viability, boundary conditions and stop criteria",
+      "pt": "Um framework de discovery cobrindo viabilidade, condições de contorno e critérios de parada",
+      "page": "Aster",
+      "section": "Outcome",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.reflection.title": {
+      "en": "A Designer's Takeaway",
+      "pt": "O que levo deste projeto",
+      "page": "Aster",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Mesmo título dos outros cases."
+    },
+    "aster.reflection.lead": {
+      "en": "Capability was only half of the design problem.",
+      "pt": "A capacidade era só metade do problema de design.",
+      "page": "Aster",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.reflection.body": {
+      "en": "The other half was keeping uncertainty, authorship and human control visible — which made most of my work identifying where the system could fail, not demonstrating that it wouldn't.",
+      "pt": "A outra metade era manter visíveis a incerteza, a autoria e o controle humano, o que fez a maior parte do meu trabalho ser identificar onde o sistema podia falhar, e não demonstrar que ele não falharia.",
+      "page": "Aster",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": null
+    },
+    "aster.reflection.question": {
+      "en": "I started by asking what an AI assistant could add to a consultation. I left with a better question: under what conditions should it act, wait, ask for confirmation, or stop.",
+      "pt": "Comecei perguntando o que um assistente de IA poderia acrescentar a uma consulta. Saí com uma pergunta melhor: em que condições ele deve agir, esperar, pedir confirmação ou parar.",
+      "page": "Aster",
+      "section": "Reflection",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "EN termina com ponto, mas é uma pergunta. Manter o ponto (pergunta indireta) está correto."
+    },
+    "home.work.scrioo.card-title": {
+      "en": "CURE/SCRIOO",
+      "pt": "CURE/SCRIOO",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=1121-4688",
+      "note": "Título compacto do card no hover — diferente de scrioo.hero.title (\"SCRIOO\"), que é o título da página do case."
+    },
+    "home.work.scrioo.contribution": {
+      "en": "I made dense supplier risk data easier to scan, compare, and act on.",
+      "pt": "Tornei os dados densos de risco de fornecedores mais fáceis de escanear, comparar e agir.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=1121-4688",
+      "note": "Citação em primeira pessoa, aparece no hover do card (desktop/tablet)."
+    },
+    "home.work.scrioo.contribution-mobile": {
+      "en": "I made dense supplier risk data easier to scan, compare, and act on.",
+      "pt": "Tornei os dados densos de risco de fornecedores mais fáceis de escanear, comparar e agir.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2112-10051",
+      "note": "Igual ao hover — só a SCRIOO repete o mesmo texto nos dois; os outros 4 cases têm versão mobile reescrita/encurtada."
+    },
+    "home.work.hp.card-title": {
+      "en": "All-In Plan for HP",
+      "pt": "All-In Plan da HP",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60983",
+      "note": "Confirmado pelo Deiver em 27/09: este é o nome correto (o hover no Figma ainda mostra \"HP All-In-One\", desatualizado — mesma string de hp.hero.title)."
+    },
+    "home.work.hp.contribution": {
+      "en": "I designed the account experience for usage, billing, early replenishment, and delivery tracking.",
+      "pt": "Desenhei a experiência de conta para uso, cobrança, reposição antecipada e rastreamento de entrega.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60983",
+      "note": "Citação em primeira pessoa, hover do card (desktop/tablet)."
+    },
+    "home.work.hp.contribution-mobile": {
+      "en": "I designed the printer subscription experience, from usage to delivery.",
+      "pt": "Desenhei a experiência da assinatura da impressora, do uso à entrega.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60977",
+      "note": "Versão mobile, mais curta que a do hover."
+    },
+    "home.work.theodoor.card-title": {
+      "en": "Theodoor",
+      "pt": "Theodoor",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60989",
+      "note": null
+    },
+    "home.work.theodoor.contribution": {
+      "en": "I designed visual, haptic, and audio feedback so people could trust what the door was doing.",
+      "pt": "Desenhei feedback visual, háptico e sonoro para que as pessoas confiassem no que a porta estava fazendo.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60989",
+      "note": "Citação em primeira pessoa, hover do card (desktop/tablet)."
+    },
+    "home.work.theodoor.contribution-mobile": {
+      "en": "I designed visual, haptic, and audio feedback for a smart door automation app.",
+      "pt": "Desenhei feedback visual, háptico e sonoro para um app de automação de porta inteligente.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60978",
+      "note": "Versão mobile, reescrita — não é só um corte da versão do hover."
+    },
+    "home.work.intuit.card-title": {
+      "en": "Intuit Education",
+      "pt": "Intuit Education",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60988",
+      "note": "Diferente de shared.cases.intuit.name (\"Intuit\") e de intuit.hero.title (\"Intuit for Education\") — forma específica usada só no hover do card."
+    },
+    "home.work.intuit.contribution": {
+      "en": "I designed most of Track, Plan, and Learn while helping shape the product’s initial foundations.",
+      "pt": "Desenhei a maior parte do Track, Plan e Learn, além de ajudar a moldar as fundações iniciais do produto.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60988",
+      "note": "Citação em primeira pessoa, hover do card (desktop/tablet)."
+    },
+    "home.work.intuit.contribution-mobile": {
+      "en": "I designed most of this financial-education product for college students.",
+      "pt": "Desenhei a maior parte desse produto de educação financeira para estudantes universitários.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60979",
+      "note": "Versão mobile, reescrita e mais curta."
+    },
+    "home.work.aster.card-title": {
+      "en": "Aster",
+      "pt": "Aster",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60987",
+      "note": null
+    },
+    "home.work.aster.contribution": {
+      "en": "I designed when the AI should act, wait, ask for confirmation, or stop.",
+      "pt": "Desenhei quando a IA deve agir, esperar, pedir confirmação ou parar.",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60987",
+      "note": "Citação em primeira pessoa, hover do card (desktop/tablet). Único case com ícone de cadeado adicional no card (protegido por senha)."
+    },
+    "home.work.aster.contribution-mobile": {
+      "en": "“I designed when ambient AI should act, wait, confirm, or stop in clinical use.”",
+      "pt": "“Desenhei quando a IA ambiente deve agir, esperar, confirmar ou parar em uso clínico.”",
+      "page": "Home",
+      "section": "Selected work",
+      "status": "revisar",
+      "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60980",
+      "note": "No Figma este texto já vem com aspas literais embutidas (único caso assim) — preservado como está."
+    }
+  }
+}

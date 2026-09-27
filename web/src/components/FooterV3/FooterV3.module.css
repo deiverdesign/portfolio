@@ -1,0 +1,137 @@
+.root {
+  background: var(--color-surface-neutral-default);
+  padding: var(--space-900) var(--space-layout-100) 0;
+  overflow: hidden;
+}
+
+.topRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-700);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-600);
+}
+
+.logo {
+  height: 24px;
+  width: auto;
+}
+
+.identityDetails {
+  display: flex;
+  flex-direction: column;
+  /* Mesmo bug do NavBarV3: sem isso, align-items:stretch (padrão)
+     estica o SVG "Sr. Product Designer" pra largura do texto de
+     localização ao lado, distorcendo a proporção. */
+  align-items: flex-start;
+  gap: var(--space-200);
+}
+
+.jobTitle {
+  height: 16px;
+  width: auto;
+}
+
+.location {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-200);
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-scale-400);
+  font-weight: var(--font-weight-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  color: var(--color-foreground-neutral-subtle);
+}
+
+.locationIcon {
+  width: 13px;
+  height: 15px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-500);
+  flex-wrap: wrap;
+}
+
+.divider {
+  margin-top: var(--space-layout-100);
+  border-top: 1px solid var(--color-border-neutral-stronger);
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--space-600) 0;
+}
+
+.copyright {
+  margin: 0;
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-scale-400);
+  font-weight: var(--font-weight-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  color: var(--color-foreground-neutral-default);
+}
+
+.tagline {
+  margin: 0;
+  padding-bottom: var(--space-layout-500);
+  font-family: var(--font-family-editorial);
+  font-weight: var(--font-weight-editorial-light);
+  font-size: var(--font-size-display-oversize);
+  line-height: var(--line-height-display-oversize);
+  color: var(--color-foreground-neutral-default);
+}
+
+.blackBar {
+  height: 33px;
+  background: var(--color-foreground-neutral-strong);
+  margin: 0 calc(var(--space-layout-100) * -1);
+}
+
+@media (max-width: 1023px) {
+  .root {
+    padding: var(--space-700) var(--space-600) 0;
+  }
+
+  .topRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .identity {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-300);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .metaRow {
+    justify-content: flex-start;
+  }
+
+  /* Display/Oversize não tem valor mobile confirmado ainda — reaproveita
+     --font-size-editorial-title (Display/Page) até isso ser conferido. */
+  .tagline {
+    font-size: var(--font-size-editorial-title);
+    line-height: var(--line-height-editorial-title);
+    padding-bottom: var(--space-layout-300);
+  }
+
+  .blackBar {
+    margin: 0 calc(var(--space-600) * -1);
+  }
+}

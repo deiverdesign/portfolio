@@ -15,6 +15,7 @@ const RAIZ = "src";
 const ARQUIVOS_TOKENS = [
   "src/styles/tokens.css",
   "src/styles/typography.css",
+  "src/styles/tokens-v3.css",
 ];
 
 // Aqui os valores crus são corretos — é onde os tokens nascem.

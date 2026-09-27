@@ -1,25 +1,17 @@
 #!/usr/bin/env node
-// Pipeline 5 (embrionário): busca os tokens direto da API do Figma, regenera
-// tokens.css, e — se algo mudou — cria uma branch + commit local sozinho.
-//
-// O que este script NÃO faz de propósito: push pro GitHub, abrir Pull Request.
-// Essas duas ações ficam manuais (rodar os comandos que o script imprime no
-// final), porque são ações que afetam o repositório compartilhado — não é
-// algo que deveria acontecer sem alguém decidir isso na hora.
-//
-// Como rodar:
-//   1. Gere um token pessoal em figma.com -> Settings -> Security -> Personal access tokens
-//   2. export FIGMA_TOKEN="seu-token-aqui"   (no terminal, nunca commitado)
-//   3. node scripts/sync-tokens.mjs
 
-import { readFileSync, writeFileSync, existsSync } from "fs";
-import { execSync } from "child_process";
-import { fileURLToPath } from "url";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const FILE_KEY = process.env.FIGMA_FILE_KEY || "zpaQNzgjhG5ZKafe2cxnkm";
 const TOKEN = process.env.FIGMA_TOKEN;
 const TOKENS_CSS_PATH = fileURLToPath(new URL("../src/styles/tokens.css", import.meta.url));
+const CANDIDATE_PATH = fileURLToPath(
+  new URL("../tmp/token-sync/tokens.figma.candidate.css", import.meta.url)
+);
 const COLLECTIONS_TO_EXPORT = ["Primitives", "Semantic", "Spacing", "Font size"];
+const RESPONSIVE_COLLECTIONS = new Set(["Spacing", "Font size"]);
 const BREAKPOINT_MODES = ["Desktop", "Tablet", "Mobile"];
 
 function fail(message) {
@@ -27,45 +19,22 @@ function fail(message) {
   process.exit(1);
 }
 
-const isMain = import.meta.url === `file://${process.argv[1]}`;
-
-if (isMain && !TOKEN) {
-  fail(
-    [
-      "FIGMA_TOKEN não encontrado.",
-      "",
-      "Gere um token pessoal em figma.com -> Settings -> Security -> Personal access tokens,",
-      "depois rode (no seu terminal, nunca aqui no chat):",
-      "",
-      '  export FIGMA_TOKEN="seu-token-aqui"',
-      "  node scripts/sync-tokens.mjs",
-    ].join("\n")
-  );
+function isDirectRun() {
+  return process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href;
 }
 
-async function fetchVariables() {
-  const res = await fetch(`https://api.figma.com/v1/files/${FILE_KEY}/variables/local`, {
-    headers: { "X-Figma-Token": TOKEN },
-  });
-  if (!res.ok) {
-    fail(`API do Figma respondeu ${res.status}: ${await res.text()}`);
+function rgbToCss(color) {
+  const to255 = (value) => Math.round(value * 255);
+  if (color.a !== undefined && color.a < 1) {
+    return `rgba(${to255(color.r)}, ${to255(color.g)}, ${to255(color.b)}, ${Number(
+      color.a.toFixed(3)
+    )})`;
   }
-  const json = await res.json();
-  return json.meta;
-}
-
-function rgbToCss(c) {
-  const to255 = (v) => Math.round(v * 255);
-  if (c.a !== undefined && c.a < 1) {
-    return `rgba(${to255(c.r)},${to255(c.g)},${to255(c.b)},${Math.round(c.a * 100) / 100})`;
-  }
-  const toHex = (v) => to255(v).toString(16).padStart(2, "0");
-  return `#${toHex(c.r)}${toHex(c.g)}${toHex(c.b)}`;
+  const toHex = (value) => to255(value).toString(16).padStart(2, "0");
+  return `#${toHex(color.r)}${toHex(color.g)}${toHex(color.b)}`;
 }
 
 function cssVarName(variable) {
-  // Code Syntax é o contrato explícito entre Figma e código. O fallback só
-  // atende coleções antigas que ainda não receberam esse metadado.
   const webSyntax = variable.codeSyntax?.WEB;
   const syntaxMatch = webSyntax?.match(/^var\((--[^)]+)\)$/);
   if (syntaxMatch) return syntaxMatch[1].slice(2);
@@ -76,144 +45,256 @@ function pxToRem(value) {
   return `${Number((value / 16).toFixed(6))}rem`;
 }
 
-function resolveValue(variableId, modeId, variablesById, visited = new Set()) {
-  if (visited.has(variableId)) return null; // proteção contra ciclo de alias
-  visited.add(variableId);
+function collectionModeId(collection, modeName) {
+  return collection.modes.find((mode) => mode.name === modeName)?.modeId;
+}
 
+function valueForMode(variable, requestedModeName, collectionsById) {
+  const collection = collectionsById[variable.variableCollectionId];
+  if (!collection) throw new Error(`Coleção ausente para a variable "${variable.name}".`);
+
+  const equivalentModeId = collectionModeId(collection, requestedModeName);
+  if (equivalentModeId && variable.valuesByMode[equivalentModeId] !== undefined) {
+    return variable.valuesByMode[equivalentModeId];
+  }
+
+  const entries = Object.entries(variable.valuesByMode);
+  if (entries.length === 1) return entries[0][1];
+
+  throw new Error(
+    `A variable "${variable.name}" não possui um valor inequívoco para o modo ${requestedModeName}.`
+  );
+}
+
+function resolveValue(variableId, modeName, variablesById, collectionsById, visited = new Set()) {
+  if (visited.has(variableId)) {
+    throw new Error(`Ciclo de alias detectado na variable ${variableId}.`);
+  }
   const variable = variablesById[variableId];
-  if (!variable) return null;
+  if (!variable) throw new Error(`Alias aponta para variable inexistente: ${variableId}.`);
 
-  const value = variable.valuesByMode[modeId] ?? Object.values(variable.valuesByMode)[0];
+  const nextVisited = new Set(visited).add(variableId);
+  const value = valueForMode(variable, modeName, collectionsById);
   if (value && typeof value === "object" && value.type === "VARIABLE_ALIAS") {
-    return resolveValue(value.id, modeId, variablesById, visited);
+    return resolveValue(value.id, modeName, variablesById, collectionsById, nextVisited);
   }
   if (value && typeof value === "object" && "r" in value) {
     return { type: "COLOR", css: rgbToCss(value) };
   }
-  if (typeof value === "number") {
-    return { type: "FLOAT", css: value };
+  if (typeof value === "number") return { type: "FLOAT", css: value };
+  if (typeof value === "string" || typeof value === "boolean") {
+    return { type: typeof value === "string" ? "STRING" : "BOOLEAN", css: String(value) };
   }
-  return null;
+  throw new Error(`Tipo de valor não suportado em "${variable.name}" (${modeName}).`);
 }
 
-function breakpointValue(variableId, variable, modeId, variablesById, useRem = false) {
-  const raw = variable.valuesByMode[modeId] ?? Object.values(variable.valuesByMode)[0];
-  if (raw && typeof raw === "object" && raw.type === "VARIABLE_ALIAS") {
-    const target = variablesById[raw.id];
-    if (target) return { css: `var(--${cssVarName(target)})`, unit: "" };
+export function validateMeta({ variables, variableCollections }) {
+  if (!variables || !variableCollections) {
+    throw new Error("A resposta do Figma não contém variables e variableCollections.");
   }
-  const resolved = resolveValue(variableId, modeId, variablesById);
-  if (!resolved) return null;
-  return useRem
-    ? { css: pxToRem(resolved.css), unit: "" }
-    : { css: resolved.css, unit: "px" };
-}
 
-export function buildCss({ variables, variableCollections }) {
-  const collectionsByName = Object.fromEntries(
-    Object.values(variableCollections).map((c) => [c.name, c])
-  );
-
-  const lines = { root: [], tablet: [], mobile: [] };
-
+  const collections = Object.values(variableCollections);
+  const collectionsByName = new Map(collections.map((collection) => [collection.name, collection]));
   for (const collectionName of COLLECTIONS_TO_EXPORT) {
-    const collection = collectionsByName[collectionName];
-    if (!collection) continue;
+    const collection = collectionsByName.get(collectionName);
+    if (!collection) throw new Error(`Coleção obrigatória ausente: ${collectionName}.`);
 
-    const modesByName = Object.fromEntries(collection.modes.map((m) => [m.name, m.modeId]));
-    const isBreakpointCollection = collection.modes.length > 1 &&
-      collection.modes.every((m) => BREAKPOINT_MODES.includes(m.name));
+    if (RESPONSIVE_COLLECTIONS.has(collectionName)) {
+      const modeNames = new Set(collection.modes.map((mode) => mode.name));
+      for (const modeName of BREAKPOINT_MODES) {
+        if (!modeNames.has(modeName)) {
+          throw new Error(`A coleção ${collectionName} não possui o modo obrigatório ${modeName}.`);
+        }
+      }
+    }
 
     for (const variableId of collection.variableIds) {
-      const variable = variables[variableId];
-      if (!variable) continue;
-      const name = cssVarName(variable);
-      const useRem = collectionName === "Font size";
-
-      if (isBreakpointCollection) {
-        const desktop = breakpointValue(variableId, variable, modesByName.Desktop, variables, useRem);
-        const tablet = breakpointValue(variableId, variable, modesByName.Tablet, variables, useRem);
-        const mobile = breakpointValue(variableId, variable, modesByName.Mobile, variables, useRem);
-        if (desktop) lines.root.push(`  --${name}: ${desktop.css}${desktop.unit};`);
-        if (tablet) lines.tablet.push(`  --${name}: ${tablet.css}${tablet.unit};`);
-        if (mobile) lines.mobile.push(`  --${name}: ${mobile.css}${mobile.unit};`);
-      } else {
-        const modeId = collection.modes[0].modeId;
-        const resolved = resolveValue(variableId, modeId, variables);
-        if (!resolved) continue;
-        // opacity/disabled é guardado em escala 0-100 no Figma (peculiaridade de
-        // como a Plugin API liga variáveis a `opacity`, ver responsive-rules.md),
-        // mas CSS espera 0-1 — converte na saída, não na fonte.
-        const value =
-          resolved.type === "FLOAT" && name.includes("opacity") ? resolved.css / 100 : resolved.css;
-        lines.root.push(`  --${name}: ${value};`);
+      if (!variables[variableId]) {
+        throw new Error(`A coleção ${collectionName} referencia variable inexistente: ${variableId}.`);
       }
     }
   }
 
-  return `/* Gerado automaticamente por scripts/sync-tokens.mjs a partir da API do Figma. */
-/* Não editar à mão — rode o script de novo pra atualizar. */
-/* Gerado em: ${new Date().toISOString()} */
+  const generatedNames = new Map();
+  for (const collectionName of COLLECTIONS_TO_EXPORT) {
+    const collection = collectionsByName.get(collectionName);
+    for (const variableId of collection.variableIds) {
+      const variable = variables[variableId];
+      const name = cssVarName(variable);
+      const previous = generatedNames.get(name);
+      if (previous) {
+        throw new Error(`Nome CSS duplicado --${name}: "${previous}" e "${variable.name}".`);
+      }
+      generatedNames.set(name, variable.name);
+    }
+  }
+}
+
+function formatVariable(variableId, modeName, collectionName, variables, collectionsById) {
+  const variable = variables[variableId];
+  const resolved = resolveValue(variableId, modeName, variables, collectionsById);
+  let value = resolved.css;
+
+  if (resolved.type === "FLOAT") {
+    if (collectionName === "Font size") value = pxToRem(value);
+    else if (collectionName === "Spacing") value = `${value}px`;
+    else if (cssVarName(variable).includes("opacity")) value /= 100;
+  }
+
+  return `  --${cssVarName(variable)}: ${value};`;
+}
+
+export function buildCss(meta) {
+  validateMeta(meta);
+  const { variables, variableCollections } = meta;
+  const collections = Object.values(variableCollections);
+  const collectionsByName = new Map(collections.map((collection) => [collection.name, collection]));
+  const collectionsById = Object.fromEntries(collections.map((collection) => [collection.id, collection]));
+  const blocks = { Desktop: [], Tablet: [], Mobile: [] };
+
+  for (const collectionName of COLLECTIONS_TO_EXPORT) {
+    const collection = collectionsByName.get(collectionName);
+    if (RESPONSIVE_COLLECTIONS.has(collectionName)) {
+      for (const modeName of BREAKPOINT_MODES) {
+        for (const variableId of collection.variableIds) {
+          blocks[modeName].push(
+            formatVariable(variableId, modeName, collectionName, variables, collectionsById)
+          );
+        }
+      }
+      continue;
+    }
+
+    const defaultModeName = collection.modes[0]?.name;
+    if (!defaultModeName) throw new Error(`A coleção ${collectionName} não possui modos.`);
+    for (const variableId of collection.variableIds) {
+      blocks.Desktop.push(
+        formatVariable(variableId, defaultModeName, collectionName, variables, collectionsById)
+      );
+    }
+  }
+
+  return `/* Candidato gerado por scripts/sync-tokens.mjs a partir do Figma. */
+/* Não substitui src/styles/tokens.css automaticamente. Revise o drift antes de integrar. */
 
 :root {
-${lines.root.join("\n")}
+${blocks.Desktop.join("\n")}
 }
 
 @media (max-width: 1023px) {
   :root {
-${lines.tablet.join("\n")}
+${blocks.Tablet.join("\n")}
   }
 }
 
 @media (max-width: 599px) {
   :root {
-${lines.mobile.join("\n")}
+${blocks.Mobile.join("\n")}
   }
 }
 `;
 }
 
-function run(cmd) {
-  return execSync(cmd, { cwd: fileURLToPath(new URL("..", import.meta.url)), encoding: "utf-8" }).trim();
+function parseResponsiveVariables(css) {
+  const rootBlocks = [...css.matchAll(/:root\s*\{([^}]*)\}/g)];
+  const modes = ["Desktop", "Tablet", "Mobile"];
+  const parsed = {};
+
+  for (let index = 0; index < Math.min(rootBlocks.length, modes.length); index += 1) {
+    const declarations = {};
+    for (const match of rootBlocks[index][1].matchAll(/--([\w-]+)\s*:\s*([^;]+);/g)) {
+      declarations[match[1]] = match[2].trim();
+    }
+    parsed[modes[index]] = declarations;
+  }
+  return parsed;
+}
+
+export function compareCssVariables(currentCss, candidateCss) {
+  const current = parseResponsiveVariables(currentCss);
+  const candidate = parseResponsiveVariables(candidateCss);
+  const missing = [];
+  const changed = [];
+  const preserved = [];
+
+  for (const modeName of BREAKPOINT_MODES) {
+    const currentMode = current[modeName] || {};
+    const candidateMode = candidate[modeName] || {};
+    for (const [name, value] of Object.entries(candidateMode)) {
+      if (!(name in currentMode)) missing.push({ mode: modeName, name, candidate: value });
+      else if (currentMode[name] !== value) {
+        changed.push({ mode: modeName, name, current: currentMode[name], candidate: value });
+      }
+    }
+    for (const [name, value] of Object.entries(currentMode)) {
+      if (!(name in candidateMode)) preserved.push({ mode: modeName, name, current: value });
+    }
+  }
+  return { missing, changed, preserved };
+}
+
+function printDrift(drift) {
+  console.log(
+    `Drift: ${drift.changed.length} alterado(s), ${drift.missing.length} ausente(s), ` +
+      `${drift.preserved.length} extensão(ões) local(is) preservada(s).`
+  );
+  for (const item of drift.changed.slice(0, 30)) {
+    console.log(`  ~ ${item.mode} --${item.name}: ${item.current} → ${item.candidate}`);
+  }
+  for (const item of drift.missing.slice(0, 30)) {
+    console.log(`  + ${item.mode} --${item.name}: ${item.candidate}`);
+  }
+  if (drift.changed.length > 30 || drift.missing.length > 30) {
+    console.log("  … relatório truncado; consulte o candidato completo.");
+  }
+}
+
+async function fetchVariables() {
+  const response = await fetch(`https://api.figma.com/v1/files/${FILE_KEY}/variables/local`, {
+    headers: { "X-Figma-Token": TOKEN },
+  });
+  if (response.status === 403) {
+    throw new Error(
+      "A API de Variables recusou o acesso. O token precisa de file_variables:read e o endpoint " +
+        "pode depender do plano do Figma. Se ele não estiver disponível, exporte via Plugin API."
+    );
+  }
+  if (!response.ok) {
+    throw new Error(`API do Figma respondeu ${response.status}: ${await response.text()}`);
+  }
+  const payload = await response.json();
+  return payload.meta;
 }
 
 async function main() {
-  console.log(`Buscando variables do arquivo ${FILE_KEY}...`);
-  const meta = await fetchVariables();
-  const newCss = buildCss(meta);
-
-  const oldCss = existsSync(TOKENS_CSS_PATH) ? readFileSync(TOKENS_CSS_PATH, "utf-8") : "";
-
-  // Ignora as linhas de timestamp/comentário na comparação — só importa se um VALOR mudou.
-  const stripTimestamp = (css) => css.replace(/\/\* Gerado em:.*\*\//, "");
-  if (stripTimestamp(newCss) === stripTimestamp(oldCss)) {
-    console.log("Nenhuma mudança nos tokens. Nada a fazer.");
-    return;
+  const args = process.argv.slice(2);
+  const unknownArgs = args.filter((arg) => arg !== "--check");
+  if (unknownArgs.length) throw new Error(`Argumento desconhecido: ${unknownArgs.join(", ")}.`);
+  if (!TOKEN) {
+    throw new Error(
+      "FIGMA_TOKEN não encontrado. Configure-o somente no seu terminal, com o escopo " +
+        "file_variables:read; nunca cole o token no chat ou no repositório."
+    );
   }
 
-  console.log("Tokens mudaram — escrevendo tokens.css e criando branch + commit local...");
-  writeFileSync(TOKENS_CSS_PATH, newCss);
+  console.log(`Lendo variables do arquivo ${FILE_KEY}…`);
+  const candidateCss = buildCss(await fetchVariables());
+  const currentCss = existsSync(TOKENS_CSS_PATH) ? readFileSync(TOKENS_CSS_PATH, "utf8") : "";
+  const drift = compareCssVariables(currentCss, candidateCss);
+  printDrift(drift);
 
-  const branch = `tokens-sync-${Date.now()}`;
-  const currentBranch = run("git rev-parse --abbrev-ref HEAD");
-  run(`git checkout -b ${branch}`);
-  run(`git add src/styles/tokens.css`);
-  run(`git commit -m "Sync automático de tokens do Figma\n\nGerado por scripts/sync-tokens.mjs, sem edição manual."`);
-  run(`git checkout ${currentBranch}`);
+  if (!args.includes("--check")) {
+    mkdirSync(dirname(CANDIDATE_PATH), { recursive: true });
+    writeFileSync(CANDIDATE_PATH, candidateCss);
+    console.log(`Candidato salvo em ${CANDIDATE_PATH}.`);
+    console.log("src/styles/tokens.css não foi alterado; branches e commits também não.");
+  }
 
-  console.log(
-    [
-      "",
-      `✓ Branch "${branch}" criada com o commit dos tokens novos.`,
-      `  Voltei pra branch "${currentBranch}" — nada foi enviado pro GitHub.`,
-      "",
-      "Pra abrir o PR de verdade, rode manualmente:",
-      `  git push -u origin ${branch}`,
-      `  gh pr create --title "Sync de tokens do Figma" --body "Gerado automaticamente"`,
-    ].join("\n")
-  );
+  if (args.includes("--check") && (drift.changed.length || drift.missing.length)) {
+    process.exitCode = 1;
+  }
 }
 
-if (isMain) {
-  main().catch((err) => fail(err.message));
+if (isDirectRun()) {
+  main().catch((error) => fail(error.message));
 }

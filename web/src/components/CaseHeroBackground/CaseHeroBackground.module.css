@@ -1,0 +1,115 @@
+.root {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--case-hero-background);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.noiseReveal,
+.noiseBoost,
+.noiseTexture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.noiseReveal {
+  z-index: 0;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.06) 0%,
+    rgb(0 0 0 / 0.1) 18%,
+    rgb(0 0 0 / 0.26) 42%,
+    rgb(0 0 0 / 0.62) 72%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.06) 0%,
+    rgb(0 0 0 / 0.1) 18%,
+    rgb(0 0 0 / 0.26) 42%,
+    rgb(0 0 0 / 0.62) 72%,
+    #000 100%
+  );
+}
+
+.noiseTexture {
+  background: var(--case-hero-noise-color);
+  opacity: 1;
+  mix-blend-mode: screen;
+  -webkit-mask: url("/images/noise/case-hero-base.webp") 0 0 / 560px 560px repeat;
+  mask: url("/images/noise/case-hero-base.webp") 0 0 / 560px 560px repeat;
+}
+
+.noiseBoost {
+  -webkit-mask-image: radial-gradient(
+    ellipse 66% 56% at 100% 100%,
+    #000 0%,
+    #000 34%,
+    rgb(0 0 0 / 0.72) 54%,
+    rgb(0 0 0 / 0.24) 76%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 66% 56% at 100% 100%,
+    #000 0%,
+    #000 34%,
+    rgb(0 0 0 / 0.72) 54%,
+    rgb(0 0 0 / 0.24) 76%,
+    transparent 100%
+  );
+}
+
+.noiseBoost .noiseTexture {
+  -webkit-mask-image: url("/images/noise/case-hero-boost.webp");
+  mask-image: url("/images/noise/case-hero-boost.webp");
+}
+
+@media (max-width: 599px) {
+  .noiseReveal {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.04) 0%,
+      rgb(0 0 0 / 0.08) 24%,
+      rgb(0 0 0 / 0.34) 58%,
+      #000 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.04) 0%,
+      rgb(0 0 0 / 0.08) 24%,
+      rgb(0 0 0 / 0.34) 58%,
+      #000 100%
+    );
+  }
+
+  .noiseTexture {
+    opacity: 0.6;
+    -webkit-mask-size: 460px 460px;
+    mask-size: 460px 460px;
+  }
+
+  .noiseBoost {
+    -webkit-mask-image: radial-gradient(
+      ellipse 82% 48% at 100% 100%,
+      #000 0%,
+      #000 30%,
+      rgb(0 0 0 / 0.66) 54%,
+      rgb(0 0 0 / 0.2) 76%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 82% 48% at 100% 100%,
+      #000 0%,
+      #000 30%,
+      rgb(0 0 0 / 0.66) 54%,
+      rgb(0 0 0 / 0.2) 76%,
+      transparent 100%
+    );
+  }
+}

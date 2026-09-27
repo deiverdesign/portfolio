@@ -1,0 +1,235 @@
+/* V3 — tokens novos, aditivos. Nenhum nome aqui existe em tokens.css ou
+   typography.css: o v2 em produção não lê nada deste arquivo, e nada nele
+   sobrescreve o legado. Quando a coleção "Color semantic v3" for
+   sincronizada pelo pipeline (scripts/sync-tokens.mjs), estes valores devem
+   ser conferidos contra o candidato gerado e esta nota removida.
+
+   Fonte: Figma, fileKey zpaQNzgjhG5ZKafe2cxnkm, coleções "Color semantic
+   v3", "Color primitives v3", "Typography v3", "Typography scale v3",
+   "Opacity v3" e "Radius" — lidas via get_variable_defs em:
+   - componente "Lets Build", nodes 2167:6287 (Desktop Large), 2111:8067
+     (Laptop), 2111:8598 (Tablet), 2111:9525 (Mobile);
+   - página "Update-Incremental" inteira, node 916:2246 (leitura agregada
+     de 26-27/09/2026 para levantar o que já está definido no arquivo).
+   Ver web/docs/home-assets-inventory.md e V3-STATUS.md (log 27/09). */
+
+:root {
+  /* ---- Color semantic v3 — modo Default ---- */
+
+  /* foreground/neutral */
+  --color-foreground-neutral-subtler: #77827d;
+  --color-foreground-neutral-subtle: #59625f;
+  --color-foreground-neutral-default: #303735;
+  --color-foreground-neutral-strong: #242a28;
+  --color-foreground-neutral-stronger: #171b1a;
+
+  /* border/neutral — "strong" não apareceu em nenhuma leitura ainda;
+     não inventar o valor, só usar os 4 confirmados. */
+  --color-border-neutral-subtlest: #ffffff;
+  --color-border-neutral-subtler: #f4f6f5;
+  --color-border-neutral-subtle: #e5e9e7;
+  --color-border-neutral-default: #cdd4d0;
+  --color-border-neutral-stronger: #454d4a;
+
+  /* surface/neutral — "subtler" e "stronger" não apareceram ainda. */
+  --color-surface-neutral-subtle: #ffffff;
+  --color-surface-neutral-default: #fcfbf7;
+  --color-surface-neutral-strong: #f4f6f5;
+
+  /* modo Inverse — só os papéis que já apareceram numa leitura real. */
+  --color-surface-neutral-inverse-subtle: #303735;
+  --color-surface-neutral-inverse-default: #242a28;
+  --color-surface-neutral-inverse-strong: #171b1a;
+  --color-foreground-neutral-inverse-default: #ffffffc7;
+  --color-foreground-neutral-inverse-strong: #ffffff;
+  --color-border-neutral-overlay-light-default: #ffffff99;
+  --color-border-neutral-overlay-dark-strong: #171b1ab2;
+
+  /* surface/border/foreground — brand */
+  --color-surface-brand-default: #dbeeec;
+  --color-surface-brand-subtle: #eef7f6;
+  /* Mesmo hex já existe como primitivo legado (--primary-300); reaproveitado
+     em vez de duplicar o valor. */
+  --color-surface-brand-strong: var(--primary-300);
+  --color-surface-brand-stronger: #246963;
+  --color-border-brand-subtler: #aadad6;
+  --color-border-brand-strong: #1c5550;
+  --color-foreground-brand-default: #1c5550;
+  --color-foreground-brand-subtle: #246963;
+
+  /* cor isolada de destaque — usada hoje no selo "Available to work" */
+  --color-foreground-accent-subtle: #e24900;
+
+  /* já existia (26/09), mantido aqui pra ficar junto do resto da escala */
+  --color-surface-decorative-default: #e5e9e7;
+
+  /* overlay/neutral — hover/pressed sobre superfície neutra. Conferido no
+     componente real "Button V3" (Secondary/Tertiary): subtle = hover,
+     default = pressed. strong ainda não apareceu associado a nenhum estado
+     de botão; mantido por ter aparecido na leitura agregada da página. */
+  --color-overlay-neutral-subtle: #0000000f; /* ~6% preto, hover */
+  --color-overlay-neutral-default: #0000001f; /* ~12% preto, pressed */
+  --color-overlay-neutral-strong: #00000099; /* ~60% preto — confirmado 27/09/2026: fundo do selo de cadeado do case Aster (protegido/confidencial), node 2264:72142 */
+
+  /* overlay/neutral no modo Inverse — valor DIFERENTE do Default acima,
+     não é o mesmo token com nome parecido. Confirmado no TagV3 dentro do
+     painel de hover do card de case (27/09/2026): o card inteiro herda
+     modo Inverse mesmo quando o painel interno é claro. Erro real que já
+     aconteceu: usar --color-overlay-neutral-default (preto) onde o
+     contexto pedia este aqui (branco). */
+  --color-overlay-neutral-inverse-default: #ffffff61; /* branco ~38% */
+
+  /* border/brand/default — anel de foco, igual nos 3 variants de botão */
+  --color-border-brand-default: #319b92;
+
+  /* opacity/38 — disabled */
+  --opacity-disabled: 0.38;
+
+  /* ---- Radius ---- */
+  --radius-none: 0px;
+  --radius-xxs: 2px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* ---- Typography v3 — papel "editorial" (Newsreader) ----
+     Distinto do --font-family-display (Renamor) que o v2 e os headings
+     gerais do v3 usam — confirmado por leitura isolada do componente
+     "Lets Build", não pela leitura agregada da página (que funde nomes
+     repetidos e esconde overrides por instância). */
+  --font-family-editorial: var(--font-newsreader), serif;
+  --font-weight-editorial-light: 300;
+  --font-weight-editorial-medium: 500;
+
+  /* Título do CTA compartilhado — desktop/laptop ("Display/CTA" no Figma) */
+  --font-size-editorial-title: 5rem; /* 80px */
+  --line-height-editorial-title: 5.5rem; /* 88px */
+
+  /* Display/Oversize — o maior papel do sistema; hoje só usado no "Design
+     from Spark to Finish" do Footer. */
+  --font-size-display-oversize: 9.625rem; /* 154px — só desktop */
+  --line-height-display-oversize: 8.6875rem; /* 139px */
+
+  /* Body/Statement2 — primeira frase da citação em destaque dos cases
+     (NORTE.md 6.6, "Decisões — formato"). Compartilha tamanho/entrelinha
+     com Body/Lead (DM Sans); só família/peso mudam. */
+  --font-size-editorial-statement: 1.75rem; /* 28px */
+  --line-height-editorial-statement: 2.3625rem; /* 37.8px */
+
+  /* ---- Typography v3 — papéis DM Sans/DM Mono novos ----
+     Valores abaixo são só o que foi confirmado em desktop pela leitura
+     agregada da página; tablet/mobile ainda não foram conferidos exceto
+     onde indicado. Conferir com get_variable_defs num node do breakpoint
+     antes de usar em produção fora do Meta/Label e UI/Action (esses dois
+     já têm os 3 breakpoints confirmados desde 26/09). */
+
+  /* Meta/Label — reaproveita --font-family-data (DM Mono) e a escala já
+     existente (--font-size-scale-400 = 13px desktop). */
+  --font-weight-meta-label: 500;
+  --line-height-meta-label: 1.4; /* 18.2 / 13 */
+  --letter-spacing-meta-label: 0.02em; /* 0.26 / 13 */
+
+  /* UI/Action — reaproveita --font-family-body (DM Sans) e
+     --font-size-scale-600 (16px desktop). */
+  --font-size-ui-action: var(--font-size-scale-600);
+  --font-weight-ui-action: 500;
+  --line-height-ui-action: 1.3; /* 20.8 / 16 */
+
+  /* Body/Default — corpo de texto longo, DM Sans Regular */
+  --font-size-body-default: 1.0625rem; /* 17px — só desktop */
+  --line-height-body-default: 1.55rem; /* 26.35px */
+
+  /* Body/Lead — DM Sans Medium, mesma métrica de Body/Statement2 */
+  --font-size-body-lead: 1.75rem; /* 28px — só desktop */
+  --line-height-body-lead: 2.3625rem; /* 37.8px */
+
+  /* Body/Statement — DM Sans Light, "resto" da citação em destaque */
+  --font-size-body-statement: 1.75rem; /* 28px — só desktop */
+  --line-height-body-statement: 2.1350rem; /* 34.16px */
+
+  /* Heading/Card e Heading/Section — DM Sans SemiBold */
+  --font-size-heading-card: 1.375rem; /* 22px — só desktop */
+  --line-height-heading-card: 1.71875rem; /* 27.5px */
+  --font-size-heading-section: 1.75rem; /* 28px — só desktop */
+  --line-height-heading-section: 2.1rem; /* 33.6px */
+  --font-weight-heading: 600;
+
+  /* Heading/Compact — nome "Deiver Brito" na NavBar/Footer. Só o tamanho e
+     peso desktop foram confirmados; entrelinha usa "normal" até conferir. */
+  --font-size-heading-compact-large: 1.125rem; /* 18px */
+  --font-weight-heading-compact: 700;
+
+  /* doubleShadow — efeito de elevação dos cards (2 drop shadows sobrepostas) */
+  --shadow-card: 0 10px 24px 0 #113e3a1a, 0 4px 4px 0 #0000001a;
+
+  /* Case brands — coleção "Case brands" no Figma, padrão
+     case/<case>/surface + case/<case>/accent (ver NORTE.md 6.6). Uso
+     confirmado: cor de marca do case fora do card da Home (ex.: badges).
+     NÃO são os stops do gradiente de fundo do card — ver abaixo. */
+  --color-case-scrioo-surface: #18480b;
+  --color-case-scrioo-accent: #8fed7f;
+  --color-case-hp-surface: #004ce0;
+  --color-case-hp-accent: #6dceff;
+  --color-case-theodoor-surface: #c64af7;
+  --color-case-theodoor-accent: #8e43ad;
+  --color-case-intuit-surface: #0452ff;
+
+  /* Fundo real do card "Cases Cards" da Home — lido via get_design_context
+     no componente inteiro (todas as 5 cases) em 27/09/2026. Cada case tem
+     um tratamento diferente: SCRIOO e Aster são gradiente vertical; HP e
+     Theodoor são cor sólida (usam o mesmo valor de case/<case>/surface
+     acima — não é uma divergência, é o mesmo token reaproveitado); Intuit
+     é gradiente diagonal com stops assimétricos. Não generalizar um
+     padrão único pros 5 — cada um foi conferido individualmente. */
+  --color-case-scrioo-card-gradient-from: #5ed763;
+  --color-case-scrioo-card-gradient-to: #51ac55;
+  --color-case-aster-card-gradient-from: #47b2a0;
+  --color-case-aster-card-gradient-to: #015b6d;
+  /* Intuit: linear-gradient(148.07deg, #236cff 33.253%, #1e06a7 99.82%) —
+     stops assimétricos, não dá pra simplificar em "from/to" genérico. */
+  --gradient-case-intuit-card: linear-gradient(148.07deg, #236cff 33.253%, #1e06a7 99.82%);
+  /* Theodoor: cor de fundo atualizada pelo Deiver no Figma em 27/09/2026
+     (era cor sólida --color-case-theodoor-surface, virou gradiente
+     diagonal) — conferido de novo via get_design_context no node
+     1117:19441, não é o valor antigo. */
+  --gradient-case-theodoor-card: linear-gradient(-30.64deg, #682488 61.962%, #713b9f 98.596%);
+
+  /* Display/Statement — Newsreader Regular (peso 400, diferente do
+     --font-weight-editorial-light usado no título do ContactCTA). Usado no
+     título do hover dos cards de case ("CURE/SCRIOO" etc). */
+  --font-weight-editorial-regular: 400;
+  --font-size-display-statement: 2.75rem; /* 44px — só desktop */
+  --line-height-display-statement: 2.97rem; /* 47.52px */
+
+  /* Tamanho ótico de logo de marca (não é medida de spec do Figma — é
+     ajuste manual do Deiver, medido em 27/09/2026 a partir de
+     Icones-tamanhos.pdf: 13 logos de cliente, cada um redimensionado à
+     mão até "pesar" igual visualmente aos outros). Logos tipo "mark"
+     (selo/badge, aspect ~1:1 — ex.: HP, McCormick, NSC, HSS) precisam
+     renderizar ~1.76× mais altos que logos tipo "wordmark" (nome escrito,
+     aspect 1.8–6.7 — os outros 9) pra terem o mesmo peso visual. Razão
+     medida por scan de pixel (bounding box de conteúdo dentro de cada
+     frame do PDF, não a caixa do arquivo): altura média mark 114.5px /
+     altura média wordmark 65.1px = 1.758. Regra vale pra qualquer lugar
+     que renderize esses logos, não só o card de case. */
+  --logo-height-wordmark: 1.125rem; /* 18px — baseline já usada no card de case */
+  --logo-height-mark: 1.98rem; /* 18px × 1.758 ≈ 31.6px */
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  :root {
+    /* "Display/Page" no Figma, tablet */
+    --font-size-editorial-title: 3.25rem; /* 52px */
+    --line-height-editorial-title: 3.25rem;
+  }
+}
+
+@media (max-width: 599px) {
+  :root {
+    /* "Display/Page" no Figma, mobile */
+    --font-size-editorial-title: 2.5rem; /* 40px */
+    --line-height-editorial-title: 2.5rem;
+  }
+}
