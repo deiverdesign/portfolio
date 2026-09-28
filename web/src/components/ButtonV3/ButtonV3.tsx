@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
+import { Children, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 import styles from "./ButtonV3.module.css";
 
@@ -25,9 +25,9 @@ export type ButtonV3Props =
  * zpaQNzgjhG5ZKafe2cxnkm, section 1580:1910. Contrato verificado nó a nó
  * (não aproximado) em 27/09/2026 — ver web/src/styles/tokens-v3.css.
  *
- * Estados hover/pressed/focus do contexto "inverted" ainda não foram
- * conferidos individualmente no Figma; reaproveitam os mesmos overlays do
- * contexto "default" até isso ser confirmado.
+ * Estados dos dois contextos conferidos no frame Button-V3 (1580:2063).
+ * O hover do primary usa um preenchimento vertical tom-sobre-tom; a label
+ * permanece com a mesma cor durante toda a transição.
  */
 export function ButtonV3({
   variant = "primary",
@@ -42,11 +42,23 @@ export function ButtonV3({
     .filter(Boolean)
     .join(" ");
 
+  /* Distingue "label + ícone à direita" (View cases, Resume...) de
+     "só ícone" (Previous/Next): :only-child em CSS ignora nós de texto,
+     então um <img> depois de um texto solto também "parece" filho único
+     pro seletor — não dá pra diferenciar só com CSS. Contamos os filhos
+     aqui e marcamos via data-attribute pro CSS usar. */
+  const isMultiPart = Children.count(children) > 1;
+  const content = (
+    <span className={styles.content} data-multi-part={isMultiPart ? "true" : undefined}>
+      {children}
+    </span>
+  );
+
   if (href) {
     const anchorRest = rest as AnchorHTMLAttributes<HTMLAnchorElement>;
     return (
       <a href={href} className={classes} {...anchorRest}>
-        {children}
+        {content}
       </a>
     );
   }
@@ -54,7 +66,7 @@ export function ButtonV3({
   const buttonRest = rest as ButtonHTMLAttributes<HTMLButtonElement>;
   return (
     <button type="button" className={classes} {...buttonRest}>
-      {children}
+      {content}
     </button>
   );
 }

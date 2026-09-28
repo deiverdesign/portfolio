@@ -29,6 +29,28 @@
   color: inherit;
 }
 
+/* Ícone à direita do texto "anda" 4px pra direita no hover/foco.
+   data-multi-part vem do componente (ver ButtonV3.tsx) — nos botões
+   só-ícone (Previous/Next) não tem esse atributo, então o ícone não se
+   move. */
+.content[data-multi-part="true"] > img:last-child {
+  transition: transform var(--dur-fast) var(--ease-out-quart);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button:not(:disabled):not([aria-disabled="true"]):hover
+    .content[data-multi-part="true"]
+    > img:last-child {
+    transform: translateX(4px);
+  }
+}
+
+.button:not(:disabled):not([aria-disabled="true"]):focus-visible
+  .content[data-multi-part="true"]
+  > img:last-child {
+  transform: translateX(4px);
+}
+
 .button:disabled,
 .button[aria-disabled="true"] {
   opacity: var(--opacity-disabled);
@@ -187,7 +209,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .primary::before,
-  .secondary::before {
+  .secondary::before,
+  .content[data-multi-part="true"] > img:last-child {
     transition: none;
   }
 }
