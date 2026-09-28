@@ -1,4 +1,6 @@
 .button {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -15,6 +17,16 @@
     background-color var(--dur-fast) var(--ease-out-quart),
     border-color var(--dur-fast) var(--ease-out-quart),
     opacity var(--dur-fast) var(--ease-out-quart);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+  color: inherit;
 }
 
 .button:disabled,
@@ -39,64 +51,107 @@
 
 /* ---- Primary ---- */
 
+.primary {
+  overflow: hidden;
+  background: var(--button-hover-fill);
+}
+
+.primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--button-rest-fill);
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--dur-base) var(--ease-out-quart);
+}
+
 .primary.default {
-  background: var(--color-surface-neutral-inverse-default);
-  color: var(--color-foreground-neutral-inverse-default);
-}
-
-.primary.default:not(:disabled):hover {
-  background: var(--color-surface-neutral-inverse-subtle);
-}
-
-.primary.default:not(:disabled):active {
-  background: var(--color-surface-neutral-inverse-strong);
+  --button-rest-fill: var(--color-surface-neutral-inverse-default);
+  --button-hover-fill: var(--color-surface-neutral-inverse-subtle);
+  --button-active-fill: var(--color-surface-neutral-inverse-strong);
+  /* Trocado de --color-foreground-neutral-inverse-default (branco 78%)
+     pra --color-foreground-neutral-inverse-strong (branco sólido) a
+     pedido do Deiver em 28/09/2026 — o 78% original batia exato com o
+     Figma, mas ele decidiu que o label deveria ser mais sólido. */
+  color: var(--color-foreground-neutral-inverse-strong);
 }
 
 .primary.inverted {
-  background: var(--color-surface-neutral-default);
+  --button-rest-fill: var(--color-surface-neutral-default);
+  --button-hover-fill: var(--color-surface-neutral-subtle);
+  --button-active-fill: var(--color-surface-neutral-strong);
   color: var(--color-foreground-neutral-default);
 }
 
-/* Hover/pressed do Primary/Inverted ainda não conferidos individualmente —
-   ver nota no componente. */
-.primary.inverted:not(:disabled):hover {
-  background: var(--color-surface-neutral-subtle);
+@media (hover: hover) and (pointer: fine) {
+  .primary:not(:disabled):not([aria-disabled="true"]):hover::before {
+    transform: translate3d(0, -101%, 0);
+  }
 }
 
-.primary.inverted:not(:disabled):active {
-  background: var(--color-surface-neutral-strong);
+.primary:not(:disabled):not([aria-disabled="true"]):focus-visible::before {
+  transform: translate3d(0, -101%, 0);
+}
+
+.primary:not(:disabled):not([aria-disabled="true"]):active {
+  background: var(--button-active-fill);
+}
+
+.primary:not(:disabled):not([aria-disabled="true"]):active::before {
+  transform: translate3d(0, -101%, 0);
 }
 
 /* ---- Secondary ---- */
 
+/* Mesma linguagem de "cortina" do Primary, com menos intensidade: o
+   outline (border-color) fica parado, só uma camada translúcida sobe de
+   baixo pra cima. Direção invertida em relação ao Primary — lá a cortina
+   opaca SAI de cima pra revelar; aqui a camada transparente ENTRA de
+   baixo pra tingir. Cores exatas por contexto: node 1580:1973 (Default) e
+   1771:4727 (Inverted) no Button V3 do Figma — ver tokens-v3.css. */
 .secondary {
+  overflow: hidden;
   background: transparent;
+}
+
+.secondary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--button-overlay-fill);
+  transform: translate3d(0, 101%, 0);
+  transition: transform var(--dur-base) var(--ease-out-quart);
 }
 
 .secondary.default {
   color: var(--color-foreground-neutral-stronger);
   border-color: var(--color-border-neutral-stronger);
-}
-
-.secondary.default:not(:disabled):hover {
-  background: var(--color-overlay-neutral-subtle);
-}
-
-.secondary.default:not(:disabled):active {
-  background: var(--color-overlay-neutral-default);
+  --button-overlay-fill: var(--color-overlay-neutral-subtle);
+  --button-overlay-active-fill: var(--color-overlay-neutral-default);
 }
 
 .secondary.inverted {
   color: var(--color-foreground-neutral-inverse-default);
   border-color: var(--color-border-neutral-overlay-light-default);
+  --button-overlay-fill: var(--color-overlay-neutral-inverse-subtle);
+  --button-overlay-active-fill: var(--color-overlay-neutral-inverse-default);
 }
 
-.secondary.inverted:not(:disabled):hover {
-  background: var(--color-overlay-neutral-subtle);
+@media (hover: hover) and (pointer: fine) {
+  .secondary:not(:disabled):not([aria-disabled="true"]):hover::before {
+    transform: translate3d(0, 0, 0);
+  }
 }
 
-.secondary.inverted:not(:disabled):active {
-  background: var(--color-overlay-neutral-default);
+.secondary:not(:disabled):not([aria-disabled="true"]):focus-visible::before {
+  transform: translate3d(0, 0, 0);
+}
+
+.secondary:not(:disabled):not([aria-disabled="true"]):active::before {
+  transform: translate3d(0, 0, 0);
+  background: var(--button-overlay-active-fill);
 }
 
 /* ---- Tertiary ---- */
@@ -128,4 +183,11 @@
 
 .tertiary.inverted:not(:disabled):active {
   background: var(--color-overlay-neutral-default);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary::before,
+  .secondary::before {
+    transition: none;
+  }
 }

@@ -53,6 +53,11 @@
   --color-surface-brand-strong: var(--primary-300);
   --color-surface-brand-stronger: #246963;
   --color-border-brand-subtler: #aadad6;
+  /* Mesma variável do Figma (border/brand/subtler) resolvida no modo
+     escuro — usada na linha divisória do NavBarV3 sobre o hero (fundo
+     escuro). Medido em 28/09/2026 direto na instância do node
+     2262:61755 via get_variable_defs, não aproximado. */
+  --color-border-brand-inverse-subtler: #133f3b;
   --color-border-brand-strong: #1c5550;
   --color-foreground-brand-default: #1c5550;
   --color-foreground-brand-subtle: #246963;
@@ -78,6 +83,11 @@
      aconteceu: usar --color-overlay-neutral-default (preto) onde o
      contexto pedia este aqui (branco). */
   --color-overlay-neutral-inverse-default: #ffffff61; /* branco ~38% */
+  /* Par "subtle" do token acima, mesma lógica: no Button V3 Secondary
+     Hover Context=Inverted (node 1771:4727), a variável overlay/neutral/
+     subtle resolve pra branco ~12%, não o #0000000f (preto) do Default —
+     conferido via get_variable_defs em 28/09/2026, não aproximado. */
+  --color-overlay-neutral-inverse-subtle: #ffffff1f; /* branco ~12% */
 
   /* border/brand/default — anel de foco, igual nos 3 variants de botão */
   --color-border-brand-default: #319b92;
@@ -103,9 +113,31 @@
   --font-weight-editorial-light: 300;
   --font-weight-editorial-medium: 500;
 
+  /* Display/Feature — título do hero da Home. Conferido nos frames
+     desktop 2262:61722 e 2262:61863 em 27/09/2026. */
+  --font-size-display-feature: 6.125rem; /* 98px */
+  --line-height-display-feature: 5.81875rem; /* 93.1px */
+  /* Entre 1024 e 1327px, o hero da Home perde largura para o resumo.
+     A escala acompanha a largura disponível: 70px no início do desktop
+     e os 98px do frame de 1327px em diante. */
+  --font-size-home-hero-responsive: clamp(
+    4.375rem,
+    calc(4.375rem + (100vw - 64rem) * 0.09241),
+    var(--font-size-display-feature)
+  );
+  /* Display/Section — títulos como "Selected work" em todos os frames. */
+  --font-size-display-section: 2.75rem; /* 44px */
+
   /* Título do CTA compartilhado — desktop/laptop ("Display/CTA" no Figma) */
   --font-size-editorial-title: 5rem; /* 80px */
   --line-height-editorial-title: 5.5rem; /* 88px */
+
+  /* Display/Page — confirmado 28/09/2026 via painel de Text Styles do
+     Figma (60/60); uma leitura de get_variable_defs num node composto
+     (vários breakpoints juntos) retornou 52/52 por engano — não é o valor
+     certo, o painel é a fonte confiável aqui. Só desktop por enquanto. */
+  --font-size-display-page: 3.75rem; /* 60px */
+  --line-height-display-page: 3.75rem; /* 60px */
 
   /* Display/Oversize — o maior papel do sistema; hoje só usado no "Design
      from Spark to Finish" do Footer. */
@@ -126,7 +158,9 @@
      já têm os 3 breakpoints confirmados desde 26/09). */
 
   /* Meta/Label — reaproveita --font-family-data (DM Mono) e a escala já
-     existente (--font-size-scale-400 = 13px desktop). */
+     existente no desktop, mas permanece em 13px também em tablet/mobile
+     (a escala legada cresce nesses breakpoints; o papel V3 não). */
+  --font-size-meta-label: 0.8125rem; /* 13px */
   --font-weight-meta-label: 500;
   --line-height-meta-label: 1.4; /* 18.2 / 13 */
   --letter-spacing-meta-label: 0.02em; /* 0.26 / 13 */
@@ -141,9 +175,20 @@
   --font-size-body-default: 1.0625rem; /* 17px — só desktop */
   --line-height-body-default: 1.55rem; /* 26.35px */
 
+  /* Body/Large — confirmado 28/09/2026 via painel de Text Styles do Figma. */
+  --font-size-body-large: 1.25rem; /* 20px — só desktop */
+  --line-height-body-large: 1.875rem; /* 30px */
+
   /* Body/Lead — DM Sans Medium, mesma métrica de Body/Statement2 */
   --font-size-body-lead: 1.75rem; /* 28px — só desktop */
   --line-height-body-lead: 2.3625rem; /* 37.8px */
+
+  /* Body/Statement2 — DM Sans, mesma métrica de --font-size-editorial-statement
+     (28/37.8), mas é um papel diferente: editorial-statement é Newsreader
+     (usado nas citações em destaque dos cases), Body/Statement2 é DM Sans.
+     Confirmado 28/09/2026 via painel de Text Styles do Figma. */
+  --font-size-body-statement2: 1.75rem; /* 28px — só desktop */
+  --line-height-body-statement2: 2.3625rem; /* 37.8px */
 
   /* Body/Statement — DM Sans Light, "resto" da citação em destaque */
   --font-size-body-statement: 1.75rem; /* 28px — só desktop */
@@ -154,6 +199,7 @@
   --line-height-heading-card: 1.71875rem; /* 27.5px */
   --font-size-heading-section: 1.75rem; /* 28px — só desktop */
   --line-height-heading-section: 2.1rem; /* 33.6px */
+  --font-size-heading-section-mobile: 1.25rem; /* 20px — card mobile */
   --font-weight-heading: 600;
 
   /* Heading/Compact — nome "Deiver Brito" na NavBar/Footer. Só o tamanho e
@@ -203,19 +249,23 @@
   --font-size-display-statement: 2.75rem; /* 44px — só desktop */
   --line-height-display-statement: 2.97rem; /* 47.52px */
 
-  /* Tamanho ótico de logo de marca (não é medida de spec do Figma — é
-     ajuste manual do Deiver, medido em 27/09/2026 a partir de
-     Icones-tamanhos.pdf: 13 logos de cliente, cada um redimensionado à
-     mão até "pesar" igual visualmente aos outros). Logos tipo "mark"
-     (selo/badge, aspect ~1:1 — ex.: HP, McCormick, NSC, HSS) precisam
-     renderizar ~1.76× mais altos que logos tipo "wordmark" (nome escrito,
-     aspect 1.8–6.7 — os outros 9) pra terem o mesmo peso visual. Razão
-     medida por scan de pixel (bounding box de conteúdo dentro de cada
-     frame do PDF, não a caixa do arquivo): altura média mark 114.5px /
-     altura média wordmark 65.1px = 1.758. Regra vale pra qualquer lugar
-     que renderize esses logos, não só o card de case. */
-  --logo-height-wordmark: 1.125rem; /* 18px — baseline já usada no card de case */
-  --logo-height-mark: 1.98rem; /* 18px × 1.758 ≈ 31.6px */
+  /* --logo-height-wordmark/--logo-height-mark (o sistema de 2 categorias
+     com altura fixa por categoria) foram removidos em 28/09/2026: o
+     Deiver recalibrou o tamanho de cada um dos 13 logos individualmente
+     no componente raiz do Figma (node 741:2636). Ver `HOME_BRAND_LOGO_SIZE`
+     em home-assets.ts — agora é a fonte única, sem token CSS. */
+
+  /* "Sr. Product Designer" (identidade, header/footer) — DM Sans, não
+     Renamor (correção de 27/09: eu tinha assumido Renamor por engano).
+     Tamanho medido, não chutado: renderizei "Sr. Product Designer" em DM
+     Sans em vários font-sizes até a largura bater com o SVG real que o
+     Deiver exportou do Figma (159px) — bateu em 17px exatos. */
+  /* Usado só no FooterV3 hoje (NavBarV3 usa --font-size-identity-role-header,
+     um token separado). Reduzido -20% em 28/09/2026: 17px × 0.8 = 13.6px. */
+  --font-size-identity-role: 0.85rem; /* 13.6px */
+  /* 17px -22% (13.25px), depois -10% em 28/09/2026: 13.25px × 0.9 =
+     11.925px. */
+  --font-size-identity-role-header: 0.7453125rem; /* 11.925px */
 }
 
 @media (min-width: 600px) and (max-width: 1023px) {
