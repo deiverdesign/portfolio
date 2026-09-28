@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { Locale } from "@/content/i18n";
+import { getCopy } from "@/content/site-copy";
 import { HOME_ASSETS } from "@/content/home-assets";
 import { LanguageSwitcherV3 } from "@/components/LanguageSwitcherV3/LanguageSwitcherV3";
 import styles from "./NavBarV3.module.css";
@@ -38,18 +39,17 @@ export function NavBarV3({
 }: NavBarV3Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const classes = [styles.root, styles[context], className].filter(Boolean).join(" ");
-  const { logo, jobTitle } = HOME_ASSETS.identity;
+  /* Versão clara de verdade no contexto escuro, não mais filtro CSS
+     (invert+brightness) — achado do Deiver em 28/09/2026: o filtro
+     deixava o logo serrilhado sobre o fundo escuro do hero. */
+  const logo = context === "dark" ? HOME_ASSETS.identity.logoInverse : HOME_ASSETS.identity.logo;
 
   return (
     <header className={classes}>
       <div className={styles.row}>
         <a href={locale === "pt" ? "/pt" : "/"} className={styles.identity}>
           <img src={logo} alt="Deiver Brito" className={styles.name} />
-          <img
-            src={jobTitle}
-            alt={locale === "pt" ? "Product Designer Sênior" : "Sr. Product Designer"}
-            className={styles.role}
-          />
+          <p className={styles.role}>{getCopy(locale, "shared.identity.job-title")}</p>
         </a>
 
         <nav className={styles.desktopNav} aria-label={locale === "pt" ? "Navegação principal" : "Main navigation"}>
@@ -63,7 +63,11 @@ export function NavBarV3({
               {link.label}
             </a>
           ))}
-          <LanguageSwitcherV3 locale={locale} />
+          <LanguageSwitcherV3
+            locale={locale}
+            context={context === "dark" ? "inverted" : "default"}
+            className={styles.languageSwitcher}
+          />
         </nav>
 
         <button
@@ -96,7 +100,10 @@ export function NavBarV3({
               {link.label}
             </a>
           ))}
-          <LanguageSwitcherV3 locale={locale} />
+          <LanguageSwitcherV3
+            locale={locale}
+            context={context === "dark" ? "inverted" : "default"}
+          />
         </nav>
       )}
     </header>
