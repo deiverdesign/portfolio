@@ -1,0 +1,33 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-200);
+}
+
+.dot {
+  width: 28px;
+  height: 7px;
+  padding: 0;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-neutral-overlay-dark-strong);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out-quart),
+    border-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.dot[data-active="true"] {
+  border-color: transparent;
+  background: var(--color-foreground-neutral-default);
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--color-border-brand-default);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    transition: none;
+  }
+}

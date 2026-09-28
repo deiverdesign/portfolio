@@ -1,0 +1,153 @@
+.section {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 740px;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--color-surface-neutral-default);
+}
+
+.container {
+  display: flex;
+  /* SEM margem aqui de propósito (3ª rodada, 28/09/2026, revendo o
+     vídeo de referência quadro a quadro): o .rail precisa ocupar a
+     largura TOTAL da viewport, de ponta a ponta — nem a esquerda nem a
+     direita têm respiro reservado no container. Só o .header (que fica
+     preso à grade de 1348px, ver abaixo) e o .track (que ganha um
+     padding-left equivalente, só pra alinhar o primeiro card em
+     repouso) têm inset próprio. Ver .rail/.track mais abaixo. */
+  flex-direction: column;
+  gap: var(--space-800);
+}
+
+.header {
+  display: flex;
+  /* Sem width:100% — junto com margin explícita dos dois lados isso
+     estourava a caixa (100% da largura do container MAIS a margem),
+     empurrando os botões pra fora da tela em telas entre 1024 e ~1508px
+     (achado do Deiver em 28/09/2026: em 1028px os botões Next/Previous
+     sumiam à direita). Sem width, o item flex estica sozinho (stretch,
+     comportamento padrão) pra preencher o espaço ENTRE as duas margens,
+     até o teto de max-width. */
+  max-width: 1348px;
+  /* Preso à mesma grade de 1348px do resto do site (Brands,
+     Capabilities), dos dois lados — max() escolhe entre o respiro
+     mínimo (80px) e a distância real até essa grade, o que for maior.
+     Diferente do .rail logo abaixo, o header NÃO bleeda — nem à
+     esquerda nem à direita — só os cards vazam até a borda real. */
+  margin-left: max(80px, calc((100% - 1348px) / 2));
+  margin-right: max(80px, calc((100% - 1348px) / 2));
+  height: 60px;
+  align-items: center;
+  gap: var(--space-500);
+}
+
+.title {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-family-editorial);
+  font-size: var(--font-size-display-section);
+  font-weight: var(--font-weight-editorial-regular);
+  line-height: 1.2;
+  color: var(--color-foreground-neutral-default);
+}
+
+/* Linha abaixo do rail (Figma: node 2299:71172, "Navigation - Case
+   navigation") — substituiu o contador "01/05" que ficava no header.
+   Mesma grade de 1348px do .header (margin-left/right idênticos), não
+   sangra como o .rail. */
+.footerNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1348px;
+  margin-left: max(80px, calc((100% - 1348px) / 2));
+  margin-right: max(80px, calc((100% - 1348px) / 2));
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-300);
+}
+
+.control {
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  padding: var(--space-400);
+}
+
+.rail {
+  /* Ocupa 100% do .container, que agora não tem margem nenhuma — o
+     rail vai de ponta a ponta da viewport. */
+  width: 100%;
+  height: 480px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  /* Sem scroll-snap: o vídeo de referência mostra o repouso pousando
+     no meio de um card (SCRIOO cortado), não alinhado à borda de
+     nenhum card — um scroll-snap:mandatory forçaria a posição de volta
+     pro card mais próximo depois de cada clique, brigando com esse
+     comportamento. O scroll agora é "por página" (ver scrollByPage em
+     SelectedWorkV3.tsx), não card a card. */
+  overscroll-behavior-inline: contain;
+  touch-action: pan-x;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  height: 480px;
+  align-items: center;
+  gap: var(--space-700);
+  /* Mesmo valor do margin-left do .header — em repouso (scrollLeft:0),
+     o primeiro card (SCRIOO) começa exatamente na grade de 1348px,
+     igual ao título acima dele. Como é padding do conteúdo rolável (e
+     não margem do .rail), ao rolar esse respiro desaparece de vista
+     junto com o resto — é só o ponto de partida, não um limite. */
+  padding-left: max(80px, calc((100% - 1348px) / 2));
+  padding-right: 1px;
+}
+
+.cardSlot {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 599px) {
+  .container {
+    /* Mesmo respiro simétrico de antes (40px / 2 = 20px por lado). */
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .header {
+    margin-left: 0;
+    margin-right: 0;
+    height: auto;
+  }
+
+  .footerNav {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .track {
+    padding-left: 0;
+    gap: var(--space-500);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail {
+    scroll-behavior: auto;
+  }
+}
