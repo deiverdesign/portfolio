@@ -20,9 +20,19 @@
 
 .container {
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: var(--space-900);
+  /* Era flex-start — o Deiver comparou lado a lado com o Figma e o
+     bloco de texto (headline + chips) fica centralizado verticalmente
+     contra a altura da foto/ilustração, não colado no topo. */
+  align-items: center;
+  /* Era justify-content:center + gap fixo (errado nos dois): o Figma
+     usa space-between sem gap — a distância entre as duas colunas é o
+     espaço que sobra, não um valor cravado (conferido de novo,
+     "justify-between" no dump bruto). SEM flex-wrap de propósito:
+     testado com wrap como "rede de segurança" e o Chrome preferia
+     quebrar linha a encolher os itens (mesmo com espaço de sobra pra
+     encolher dentro dos min-width) — o wrap competia com o shrink em
+     vez de só ser um fallback. Sem wrap, o shrink (ver .imageContainer/
+     .content) faz o trabalho sozinho, sem essa disputa. */
   /* Também errado antes: 1348px é a grade padrão do site, mas essa
      seção específica usa 1184px no Figma (conferido de novo via
      get_design_context, "max-w-[1184px]") — mais estreita que o resto
@@ -33,16 +43,27 @@
 
 .imageContainer {
   position: relative;
-  flex-shrink: 0;
-  width: 668px;
-  height: 453.34px;
+  /* Era width/height fixos em px (668×453.34) — o Deiver achou o texto
+     cortado em 1038px: nessa largura, a seção (1038 − 2×32px de
+     padding) já não cabe 668+416px lado a lado, e como a coluna de
+     texto tinha flex-shrink:0 (não encolhia), ela vazava pra fora em
+     vez de se ajustar. Com aspect-ratio + max-width em vez de tamanho
+     cravado, essa coluna agora encolhe de verdade — a foto e a
+     ilustração (ambas em %, não px, dentro dela) acompanham
+     proporcionalmente. Só cresce até o tamanho real do Figma (668px),
+     nunca passa disso em telas largas. */
+  flex: 1 1 668px;
+  min-width: 280px;
+  max-width: 668px;
+  aspect-ratio: 668 / 453.34;
 }
 
 .graphismFrame {
   position: absolute;
   inset: 0;
-  width: 628px;
-  height: 441.34px;
+  /* 628×441.34 relativo aos 668×453.34 do .imageContainer. */
+  width: 94.01%;
+  height: 97.35%;
   overflow: hidden;
 }
 
@@ -60,10 +81,12 @@
 
 .photo {
   position: absolute;
-  left: 41.77px;
+  /* 41.77/311.63/350.59px relativos aos 668×453.34 do .imageContainer
+     — em % pra acompanhar o container fluido, não em px fixo. */
+  left: 6.25%;
   bottom: 0;
-  width: 311.63px;
-  height: 350.59px;
+  width: 46.65%;
+  height: 77.34%;
   object-fit: cover;
   border-radius: var(--radius-sm);
 }
@@ -71,10 +94,14 @@
 .content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  flex: 1 0 0;
+  gap: var(--space-900);
+  /* Era flex:1 0 0 (flex-shrink:0) — a coluna nunca encolhia, essa era
+     a causa direta do corte em 1038px. flex-shrink habilitado (o "1"
+     do meio) + min-width evita tanto o corte quanto um texto
+     desconfortavelmente estreito. */
+  flex: 1 1 416px;
+  min-width: 280px;
   max-width: 416px;
-  padding-bottom: var(--space-900);
 }
 
 .headline {
@@ -161,27 +188,11 @@
 
   .imageContainer {
     width: 100%;
-    height: auto;
-    aspect-ratio: 668 / 453.34;
-    overflow: hidden;
-  }
-
-  /* No desktop o tamanho fixo em px bate exato com o Figma, mas em
-     telas menores o container encolhe (via aspect-ratio) e essa moldura
-     ficava com o tamanho fixo do desktop — estourava pra fora do
-     container em vez de acompanhar (achado ao testar em 393px: o
-     grafismo vazava por cima do texto "Complex products..." abaixo).
-     100%/100% acompanha o container esticado; o "sangramento" da
-     ilustração (ver .graphism) continua relativo a essa caixa, então
-     não precisa mudar. */
-  .graphismFrame {
-    width: 100%;
-    height: 100%;
+    max-width: none;
   }
 
   .content {
     max-width: none;
-    padding-bottom: 0;
   }
 }
 
