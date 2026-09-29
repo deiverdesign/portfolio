@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
 import { ButtonV3 } from "@/components/ButtonV3/ButtonV3";
 import { CarouselIndicatorsV3 } from "@/components/CarouselIndicatorsV3/CarouselIndicatorsV3";
 import { EyebrowV3 } from "@/components/EyebrowV3/EyebrowV3";
 import { IconV3 } from "@/components/IconV3/IconV3";
 import type { RasterAsset } from "@/content/home-assets";
+import { useRailCarousel } from "@/hooks/useRailCarousel";
 import styles from "./CaseValidationV3.module.css";
 
 export interface CaseValidationV3Card {
@@ -37,60 +36,11 @@ export interface CaseValidationV3Props {
  * poucos itens, diferente das 13 marcas do Brands).
  */
 export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusion }: CaseValidationV3Props) {
-  const railRef = useRef<HTMLDivElement>(null);
-  const frameRef = useRef<number | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  /* offsetLeft por si só não é confiável aqui: o offsetParent do <li>
-     não é o .rail que rola (é o BODY, já que nenhum ancestro entre eles
-     tem position:relative), então offsetLeft inclui deslocamentos que
-     não fazem parte da área de scroll — medido ao vivo: um card que
-     devia parar em 698px parava em 752px, sempre cortado dos dois
-     lados depois de "Next" (mesma classe de bug que o rail do Home já
-     teve). getBoundingClientRect(), relativo ao próprio .rail, dá a
-     posição real dentro do scroll, sempre. */
-  const itemLeftInRail = (rail: HTMLElement, item: HTMLElement) =>
-    item.getBoundingClientRect().left - rail.getBoundingClientRect().left + rail.scrollLeft;
-
-  const updateActiveIndex = useCallback(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-    const items = Array.from(rail.querySelectorAll("li")) as HTMLElement[];
-    const { scrollLeft } = rail;
-    let closest = 0;
-    let closestDistance = Number.POSITIVE_INFINITY;
-    items.forEach((item, index) => {
-      const distance = Math.abs(itemLeftInRail(rail, item) - scrollLeft);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closest = index;
-      }
-    });
-    setActiveIndex(closest);
-  }, []);
-
-  useEffect(
-    () => () => {
-      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
-    },
-    [],
-  );
-
-  const handleScroll = () => {
-    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
-    frameRef.current = requestAnimationFrame(updateActiveIndex);
-  };
-
-  const moveTo = (index: number) => {
-    const rail = railRef.current;
-    if (!rail) return;
-    const items = rail.querySelectorAll("li");
-    const item = items[index] as HTMLElement | undefined;
-    if (!item) return;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    rail.scrollTo({ left: itemLeftInRail(rail, item), behavior: reducedMotion ? "auto" : "smooth" });
-    setActiveIndex(index);
-  };
+  // Lógica de scroll/alinhamento centralizada em useRailCarousel (não é
+  // gambiarra local): mesmo componente vai ser copiado pros outros 4
+  // cases, então o fix precisa estar num lugar só pra não precisar ser
+  // reaplicado 4 vezes — ver comentário do hook pro porquê.
+  const { railRef, activeIndex, moveTo, handleScroll } = useRailCarousel<HTMLDivElement>("li");
 
   return (
     <section className={styles.section}>
