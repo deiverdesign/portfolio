@@ -1,0 +1,89 @@
+.section {
+  background: var(--color-surface-neutral-default);
+  padding: var(--space-layout-200) var(--space-layout-100);
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-800) var(--space-700);
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+.card {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 280px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-500);
+  height: 168px;
+  padding: var(--space-700);
+  border-radius: var(--radius-xs);
+  /* Ângulo médio dos 3 cards no Figma (-8.78° / -10.72° / -8.78°) — a
+     diferença entre eles é ruído de auto-layout, não intenção de
+     design; um valor só, mais simples de manter. */
+  background: linear-gradient(
+    -10deg,
+    var(--color-surface-brand-default) 6.28%,
+    var(--color-surface-neutral-strong) 62.91%
+  );
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.label {
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-meta-label);
+  font-weight: var(--font-weight-meta-label);
+  line-height: var(--line-height-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  color: var(--color-foreground-accent-subtle);
+  text-transform: uppercase;
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-600);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+  color: var(--color-foreground-neutral-default);
+}
+
+.clients {
+  margin: 0;
+  white-space: pre-line;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+  color: var(--color-foreground-neutral-default);
+}
+
+@media (max-width: 1023px) {
+  .section {
+    padding: var(--space-layout-200) var(--space-600);
+  }
+}
+
+@media (max-width: 599px) {
+  .card {
+    min-width: 100%;
+  }
+}

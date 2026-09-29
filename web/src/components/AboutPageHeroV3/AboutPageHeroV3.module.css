@@ -1,0 +1,188 @@
+.section {
+  background: var(--color-surface-neutral-default);
+  padding: var(--space-layout-100) var(--space-layout-100) 0;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-900);
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+.imageContainer {
+  position: relative;
+  flex-shrink: 0;
+  width: 668px;
+  height: 453.34px;
+}
+
+.graphismFrame {
+  position: absolute;
+  inset: 0;
+  width: 628px;
+  height: 441.34px;
+  overflow: hidden;
+}
+
+/* A ilustração é exportada ~5-7% maior que a moldura que a contém e
+   cortada por overflow:hidden — sem isso sobrava uma borda fina
+   indesejada nas quinas, conferido no Figma (node 2262:64653). */
+.graphism {
+  position: absolute;
+  top: -1.55%;
+  left: -5.48%;
+  width: 107.09%;
+  height: 104.57%;
+  max-width: none;
+}
+
+.photo {
+  position: absolute;
+  left: 41.77px;
+  bottom: 0;
+  width: 311.63px;
+  height: 350.59px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1 0 0;
+  max-width: 416px;
+  padding-bottom: var(--space-900);
+}
+
+.headline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  color: var(--color-foreground-brand-default);
+}
+
+.lines {
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+}
+
+.lines span {
+  display: block;
+}
+
+.statement {
+  margin: 0;
+  font-family: var(--font-family-editorial);
+  font-weight: var(--font-weight-editorial-regular);
+  font-size: var(--font-size-display-statement);
+  line-height: var(--line-height-display-statement);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+}
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-300);
+  height: 32px;
+  padding: var(--space-200) var(--space-500);
+  border: 1px solid var(--color-border-neutral-subtler);
+  margin-right: -1px;
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-meta-label);
+  font-weight: var(--font-weight-meta-label);
+  line-height: var(--line-height-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  color: var(--color-foreground-neutral-default);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.accentTick {
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 10.94px;
+  background: var(--color-foreground-accent-subtle);
+}
+
+.dot {
+  width: 2.06px;
+  height: 2.06px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.flag {
+  border-radius: 2px;
+}
+
+@media (max-width: 1023px) {
+  .section {
+    padding: var(--space-layout-100) var(--space-600) 0;
+  }
+
+  .container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-layout-200);
+  }
+
+  .imageContainer {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 668 / 453.34;
+    overflow: hidden;
+  }
+
+  /* No desktop o tamanho fixo em px bate exato com o Figma, mas em
+     telas menores o container encolhe (via aspect-ratio) e essa moldura
+     ficava com o tamanho fixo do desktop — estourava pra fora do
+     container em vez de acompanhar (achado ao testar em 393px: o
+     grafismo vazava por cima do texto "Complex products..." abaixo).
+     100%/100% acompanha o container esticado; o "sangramento" da
+     ilustração (ver .graphism) continua relativo a essa caixa, então
+     não precisa mudar. */
+  .graphismFrame {
+    width: 100%;
+    height: 100%;
+  }
+
+  .content {
+    max-width: none;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .section {
+    padding: var(--space-layout-100) var(--space-600) 0;
+  }
+
+  .imageContainer {
+    aspect-ratio: 343 / 317;
+  }
+
+  .photo {
+    left: 19%;
+    width: 56%;
+    height: 68%;
+  }
+
+  .identity {
+    flex-wrap: wrap;
+    row-gap: var(--space-300);
+  }
+}
