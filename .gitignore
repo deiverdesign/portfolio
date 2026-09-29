@@ -2,3 +2,10 @@
 .DS_Store
 .agents/
 web/tmp/token-sync/
+
+# Exportações temporárias usadas para inspecionar assets do Figma.
+web/public/images/v3/_figma-tmp*/
+web/public/images/v3/home/brands/_probe/
+web/public/images/v3/home/brands/original/2906b3204ba49d074a9addb69eb7f5510db75130.svg
+web/public/images/v3/home/brands/original/479f43e1855b367734d8f63355f286c2f75f01fb.svg
+web/public/images/v3/home/brands/original/8b47362ded7a2a9f2ac9d4cc8f7b2278c68e9ddb.svg
