@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
 import { HOME_ASSETS } from "@/content/home-assets";
+import { IconV3 } from "@/components/IconV3/IconV3";
 import { LanguageSwitcherV3 } from "@/components/LanguageSwitcherV3/LanguageSwitcherV3";
 import styles from "./NavBarV3.module.css";
 
@@ -82,11 +83,10 @@ export function NavBarV3({
           aria-label={locale === "pt" ? "Abrir menu" : "Open menu"}
           onClick={() => setMobileOpen((open) => !open)}
         >
-          <span className={styles.menuIcon} aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
+          {/* Era 3 spans desenhados via CSS — o Deiver apontou o ícone
+              real do Figma (Icons/Menu2, node 836:10943), já baixado em
+              menu2.svg. */}
+          <IconV3 name="menu2" size={14} className={styles.menuIcon} />
         </button>
       </div>
 

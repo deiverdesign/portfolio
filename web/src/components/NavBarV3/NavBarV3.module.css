@@ -158,17 +158,14 @@
   outline-offset: 2px;
 }
 
-.menuIcon {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  width: 20px;
-}
-
-.menuIcon span {
-  display: block;
-  height: 2px;
-  background: currentColor;
+/* O SVG (menu2.svg) tem a cor cravada (#303735, escura) em vez de
+   currentColor — mesma limitação documentada no IconV3. No contexto
+   .dark, sem isso o ícone ficaria invisível sobre o fundo escuro do
+   hero; filter:invert() é seguro aqui porque o ícone é pequeno (14px,
+   3 traços retos) — diferente do logo grande, que serrilhava com esse
+   mesmo tipo de filtro. */
+.dark .menuIcon {
+  filter: invert(1);
 }
 
 .mobileNav {
