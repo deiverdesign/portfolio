@@ -18,7 +18,13 @@ const dmMono = DM_Mono({
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
-  weight: ["300", "500"],
+  // 300/500 cobriam --font-weight-editorial-light/medium, mas faltava o
+  // 400 (--font-weight-editorial-regular) — usado em vários títulos
+  // (Brands, Capabilities, etc.). Sem o peso 400 carregado, o navegador
+  // sintetiza a partir do 300 mais próximo, deixando esses títulos mais
+  // finos que o Figma (achado do Deiver comparando screenshots lado a
+  // lado em 28/09/2026).
+  weight: ["300", "400", "500"],
   style: ["normal", "italic"],
   subsets: ["latin"],
 });
@@ -66,7 +72,13 @@ export function LocaleRootLayout({
       lang={locale === "pt" ? "pt-BR" : "en"}
       className={`${dmSans.variable} ${dmMono.variable} ${renamor.variable} ${newsreader.variable}`}
     >
-      <body>
+      {/* Extensões como Grammarly injetam atributos no <body> antes do
+          React hidratar (data-gr-ext-installed, data-new-gr-c-s-check-
+          loaded) — o React compara e reclama de "mismatch" mesmo não
+          havendo bug nenhum nosso. suppressHydrationWarning aqui é o
+          fix padrão do Next.js pra esse caso específico: só ignora
+          diffs de ATRIBUTOS deste elemento, não afeta o conteúdo. */}
+      <body suppressHydrationWarning>
         {children}
         <Analytics />
       </body>
