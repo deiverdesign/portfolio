@@ -22,6 +22,7 @@ export function AboutPageV3({ locale }: AboutPageV3Props) {
   const homeHref = locale === "pt" ? "/pt/v3" : "/v3";
   const aboutHref = locale === "pt" ? "/pt/v3/sobre" : "/v3/about";
   const contactHref = `${homeHref}#contact`;
+  const languageHref = locale === "pt" ? "/v3/about" : "/pt/v3/sobre";
 
   const links: NavBarV3Link[] = [
     { label: getCopy(locale, "shared.nav.home"), href: homeHref },
@@ -32,7 +33,13 @@ export function AboutPageV3({ locale }: AboutPageV3Props) {
 
   return (
     <>
-      <NavBarV3 locale={locale} context="light" links={links} />
+      <NavBarV3
+        locale={locale}
+        identityHref={homeHref}
+        languageHref={languageHref}
+        context="light"
+        links={links}
+      />
       <main>
         <AboutPageHeroV3 locale={locale} />
         <AboutPageFactsV3 locale={locale} />

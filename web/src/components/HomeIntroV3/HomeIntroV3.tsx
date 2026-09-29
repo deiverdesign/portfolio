@@ -18,6 +18,9 @@ type IntroPhase =
 
 export interface HomeIntroV3Props {
   locale: Locale;
+  homeHref?: string;
+  aboutHref?: string;
+  languageHref?: string;
   /** Desliga a coreografia e entrega diretamente o hero final. */
   introEnabled?: boolean;
   /** `null` desliga a memória de sessão, útil para specimens e testes. */
@@ -52,6 +55,9 @@ function rememberCompletedSession(key: string | null) {
  */
 export function HomeIntroV3({
   locale,
+  homeHref,
+  aboutHref,
+  languageHref,
   introEnabled = true,
   sessionKey = DEFAULT_SESSION_KEY,
 }: HomeIntroV3Props) {
@@ -113,7 +119,13 @@ export function HomeIntroV3({
 
   return (
     <div className={styles.root} data-phase={phase}>
-      <HomeHeroV3 locale={locale} contentVisible={contentVisible} />
+      <HomeHeroV3
+        locale={locale}
+        homeHref={homeHref}
+        aboutHref={aboutHref}
+        languageHref={languageHref}
+        contentVisible={contentVisible}
+      />
 
       {overlayVisible && (
         <div className={styles.curtain} aria-hidden="true">

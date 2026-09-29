@@ -23,13 +23,22 @@ const CONTACT_HREF = "mailto:hello@deiver.com.br";
 export function HomeV3({ locale, introEnabled = true, introSessionKey }: HomeV3Props) {
   const homeHref = locale === "pt" ? "/pt/v3" : "/v3";
   const aboutHref = locale === "pt" ? "/pt/v3/sobre" : "/v3/about";
+  const languageHref = locale === "pt" ? "/v3" : "/pt/v3";
 
   return (
     <>
-      <StickyNavBarV3 locale={locale} homeHref={homeHref} aboutHref={aboutHref} />
+      <StickyNavBarV3
+        locale={locale}
+        homeHref={homeHref}
+        aboutHref={aboutHref}
+        languageHref={languageHref}
+      />
       <main>
         <HomeIntroV3
           locale={locale}
+          homeHref={homeHref}
+          aboutHref={aboutHref}
+          languageHref={languageHref}
           introEnabled={introEnabled}
           sessionKey={introSessionKey}
         />

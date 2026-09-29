@@ -13,6 +13,7 @@ export interface HomeHeroV3Props {
   locale: Locale;
   homeHref?: string;
   aboutHref?: string;
+  languageHref?: string;
   contactHref?: string;
   resumeHref?: string;
   casesHref?: string;
@@ -31,6 +32,7 @@ export function HomeHeroV3({
   locale,
   homeHref = locale === "pt" ? "/pt" : "/",
   aboutHref = locale === "pt" ? "/pt/sobre" : "/about",
+  languageHref,
   contactHref = "#contact",
   resumeHref = RESUME_HREF[locale],
   casesHref = "#selected-work",
@@ -61,7 +63,14 @@ export function HomeHeroV3({
         priority
       />
 
-      <NavBarV3 locale={locale} context="dark" links={links} className={styles.navigation} />
+      <NavBarV3
+        locale={locale}
+        identityHref={homeHref}
+        languageHref={languageHref}
+        context="dark"
+        links={links}
+        className={styles.navigation}
+      />
 
       <div className={styles.content}>
         <div className={styles.intro}>

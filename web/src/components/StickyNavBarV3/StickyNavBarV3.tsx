@@ -12,6 +12,7 @@ export interface StickyNavBarV3Props {
   locale: Locale;
   homeHref?: string;
   aboutHref?: string;
+  languageHref?: string;
   contactHref?: string;
   resumeHref?: string;
 }
@@ -32,6 +33,7 @@ export function StickyNavBarV3({
   locale,
   homeHref = locale === "pt" ? "/pt" : "/",
   aboutHref = locale === "pt" ? "/pt/sobre" : "/about",
+  languageHref,
   contactHref = "#contact",
   resumeHref = RESUME_HREF[locale],
 }: StickyNavBarV3Props) {
@@ -60,7 +62,13 @@ export function StickyNavBarV3({
 
   return (
     <div className={styles.root} data-visible={visible} inert={visible ? undefined : true}>
-      <NavBarV3 locale={locale} context="light" links={links} />
+      <NavBarV3
+        locale={locale}
+        identityHref={homeHref}
+        languageHref={languageHref}
+        context="light"
+        links={links}
+      />
     </div>
   );
 }

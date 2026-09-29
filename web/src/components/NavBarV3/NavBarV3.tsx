@@ -16,6 +16,8 @@ export interface NavBarV3Link {
 
 export interface NavBarV3Props {
   locale: Locale;
+  identityHref?: string;
+  languageHref?: string;
   /** "Context" no Figma — sobre qual fundo a NavBar está. */
   context?: "light" | "dark";
   links: NavBarV3Link[];
@@ -33,6 +35,8 @@ export interface NavBarV3Props {
  */
 export function NavBarV3({
   locale,
+  identityHref = locale === "pt" ? "/pt" : "/",
+  languageHref,
   context = "light",
   links,
   className,
@@ -47,7 +51,7 @@ export function NavBarV3({
   return (
     <header className={classes}>
       <div className={styles.row}>
-        <a href={locale === "pt" ? "/pt" : "/"} className={styles.identity}>
+        <a href={identityHref} className={styles.identity}>
           <img src={logo} alt="Deiver Brito" className={styles.name} />
           <p className={styles.role}>{getCopy(locale, "shared.identity.job-title")}</p>
         </a>
@@ -65,6 +69,7 @@ export function NavBarV3({
           ))}
           <LanguageSwitcherV3
             locale={locale}
+            href={languageHref}
             context={context === "dark" ? "inverted" : "default"}
             className={styles.languageSwitcher}
           />
@@ -102,6 +107,7 @@ export function NavBarV3({
           ))}
           <LanguageSwitcherV3
             locale={locale}
+            href={languageHref}
             context={context === "dark" ? "inverted" : "default"}
           />
         </nav>

@@ -7,6 +7,7 @@ const HREF_BY_LOCALE: Record<Locale, string> = { en: "/pt", pt: "/" };
 
 export interface LanguageSwitcherV3Props {
   locale: Locale;
+  href?: string;
   /** Contraste do controle contra a superfície onde ele é renderizado. */
   context?: "default" | "inverted";
   className?: string;
@@ -27,6 +28,7 @@ export interface LanguageSwitcherV3Props {
  */
 export function LanguageSwitcherV3({
   locale,
+  href = HREF_BY_LOCALE[locale],
   context = "default",
   className,
 }: LanguageSwitcherV3Props) {
@@ -35,7 +37,7 @@ export function LanguageSwitcherV3({
 
   return (
     <a
-      href={HREF_BY_LOCALE[locale]}
+      href={href}
       className={classes}
       aria-label={target === "pt" ? "Mudar para português" : "Switch to English"}
       lang={locale}
