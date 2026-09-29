@@ -3,55 +3,40 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * offsetLeft por si só não é confiável pra medir a posição de um item
- * dentro de um rail que rola: ele é relativo ao offsetParent do
- * elemento, que só é o próprio rail se algum ancestro entre os dois
- * tiver position:relative — fácil de quebrar sem querer numa
- * refatoração de CSS, e sem erro nenhum no console quando quebra.
- * Achado ao vivo no CaseValidationV3 em 29/09/2026: um card que devia
- * parar em 698px parava em 752px, sempre cortado dos dois lados depois
- * de "Next". getBoundingClientRect(), relativo ao próprio rail, dá a
- * posição real dentro da área de scroll, sempre — não depende de
- * nenhum ancestro ter position:relative.
+ * Rola por PÁGINA (a própria largura do rail), não por item — mesmo
+ * padrão já usado em SelectedWorkV3/BrandsSectionV3. Substituiu uma
+ * primeira versão que alinhava o item clicado coladinho à esquerda
+ * (via getBoundingClientRect, corrigindo um bug de offsetLeft) — essa
+ * abordagem por item quebrava de um jeito NOVO com poucos itens numa
+ * tela larga: perto do fim do rail não sobra espaço de rolagem
+ * suficiente pra colar o item clicado à esquerda sem deixar vazio
+ * depois dele, e o navegador trava o scroll no máximo possível — o
+ * item pousa flutuando no meio, com uma tira do anterior vazando pela
+ * borda (achado do Deiver em 29/09/2026, reproduzido em 1365px e no
+ * mobile 405px). Rolar por página elimina essa classe de bug inteira:
+ * a posição final é sempre 0, o máximo, ou uma fração exata entre os
+ * dois — nunca um valor "travado no meio".
  */
-function itemLeftInRail(rail: HTMLElement, item: HTMLElement) {
-  return item.getBoundingClientRect().left - rail.getBoundingClientRect().left + rail.scrollLeft;
-}
-
-/**
- * Estado + navegação de um rail horizontal paginado por item (1 "página"
- * = 1 item, ex. os cards do CaseValidationV3) — não confundir com o
- * padrão de página = rail.clientWidth do SelectedWorkV3/BrandsSectionV3,
- * que rola por tela cheia, não por item. `itemSelector` é relativo ao
- * elemento que a ref é anexada (o rail que tem overflow-x:auto).
- */
-export function useRailCarousel<T extends HTMLElement = HTMLDivElement>(itemSelector: string) {
+export function useRailCarousel<T extends HTMLElement = HTMLDivElement>() {
   const railRef = useRef<T | null>(null);
   const frameRef = useRef<number | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activePage, setActivePage] = useState(0);
+  const [pageCount, setPageCount] = useState(1);
 
-  const getItems = useCallback((): HTMLElement[] => {
-    const rail = railRef.current;
-    if (!rail) return [];
-    return Array.from(rail.querySelectorAll<HTMLElement>(itemSelector));
-  }, [itemSelector]);
-
-  const updateActiveIndex = useCallback(() => {
+  const updateState = useCallback(() => {
     const rail = railRef.current;
     if (!rail) return;
-    const items = getItems();
-    const { scrollLeft } = rail;
-    let closest = 0;
-    let closestDistance = Number.POSITIVE_INFINITY;
-    items.forEach((item, index) => {
-      const distance = Math.abs(itemLeftInRail(rail, item) - scrollLeft);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closest = index;
-      }
-    });
-    setActiveIndex(closest);
-  }, [getItems]);
+    const maxScrollLeft = rail.scrollWidth - rail.clientWidth;
+    const pages = Math.max(1, Math.ceil(rail.scrollWidth / rail.clientWidth));
+    setPageCount(pages);
+    setActivePage(maxScrollLeft > 0 ? Math.round((rail.scrollLeft / maxScrollLeft) * (pages - 1)) : 0);
+  }, []);
+
+  // Mede a largura real do rail só depois do primeiro layout — sem isso
+  // pageCount ficava preso no valor inicial (1).
+  useEffect(() => {
+    updateState();
+  }, [updateState]);
 
   useEffect(
     () => () => {
@@ -62,20 +47,30 @@ export function useRailCarousel<T extends HTMLElement = HTMLDivElement>(itemSele
 
   const handleScroll = useCallback(() => {
     if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
-    frameRef.current = requestAnimationFrame(updateActiveIndex);
-  }, [updateActiveIndex]);
+    frameRef.current = requestAnimationFrame(updateState);
+  }, [updateState]);
 
-  const moveTo = useCallback(
-    (index: number) => {
+  const goToPage = useCallback(
+    (page: number) => {
       const rail = railRef.current;
-      const item = getItems()[index];
-      if (!rail || !item) return;
+      if (!rail) return;
+      const maxScrollLeft = rail.scrollWidth - rail.clientWidth;
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      rail.scrollTo({ left: itemLeftInRail(rail, item), behavior: reducedMotion ? "auto" : "smooth" });
-      setActiveIndex(index);
+      rail.scrollTo({
+        left: maxScrollLeft * (page / Math.max(1, pageCount - 1)),
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
+      setActivePage(page);
     },
-    [getItems],
+    [pageCount],
   );
 
-  return { railRef, activeIndex, moveTo, handleScroll };
+  const scrollByPage = useCallback((direction: 1 | -1) => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    rail.scrollBy({ left: direction * rail.clientWidth, behavior: reducedMotion ? "auto" : "smooth" });
+  }, []);
+
+  return { railRef, activePage, pageCount, goToPage, scrollByPage, handleScroll };
 }

@@ -31,16 +31,20 @@ export interface CaseValidationV3Props {
 /**
  * Figma: bloco "Usability Validation" do case (ex. SCRIOO node 2262:65858).
  * Carrossel de 2-3 cards (Question/Test/What changed) + citação de
- * fechamento. Mesmo padrão de rail com dots + prev/next já usado em
- * `SelectedWorkV3`/`BrandsSectionV3`, aqui com 1 página por card (são
- * poucos itens, diferente das 13 marcas do Brands).
+ * fechamento. Rola por PÁGINA (largura do rail), não por card — mesmo
+ * padrão de SelectedWorkV3/BrandsSectionV3. Uma primeira versão alinhava
+ * o card clicado coladinho à esquerda por item; funcionava em telas
+ * estreitas mas quebrava perto do fim do rail em telas largas com só 3
+ * cards (não sobrava espaço de rolagem pra colar sem deixar vazio
+ * depois) — ver comentário em useRailCarousel.
  */
 export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusion }: CaseValidationV3Props) {
-  // Lógica de scroll/alinhamento centralizada em useRailCarousel (não é
-  // gambiarra local): mesmo componente vai ser copiado pros outros 4
-  // cases, então o fix precisa estar num lugar só pra não precisar ser
-  // reaplicado 4 vezes — ver comentário do hook pro porquê.
-  const { railRef, activeIndex, moveTo, handleScroll } = useRailCarousel<HTMLDivElement>("li");
+  // Lógica de scroll centralizada em useRailCarousel (não é gambiarra
+  // local): mesmo componente vai ser copiado pros outros 4 cases, então
+  // o fix precisa estar num lugar só pra não precisar ser reaplicado 4
+  // vezes.
+  const { railRef, activePage, pageCount, goToPage, scrollByPage, handleScroll } =
+    useRailCarousel<HTMLDivElement>();
 
   return (
     <section className={styles.section}>
@@ -96,18 +100,18 @@ export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusio
       <div className={styles.controls}>
         <div className={styles.dots}>
           <CarouselIndicatorsV3
-            count={cards.length}
-            activeIndex={activeIndex}
-            onSelect={moveTo}
-            getLabel={(index) => cards[index]?.name ?? `${index + 1}`}
+            count={pageCount}
+            activeIndex={activePage}
+            onSelect={goToPage}
+            getLabel={(index) => `Page ${index + 1}`}
           />
         </div>
         <div className={styles.arrows}>
           <ButtonV3
             variant="secondary"
             size="medium"
-            onClick={() => moveTo(Math.max(0, activeIndex - 1))}
-            disabled={activeIndex === 0}
+            onClick={() => scrollByPage(-1)}
+            disabled={activePage === 0}
             aria-label="Previous"
           >
             <IconV3 name="arrow-left" size={16} />
@@ -115,8 +119,8 @@ export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusio
           <ButtonV3
             variant="secondary"
             size="medium"
-            onClick={() => moveTo(Math.min(cards.length - 1, activeIndex + 1))}
-            disabled={activeIndex === cards.length - 1}
+            onClick={() => scrollByPage(1)}
+            disabled={activePage === pageCount - 1}
             aria-label="Next"
           >
             <IconV3 name="arrow-right" size={16} />
