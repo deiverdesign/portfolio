@@ -107,7 +107,16 @@
 .badge {
   position: absolute;
   top: 8px;
-  right: -47.85px;
+  /* Era -47.85px (valor exato do Figma) — mas o padding direito da
+     .section é --space-800 (32px), então esse sangramento sempre
+     vazava ~16px pra fora da página de verdade (cortando o selo),
+     não só em 1024px: em qualquer largura onde o .container não
+     está no teto absoluto de 1348px (ou seja, abaixo de ~1412px de
+     viewport — o que cobre até o 1327px do Figma "Desktop-Laptop").
+     Reduzido pro token mais próximo que cabe dentro do padding com
+     uma margem de segurança de 8px — sangra menos que o Figma em
+     telas muito largas, mas nunca corta o selo. */
+  right: calc(-1 * var(--space-700));
   width: 101.85px;
   height: 101.82px;
 }
