@@ -63,27 +63,22 @@
 }
 
 .banner {
-  display: flex;
   flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
   width: 668px;
   max-width: 100%;
   height: 423px;
   border-radius: var(--radius-sm);
-  /* Cor lisa "de espera" — o próprio Figma marca essa imagem como não
-     decidida ainda pelo Deiver (ver comentário no .tsx). */
-  background: var(--color-surface-decorative-default);
-}
-
-.bannerNote {
-  max-width: 320px;
-  margin: 0;
-  text-align: center;
-  font-family: var(--font-family-body);
-  font-size: var(--font-size-body-default);
-  line-height: var(--line-height-body-default);
-  color: var(--color-foreground-neutral-subtle);
+  /* Listras diagonais — convenção visual comum pra "imagem ainda não
+     existe" (o Deiver pediu placeholder visual, não texto escrito em
+     cima). Duas cores lisas do próprio sistema, sem inventar token
+     novo: --color-surface-decorative-default e um tom vizinho dela. */
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-surface-decorative-default),
+    var(--color-surface-decorative-default) 12px,
+    var(--color-surface-neutral-strong) 12px,
+    var(--color-surface-neutral-strong) 24px
+  );
 }
 
 @media (max-width: 1023px) {

@@ -40,15 +40,16 @@ export function AboutPageProcessV3({ locale }: AboutPageProcessV3Props) {
             </ul>
           </div>
         </div>
-        {/* Texto de placeholder interno, não copy editorial — por isso
-            direto aqui, não no catálogo (site-copy.generated.json vem do
-            Excel do Deiver, é conteúdo aprovado). Trocar todo esse bloco
-            pela imagem/vídeo real assim que existir. */}
-        <div className={styles.banner} role="img" aria-label="">
-          <p className={styles.bannerNote}>
-            {locale === "pt" ? "Imagem a definir." : "Image to be decided."}
-          </p>
-        </div>
+        {/* Placeholder puramente visual (listras diagonais, convenção comum
+            pra "imagem ainda não existe") — sem legenda cravada; o texto
+            ficava competindo com o resto da página. aria-label existe só
+            pra leitor de tela, não aparece na tela. Trocar por
+            `<img>`/`<video>` quando o asset existir. */}
+        <div
+          className={styles.banner}
+          role="img"
+          aria-label={locale === "pt" ? "Imagem a definir" : "Image to be decided"}
+        />
       </div>
     </section>
   );
