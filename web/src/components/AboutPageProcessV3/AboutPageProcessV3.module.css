@@ -1,6 +1,10 @@
 .section {
-  background: var(--color-surface-neutral-default);
-  padding: var(--space-layout-300) var(--space-layout-100);
+  /* Reconferido no Figma (node 2262:64712): fundo branco puro, não o
+     cream padrão — e padding era var(--space-layout-300/100) (64/48),
+     o real é var(--space-layout-400) (80) vertical e var(--space-800)
+     (32) horizontal. */
+  background: var(--color-surface-neutral-subtle);
+  padding: var(--space-layout-400) var(--space-800);
 }
 
 .container {
@@ -82,10 +86,6 @@
 }
 
 @media (max-width: 1023px) {
-  .section {
-    padding: var(--space-layout-200) var(--space-600);
-  }
-
   /* Empilha texto sobre banner (confirmado no Figma em 778 e 393px —
      as duas larguras ficam lado a lado só no desktop). Sem isso, o
      banner (com max-width:100%) por acaso preenchia a linha inteira

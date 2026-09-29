@@ -1,6 +1,21 @@
 .section {
-  background: var(--color-surface-neutral-default);
-  padding: var(--space-layout-100) var(--space-layout-100) 0;
+  /* Gradiente vertical (Figma: "Gradient/Surface/Cool", node 2262:64650)
+     — não tinha sido implementado na primeira leitura, só peguei o
+     conteúdo interno da seção. Stops exatos via get_variable_defs:
+     teal claro embaixo, branco em cima. Os hex batem com tokens que já
+     existem no projeto (não são primitivos novos): #aadad6 é
+     --color-border-brand-subtler, #ffffff é --color-surface-neutral-
+     subtle — reaproveitados em vez de duplicados. */
+  background: linear-gradient(
+    to top,
+    var(--color-border-brand-subtler) 1.709%,
+    var(--color-surface-neutral-subtle) 94.158%
+  );
+  /* Era --space-layout-100 (48px) — errado, conferido de novo: o Figma
+     usa --space-800 (32px) só no topo e nos lados; embaixo não tem
+     padding próprio, o respiro vem do padding-bottom dos filhos
+     (.imageContainer/.content). */
+  padding: var(--space-800) var(--space-800) 0;
 }
 
 .container {
@@ -8,7 +23,11 @@
   align-items: flex-start;
   justify-content: center;
   gap: var(--space-900);
-  max-width: 1348px;
+  /* Também errado antes: 1348px é a grade padrão do site, mas essa
+     seção específica usa 1184px no Figma (conferido de novo via
+     get_design_context, "max-w-[1184px]") — mais estreita que o resto
+     da página de propósito. */
+  max-width: 1184px;
   margin: 0 auto;
 }
 

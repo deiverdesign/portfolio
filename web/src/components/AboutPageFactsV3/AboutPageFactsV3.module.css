@@ -1,6 +1,13 @@
 .section {
-  background: var(--color-surface-neutral-default);
-  padding: var(--space-layout-200) var(--space-layout-100);
+  /* Reconferido no Figma (node 2262:64677): fundo teal sólido, não o
+     cream padrão do resto da página — errei isso na primeira leitura,
+     só copiei o padrão das outras seções sem checar essa de novo.
+     #aadad6 já existe como --color-surface-brand-strong (var(--primary-
+     300)), reaproveitado. Padding também estava errado: era --space-
+     layout-200/100 (56/48), o real é 0 em cima (a Bento-Spread-Section
+     acima já sobra espaço) e --space-800 (32) nos outros 3 lados. */
+  background: var(--color-surface-brand-strong);
+  padding: 0 var(--space-800) var(--space-800);
 }
 
 .container {
@@ -74,12 +81,6 @@
   font-size: var(--font-size-body-default);
   line-height: var(--line-height-body-default);
   color: var(--color-foreground-neutral-default);
-}
-
-@media (max-width: 1023px) {
-  .section {
-    padding: var(--space-layout-200) var(--space-600);
-  }
 }
 
 @media (max-width: 599px) {
