@@ -2,6 +2,7 @@ import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
 import { HOME_ASSETS } from "@/content/home-assets";
 import { ButtonV3 } from "@/components/ButtonV3/ButtonV3";
+import { IconV3 } from "@/components/IconV3/IconV3";
 import styles from "./FooterV3.module.css";
 
 export interface FooterV3Props {
@@ -17,13 +18,12 @@ export interface FooterV3Props {
  * Figma: componente "Footer", fileKey zpaQNzgjhG5ZKafe2cxnkm, frame
  * 1821:36880 (Desktop 1821:36881, Mobile 1925:17668).
  *
- * Pendência de asset: o pequeno grafismo hexagonal ao lado do copyright
- * ("DEIVER-Graphism-Footer", ~57×35) ainda não foi exportado/auditado —
- * este componente funciona sem ele, e o espaço fica vazio até chegar.
- *
  * A palavra "Spark" na tagline recebe uma microinteração de partículas no
- * hover (ver NORTE.md 6.6, "Footer — microinteração de partículas"); este
- * componente ainda renderiza a tagline estática, sem esse efeito.
+ * hover — contrato completo em V3-HANDOFF.md, seção "Footer —
+ * microinteração de partículas em 'Spark'" (não é no NORTE.md, referência
+ * corrigida em 27/09). Marcado como [PENDENTE] lá, não bloqueia o primeiro
+ * release; este componente ainda renderiza a tagline estática, sem esse
+ * efeito.
  */
 export function FooterV3({
   locale,
@@ -34,7 +34,7 @@ export function FooterV3({
   className,
 }: FooterV3Props) {
   const classes = className ? `${styles.root} ${className}` : styles.root;
-  const { logo, jobTitle, locationTree } = HOME_ASSETS.identity;
+  const { logo, locationTree, graphismFooter } = HOME_ASSETS.identity;
 
   return (
     <footer className={classes}>
@@ -42,11 +42,7 @@ export function FooterV3({
         <div className={styles.identity}>
           <img src={logo} alt="Deiver Brito" className={styles.logo} />
           <div className={styles.identityDetails}>
-            <img
-              src={jobTitle}
-              alt={locale === "pt" ? "Product Designer Sênior" : "Sr. Product Designer"}
-              className={styles.jobTitle}
-            />
+            <p className={styles.jobTitle}>{getCopy(locale, "shared.identity.job-title")}</p>
             <span className={styles.location}>
               <img src={locationTree} alt="" aria-hidden="true" className={styles.locationIcon} />
               {getCopy(locale, "shared.footer.location")}
@@ -55,17 +51,18 @@ export function FooterV3({
         </div>
 
         <div className={styles.actions}>
+          <ButtonV3 href={resumeHref} variant="secondary">
+            {getCopy(locale, "shared.footer.resume")}
+            <IconV3 name="download" size={16} />
+          </ButtonV3>
+          <ButtonV3 href={linkedinHref} variant="secondary">
+            {getCopy(locale, "shared.footer.linkedin")}
+          </ButtonV3>
           <ButtonV3 href={homeHref} variant="primary">
             {getCopy(locale, "shared.footer.home")}
           </ButtonV3>
           <ButtonV3 href={aboutHref} variant="primary">
             {getCopy(locale, "shared.footer.about")}
-          </ButtonV3>
-          <ButtonV3 href={resumeHref} variant="secondary">
-            {getCopy(locale, "shared.footer.resume")} <span aria-hidden="true">↓</span>
-          </ButtonV3>
-          <ButtonV3 href={linkedinHref} variant="secondary">
-            {getCopy(locale, "shared.footer.linkedin")}
           </ButtonV3>
         </div>
       </div>
@@ -73,6 +70,7 @@ export function FooterV3({
       <div className={styles.divider} />
 
       <div className={styles.metaRow}>
+        <img src={graphismFooter} alt="" aria-hidden="true" className={styles.graphismFooter} />
         <p className={styles.copyright}>{getCopy(locale, "shared.footer.copyright")}</p>
       </div>
 

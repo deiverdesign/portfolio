@@ -1,47 +1,66 @@
+/* Reconferido no Figma real (node 1729:13198) em 27/09/2026 — não é mais
+   aproximação. Estrutura: grafismo decorativo absoluto atrás, e uma linha
+   flex (retrato + coluna de conteúdo) na frente. */
+
 .root {
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-layout-300);
+  justify-content: center;
   overflow: hidden;
   background: var(--color-surface-brand-strong);
-  padding: var(--space-layout-400) var(--space-layout-500);
+  padding: var(--space-layout-500) var(--space-layout-400);
 }
 
 .graphism {
   position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  height: 100%;
-  width: auto;
-  max-width: 65%;
-  opacity: 0.4;
-  pointer-events: none;
   z-index: 0;
+  /* left/right 10.74%, top calc(50% + 61.6px) — valores reais do Figma,
+     não centralização aproximada. O SVG já vem com opacity 0.4 embutida
+     no próprio path; aplicar opacity de novo aqui era um bug de
+     "dupla opacidade" (mesma classe de erro já documentada no NORTE.md
+     pro container da SCRIOO) — 0.4 × 0.4 = 0.16, bem mais apagado do que
+     devia. Corrigido: nenhuma opacidade extra aqui. */
+  left: 10.74%;
+  right: 10.74%;
+  top: calc(50% + 61.6px);
+  transform: translateY(-50%);
+  aspect-ratio: 1242.99 / 818.54;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+}
+
+.row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-layout-400);
+  max-width: 1348px;
+  width: 100%;
 }
 
 .portrait {
-  position: relative;
-  z-index: 1;
   flex-shrink: 0;
-  width: clamp(140px, 18vw, 260px);
+  width: clamp(140px, 18vw, 255px);
   height: auto;
 }
 
 .content {
-  position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-500);
+  flex: 1;
+  min-width: 0;
 }
 
 .eyebrow {
   margin: 0;
   font-family: var(--font-family-data);
-  font-size: var(--font-size-scale-400);
+  font-size: var(--font-size-meta-label);
   font-weight: var(--font-weight-meta-label);
   line-height: var(--line-height-meta-label);
   letter-spacing: var(--letter-spacing-meta-label);
@@ -59,26 +78,40 @@
   color: var(--color-foreground-neutral-stronger);
 }
 
+.buttonWrap {
+  /* O botão fica alinhado à direita da coluna de texto, não à esquerda —
+     conferido no Figma (node 1729:13195, "items-end"). */
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
 @media (min-width: 600px) and (max-width: 1023px) {
   .root {
-    gap: var(--space-layout-200);
     padding: var(--space-layout-200) var(--space-layout-300);
+  }
+
+  .row {
+    gap: var(--space-layout-200);
   }
 }
 
 @media (max-width: 599px) {
   .root {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-layout-100);
     padding: var(--space-layout-100) var(--space-600);
   }
 
-  .graphism {
-    max-width: 100%;
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-layout-100);
   }
 
   .portrait {
     width: clamp(120px, 40vw, 180px);
+  }
+
+  .buttonWrap {
+    justify-content: flex-start;
   }
 }

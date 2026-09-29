@@ -23,17 +23,23 @@ export interface CaseCardLargeV3Props {
    * Opcional só pra cases sem asset de logo próprio ainda. */
   logoSrc?: string;
   logoAlt?: string;
-  /** "mark" (selo/badge, ex.: HP) precisa renderizar mais alto que
-   * "wordmark" (nome escrito, ex.: SCRIOO) pra pesar visualmente igual —
-   * ver `HOME_BRAND_LOGO_TYPE` em home-assets.ts. Default "wordmark" por
-   * ser o tipo mais comum entre os 5 cases da Home. */
-  logoType?: "mark" | "wordmark";
+  /** Tamanho renderizado do logo em px — calcule com
+   * `getHomeBrandLogoSize(brand, 1.2)` em home-assets.ts (1.2 é a escala
+   * medida no Figma pros 5 cases da Home em 28/09/2026, sobre o
+   * componente raiz `HOME_BRAND_LOGO_SIZE`). Não aproxime por categoria
+   * "mark"/"wordmark" — cada logo tem sua própria proporção calibrada. */
+  logoWidth?: number;
+  logoHeight?: number;
   devices: RasterAsset;
+  /** Asset específico do enquadramento mobile. Quando omitido, reutiliza
+   * `devices`; a posição continua vindo de `mobileDevicesStyle`. */
+  mobileDevices?: RasterAsset;
   /** Posição/tamanho do `devices` — genuinamente diferente por case
    * (SCRIOO/HP encostam na direita e sangram por cima; Theodoor
    * centraliza; Intuit ancora à esquerda), conferido no Figma real de
    * cada um em 27/09. Não generalizar um default único. */
   devicesStyle?: CSSProperties;
+  mobileDevicesStyle?: CSSProperties;
   /** Segunda camada de imagem, atrás de `devices` — só a Aster usa (o
    * Figma real tem "Back-Aster"/"front-Aster" como duas fotos
    * sobrepostas, não uma composição única). Testei essa hipótese pro
@@ -77,6 +83,8 @@ export interface CaseCardLargeV3Props {
   hoverTitle: string;
   /** Citação em 1ª pessoa mostrada no hover. */
   hoverQuote: string;
+  /** No mobile não existe hover: a contribuição curta fica sempre visível. */
+  mobileTitle?: string;
   hoverTags: string[];
   /** Case protegido/confidencial (ex.: Aster) — mostra um selo de cadeado
    * no canto, tanto no estado default quanto no hover. Confirmado no
@@ -109,9 +117,12 @@ export function CaseCardLargeV3({
   href,
   logoSrc,
   logoAlt,
-  logoType = "wordmark",
+  logoWidth,
+  logoHeight,
   devices,
+  mobileDevices,
   devicesStyle,
+  mobileDevicesStyle,
   secondDevice,
   secondDeviceStyle,
   decorative,
@@ -123,6 +134,7 @@ export function CaseCardLargeV3({
   titleColor,
   hoverTitle,
   hoverQuote,
+  mobileTitle,
   hoverTags,
   locked = false,
   className,
@@ -150,10 +162,7 @@ export function CaseCardLargeV3({
           src={logoSrc}
           alt={logoAlt ?? ""}
           className={styles.logo}
-          style={{
-            height:
-              logoType === "mark" ? "var(--logo-height-mark)" : "var(--logo-height-wordmark)",
-          }}
+          style={{ width: logoWidth, height: logoHeight }}
         />
       )}
 
@@ -183,6 +192,15 @@ export function CaseCardLargeV3({
         style={devicesStyle}
       />
 
+      <img
+        src={(mobileDevices ?? devices).src}
+        width={(mobileDevices ?? devices).width}
+        height={(mobileDevices ?? devices).height}
+        alt=""
+        className={styles.mobileDevices}
+        style={mobileDevicesStyle}
+      />
+
       <p className={styles.title} style={titleColor ? { color: titleColor } : undefined}>
         {titleLines.map((line, index) => (
           <Fragment key={line}>
@@ -191,6 +209,15 @@ export function CaseCardLargeV3({
           </Fragment>
         ))}
       </p>
+
+      <div className={styles.mobileContent} style={titleColor ? { color: titleColor } : undefined}>
+        <p className={styles.mobileTitle}>{mobileTitle ?? hoverQuote}</p>
+        <div className={styles.mobileTags}>
+          {hoverTags.slice(0, 2).map((tag) => (
+            <TagV3 key={tag} label={tag} />
+          ))}
+        </div>
+      </div>
 
       <div className={styles.hoverPanel}>
         {/* Brilho decorativo removido a pedido do Deiver em 27/09 — a

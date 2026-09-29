@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "source": {
     "file": "site-copy.xlsx",
-    "sha256": "b73f10257c58f7ef1f30cb966cf4f9b583901f9640e67536957c427f06ff8b0e",
-    "entryCount": 362,
+    "sha256": "63677f79e651b789c6727b008a1a08b858c671a193b2c468f66d0359847c2b43",
+    "entryCount": 363,
     "ignoredRows": [
       73
     ]
@@ -298,8 +298,8 @@
       "note": "No Figma é vetor (texto em contorno): precisa de uma versão PT desenhada. Confirmar o texto EN exato."
     },
     "shared.cta.eyebrow": {
-      "en": "LET'S WORK TOGETHER",
-      "pt": "VAMOS TRABALHAR JUNTOS",
+      "en": "LET'S WORK TOGETHER • hello@deiver.com.br",
+      "pt": "VAMOS TRABALHAR JUNTOS • hello@deiver.com.br",
       "page": "Shared",
       "section": "Let's build",
       "status": "revisar",
@@ -316,8 +316,8 @@
       "note": "Site atual: \"Vamos construir produtos mais claros.\""
     },
     "shared.cta.button": {
-      "en": "Contact me",
-      "pt": "Fale comigo",
+      "en": "Email me",
+      "pt": "Me envie um e-mail",
       "page": "Shared",
       "section": "Let's build",
       "status": "revisar",
@@ -3266,6 +3266,15 @@
       "status": "revisar",
       "figma": "https://www.figma.com/design/zpaQNzgjhG5ZKafe2cxnkm/Portfolio-2026?node-id=2262-60980",
       "note": "No Figma este texto já vem com aspas literais embutidas (único caso assim) — preservado como está."
+    },
+    "shared.identity.job-title": {
+      "en": "Sr. Product Designer",
+      "pt": "Product Designer Sênior",
+      "page": "Shared",
+      "section": "Identity",
+      "status": "revisar",
+      "figma": "abrir",
+      "note": "Antes era um SVG cravado (job-title.svg); virou texto de verdade em 27/09 pra bater com a tipografia real do Figma (Renamor, nao mais mono/uppercase)."
     }
   }
 }

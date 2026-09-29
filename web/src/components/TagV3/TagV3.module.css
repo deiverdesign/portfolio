@@ -6,7 +6,7 @@
   /* Modo Inverse, não Default — ver nota em tokens-v3.css. */
   background: var(--color-overlay-neutral-inverse-default);
   font-family: var(--font-family-data);
-  font-size: var(--font-size-scale-400);
+  font-size: var(--font-size-meta-label);
   font-weight: var(--font-weight-meta-label);
   letter-spacing: var(--letter-spacing-meta-label);
   line-height: var(--line-height-meta-label);

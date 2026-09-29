@@ -10,6 +10,11 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--space-700);
+  /* Confirmado no Figma (node 1821:36882): a linha de conteúdo tem um teto
+     de 1348px e centraliza dentro do footer, não estica até a borda do
+     card em telas largas. */
+  max-width: 1348px;
+  margin: 0 auto;
 }
 
 .identity {
@@ -19,7 +24,8 @@
 }
 
 .logo {
-  height: 24px;
+  /* Reduzido -15% em 28/09/2026: 24px × 0.85 = 20.4px. */
+  height: 20.4px;
   width: auto;
 }
 
@@ -34,8 +40,17 @@
 }
 
 .jobTitle {
-  height: 16px;
-  width: auto;
+  /* Corrigido em 27/09: era um SVG cravado (job-title.svg) em mono/
+     uppercase. Texto de verdade agora — DM Sans (--font-family-body),
+     NÃO Renamor (eu tinha assumido Renamor por engano; o Deiver confirmou
+     que a v3 não usa essa fonte aqui). Tamanho medido contra o SVG real
+     que o Deiver exportou do Figma — ver --font-size-identity-role em
+     tokens-v3.css. Mesmo tratamento aplicado no NavBarV3. */
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-identity-role);
+  font-weight: 400;
+  color: var(--color-foreground-neutral-default);
 }
 
 .location {
@@ -43,9 +58,13 @@
   align-items: center;
   gap: var(--space-200);
   font-family: var(--font-family-data);
-  font-size: var(--font-size-scale-400);
+  font-size: var(--font-size-meta-label);
   font-weight: var(--font-weight-meta-label);
   letter-spacing: var(--letter-spacing-meta-label);
+  /* Estilo Meta/Label é sempre uppercase — mesma regra do TagV3, que usa
+     a mesma família tipográfica. Faltava aqui (achado de 27/09, Deiver
+     comparou o footer com o Figma). */
+  text-transform: uppercase;
   color: var(--color-foreground-neutral-subtle);
 }
 
@@ -69,21 +88,43 @@
 .metaRow {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  /* Grafismo à esquerda, copyright à direita — confirmado no Figma (node
+     1821:36894/36895, "justify-between"). Antes só tinha o copyright, daí
+     o flex-end. */
+  justify-content: space-between;
   padding: var(--space-600) 0;
+  /* Mesmo teto de 1348px do .topRow — confirmado no Figma. */
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+.graphismFooter {
+  height: 35px;
+  width: auto;
+  flex-shrink: 0;
 }
 
 .copyright {
   margin: 0;
   font-family: var(--font-family-data);
-  font-size: var(--font-size-scale-400);
+  font-size: var(--font-size-meta-label);
   font-weight: var(--font-weight-meta-label);
   letter-spacing: var(--letter-spacing-meta-label);
+  /* Meta/Label é sempre uppercase — mesma lição do .location acima. */
+  text-transform: uppercase;
   color: var(--color-foreground-neutral-default);
 }
 
 .tagline {
-  margin: 0;
+  /* Achado do Deiver em 28/09/2026: faltavam os dois — max-width:1348px
+     (conferido no Figma, node 1821:36925, "Frame 386": mesmo x=176 e
+     width=1348 do .topRow/.metaRow, mas a tagline não tinha nenhum dos
+     dois, então desalinhava com o resto do rodapé em telas largas) e
+     margin-top (o texto ficava colado no copyright acima; o gap real
+     entre os dois frames no Figma é 56px, que bate exato com o token
+     --space-layout-200). */
+  max-width: 1348px;
+  margin: var(--space-layout-200) auto 0;
   padding-bottom: var(--space-layout-500);
   font-family: var(--font-family-editorial);
   font-weight: var(--font-weight-editorial-light);

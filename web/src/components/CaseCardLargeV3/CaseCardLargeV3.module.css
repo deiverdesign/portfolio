@@ -68,9 +68,8 @@
   z-index: 1;
   top: var(--space-700); /* 24px, fixo nos dois tamanhos */
   left: var(--space-700); /* 24px, fixo nos dois tamanhos */
-  /* height vem inline (prop `logoType`) — varia por tipo de logo, ver
-     --logo-height-mark/--logo-height-wordmark em tokens-v3.css. */
-  width: auto;
+  /* width/height vêm inline (props `logoWidth`/`logoHeight`) — px exato
+     por logo, ver `getHomeBrandLogoSize` em home-assets.ts. */
 }
 
 .lockBadge {
@@ -115,6 +114,11 @@
   height: auto;
 }
 
+.mobileDevices,
+.mobileContent {
+  display: none;
+}
+
 .title {
   position: absolute;
   z-index: 1;
@@ -128,6 +132,14 @@
   font-weight: var(--font-weight-heading);
   line-height: var(--line-height-heading-section);
   color: var(--color-foreground-neutral-strong);
+}
+
+.large .title {
+  max-width: 208px;
+}
+
+.small .title {
+  max-width: 274px;
 }
 
 .hoverPanel {
@@ -235,22 +247,74 @@
   color: white;
 }
 
-/* Mobile ainda não foi implementado como variante própria (conteúdo
-   default some, painel de hover não existe — no mobile o conteúdo do
-   "hover" já aparece direto). O Deiver confirmou (27/09) que todos os 5
-   cases têm o MESMO tamanho no mobile (322px) — diferente do
-   Desktop/Tablet, que bifurca large/small. As regras abaixo são um
-   ponto de partida herdado da versão antiga do componente, não a
-   variante mobile real; não confiar nelas sem conferir o Figma mobile
-   antes de implementar de verdade. */
+/* Tablet: o destaque ocupa o rail menos os 28px que anunciam o próximo
+   item (688 - 28 = 660 no frame 778px, node 2262:62051). */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .large {
+    width: calc(100vw - 118px);
+    max-width: 660px;
+  }
+}
+
+/* Mobile real, node 2262:62192: todos os cards são 322×480, sem hover.
+   A contribuição curta e as duas tags ficam permanentemente visíveis. */
 @media (max-width: 599px) {
+  .root,
+  .large,
+  .small {
+    width: calc(100vw - 68px);
+    max-width: 322px;
+    height: 480px;
+  }
+
+  .root:hover {
+    transform: none;
+  }
+
+  .root:hover .hoverPanel,
+  .root:focus-visible .hoverPanel {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .devices,
   .title {
-    max-width: 55%;
-    font-size: var(--font-size-heading-card);
-    line-height: var(--line-height-heading-card);
+    display: none;
+  }
+
+  .mobileDevices {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    height: auto;
+  }
+
+  .mobileContent {
+    position: absolute;
+    z-index: 2;
+    right: var(--space-700);
+    bottom: var(--space-700);
+    left: var(--space-700);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-500);
+  }
+
+  .mobileTitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-heading-section-mobile);
+    font-weight: var(--font-weight-heading);
+    line-height: 1.25;
+  }
+
+  .mobileTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-300);
   }
 
   .decorative {
-    width: 32%;
+    width: 46.5%;
   }
 }

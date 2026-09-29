@@ -33,8 +33,28 @@
   border-color: var(--color-border-brand-default);
 }
 
+.inverted {
+  color: var(--color-foreground-neutral-inverse-default);
+}
+
+.inverted:hover {
+  background: color-mix(in srgb, var(--color-surface-neutral-default) 12%, transparent);
+  color: var(--color-foreground-neutral-inverse-strong);
+}
+
+.inverted:active {
+  background: color-mix(in srgb, var(--color-surface-neutral-default) 20%, transparent);
+  color: var(--color-foreground-neutral-inverse-strong);
+}
+
+.inverted .caret {
+  filter: brightness(0) invert(1);
+}
+
 .caret {
-  font-size: var(--font-size-scale-300);
-  line-height: 1;
-  transform: translateY(1px);
+  /* Ícone real (caret-down, 16px, node do Figma) — não mais o caractere
+     de texto "⌄". O translateY que existia antes compensava a baseline
+     do texto; um <img> dentro de um flex com align-items:center já
+     centraliza sozinho, sem hack. */
+  flex-shrink: 0;
 }

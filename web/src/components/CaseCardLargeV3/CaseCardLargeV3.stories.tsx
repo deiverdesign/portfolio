@@ -1,8 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import { CaseCardLargeV3 } from "./CaseCardLargeV3";
-import { HOME_ASSETS, getHomeBrandLogo } from "@/content/home-assets";
+import { HOME_ASSETS, getHomeBrandLogo, getHomeBrandLogoSize } from "@/content/home-assets";
 import { getCopy } from "@/content/site-copy";
+
+// Mesma escala usada em SelectedWorkV3.tsx (CASE_LOGO_SCALE) — medida no
+// Figma em 28/09/2026 sobre o componente raiz HOME_BRAND_LOGO_SIZE.
+const scrioLogo = getHomeBrandLogoSize("scrioo", 1.2);
+const hpLogo = getHomeBrandLogoSize("hp", 1.2);
+const theodoorLogo = getHomeBrandLogoSize("theodoor", 1.2);
+const intuitLogo = getHomeBrandLogoSize("intuit", 1.2);
+const asterLogo = getHomeBrandLogoSize("aster", 1.2);
 
 const meta = {
   title: "V3/CaseCardLargeV3",
@@ -40,6 +48,8 @@ export const Scrioo: Story = {
     // nele — não é redundante, os dois convivem no Figma real.
     logoSrc: getHomeBrandLogo("scrioo", "original"),
     logoAlt: "SCRIOO",
+    logoWidth: scrioLogo.width,
+    logoHeight: scrioLogo.height,
     devices: HOME_ASSETS.cases.scrioo.devices,
     // right:0, top:62px, width:498px no Figma (card 742×480) — sem padding.
     devicesStyle: { right: 0, top: 62, width: 498 },
@@ -68,10 +78,8 @@ export const Hp: Story = {
     href: "/cases/hp",
     logoSrc: getHomeBrandLogo("hp", "white"),
     logoAlt: "HP",
-    // HP é logo tipo "mark" (selo, aspect ~1:1) — precisa renderizar mais
-    // alto que um wordmark pra pesar igual visualmente (27/09, medido a
-    // partir do PDF de referência do Deiver).
-    logoType: "mark",
+    logoWidth: hpLogo.width,
+    logoHeight: hpLogo.height,
     devices: HOME_ASSETS.cases.hp.devices,
     // left:42px, top:71px, width:391px no Figma real (card 472×480,
     // node 1117:19339, "image 25") — não é o mesmo enquadramento da
@@ -99,6 +107,8 @@ export const Theodoor: Story = {
     href: "/cases/theodoor",
     logoSrc: getHomeBrandLogo("theodoor", "white"),
     logoAlt: "Theodoor",
+    logoWidth: theodoorLogo.width,
+    logoHeight: theodoorLogo.height,
     devices: HOME_ASSETS.cases.theodoor.device,
     // left:50px, top:91px, width:367px — mockup de iPhone centralizado
     // (diferente do encostado-na-direita da SCRIOO/HP), node 1117:19449.
@@ -122,6 +132,8 @@ export const Intuit: Story = {
     href: "/cases/intuit",
     logoSrc: getHomeBrandLogo("intuit", "white"),
     logoAlt: "Intuit",
+    logoWidth: intuitLogo.width,
+    logoHeight: intuitLogo.height,
     devices: HOME_ASSETS.cases.intuit.device,
     // left:173px, top:69px, width:299px, ALTURA FIXA 411px (não auto) —
     // node 2246:19406. Corrigido em 27/09: eu tinha deixado height:auto,
@@ -154,6 +166,8 @@ export const Aster: Story = {
     href: "/cases/aster",
     logoSrc: getHomeBrandLogo("aster", "white"),
     logoAlt: "Aster",
+    logoWidth: asterLogo.width,
+    logoHeight: asterLogo.height,
     // Único dos 5 cases cujo "fundo" não é cor/gradiente CSS — é a própria
     // foto (aster-background.png), conferida pixel a pixel contra o PDF
     // de referência do Deiver: os cantos não batem com um gradiente
