@@ -1,0 +1,74 @@
+/* Figma: node 2262:61851 (Desktop, dentro dos 1348px do frame composto),
+   conferido em 28/09/2026. */
+
+.root {
+  background: var(--color-surface-neutral-default);
+  padding: var(--space-layout-300) var(--space-layout-100);
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-layout-200);
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+.column {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-layout-300);
+  min-width: 0;
+}
+
+.column:first-child {
+  max-width: 658px;
+  min-width: 440px;
+}
+
+.column:last-child {
+  max-width: 500px;
+  min-width: 376px;
+  padding-top: 182px;
+}
+
+.statement {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-family-editorial);
+  font-weight: 400;
+  font-size: var(--font-size-display-statement);
+  line-height: var(--line-height-display-statement);
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.badge {
+  width: 96px;
+  height: 96px;
+}
+
+@media (max-width: 1023px) {
+  .root {
+    padding: var(--space-layout-200) var(--space-layout-100);
+  }
+
+  .container {
+    flex-direction: column;
+    gap: var(--space-layout-200);
+  }
+
+  .column:first-child,
+  .column:last-child {
+    max-width: none;
+    min-width: 0;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .root {
+    padding: var(--space-layout-100) var(--space-600);
+  }
+}

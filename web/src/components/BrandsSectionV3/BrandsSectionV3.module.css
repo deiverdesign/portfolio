@@ -1,0 +1,262 @@
+/* Figma: node 2262:61790 (Desktop, 1348px), conferido em 28/09/2026. */
+
+/* Padding do gutter da página fica AQUI (fora do max-width) — se ficasse
+   junto com o max-width:1348px no mesmo elemento, o padding comeria parte
+   dos 1348px de conteúdo real (bug achado em 28/09, mesma correção já
+   aplicada no FooterV3: max-width/centralização num elemento, padding de
+   gutter noutro). */
+.root {
+  --brands-logo-scale: 1;
+  /* No Figma, o wrapper da seção tem ~292px de espaço em branco acima do
+     título (barra divisória + respiro) antes do hexágono decorativo
+     começar — nosso .root aqui só tinha --space-layout-300 (64-80px) de
+     padding, bem menos, e o -299px de top do .hexagon vazava pra cima
+     dos cards do Selected Work (a seção anterior). O overflow:hidden
+     resolvia o vazamento, mas cortava o hexágono quase inteiro — o
+     Deiver confirmou em 28/09/2026 que o efeito real (Figma) é a SEÇÃO
+     em si ficar bem mais alta, quase tela cheia, não o hexágono raso
+     dentro de um espaço compacto. min-height generoso + flex centraliza
+     o conteúdo verticalmente, dando espaço de sobra pros ±300px que o
+     hexágono precisa acima/abaixo do título sem cortar. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: clamp(750px, 90vh, 960px);
+  overflow: hidden;
+  padding: var(--space-layout-300) var(--space-layout-100);
+  background: var(--color-surface-neutral-default);
+}
+
+.container {
+  position: relative;
+  isolation: isolate; /* mesmo padrão do HomeHeroV3 pro grafismo de fundo
+    ficar atrás do conteúdo sem escapar pra fora do stacking context daqui */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-700);
+  width: 100%;
+  /* Achado do Deiver em 28/09/2026 (mesmo problema encontrado no
+     SelectedWorkV3): sem `width:100%`, um item flex centralizado com
+     `margin:0 auto` encolhe pro tamanho do próprio conteúdo em vez de
+     esticar até o max-width — como o título (358px) + grid de cards
+     (936px) somam só 1294px, sobrando 54px do teto de 1348px, o
+     container ficava com 1318px e centralizava essa caixa MENOR, saindo
+     15px à direita do grid real que Capabilities usa. Com width:100%, o
+     container ocupa os 1348px inteiros e o justify-content:space-between
+     distribui os 54px sobrando entre o título e o grid — exatamente como
+     no Figma (gap real medido lá: 54px entre Frame 474 e Frame 117). */
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+/* Medido no Figma (node 2262:61785, relativo ao node 2262:61790 = este
+   .container): x=-281.93px, y=-299px, 824.86×698.44px. Só desktop — some
+   no breakpoint mobile/tablet, onde o layout empilha e não sobra espaço
+   pra esse tipo de sangria decorativa. */
+.hexagon {
+  position: absolute;
+  z-index: -1;
+  left: -282px;
+  top: -299px;
+  width: 825px;
+  height: 698px;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-800);
+  flex: 1 0 0;
+  max-width: 358px;
+  min-width: 0;
+  padding-right: var(--space-700);
+}
+
+.title {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-family-editorial);
+  font-weight: 400;
+  font-size: var(--font-size-display-section);
+  line-height: var(--line-height-display-section);
+  color: var(--color-foreground-neutral-strong);
+}
+
+.subtitle {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+  color: var(--color-foreground-neutral-default);
+}
+
+.grid {
+  display: flex;
+  flex: 1 0 0;
+  max-width: 936px;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-200);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 184px;
+  height: 108px;
+  border-radius: 4px;
+  background: var(--color-surface-neutral-subtle);
+  flex-shrink: 0;
+}
+
+/* width/height vêm inline (px exatos por logo × LOGO_SCALE, ver
+   BrandsSectionV3.tsx) — cada um tem sua própria proporção calibrada no
+   Figma, não dá pra generalizar num único width/height ou categoria fixa
+   aqui no CSS. */
+.logo {
+  display: block;
+}
+
+@media (max-width: 1023px) {
+  .root {
+    min-height: 0;
+    padding: var(--space-layout-200) var(--space-layout-100);
+  }
+
+  .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-layout-100);
+  }
+
+  .header {
+    max-width: none;
+    padding-right: 0;
+  }
+
+  .hexagon {
+    display: none;
+  }
+
+  .grid {
+    max-width: none;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  /* Frame tablet: cards 199×108, em vez dos 184×108 do desktop large. */
+  .card {
+    width: 199px;
+  }
+}
+
+/* Controles do carrossel (bolinhas + anterior/próximo) — só existem
+   visualmente no mobile. Escondidos por padrão; a media query abaixo
+   revela. */
+.mobileNav {
+  display: none;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot,
+.dotActive {
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  height: 7px;
+  cursor: pointer;
+}
+
+.dot {
+  width: 7px;
+  background: var(--color-border-neutral-default);
+}
+
+.dotActive {
+  width: 28px;
+  background: var(--color-foreground-neutral-default);
+}
+
+.controls {
+  display: flex;
+  gap: var(--space-300);
+}
+
+.control {
+  width: 48px;
+  min-width: 48px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 599px) {
+  .root {
+    padding: var(--space-layout-100) var(--space-600);
+  }
+
+  /* Confirmado no Figma mobile (node 2262:62218/62219): a grade NÃO
+     quebra linha — vira 2 linhas fixas que sangram pra fora do container
+     (927px de conteúdo dentro de 340px de viewport), roláveis
+     horizontalmente. Não é o mesmo comportamento de flex-wrap usado em
+     desktop/tablet, por isso o grid-auto-flow muda por completo aqui, não
+     só o tamanho do card. */
+  .grid {
+    /* flex:1 0 0 do desktop tem flex-basis:0 — dentro do .container em
+       coluna aqui, isso colapsava a altura do grid pra 0 (o item só
+       cresce se o container tiver altura definida pra distribuir, e
+       .container aqui é auto/por-conteúdo). Resetado pra flex:none. */
+    flex: none;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, 92px);
+    grid-auto-columns: 171px;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+  }
+
+  .card {
+    width: 171px;
+    height: 92px;
+    scroll-snap-align: start;
+  }
+
+  /* Card fica 92px de altura aqui (contra 108px no desktop/tablet) — a
+     proporção entre os 10 logos continua a mesma (vem do width/height
+     inline), só a escala geral cai por 92/108 ≈ 0.8519 pra caber no
+     card menor. */
+  .root {
+    --brands-logo-scale: 0.8519;
+  }
+
+  .mobileNav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: var(--space-700);
+  }
+}

@@ -1,0 +1,155 @@
+/* Figma: node 2262:61824 (Desktop, 1348px), conferido em 28/09/2026. */
+
+.root {
+  background: var(--color-surface-brand-stronger);
+  padding: var(--space-layout-300) var(--space-layout-100);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-layout-300);
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-layout-100);
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  white-space: nowrap;
+  font-family: var(--font-family-editorial);
+  font-weight: 400;
+  font-size: var(--font-size-display-section);
+  line-height: var(--line-height-display-section);
+  color: var(--color-foreground-neutral-inverse-strong);
+}
+
+.intro {
+  flex: 1 0 0;
+  min-width: 300px;
+  max-width: 488px;
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+  color: var(--color-foreground-neutral-inverse-default);
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-700);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 336px;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-800);
+  padding: var(--space-layout-100) var(--space-700) var(--space-800);
+  border-radius: 7px;
+  background: var(--color-surface-neutral-default);
+  overflow: hidden;
+  transition: background-color var(--dur-base) var(--ease-out-quart);
+}
+
+.illustration {
+  width: 100%;
+  max-width: 358px;
+  height: auto;
+  /* Os PNGs são exportados com fundo branco puro (#fff), mas o card usa
+     --color-surface-neutral-default (creme, não branco puro) — sem isso
+     dava pra ver o quadrado branco da imagem destacado do card. Multiply
+     "some" com o branco (branco × qualquer cor = a própria cor) e deixa
+     só o desenho colorido por cima do creme do card, um pouco mais
+     escuro/pesado — pedido do Deiver em 28/09/2026. */
+  mix-blend-mode: multiply;
+  transform: scale(1);
+  transform-origin: center;
+  transition:
+    transform var(--dur-base) var(--ease-out-quart),
+    filter var(--dur-base) var(--ease-out-quart);
+}
+
+/* O card é informativo, não clicável: a resposta fica dentro da superfície,
+   sem cursor, sombra, elevação ou deslocamento que sugira uma ação. */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    background: var(--color-surface-neutral-subtle);
+  }
+
+  .card:hover .illustration {
+    transform: scale(1.02);
+    filter: saturate(1.06) contrast(1.02);
+  }
+}
+
+.cardTitle {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-family-body);
+  font-weight: 600;
+  font-size: var(--font-size-heading-card);
+  line-height: var(--line-height-heading-card);
+  color: var(--color-foreground-neutral-default);
+}
+
+.cardBody {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+  color: var(--color-foreground-neutral-default);
+}
+
+@media (max-width: 1023px) {
+  .root {
+    padding: var(--space-layout-200) var(--space-layout-100);
+  }
+
+  .grid {
+    flex-direction: column;
+  }
+
+  .card {
+    /* A grade passa a coluna; flex-basis:0 do desktop colapsava a altura
+       dos cards na composição completa da Home. */
+    flex: none;
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 599px) {
+  .root {
+    padding: var(--space-layout-100) var(--space-600);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .illustration {
+    transition: none;
+  }
+
+  .card:hover .illustration {
+    transform: none;
+  }
+}

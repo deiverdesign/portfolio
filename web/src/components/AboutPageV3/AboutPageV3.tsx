@@ -14,7 +14,6 @@ export interface AboutPageV3Props {
 }
 
 const LINKEDIN_HREF = "https://linkedin.com/in/deiverbrito";
-const CONTACT_HREF = "mailto:hello@deiver.com.br";
 
 /** Composição completa da página About V3. Figma: "Portfolio-Deiver-
  * About", node 2262:64510. Isolada em rota de preview até o cutover,

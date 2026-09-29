@@ -1,0 +1,221 @@
+.root {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  /* Altura dinâmica no desktop (pedido do Deiver em 28/09/2026). Valores
+     revistos no mesmo dia: a primeira versão (piso 790px, teto 960px, só
+     -120px de respiro) não sobrava espiada suficiente pra alcançar a COR
+     dos cards do Selected Work — só o fundo branco vazio da seção (que
+     tem ~84px de respiro interno antes do título "Selected work" + mais
+     ~92px até o topo dos cards, medido no DOM: nav 76px + conteúdo do
+     hero 230px + padding inferior 48px = 354px é o mínimo real do hero
+     sem cortar nada).
+     Piso 650px (gap generoso de 296px acima do mínimo de 354px, hero
+     ainda não fica espremido) + respiro de -220px em vez de -120px
+     garantem, em telas comuns de notebook (~850-900px de altura útil),
+     pelo menos ~150-200px de espiada — o suficiente pra cruzar o respiro
+     do Selected Work e mostrar um pedaço colorido do primeiro card, não
+     só fundo branco. Teto abaixado pra 820px (era 960px) porque não faz
+     sentido o hero continuar crescendo tanto em monitores grandes — o
+     objetivo é maximizar espiada, não altura do hero.
+     IMPORTANTE: `.root` em HomeIntroV3.module.css precisa ter essa MESMA
+     altura — o hero fica centralizado dentro daquele wrapper durante a
+     animação de entrada, então as duas têm que bater ou sobra vão em
+     branco entre o hero e o Selected Work. */
+  height: clamp(650px, calc(100vh - 220px), 820px);
+  padding: 0 32px 48px;
+  overflow: hidden;
+  color: #ffffffe0;
+  background: linear-gradient(
+    196.91602638458204deg,
+    #1c5550 11.658%,
+    #073237 97.956%
+  );
+}
+
+.graphism {
+  position: absolute;
+  z-index: -1;
+  top: calc(50% + 23.47px);
+  left: calc(50% - 32px);
+  width: 1754.613px;
+  height: 1076.937px;
+  max-width: none;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* A NavBarV3 continua sendo a fonte única do componente. Aqui só aplicamos
+   o container e o contexto transparente medidos dentro do hero. */
+.root .navigation {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  transition:
+    opacity var(--dur-hero-reveal) var(--ease-out-quart),
+    transform var(--dur-hero-reveal) var(--ease-out-quart);
+}
+
+/* O max-width:1396px + padding-inline:24px que existia aqui como hack
+   específico do hero agora mora no próprio NavBarV3 (ver .row dentro do
+   media query desktop em NavBarV3.module.css) — junto com a linha
+   div-bottom que faltava, achado do Deiver em 28/09/2026. Isso evita
+   duplicar a lógica pro header fixo que vai reaproveitar o NavBarV3. */
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  width: calc(100% - 96px);
+  max-width: 1348px;
+  height: 230px;
+  margin-inline: auto;
+}
+
+.intro {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 230px;
+  flex-direction: column;
+  gap: 24px;
+  transition:
+    opacity var(--dur-hero-reveal) var(--ease-out-quart) 60ms,
+    transform var(--dur-hero-reveal) var(--ease-out-quart) 60ms;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 19px;
+  margin: 0;
+  color: #ffffffe0;
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-meta-label);
+  font-weight: var(--font-weight-meta-label);
+  line-height: var(--line-height-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  /* Meta/Label é sempre uppercase — mesma convenção do TagV3/FooterV3.
+     Estava lowercase (achado do Deiver comparando com o Figma). */
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.location img {
+  width: 13.141px;
+  height: 14.726px;
+}
+
+.separator {
+  width: 2.063px;
+  height: 2.063px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: #ffffffe0;
+  font-family: var(--font-family-editorial);
+  font-size: var(--font-size-home-hero-responsive);
+  font-weight: var(--font-weight-editorial-light);
+  line-height: var(--line-height-display-feature);
+  letter-spacing: 0;
+}
+
+.title span {
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.summary {
+  display: flex;
+  flex: 0 0 clamp(280px, calc(280px + (100vw - 1327px) * 0.1682), 392px);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  padding-bottom: 0;
+  transition:
+    opacity var(--dur-hero-reveal) var(--ease-out-quart) 120ms,
+    transform var(--dur-hero-reveal) var(--ease-out-quart) 120ms;
+}
+
+.root[data-content-visible="false"] .navigation,
+.root[data-content-visible="false"] .intro,
+.root[data-content-visible="false"] .summary {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.root[data-content-visible="true"] .navigation,
+.root[data-content-visible="true"] .intro,
+.root[data-content-visible="true"] .summary {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.summary p {
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  font-weight: 400;
+  line-height: var(--line-height-body-default);
+}
+
+.cta {
+  min-height: 44px;
+}
+
+.ctaIcon {
+  filter: brightness(0) invert(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root .navigation,
+  .intro,
+  .summary {
+    transition: none;
+  }
+}
+
+/* Ainda não é um contrato visual para tablet/mobile. Este fallback mantém o
+   conteúdo legível no specimen até os frames correspondentes chegarem. */
+@media (max-width: 1023px) {
+  .root {
+    height: auto;
+    min-height: 790px;
+    padding-inline: 20px;
+  }
+
+  .content {
+    align-items: flex-start;
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+  }
+
+  .intro {
+    width: 100%;
+    height: auto;
+  }
+
+  .title {
+    font-size: var(--font-size-editorial-title);
+    line-height: var(--line-height-editorial-title);
+  }
+
+  .summary {
+    flex-basis: auto;
+    max-width: 392px;
+  }
+}
