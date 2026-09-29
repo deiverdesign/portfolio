@@ -98,6 +98,7 @@
 
 .photo3 {
   flex: 1 0 0;
+  min-width: 0;
   height: 180px;
   object-fit: cover;
   border-radius: var(--radius-sm);
