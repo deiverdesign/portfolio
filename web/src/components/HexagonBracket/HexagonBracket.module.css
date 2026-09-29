@@ -1,0 +1,41 @@
+.frame {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--hexagon-bracket-size, 6rem);
+  padding-inline: var(--hexagon-bracket-gap, 1.5rem);
+}
+
+.bracket {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: var(--hexagon-bracket-size, 6rem);
+  overflow: visible;
+  /* Both halves share one viewBox, so at shift 0 they overlap into the closed
+     hexagon. Opening is nothing but translating them apart. */
+  transform: translate(-50%, -50%) translateX(var(--shift, 0px));
+  transition: transform var(--hexagon-bracket-duration, 640ms)
+    var(--hexagon-bracket-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+}
+
+.content {
+  position: relative;
+  opacity: 0;
+  transition: opacity calc(var(--hexagon-bracket-duration, 640ms) * 0.55)
+    var(--hexagon-bracket-content-ease, ease)
+    calc(var(--hexagon-bracket-duration, 640ms) * 0.35);
+}
+
+.frame[data-open="true"] .content {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bracket,
+  .content {
+    transition-duration: 1ms;
+    transition-delay: 0ms;
+  }
+}

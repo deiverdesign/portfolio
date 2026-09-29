@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 export function useInView<T extends HTMLElement>() {
   const ref = useRef<T | null>(null);
   const [isInView, setIsInView] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const node = ref.current;
@@ -17,6 +18,7 @@ export function useInView<T extends HTMLElement>() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        setIsReady(true);
         if (entry.isIntersecting) {
           setIsInView(true);
           observer.disconnect();
@@ -29,5 +31,5 @@ export function useInView<T extends HTMLElement>() {
     return () => observer.disconnect();
   }, []);
 
-  return { ref, isInView };
+  return { ref, isInView, isReady };
 }

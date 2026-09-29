@@ -1,0 +1,46 @@
+.root > [data-motion-part] {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--dur-hero-reveal) var(--ease-out-quart),
+    transform var(--dur-hero-reveal) var(--ease-out-quart);
+}
+
+.root > [data-motion-part="eyebrow"] {
+  transition-duration: var(--dur-base);
+  transition-timing-function: var(--ease-out-expo);
+}
+
+.root > [data-motion-part="body"] {
+  transition-delay: 60ms;
+}
+
+.root[data-has-eyebrow="true"] > [data-motion-part="title"] {
+  transition-delay: 160ms;
+}
+
+.root[data-has-eyebrow="true"] > [data-motion-part="body"] {
+  transition-delay: 220ms;
+}
+
+/* Progressive enhancement: sem JS não há data-motion-ready e todo o
+   conteúdo permanece no estado final. Só escondemos antes do trigger depois
+   que o observer foi instalado com sucesso. */
+.root[data-motion-ready="true"][data-motion-visible="false"] > [data-motion-part] {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+@media (max-width: 599px) {
+  .root[data-motion-ready="true"][data-motion-visible="false"] > [data-motion-part] {
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root > [data-motion-part] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

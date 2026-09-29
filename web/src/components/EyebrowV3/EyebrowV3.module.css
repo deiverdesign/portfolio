@@ -1,0 +1,21 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-foreground-brand-default);
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-meta-label);
+  font-weight: var(--font-weight-meta-label);
+  line-height: var(--line-height-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  text-transform: uppercase;
+}
+
+.frame {
+  --hexagon-bracket-size: 21px;
+  --hexagon-bracket-gap: 0;
+  --hexagon-bracket-duration: var(--dur-base);
+  --hexagon-bracket-ease: var(--ease-out-expo);
+  --hexagon-bracket-content-ease: var(--ease-out-expo);
+  min-height: 21px;
+  padding-inline: 0;
+}
