@@ -1,0 +1,27 @@
+.root {
+  /* Sempre quadrado, do tamanho da altura da linha (200px) — não
+     divide a largura com a primeira imagem, que é quem deve crescer/
+     encolher (achado do Deiver em 29/09/2026). `flex:0 0 auto` +
+     `aspect-ratio` calcula a largura a partir da altura herdada do
+     `.mediaRow` (height:100%), em vez do contrário. */
+  flex: 0 0 auto;
+  height: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-500);
+  padding: var(--space-500);
+  border-radius: var(--radius-sm);
+}
+
+.label {
+  width: 77px;
+  height: 13px;
+}
+
+.glyph {
+  width: 65px;
+  height: 43px;
+  align-self: flex-start;
+}

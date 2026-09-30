@@ -1,0 +1,33 @@
+.root {
+  /* 14px é o padrão (texto — discreto de propósito). Mídia/cards passam
+     um valor maior via a prop `offsetPx` (achado do Deiver em
+     29/09/2026: o movimento de imagens/cards estava fraco demais
+     comparado ao efeito do site melius.com que ele curtiu). */
+  --motion-reveal-offset: 14px;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--dur-hero-reveal) var(--ease-out-quart),
+    transform var(--dur-hero-reveal) var(--ease-out-quart);
+}
+
+.root[data-motion-ready="true"][data-motion-visible="false"] {
+  opacity: 0;
+  transform: translateY(var(--motion-reveal-offset));
+}
+
+@media (max-width: 599px) {
+  .root[data-motion-ready="true"][data-motion-visible="false"] {
+    /* Mantém a mesma proporção do valor base (8/14 ≈ 0.57), escalado
+       pro offset que a instância pediu. */
+    transform: translateY(calc(var(--motion-reveal-offset) * 0.57));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

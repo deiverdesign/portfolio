@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
@@ -29,10 +29,9 @@ export interface NavBarV3Props {
  * Figma: componente "NavBar-V3", fileKey zpaQNzgjhG5ZKafe2cxnkm, frame
  * 1777:31162 (Desktop 1713:2170, Mobile 1777:31163).
  *
- * Simplificação assumida: o painel mobile (o que o hambúrguer abre) ainda
- * não tem especificação própria conferida no Figma — aqui ele só
- * mostra/esconde os mesmos links em coluna. Revisar contra o Figma antes de
- * integrar numa página real.
+ * Menu mobile conferido nos frames 2320:75128 (inverse) e 2320:75068
+ * (default): overlay de viewport, itens de 44px com divisórias e escolha de
+ * idioma explícita. O controlo compacto EN continua exclusivo do desktop.
  */
 export function NavBarV3({
   locale,
@@ -48,6 +47,16 @@ export function NavBarV3({
      (invert+brightness) — achado do Deiver em 28/09/2026: o filtro
      deixava o logo serrilhado sobre o fundo escuro do hero. */
   const logo = context === "dark" ? HOME_ASSETS.identity.logoInverse : HOME_ASSETS.identity.logo;
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileOpen]);
 
   return (
     <header className={classes}>
@@ -86,31 +95,69 @@ export function NavBarV3({
           {/* Era 3 spans desenhados via CSS — o Deiver apontou o ícone
               real do Figma (Icons/Menu2, node 836:10943), já baixado em
               menu2.svg. */}
-          <IconV3 name="menu2" size={14} className={styles.menuIcon} />
+          <IconV3 name="menu2" size={24} className={styles.menuIcon} />
         </button>
       </div>
 
       {mobileOpen && (
-        <nav
-          className={styles.mobileNav}
-          aria-label={locale === "pt" ? "Navegação principal" : "Main navigation"}
-        >
-          {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={styles.navLink}
-              aria-current={link.active ? "page" : undefined}
-            >
-              {link.label}
+        <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={locale === "pt" ? "Menu" : "Menu"}>
+          <div className={styles.mobileHeader}>
+            <a href={identityHref} className={styles.identity} onClick={() => setMobileOpen(false)}>
+              <img src={logo} alt="Deiver Brito" className={styles.name} />
+              <p className={styles.role}>{getCopy(locale, "shared.identity.job-title")}</p>
             </a>
-          ))}
-          <LanguageSwitcherV3
-            locale={locale}
-            href={languageHref}
-            context={context === "dark" ? "inverted" : "default"}
-          />
-        </nav>
+            <button
+              type="button"
+              className={styles.mobileClose}
+              aria-label={locale === "pt" ? "Fechar menu" : "Close menu"}
+              onClick={() => setMobileOpen(false)}
+            >
+              <IconV3 name="close" size={24} className={styles.mobileCloseIcon} />
+            </button>
+          </div>
+
+          <nav className={styles.mobileNav} aria-label={locale === "pt" ? "Navegação principal" : "Main navigation"}>
+            {links.map((link, index) => {
+              const isResume = index === links.length - 1;
+              return (
+                <Fragment key={link.href}>
+                  <a
+                    href={link.href}
+                    className={styles.mobileNavLink}
+                    aria-current={link.active ? "page" : undefined}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <span className={styles.mobileNavLabel}>{link.label}</span>
+                    <IconV3 name={isResume ? "download" : "caret-right"} size={16} className={styles.mobileNavIcon} />
+                  </a>
+                  {/* Divisória como irmã do link no MESMO grid (não
+                      border-bottom nele): no Figma ela é um elemento à
+                      parte, recebendo o mesmo gap de 8px dos dois lados.
+                      Como border-bottom, ela ficava "grudada" no texto de
+                      cima e o gap inteiro sobrava só embaixo — achado do
+                      Deiver em 29/09/2026, comparando com o Figma e vendo
+                      que 9px em cima virava 17px embaixo. Precisa ser irmã
+                      direta no grid, não filha de um wrapper por link,
+                      senão o gap volta a ficar todo de um lado só. */}
+                  {!isResume && <div className={styles.mobileNavDivider} aria-hidden="true" />}
+                </Fragment>
+              );
+            })}
+          </nav>
+
+          <div className={styles.mobileLanguages} aria-label={locale === "pt" ? "Idioma" : "Language"}>
+            {locale === "en" ? (
+              <span className={styles.mobileLanguageActive}>English</span>
+            ) : (
+              <a href={languageHref} className={styles.mobileLanguage}>English</a>
+            )}
+            {locale === "pt" ? (
+              <span className={styles.mobileLanguageActive}>Portuguese</span>
+            ) : (
+              <a href={languageHref} className={styles.mobileLanguage}>Portuguese</a>
+            )}
+          </div>
+        </div>
       )}
     </header>
   );

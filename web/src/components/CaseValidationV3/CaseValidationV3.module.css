@@ -1,0 +1,282 @@
+.section {
+  padding: var(--space-900) var(--space-layout-100);
+  background: var(--color-surface-neutral-subtle, #f4f6f5);
+}
+
+@media (max-width: 1023px) {
+  .section {
+    /* --space-layout-100 cresce em telas menores (48/54/60px) — usado
+       como margem lateral, isso deixava a seção espremida no mobile
+       (achado do Deiver em 29/09/2026). --space-600 é o mesmo token
+       que o NavBarV3 já usa pra esse mesmo caso. */
+    padding-left: var(--space-600);
+    padding-right: var(--space-600);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    /* Regra do Deiver em 29/09/2026: toda "área" leva no mínimo 80px de
+       respiro vertical — o top/bottom de 40px (space-900) subiu pra
+       space-layout-400; a lateral não muda. */
+    padding: var(--space-layout-400) var(--space-900);
+  }
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-700);
+  margin: 0 auto var(--space-800);
+  max-width: 1348px;
+}
+
+@media (min-width: 1024px) {
+  .intro {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  /* Sem gap uniforme — mesmo erro achado pelo Deiver no Reflection
+     (29/09/2026): eyebrow→título e título→corpo são espaços diferentes
+     no Figma (node 2262:65908/65909), não um valor único de 12px. */
+  gap: 0;
+  max-width: 560px;
+}
+
+.title {
+  margin: 0;
+  margin-top: var(--space-500);
+  font-family: var(--font-family-editorial);
+  /* Testado ao vivo com o Deiver em 29/09/2026: 300 bate melhor com o
+     Figma do que o 400 que o código gerado rotulava — ver comentário
+     completo em CaseDecisionsV3.module.css. */
+  font-weight: var(--font-weight-editorial-light);
+  font-size: var(--font-size-display-page);
+  line-height: var(--line-height-display-page);
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.body {
+  margin: 0;
+  margin-top: var(--space-layout-100);
+  color: var(--color-foreground-neutral-stronger);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: 1.6;
+}
+
+.media {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* .media virou o wrapper do MotionReveal (precisa de um elemento próprio
+   pra animar sem quebrar o flex do .intro) — a imagem em si só precisa
+   preencher esse wrapper. */
+.media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Mesmo padrão do `.rail`/`.track` do SelectedWorkV3 (Home): o rail vai
+   de ponta a ponta da viewport, sem `max-width` — antes eu limitava a
+   caixa em 1348px, o que criava uma "máscara" que nunca deixava nada
+   aparecer além da grade, mesmo sobrando espaço na tela (achado do
+   Deiver em 29/09/2026). O alinhamento com a grade vira padding-left do
+   `.track` (não largura do `.rail`), então os cards podem sangrar pra
+   dentro do respiro da tela ao rolar. */
+.rail {
+  /* Achado do Deiver em 29/09/2026: o `.rail` fica DENTRO da `.section`
+     (que já tem padding-inline próprio), diferente do SelectedWorkV3 na
+     Home, cujo rail é filho direto de ponta a ponta da página. Sem
+     compensar isso, o "100%" usado no cálculo do `.track` (abaixo) não
+     era a largura da tela, e sim tela-menos-esse-padding — os cards
+     ficavam deslocados pra direita. Aqui o rail sangra pra fora da
+     section com margin negativa (mesmo valor do padding dela, por
+     breakpoint) pra virar de ponta a ponta de verdade. */
+  margin-inline: calc(var(--space-900) * -1);
+  overflow-x: auto;
+  /* Sem scroll-snap, igual ao SelectedWorkV3 — com o respiro de 80px no
+     início do `.track`, o snap puxava o scroll de volta pro primeiro
+     card e cancelava esse respiro em repouso (achado nesta mesma
+     rodada, 29/09/2026). */
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+
+@media (max-width: 1023px) {
+  .rail {
+    margin-inline: calc(var(--space-600) * -1);
+  }
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  gap: var(--space-500);
+  /* 80px fixo, não o token responsivo --space-layout-400 — mesmo valor
+     literal que o .track do SelectedWorkV3 usa, de propósito. */
+  padding: 0 1px 0 max(80px, calc((100% - 1348px) / 2));
+  margin: 0;
+  list-style: none;
+}
+
+.card {
+  /* Figma (node 2262:65920, instância real na página) usa 843px fixos;
+     na tela real o Deiver achou exagerado num monitor grande e pediu
+     600px — decisão dele sobre a tela, não fidelidade ao Figma. No
+     mobile o card ainda encolhe pra caber (min/85vw). Também traz a
+     borda solid branca (contorno sutil no fundo cinza) e o gap de 40px
+     (--space-900) entre o banner e o bloco de texto, que eu não tinha
+     — por isso tudo ficava espremido. */
+  flex: 0 0 min(600px, 85vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-900);
+  background: var(--color-surface-neutral-default, white);
+  border: 1px solid var(--color-border-neutral-subtlest);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.cardBanner {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2098 / 659;
+  object-fit: cover;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  /* 24px (--space-700) entre título / pergunta / evidência — eu tinha
+     12px (--space-400). */
+  gap: var(--space-700);
+  padding: 0 var(--space-700) var(--space-800);
+}
+
+.cardName {
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-weight: 600;
+  /* Heading/Section desktop (28px) — eu tinha a variante mobile (20px). */
+  font-size: var(--font-size-heading-section);
+  line-height: var(--line-height-heading-section);
+  color: var(--color-foreground-neutral-default);
+}
+
+.cardQuestion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.cardDivider {
+  height: 1px;
+  background: var(--color-border-neutral-subtle);
+}
+
+.cardEvidence {
+  display: flex;
+  flex-wrap: wrap;
+  /* 32px (--space-800) entre as colunas Test/What changed — antes cada
+     linha tinha seu próprio divisor em vez de um só acima das duas. */
+  gap: var(--space-800);
+}
+
+.cardColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  flex: 1 1 200px;
+  min-width: 160px;
+}
+
+.cardLabel {
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-meta-label);
+  font-weight: var(--font-weight-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  text-transform: uppercase;
+  color: var(--color-foreground-neutral-default);
+}
+
+.cardValue {
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+  color: var(--color-foreground-neutral-default);
+}
+
+.controls {
+  /* Figma (node 2262:65921): a linha inteira é `justify-end`, mas o
+     grupo de dots é `flex:1` e centraliza os pontos dentro do espaço
+     que sobra — na prática os dots ficam centralizados e as setas
+     grudadas na borda direita, não os dois juntos à esquerda como eu
+     tinha feito. `padding-left: 80px` (--space-layout-400) casa com o
+     mesmo respiro usado no `.intro` entre texto e mídia. */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-400);
+  /* Literal 80px, não o token --space-layout-400 (que vale 100px no
+     desktop) — o Figma pedia 80 fixo aqui, achado ao conferir de novo
+     nesta rodada. */
+  padding-left: 80px;
+  margin: var(--space-600) auto 0;
+  max-width: 1348px;
+}
+
+.dots {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.arrows {
+  display: flex;
+  gap: var(--space-300);
+}
+
+/* Figma (node 2262:65921, "Frame 441"): os botões Previous/Next são
+   quadrados de 48×48, não a pílula retangular que o size="medium" do
+   Button-V3 desenha por padrão (padding pensado pra botão COM texto,
+   não só ícone) — achado do Deiver em 29/09/2026. width/height fixos
+   ganham do padding independente da ordem dos CSS Modules no bundle. */
+.arrowButton {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+}
+
+.conclusion {
+  /* Alinha à mesma borda esquerda do `.intro`/`.rail` (centralizados em
+     1348px), mas com o texto mais estreito — por isso não dá pra usar
+     `margin:auto` direto (centralizaria a citação inteira, não só
+     alinharia a borda). */
+  margin: var(--space-800) 0 0 max(0px, calc((100% - 1348px) / 2));
+  max-width: 680px;
+  font-family: var(--font-family-editorial);
+  font-weight: var(--font-weight-editorial-medium);
+  font-size: var(--font-size-body-lead);
+  line-height: var(--line-height-body-lead);
+  color: var(--color-foreground-neutral-default);
+  padding-left: var(--space-500);
+  border-left: 2px solid var(--color-border-neutral-default);
+}

@@ -1,0 +1,156 @@
+.section {
+  padding: var(--space-900) var(--space-layout-100);
+}
+
+@media (max-width: 1023px) {
+  .section {
+    /* --space-layout-100 cresce em telas menores (48/54/60px) — usado
+       como margem lateral, isso deixava a seção espremida no mobile
+       (achado do Deiver em 29/09/2026). --space-600 é o mesmo token
+       que o NavBarV3 já usa pra esse mesmo caso. */
+    padding-left: var(--space-600);
+    padding-right: var(--space-600);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    /* Regra do Deiver em 29/09/2026: toda "área" leva no mínimo 80px de
+       respiro vertical — o top/bottom de 40px (space-900) subiu pra
+       space-layout-400; a lateral não muda. */
+    padding: var(--space-layout-400) var(--space-900);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-800);
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  /* Sem gap uniforme — mesmo erro achado pelo Deiver no Reflection
+     (29/09/2026): no Figma (node 2262:65944/65949) só eyebrow→título é
+     16px; título→corpo e corpo→checklist são 64px cada, bem maiores do
+     que os 16px que estavam uniformes aqui. */
+  gap: 0;
+}
+
+.title {
+  margin: 0;
+  margin-top: var(--space-500);
+  font-family: var(--font-family-editorial);
+  /* Testado ao vivo com o Deiver em 29/09/2026: 300 bate melhor com o
+     Figma do que o 400 que o código gerado rotulava — ver comentário
+     completo em CaseDecisionsV3.module.css. */
+  font-weight: var(--font-weight-editorial-light);
+  font-size: var(--font-size-display-page);
+  line-height: var(--line-height-display-page);
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.body {
+  margin: 0;
+  margin-top: var(--space-layout-300);
+  max-width: 520px;
+  color: var(--color-foreground-neutral-stronger);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: 1.6;
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  /* 24px entre itens (node 2262:65949), não 12px. */
+  gap: var(--space-700);
+  margin: var(--space-layout-300) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-300);
+  color: var(--color-foreground-neutral-stronger);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+}
+
+.checkIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.media {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+.primaryMedia {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+/* .primaryMedia/.secondaryMedia viraram wrappers do MotionReveal (o
+   elemento que anima precisa de caixa própria no layout — um
+   display:contents não teria opacity/transform pra animar). A imagem em
+   si só precisa preencher esse wrapper. */
+.primaryMedia img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: inherit;
+}
+
+.mediaRow {
+  /* Altura fixa de 200px pros dois — a primeira imagem "preenche o
+     container" (cresce/encolhe e revela mais ou menos das laterais,
+     tipo uma máscara), a segunda (cartão "Noto Sans") é sempre
+     quadrada. Achado do Deiver em 29/09/2026: eram grandes demais e a
+     segunda não deveria dividir a largura igualmente com a primeira. */
+  display: flex;
+  align-items: stretch;
+  height: 200px;
+  gap: var(--space-400);
+}
+
+.secondaryMedia {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.secondaryMedia img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+/* Wrapper do MotionReveal em volta do CaseTypeSpecimenCard — precisa
+   repetir o mesmo flex:0 0 auto/height:100%/aspect-ratio do .root dele
+   (CaseTypeSpecimenCard.module.css), senão o card perde o tamanho
+   quadrado herdado da altura do .mediaRow. */
+.extraMedia {
+  flex: 0 0 auto;
+  height: 100%;
+  aspect-ratio: 1;
+}

@@ -1,0 +1,237 @@
+.section {
+  padding: var(--space-900) var(--space-layout-100);
+}
+
+@media (max-width: 1023px) {
+  .section {
+    /* --space-layout-100 cresce em telas menores (48/54/60px) — usado
+       como margem lateral, isso deixava a seção espremida no mobile
+       (achado do Deiver em 29/09/2026). --space-600 é o mesmo token
+       que o NavBarV3 já usa pra esse mesmo caso. */
+    padding-left: var(--space-600);
+    padding-right: var(--space-600);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    /* Regra do Deiver em 29/09/2026: toda "área" leva no mínimo 80px de
+       respiro vertical — o top/bottom de 40px (space-900) subiu pra
+       space-layout-400; a lateral não muda. */
+    padding: var(--space-layout-400) var(--space-900);
+  }
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-800);
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .text {
+    flex: 1 1 0;
+    min-width: 452px;
+  }
+}
+
+/* Divisor vertical (Figma node 2262:65992) — altura fixa de 136px, não
+   acompanha a coluna inteira; só aparece a partir do desktop, onde as
+   duas colunas ficam lado a lado. */
+.divider {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .divider {
+    display: block;
+    align-self: center;
+    width: 1px;
+    height: 136px;
+    background: var(--color-border-neutral-default);
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  /* Sem gap uniforme — achado do Deiver em 29/09/2026, comparando com o
+     Figma (node 2262:65983): os espaços entre eyebrow/título/lead/
+     citação/fechamento são todos diferentes entre si (16/48/20/20px),
+     não um valor único. Cada margin-top abaixo é o valor real medido
+     ali, não uma aproximação. */
+  gap: 0;
+}
+
+.title {
+  margin: 0;
+  margin-top: var(--space-500);
+  font-family: var(--font-family-editorial);
+  /* Testado ao vivo com o Deiver em 29/09/2026: 300 bate melhor com o
+     Figma do que o 400 que o código gerado rotulava — ver comentário
+     completo em CaseDecisionsV3.module.css. Não mexi em `.nextLabel`/
+     `.nextName` (mesmo arquivo) — não fizeram parte do teste ao vivo. */
+  font-weight: var(--font-weight-editorial-light);
+  font-size: var(--font-size-display-page);
+  line-height: var(--line-height-display-page);
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.lead {
+  margin: 0;
+  margin-top: var(--space-layout-100);
+  color: var(--color-foreground-neutral-default);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+}
+
+.quote {
+  margin: 0;
+  margin-top: var(--space-600);
+  color: var(--color-foreground-neutral-stronger);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-lead);
+  line-height: 1.4;
+}
+
+.close {
+  margin: 0;
+  margin-top: var(--space-600);
+  color: var(--color-foreground-neutral-default);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+}
+
+.nextColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+.nextLabel {
+  font-family: var(--font-family-editorial);
+  font-weight: 400;
+  font-size: var(--font-size-display-section);
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.nextCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-700);
+  width: 100%;
+  max-width: 476px;
+  height: 274px;
+  padding: var(--space-700);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  overflow: hidden;
+}
+
+/* Sem hover documentado no Figma pra esse card — o Deiver pediu pra
+   seguir a MESMA linguagem do Button-V3 primário (29/09/2026), não
+   inventar sombra/levante novos (a v3 não usa sombra em hover em lugar
+   nenhum). O botão cobre o fundo em repouso com uma camada e desliza ela
+   pra fora no hover, revelando um tom por baixo — aqui replico isso com
+   uma camada branca translúcida (não dá pra saber de antemão a cor de
+   cada case pra calcular um "hover fill" fixo, então a camada tinta
+   qualquer cor de fundo por igual). */
+.nextCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgb(255 255 255 / 10%);
+  transform: translate3d(0, 101%, 0);
+  transition: transform var(--dur-base) var(--ease-out-quart);
+  pointer-events: none;
+}
+
+.nextCard:hover::before,
+.nextCard:focus-visible::before {
+  transform: translate3d(0, 0, 0);
+}
+
+.nextCard:focus-visible {
+  outline: 2px solid var(--color-foreground-neutral-inverse-strong, white);
+  outline-offset: 2px;
+}
+
+.nextLogo,
+.nextBody,
+.nextArrow {
+  position: relative;
+  z-index: 1;
+}
+
+.nextLogo {
+  height: 32px;
+  width: 32px;
+}
+
+.nextBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  max-width: 80%;
+}
+
+.nextName {
+  margin: 0;
+  font-family: var(--font-family-editorial);
+  font-weight: 400;
+  font-size: var(--font-size-display-section);
+  color: var(--color-foreground-neutral-inverse-strong, white);
+}
+
+.nextSummary {
+  margin: 0;
+  color: var(--color-foreground-neutral-inverse-default);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+}
+
+.nextArrow {
+  position: absolute;
+  right: var(--space-700);
+  bottom: var(--space-700);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-200);
+  border: 1.7px solid var(--color-foreground-neutral-inverse-strong, white);
+  border-radius: var(--radius-full);
+  background: transparent;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.nextCard:hover .nextArrow {
+  background: var(--color-foreground-neutral-inverse-strong, white);
+  transform: translateX(4px);
+}
+
+/* O SVG (caret-right.svg) tem a cor cravada (#303735, escura) em vez de
+   currentColor — mesma limitação documentada no IconV3. Sem isso o
+   ícone fica invisível sobre o fundo colorido do card. Com o círculo
+   preenchido de branco no hover, o ícone escuro original já contrasta
+   sozinho — não precisa mais do invert() nesse estado. */
+.nextArrow img {
+  filter: invert(1);
+  transition: filter var(--dur-fast) var(--ease-out-quart);
+}
+
+.nextCard:hover .nextArrow img {
+  filter: none;
+}

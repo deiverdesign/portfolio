@@ -1,0 +1,100 @@
+.section {
+  /* Gradiente de baixo pra cima, cinza claro → branco (Figma node
+     2262:65862, "Context-Section") — o Deiver notou que eu tinha
+     deixado a seção sem cor nenhuma (herdando o branco da página),
+     diferente da Decisions logo abaixo. */
+  background: linear-gradient(
+    to top,
+    var(--color-surface-neutral-strong),
+    var(--color-surface-neutral-subtle)
+  );
+  padding: var(--space-layout-300) var(--space-layout-100);
+}
+
+@media (max-width: 1023px) {
+  .section {
+    /* --space-layout-100/300 crescem em telas menores (o oposto do que
+       faz sentido pra margem lateral) — --space-600 é o mesmo token
+       que o NavBarV3 já usa pra esse mesmo caso. */
+    padding-left: var(--space-600);
+    padding-right: var(--space-600);
+    padding-top: var(--space-800);
+    padding-bottom: var(--space-800);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    /* Regra do Deiver em 29/09/2026: toda "área" de case section leva no
+       mínimo 80px de respiro vertical (space-layout-400) — o que já era
+       maior que isso (aqui, o bottom de 96px/space-layout-500, vindo do
+       Figma) fica como está; só o top (64px/space-layout-300) subiu. */
+    padding: var(--space-layout-400) var(--space-layout-300) var(--space-layout-500);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-800);
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    /* Valores exatos do Figma (node 2262:65863): gap de 80px entre as
+       colunas de texto e imagem — eu tinha usado 32px (--space-800). */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    gap: var(--space-layout-400);
+    align-items: center;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  /* 48px entre o bloco do título e o bloco de parágrafos (node
+     2262:65864) — eu tinha usado 12px (--space-400). */
+  gap: var(--space-layout-100);
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+  max-width: 564px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-family-editorial);
+  /* Testado ao vivo com o Deiver em 29/09/2026: 300 bate melhor com o
+     Figma do que o 400 que o código gerado rotulava — ver comentário
+     completo em CaseDecisionsV3.module.css. */
+  font-weight: var(--font-weight-editorial-light);
+  font-size: var(--font-size-display-page);
+  line-height: var(--line-height-display-page);
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.paragraphBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-700);
+  max-width: 528px;
+}
+
+.paragraph {
+  margin: 0;
+  color: var(--color-foreground-neutral-stronger);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: 1.55;
+}
+
+.media img {
+  width: 100%;
+  height: auto;
+  display: block;
+}

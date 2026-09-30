@@ -1,0 +1,99 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  /* Figma (node 2262:65873): 32px entre os dois cards, eu tinha 16px. */
+  gap: var(--space-800);
+  padding: var(--space-800) var(--space-layout-100);
+  /* max-width vive num filho, não aqui — com box-sizing:border-box,
+     colocar os dois no mesmo elemento faz o padding comer parte dos
+     1348px de conteúdo real (mesmo bug já documentado no
+     BrandsSectionV3 em 28/09/2026). */
+  max-width: calc(1348px + 2 * var(--space-layout-100));
+  margin: 0 auto;
+}
+
+@media (max-width: 1023px) {
+  .root {
+    /* --space-layout-100 cresce em telas menores (48/54/60px) — usado
+       como margem lateral, isso deixava a seção espremida no mobile
+       (achado do Deiver em 29/09/2026). --space-600 é o mesmo token
+       que o NavBarV3 já usa pra esse mesmo caso; o max-width precisa
+       usar o mesmo valor do padding pra continuar batendo com o resto
+       do grid. */
+    padding-left: var(--space-600);
+    padding-right: var(--space-600);
+    max-width: calc(1348px + 2 * var(--space-600));
+  }
+}
+
+@media (min-width: 1024px) {
+  .root {
+    /* Regra do Deiver em 29/09/2026: toda "área" leva no mínimo 80px de
+       respiro vertical — o top/bottom de 32px (space-800) subiu pra
+       space-layout-400; a lateral (space-900) não muda, não fazia parte
+       do pedido. */
+    padding: var(--space-layout-400) var(--space-900);
+    max-width: calc(1348px + 2 * var(--space-900));
+  }
+}
+
+.card {
+  /* Figma: gap-700(24px) entre ícone+label / divisor / valor, padding
+     20×16, borda border-neutral-stronger (eu tinha default, mais
+     clara), radius xxs. min-width 370px. */
+  flex: 1 1 370px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-700);
+  padding: var(--space-500) var(--space-600);
+  border: 1px solid var(--color-border-neutral-stronger);
+  border-radius: var(--radius-xxs);
+  background: var(--color-surface-neutral-default);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  /* Figma: gap-400 (12px) entre o ícone e o texto — eu tinha 4px
+     (--space-200), achado do Deiver em 29/09/2026. */
+  gap: var(--space-400);
+  white-space: nowrap;
+  color: var(--color-foreground-neutral-default);
+  font-family: var(--font-family-body);
+  font-weight: 500;
+  font-size: var(--font-size-ui-action);
+  line-height: var(--line-height-ui-action);
+}
+
+.divider {
+  flex: 0 0 3.71665px;
+  width: 3.71665px;
+  height: 41.8686px;
+  object-fit: fill;
+}
+
+.value {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--color-foreground-neutral-subtle);
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-meta-label);
+  font-weight: var(--font-weight-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  line-height: var(--line-height-meta-label);
+  text-transform: uppercase;
+}
+
+@media (max-width: 599px) {
+  .card {
+    flex-basis: 100%;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .card {
+    flex-basis: 100%;
+    min-height: 77.0608px;
+  }
+}

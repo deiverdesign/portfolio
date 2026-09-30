@@ -5,29 +5,29 @@
 }
 
 .dot {
+  /* Hexágono alongado (Figma nodes 2262:65930 selecionado / 2262:65931
+     não selecionado, mesmos SVGs exportados) — antes era uma pílula
+     arredondada (`border-radius:full`), aproximação que não existe no
+     Figma. Confirmado pelo Deiver em 29/09/2026: esse é o padrão de
+     bullet do site inteiro, não uma variante só do carrossel de case.
+     Variante de cor clara pra fundo escuro fica pra depois. */
   width: 28px;
   height: 7px;
   padding: 0;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-border-neutral-overlay-dark-strong);
-  background: transparent;
+  border: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("/images/v3/icons/indicator-unselected.svg");
   cursor: pointer;
-  transition: background-color var(--dur-fast) var(--ease-out-quart),
-    border-color var(--dur-fast) var(--ease-out-quart);
 }
 
 .dot[data-active="true"] {
-  border-color: transparent;
-  background: var(--color-foreground-neutral-default);
+  background-image: url("/images/v3/icons/indicator-selected.svg");
 }
 
 .dot:focus-visible {
   outline: 2px solid var(--color-border-brand-default);
   outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dot {
-    transition: none;
-  }
 }

@@ -4,6 +4,7 @@ import { ButtonV3 } from "@/components/ButtonV3/ButtonV3";
 import { CarouselIndicatorsV3 } from "@/components/CarouselIndicatorsV3/CarouselIndicatorsV3";
 import { EyebrowV3 } from "@/components/EyebrowV3/EyebrowV3";
 import { IconV3 } from "@/components/IconV3/IconV3";
+import { MotionReveal } from "@/components/MotionReveal/MotionReveal";
 import type { RasterAsset } from "@/content/home-assets";
 import { useRailCarousel } from "@/hooks/useRailCarousel";
 import styles from "./CaseValidationV3.module.css";
@@ -51,22 +52,28 @@ export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusio
       <div className={styles.intro}>
         <div className={styles.text}>
           <EyebrowV3>{eyebrow}</EyebrowV3>
-          <h2 className={styles.title}>{title}</h2>
-          <p className={styles.body}>{body}</p>
+          <MotionReveal as="h2" className={styles.title} delayMs={80}>
+            {title}
+          </MotionReveal>
+          <MotionReveal as="p" className={styles.body} delayMs={140}>
+            {body}
+          </MotionReveal>
         </div>
-        <img
-          src={media.src}
-          width={media.width}
-          height={media.height}
-          alt=""
-          className={styles.media}
-        />
+        <MotionReveal as="div" className={styles.media} delayMs={200} offsetPx={40}>
+          <img src={media.src} width={media.width} height={media.height} alt="" />
+        </MotionReveal>
       </div>
 
       <div className={styles.rail} ref={railRef} onScroll={handleScroll}>
         <ul className={styles.track}>
-        {cards.map((card) => (
-          <li className={styles.card} key={card.name}>
+        {cards.map((card, index) => (
+          <MotionReveal
+            as="li"
+            className={styles.card}
+            key={card.name}
+            delayMs={index * 80}
+            offsetPx={40}
+          >
             <img
               src={card.banner.src}
               width={card.banner.width}
@@ -92,7 +99,7 @@ export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusio
                 </div>
               </div>
             </div>
-          </li>
+          </MotionReveal>
         ))}
         </ul>
       </div>
@@ -110,20 +117,22 @@ export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusio
           <ButtonV3
             variant="secondary"
             size="medium"
+            className={styles.arrowButton}
             onClick={() => scrollByPage(-1)}
             disabled={activePage === 0}
             aria-label="Previous"
           >
-            <IconV3 name="arrow-left" size={16} />
+            <IconV3 name="arrow-left" size={20} />
           </ButtonV3>
           <ButtonV3
             variant="secondary"
             size="medium"
+            className={styles.arrowButton}
             onClick={() => scrollByPage(1)}
             disabled={activePage === pageCount - 1}
             aria-label="Next"
           >
-            <IconV3 name="arrow-right" size={16} />
+            <IconV3 name="arrow-right" size={20} />
           </ButtonV3>
         </div>
       </div>

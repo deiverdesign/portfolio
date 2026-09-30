@@ -79,10 +79,12 @@
 }
 
 .buttonWrap {
-  /* O botão fica alinhado à direita da coluna de texto, não à esquerda —
-     conferido no Figma (node 1729:13195, "items-end"). */
+  /* Decisão do Deiver em 29/09/2026: mudou de ideia e atualizou o
+     próprio Figma pra alinhar à esquerda (antes era items-end, à
+     direita — node 1729:13195). Comentário antigo mantido pra registrar
+     a mudança, não porque o valor antigo ainda vale. */
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   width: 100%;
 }
 

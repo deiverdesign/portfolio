@@ -242,6 +242,20 @@
      1117:19441, não é o valor antigo. */
   --gradient-case-theodoor-card: linear-gradient(-30.64deg, #682488 61.962%, #713b9f 98.596%);
 
+  /* Hero da página de case da SCRIOO no mobile — não tem imagem exportada
+     (diferente de desktop/tablet); é um radial-gradient puro, lido via
+     get_design_context no node 2309:72460 em 29/09/2026. */
+  --gradient-case-scrioo-hero-mobile: radial-gradient(
+    147.52% 62.376% at 54.61% 88.8%,
+    #9ee984 0%,
+    #6fc45a 9.0504%,
+    #58b145 13.576%,
+    #409e31 18.101%,
+    #2e7f31 35.649%,
+    #1f5a22 83.912%,
+    #18701d 100%
+  );
+
   /* Display/Statement — Newsreader Regular (peso 400, diferente do
      --font-weight-editorial-light usado no título do ContactCTA). Usado no
      título do hover dos cards de case ("CURE/SCRIOO" etc). */
@@ -273,6 +287,12 @@
     /* "Display/Page" no Figma, tablet */
     --font-size-editorial-title: 3.25rem; /* 52px */
     --line-height-editorial-title: 3.25rem;
+    /* Achado do Deiver em 29/09/2026: eu tinha usado o valor do frame
+       "Mobile" genérico (53px) também pro tablet, por não achar um frame
+       de tablet específico na hora. Existe sim — SCRIOO node 2262:66323
+       ("Footer" real, 778px) — com um valor próprio, bem maior: 108px. */
+    --font-size-display-oversize: 6.75rem; /* 108px */
+    --line-height-display-oversize: 6.75rem; /* 108px */
   }
 }
 
@@ -281,5 +301,9 @@
     /* "Display/Page" no Figma, mobile */
     --font-size-editorial-title: 2.5rem; /* 40px */
     --line-height-editorial-title: 2.5rem;
+    /* Confirmado no frame "Mobile" (1925:17668, 390px) — esse aqui é
+       real, diferente do tablet acima. */
+    --font-size-display-oversize: 3.3125rem; /* 53px */
+    --line-height-display-oversize: 3.375rem; /* 54px */
   }
 }

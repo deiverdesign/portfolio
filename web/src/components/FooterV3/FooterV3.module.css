@@ -122,15 +122,27 @@
      dois, então desalinhava com o resto do rodapé em telas largas) e
      margin-top (o texto ficava colado no copyright acima; o gap real
      entre os dois frames no Figma é 56px, que bate exato com o token
-     --space-layout-200). */
+     --space-layout-200). Achado do Deiver em 29/09/2026: o texto deve
+     encostar direto na .blackBar (zero espaço embaixo) — o
+     padding-bottom de 96px era resquício de quando a barra preta não
+     existia ainda nesse componente. */
   max-width: 1348px;
   margin: var(--space-layout-200) auto 0;
-  padding-bottom: var(--space-layout-500);
+  padding-bottom: 0;
   font-family: var(--font-family-editorial);
   font-weight: var(--font-weight-editorial-light);
   font-size: var(--font-size-display-oversize);
   line-height: var(--line-height-display-oversize);
   color: var(--color-foreground-neutral-default);
+  /* padding-bottom:0 zera a CAIXA da linha, mas não o espaço que a fonte
+     reserva abaixo da linha de base pra letras com rabicho (g/y/p) — a
+     Newsreader reserva ~41px disso no tamanho usado aqui, e "Finish" não
+     usa nada disso (medido com canvas.measureText: descida real de
+     ~1.5px, não os ~41px que a caixa da linha reserva). Sem isso a
+     última linha fica visualmente flutuando acima da .blackBar mesmo com
+     padding zerado — achado do Deiver em 29/09/2026, comparando com a
+     print real. -0.208em escala com o font-size (não é um px fixo). */
+  margin-bottom: -0.208em;
 }
 
 .blackBar {
@@ -139,7 +151,30 @@
   margin: 0 calc(var(--space-layout-100) * -1);
 }
 
-@media (max-width: 1023px) {
+/* Achado do Deiver em 29/09/2026: eu tinha um ÚNICO breakpoint
+   (max-width:1023px) empilhando tudo (topRow, actions, metaRow) e usando
+   o valor do frame "Mobile" (390px) pra qualquer tela abaixo de 1024px.
+   Mas a SCRIOO tem um frame de TABLET real e próprio (node 2262:66323,
+   778px) — e nele o layout NÃO empilha, continua em linha como no
+   desktop, só com respiro/tamanhos próprios. Empilhar aqui também
+   (600-1023px) estava errado; só o mobile de verdade (<600px) empilha. */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .root {
+    /* Figma (node 2262:66323): 36px de cada lado, --space-800 no
+       breakpoint de tablet (não --space-600, que era o valor usado pro
+       mobile empilhado). */
+    padding: var(--space-700) var(--space-800) 0;
+  }
+
+  .blackBar {
+    /* Sangria da barra preta precisa cancelar o padding do .root NESTE
+       breakpoint (--space-800), senão ela não fica de ponta a ponta de
+       verdade no tablet. */
+    margin: 0 calc(var(--space-800) * -1);
+  }
+}
+
+@media (max-width: 599px) {
   .root {
     padding: var(--space-700) var(--space-600) 0;
   }
@@ -161,15 +196,30 @@
   }
 
   .metaRow {
-    justify-content: flex-start;
+    /* Figma (node 1925:17668, frame Mobile): abaixo de 600px o grafismo
+       e o copyright empilham (ícone em cima, texto embaixo) — não ficam
+       na mesma linha como no tablet/desktop. Mantendo os dois na mesma
+       linha (só com justify-content:flex-start) o texto quebrava em 2
+       linhas e ficava encavalado com o ícone (achado do Deiver em
+       29/09/2026 — na hora eu apliquei isso pra <1024px inteiro, que
+       incluía o tablet errado; corrigido pra só <600px de verdade). */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-600);
+    padding: var(--space-500) 0;
   }
 
-  /* Display/Oversize não tem valor mobile confirmado ainda — reaproveita
-     --font-size-editorial-title (Display/Page) até isso ser conferido. */
+  /* Valor exato do frame Mobile do Figma (node 1925:17690): 53px/54px,
+     agora um token próprio (--font-size-display-oversize por
+     breakpoint em tokens-v3.css) — não é o --font-size-editorial-title
+     (40/52px) que eu tinha reaproveitado "até confirmar". O tablet usa
+     um valor bem maior e diferente (108px, node 2262:66323) — não é o
+     mesmo token reaproveitado pros dois. */
   .tagline {
-    font-size: var(--font-size-editorial-title);
-    line-height: var(--line-height-editorial-title);
-    padding-bottom: var(--space-layout-300);
+    font-size: var(--font-size-display-oversize);
+    line-height: var(--line-height-display-oversize);
+    /* Mesmo achado do desktop (29/09/2026): encosta na .blackBar. */
+    padding-bottom: 0;
   }
 
   .blackBar {

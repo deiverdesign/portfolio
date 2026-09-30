@@ -1,0 +1,258 @@
+.root {
+  /* Sem espaço entre o header e o hero — igual ao Figma (NavBarV3
+     seguido de Hero-Section sem padding-top, node 2262:65858).
+     Confirmado com o Deiver em 29/09/2026: fidelidade ao Figma, não
+     escolha de espaçamento. */
+  padding: 0 var(--space-layout-100) 0;
+}
+
+@media (max-width: 1023px) {
+  .root {
+    /* --space-layout-100 cresce em telas menores (48/54/60px — o
+       oposto do que faz sentido pra respiro lateral) porque é o mesmo
+       token usado pra ESPAÇAMENTO VERTICAL entre blocos, que de fato
+       deve crescer com o tamanho da fonte em telas menores. Usado como
+       margem lateral, isso deixava o hero espremido no mobile (achado
+       do Deiver em 29/09/2026, 60px de cada lado num viewport de
+       388px). --space-600 é o mesmo token que o NavBarV3 já usa pro
+       mesmo problema (ver `.row` dele). */
+    padding-left: var(--space-600);
+    padding-right: var(--space-600);
+  }
+}
+
+.frame {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background-image: var(--case-hero-bg-mobile);
+  background-size: cover;
+  background-position: center;
+  min-height: 620px;
+  /* Medido no Figma (frame "Scrioo-Desktop-Large"): o banner de fundo
+     tem um teto de 1640px, diferente do conteúdo (1348px) — os dois
+     ficam centralizados dentro do mesmo `.root`, não são o mesmo valor. */
+  max-width: 1640px;
+  margin: 0 auto;
+}
+
+@media (min-width: 600px) {
+  .frame {
+    background-image: var(--case-hero-bg-tablet);
+    min-height: 760px;
+  }
+}
+
+@media (min-width: 1152px) {
+  .frame {
+    background-image: var(--case-hero-bg-desktop);
+    /* Altura real medida no frame do Figma (Deiver, 29/09/2026) — bem
+       menor do que o `min-height` chutado antes. */
+    height: 504px;
+    min-height: 0;
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-600) var(--space-600) 0;
+  gap: var(--space-600);
+}
+
+@media (min-width: 1152px) {
+  .content {
+    /* Conteúdo do banner tem seu próprio teto de 1348px, centralizado
+       dentro do frame (que já tem até 1640px). Em vez de `max-width` +
+       `margin:auto` (que zera o padding quando o frame é mais estreito
+       que 1348px — bug visto pelo Deiver em 29/09/2026, texto encostava
+       na borda em várias larguras entre 1024 e ~1450px), o padding
+       cresce com `max()`: nunca fica abaixo de 32px, e passa a abrir
+       espaço extra assim que o frame ultrapassa 1348 + 2×32px — o
+       resultado é o mesmo recuo de 178px que as outras seções usam,
+       sem depender de um valor fixo de viewport. */
+    padding: var(--space-500) max(var(--space-800), calc((100% - 1348px) / 2)) 0;
+    gap: var(--space-500);
+  }
+}
+
+.topNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-400);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-200);
+  color: var(--color-foreground-neutral-inverse-default);
+  text-decoration: none;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+}
+
+/* Os SVGs de seta têm a cor cravada (#303735, escura) em vez de
+   currentColor — mesma limitação documentada no IconV3/NavBarV3. Sem
+   isso os ícones ficam invisíveis sobre o fundo escuro do hero.
+   filter:invert() é seguro aqui: ícones pequenos (16px), só traços
+   retos — diferente de um logo com curvas, que serrilha com esse mesmo
+   tipo de filtro (achado do Deiver em 28/09/2026). */
+.backLink img,
+.navArrow img {
+  filter: invert(1);
+}
+
+.otherCases {
+  display: flex;
+  align-items: center;
+  gap: var(--space-300);
+  color: var(--color-foreground-neutral-inverse-default);
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  text-transform: uppercase;
+}
+
+.navArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-border-neutral-overlay-light-default);
+  color: var(--color-foreground-neutral-inverse-default);
+  text-decoration: none;
+}
+
+.navArrow[aria-disabled="true"] {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  /* Centralizado na vertical, não grudado embaixo — comparado direto
+     com o Figma pelo Deiver em 29/09/2026. */
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-700);
+  flex-wrap: nowrap;
+}
+
+.textBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 620px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-200);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-family-editorial);
+  font-weight: var(--font-weight-editorial-light);
+  font-size: var(--font-size-display-feature);
+  line-height: var(--line-height-display-feature);
+  color: var(--color-foreground-neutral-inverse-strong, white);
+}
+
+.summary {
+  margin: 0;
+  max-width: 460px;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: 1.5;
+  color: var(--color-foreground-neutral-inverse-default);
+}
+
+.devices {
+  /* Figma Desktop Small (1288px): 498.141px em uma área interna de
+     1208px. O percentual abaixo preserva essa proporção e o teto mantém
+     a escala do Desktop Large. Virou o wrapper do MotionReveal — a
+     imagem em si só preenche esse wrapper. */
+  width: min(41.25%, 520px);
+  height: auto;
+  flex-shrink: 0;
+}
+
+.devices img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Entre o desktop pequeno que comporta as duas colunas (1288px no Figma)
+   e o tablet, a composição passa a ser vertical. Antes ela ainda recebia
+   a altura desktop de 504px, mas o flex já quebrava a imagem para baixo —
+   combinação que causava o corte visto em 1056px. */
+@media (min-width: 600px) and (max-width: 1151px) {
+  .root {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .frame {
+    min-height: 784px;
+  }
+
+  .content {
+    padding: var(--space-800) var(--space-700) 0;
+    gap: var(--space-100);
+  }
+
+  .body {
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: var(--space-500);
+  }
+
+  .textBlock {
+    width: 100%;
+    max-width: 554px;
+  }
+
+  .devices {
+    width: min(100%, 615.645px);
+    align-self: center;
+  }
+}
+
+@media (max-width: 599px) {
+  .topNav {
+    flex-wrap: wrap;
+    gap: var(--space-300);
+  }
+
+  .body {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .title {
+    font-size: var(--font-size-display-section);
+    line-height: 1.05;
+  }
+
+  .devices {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+}

@@ -1,0 +1,230 @@
+.section {
+  /* Gradiente de cima pra baixo, branco → verde bem claro de marca
+     (Figma node 2262:65878, "Key design decisions - Section"), com
+     linha fina em cima e embaixo — diferente da Context logo acima
+     (achado do Deiver em 29/09/2026: eu tinha deixado as duas iguais,
+     sem cor nenhuma). */
+  background: linear-gradient(
+    to bottom,
+    var(--color-surface-neutral-subtle) 0%,
+    var(--color-surface-neutral-subtle) 50%,
+    var(--color-surface-brand-subtle) 100%
+  );
+  border-top: 1px solid var(--color-border-neutral-subtle);
+  border-bottom: 1px solid var(--color-border-neutral-subtle);
+  padding: var(--space-layout-400) var(--space-layout-100);
+}
+
+@media (max-width: 1023px) {
+  .section {
+    /* --space-layout-100/400 crescem em telas menores (o oposto do que
+       faz sentido pra margem lateral) — --space-600 é o mesmo token
+       que o NavBarV3 já usa pra esse mesmo caso. */
+    padding-left: var(--space-600);
+    padding-right: var(--space-600);
+    padding-top: var(--space-800);
+    padding-bottom: var(--space-800);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding: var(--space-layout-400) var(--space-layout-300);
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  /* Valores reais do Figma (node 2262:65878/65879), não os 12/32px que
+     eu tinha (mesmo erro de gap uniforme achado pelo Deiver em
+     29/09/2026 no Reflection, e que ele suspeitou estar em outros
+     lugares também — confirmado aqui): 16px eyebrow→título, 80px
+     header→grid. */
+  gap: var(--space-500);
+  margin: 0 auto var(--space-layout-400);
+  max-width: 1348px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-family-editorial);
+  /* Testado ao vivo com o Deiver em 29/09/2026: o código gerado do
+     Figma rotulava esse texto como "Newsreader Regular" (400), mas
+     comparando visualmente 300 bate melhor com o que o Figma mostra —
+     mesmo padrão de rótulo-errado já documentado no NORTE.md (a
+     variável do Figma nem sempre corresponde ao peso real do texto).
+     Reaproveita o token que o título do Hero já usa. */
+  font-weight: var(--font-weight-editorial-light);
+  font-size: var(--font-size-display-page);
+  line-height: var(--line-height-display-page);
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-800);
+  max-width: 1348px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+}
+
+.mediaColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+.mediaMain {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.mediaThumbs {
+  display: flex;
+  gap: var(--space-400);
+  /* Altura fixa da linha (Figma, node 2262:65889 "ImageLine2"): 194px
+     numa coluna de 518px de largura — proporcional, não um px fixo, pra
+     acompanhar a largura responsiva da coluna. */
+  aspect-ratio: 518 / 194;
+}
+
+.mediaThumbContainer {
+  /* Achado do Deiver em 29/09/2026: as duas miniaturas tinham altura
+     diferente porque cada uma escalava pela PRÓPRIA proporção da imagem
+     de origem (668×388 vs 636×402) — com width igual e height:auto, isso
+     nunca ia bater. No Figma as duas têm a MESMA altura e larguras
+     diferentes (334px/168px, quase 2:1), com a imagem cortada
+     (object-fit:cover) pra caber — não é escala livre. */
+  height: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.mediaThumbContainer:first-child {
+  flex: 334;
+}
+
+.mediaThumbContainer:last-child {
+  flex: 168;
+}
+
+.mediaThumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.item {
+  width: 100%;
+}
+
+.itemHeading {
+  margin: 0;
+}
+
+.itemButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-700);
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-sans-semibold);
+  font-size: var(--font-size-heading-card);
+  line-height: var(--line-height-heading-card);
+  color: var(--color-foreground-neutral-stronger);
+}
+
+.activeIndicator {
+  align-self: stretch;
+  flex: 0 0 1px;
+  background: var(--color-foreground-neutral-stronger);
+}
+
+.itemTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--space-300) 0;
+}
+
+.caretSlot {
+  display: grid;
+  flex: 0 0 31px;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+}
+
+.caret {
+  display: block;
+  transition: transform 180ms ease-out;
+}
+
+.item[data-open="true"] .caret {
+  transform: rotate(180deg);
+}
+
+.itemBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 var(--space-900) 0 var(--space-layout-100);
+  border-left: 1px solid var(--color-border-neutral-subtle);
+  color: var(--color-foreground-neutral-default);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body-default);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    max-height 260ms ease-out,
+    padding 260ms ease-out,
+    opacity 180ms ease-out;
+}
+
+.itemBody[data-open="true"] {
+  max-height: 420px;
+  padding-top: var(--space-600);
+  padding-bottom: var(--space-800);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.itemBody p {
+  margin: 0;
+}
+
+.itemBody strong {
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret,
+  .itemBody {
+    transition: none;
+  }
+}
