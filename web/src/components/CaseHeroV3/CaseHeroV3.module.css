@@ -310,6 +310,18 @@
     height: 100%;
     object-fit: contain;
   }
+
+  .title {
+    /* Achado do Deiver em 30/09/2026: a escala "1000" do Figma
+       (Desktop 98 / Tablet 76 / Mobile 52) nunca teve versão de tablet
+       aqui — o token --font-size-display-feature só existe com o valor
+       de desktop (98px) em tokens-v3.css, então o título não encolhia
+       nesse breakpoint. Literal, não token, pelo mesmo motivo dos
+       outros valores deste bloco (o range 600-1151px deste componente
+       não é coberto pela tabela de tokens de tablet, que vai só até
+       1023px). */
+    font-size: 4.75rem; /* 76px */
+  }
 }
 
 @media (max-width: 599px) {
@@ -324,7 +336,13 @@
   }
 
   .title {
-    font-size: var(--font-size-display-section);
+    /* Achado do Deiver em 30/09/2026: usava --font-size-display-section
+       (44px), token errado — a escala "1000" do Figma pede 52px no
+       mobile pra esse título (Desktop 98 / Tablet 76 / Mobile 52),
+       mesma tabela que motivou o fix do tablet acima. Literal pelo
+       mesmo motivo: não existe token de --font-size-display-feature
+       pra esse breakpoint em tokens-v3.css. */
+    font-size: 3.25rem; /* 52px */
     line-height: 1.05;
   }
 

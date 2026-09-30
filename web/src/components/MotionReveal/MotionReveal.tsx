@@ -11,7 +11,7 @@ export interface MotionRevealProps extends Omit<AllHTMLAttributes<HTMLElement>, 
   as?: ElementType;
   /** Atraso (ms) — usado pra escalonar itens lado a lado (mídia, cards). */
   delayMs?: number;
-  /** Anima já ao carregar, se o elemento já estiver visível (Hero, sem scroll-trigger). */
+  /** Anima já ao carregar, se o elemento já estiver visível. Default true — achado do Deiver em 30/09/2026: qualquer elemento que já apareça (mesmo que só um pedaço) no viewport do primeiro paint deve animar direto, não esperar um scroll mínimo pra disparar o IntersectionObserver. Passe `false` explicitamente só quando quiser mesmo esperar o scroll. */
   triggerIfInitiallyVisible?: boolean;
   /** Distância (px) do translateY de entrada. Default 14 (texto). Mídia/cards usam um valor maior — ver `--motion-reveal-offset`. */
   offsetPx?: number;
@@ -30,7 +30,7 @@ export function MotionReveal({
   children,
   as: Tag = "div",
   delayMs = 0,
-  triggerIfInitiallyVisible = false,
+  triggerIfInitiallyVisible = true,
   offsetPx,
   className,
   style,
