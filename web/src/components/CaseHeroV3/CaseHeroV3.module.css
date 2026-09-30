@@ -138,6 +138,11 @@
 
 .body {
   flex: 1;
+  /* `.body` também é item flex (de `.content`, coluna) — sem isso, o
+     min-height:auto padrão do flexbox deixa ele crescer pra caber o
+     conteúdo (a imagem do device) em vez de encolher pro espaço
+     disponível, do mesmo jeito que aconteceu com `.devices` abaixo. */
+  min-height: 0;
   display: flex;
   /* Centralizado na vertical, não grudado embaixo — comparado direto
      com o Figma pelo Deiver em 29/09/2026. */
@@ -194,6 +199,32 @@
   display: block;
   width: 100%;
   height: auto;
+}
+
+/* Achado do Deiver em 30/09/2026 (case Intuit): a foto do device dessa
+   página é um retrato (bem mais alto que largo, diferente das outras
+   cases), e escalar só pela largura fazia a altura passar dos 504px
+   fixos do `.frame` no desktop — descentralizava o textBlock ao lado
+   (align-items:center passa a centralizar contra a altura do item mais
+   alto do `.body`, não contra o frame). Sem mudar as outras cases
+   (paisagem, já cabem pela largura): o wrapper passa a ocupar a altura
+   disponível do `.body` (que tem altura real via flex:1 dentro de
+   `.content`, não é auto), e a imagem usa `object-fit:contain` pra
+   respeitar o que for mais restritivo entre largura e altura. */
+@media (min-width: 1152px) {
+  .devices {
+    height: 100%;
+    /* Sem isso, o item flex não encolhe abaixo do tamanho intrínseco da
+       imagem (min-height:auto é o padrão do flexbox) — o `.body` inteiro
+       crescia pra caber a imagem em vez do contrário. */
+    min-height: 0;
+  }
+
+  .devices img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 }
 
 /* Entre o desktop pequeno que comporta as duas colunas (1288px no Figma)
