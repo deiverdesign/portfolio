@@ -22,6 +22,11 @@
        do grid. */
     padding-left: var(--space-600);
     padding-right: var(--space-600);
+    /* Achado do Deiver em 30/09/2026: a regra dos 80px mínimos (29/09)
+       só tinha sido aplicada no desktop — aqui não tinha override
+       nenhum, herdava --space-800 (32/36/40px) do `.root` base. */
+    padding-top: var(--space-layout-400);
+    padding-bottom: var(--space-layout-400);
     max-width: calc(1348px + 2 * var(--space-600));
   }
 }

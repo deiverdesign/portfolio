@@ -22,8 +22,11 @@
        que o NavBarV3 já usa pra esse mesmo caso. */
     padding-left: var(--space-600);
     padding-right: var(--space-600);
-    padding-top: var(--space-800);
-    padding-bottom: var(--space-800);
+    /* Achado do Deiver em 30/09/2026: a regra dos 80px mínimos (29/09)
+       só tinha sido aplicada no desktop — aqui ficou com o valor antigo
+       (--space-800, 32/36/40px conforme o breakpoint). */
+    padding-top: var(--space-layout-400);
+    padding-bottom: var(--space-layout-400);
   }
 }
 

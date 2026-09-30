@@ -10,6 +10,11 @@
        que o NavBarV3 já usa pra esse mesmo caso. */
     padding-left: var(--space-600);
     padding-right: var(--space-600);
+    /* Achado do Deiver em 30/09/2026: a regra dos 80px mínimos (29/09)
+       só tinha sido aplicada no desktop — aqui não tinha override
+       nenhum, herdava --space-900 (40/45/50px) do `.section` base. */
+    padding-top: var(--space-layout-400);
+    padding-bottom: var(--space-layout-400);
   }
 }
 
