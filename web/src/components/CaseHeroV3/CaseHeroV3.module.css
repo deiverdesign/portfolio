@@ -242,8 +242,17 @@
   }
 
   .content {
-    padding: var(--space-800) var(--space-700) 0;
-    gap: var(--space-100);
+    /* Valores exatos medidos pelo Deiver no Figma tablet (node
+       2346:82087) em 30/09/2026 — nenhum desses batia com os tokens que
+       eu tinha usado (--space-800 dava ~36px de padding-top em vez de
+       24, --space-100 dava 2px de gap em vez de 18, e faltava
+       padding-bottom). Literal, não token: nem --space-500 nem outro
+       token do sistema resolve pra 18/24 de forma estável no range
+       600-1151px inteiro (a v3 tem uma tabela de tokens própria pra
+       tablet que só cobre até 1023px; esse componente usa um corte
+       próprio até 1151px — ver comentário no bloco de 1152px abaixo). */
+    padding: 24px var(--space-700) 24px;
+    gap: 18px;
   }
 
   .body {
@@ -251,12 +260,15 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    gap: var(--space-500);
+    gap: 16px;
   }
 
   .textBlock {
     width: 100%;
     max-width: 554px;
+    /* Mesma medição: 24px entre tags→título e título→resumo, não os
+       16px do gap base (que valia pro desktop). */
+    gap: 24px;
   }
 
   .devices {
