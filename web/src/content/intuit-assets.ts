@@ -16,7 +16,9 @@ export const INTUIT_ASSETS = {
     backgroundDesktop: raster("/images/v3/cases/intuit/hero-bg-desktop.png", 3280, 1008),
     backgroundTablet: raster("/images/v3/cases/intuit/hero-bg-tablet.png", 1876, 1634),
     backgroundMobile: raster("/images/v3/cases/intuit/hero-bg-mobile.png", 1378, 1755),
-    devices: raster("/images/v3/cases/intuit/hero-devices.png", 1029, 1272),
+    // Trocado em 30/09/2026 pela versão em melhor qualidade que o Deiver
+    // reexportou (era a mesma foto, mas em baixa).
+    devices: raster("/images/v3/cases/intuit/hero-devices.png", 900, 809),
   },
   decisions: {
     // Decision 1 — Build the Foundations Before the Direction Was Settled.
