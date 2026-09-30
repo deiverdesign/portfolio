@@ -22,7 +22,9 @@ export const INTUIT_ASSETS = {
     // usam um corte mais fechado (cabeça+ombros). `devices` é o corte
     // fechado (base/fallback), `devicesDesktop` sobrescreve em telas
     // largas via `<picture>` em CaseHeroV3.
-    devices: raster("/images/v3/cases/intuit/hero-devices-tablet.png", 900, 809),
+    // Trocado de novo em 30/09/2026 (v3) — proporção mais larga/curta,
+    // funciona melhor dentro do teto de 700px do hero no tablet.
+    devices: raster("/images/v3/cases/intuit/hero-devices-tablet.png", 1196, 825),
     devicesDesktop: raster("/images/v3/cases/intuit/hero-devices-desktop.png", 1029, 1272),
   },
   decisions: {
