@@ -10,14 +10,18 @@ export interface CaseReflectionV3NextCase {
   name: string;
   summary: string;
   background: string;
+  /** Logos circulares usam 32px; wordmarks precisam preservar proporção. */
+  logoWidth?: number;
 }
 
 export interface CaseReflectionV3Props {
   eyebrow: string;
   title: string;
-  lead: string;
-  quote: string;
-  close: string;
+  /** Opcional — Intuit não tem essa linha de abertura curta, só citação + fechamento. */
+  lead?: string;
+  /** Opcional — mesma razão do `lead`; nem toda composição usa as duas frases. */
+  quote?: string;
+  close?: string;
   nextLabel: string;
   next: CaseReflectionV3NextCase;
 }
@@ -37,15 +41,21 @@ export function CaseReflectionV3({ eyebrow, title, lead, quote, close, nextLabel
           <MotionReveal as="h2" className={styles.title} delayMs={80}>
             {title}
           </MotionReveal>
-          <MotionReveal as="p" className={styles.lead} delayMs={140}>
-            {lead}
-          </MotionReveal>
-          <MotionReveal as="p" className={styles.quote} delayMs={200}>
-            {quote}
-          </MotionReveal>
-          <MotionReveal as="p" className={styles.close} delayMs={260}>
-            {close}
-          </MotionReveal>
+          {lead && (
+            <MotionReveal as="p" className={styles.lead} delayMs={140}>
+              {lead}
+            </MotionReveal>
+          )}
+          {quote && (
+            <MotionReveal as="p" className={styles.quote} delayMs={200}>
+              {quote}
+            </MotionReveal>
+          )}
+          {close && (
+            <MotionReveal as="p" className={styles.close} delayMs={260}>
+              {close}
+            </MotionReveal>
+          )}
         </div>
 
         {/* Divisor vertical (Figma node 2262:65992) — 136px de altura,
@@ -62,7 +72,12 @@ export function CaseReflectionV3({ eyebrow, title, lead, quote, close, nextLabel
             delayMs={80}
             offsetPx={40}
           >
-            <img src={next.logoSrc} alt={next.logoAlt} className={styles.nextLogo} />
+            <img
+              src={next.logoSrc}
+              alt={next.logoAlt}
+              className={styles.nextLogo}
+              style={next.logoWidth ? { width: next.logoWidth, height: "auto" } : undefined}
+            />
             <div className={styles.nextBody}>
               <h3 className={styles.nextName}>{next.name}</h3>
               <p className={styles.nextSummary}>{next.summary}</p>

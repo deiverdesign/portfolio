@@ -37,6 +37,12 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .root.compactBefore {
+    padding-top: var(--space-800);
+  }
+}
+
 .card {
   /* Figma: gap-700(24px) entre ícone+label / divisor / valor, padding
      20×16, borda border-neutral-stronger (eu tinha default, mais

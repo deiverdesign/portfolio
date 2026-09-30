@@ -99,7 +99,7 @@ export function CaseHeroV3({
             <div className={styles.textBlock}>
               <MotionReveal as="div" className={styles.tags} triggerIfInitiallyVisible>
                 {tags.map((tag) => (
-                  <TagV3 key={tag} label={tag} />
+                  <TagV3 key={tag} label={tag} context="inverted" />
                 ))}
               </MotionReveal>
               <MotionReveal as="h1" className={styles.title} delayMs={80} triggerIfInitiallyVisible>

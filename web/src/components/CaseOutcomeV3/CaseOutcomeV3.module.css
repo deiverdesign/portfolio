@@ -100,6 +100,20 @@
   gap: var(--space-400);
 }
 
+/* Theodoor (Figma 2262:68549): as duas evidências ocupam uma única
+   coluna, uma sobre a outra, com 16px entre elas. Não reutiliza a faixa
+   horizontal/200px do HP, que é uma composição diferente. */
+.mediaStacked {
+  gap: var(--space-500);
+}
+
+@media (min-width: 1024px) {
+  .mediaStacked {
+    width: min(100%, 544px);
+    justify-self: end;
+  }
+}
+
 .primaryMedia {
   width: 100%;
   height: auto;
@@ -143,6 +157,26 @@
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
+}
+
+.secondaryMedia video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.mediaStacked .mediaRow {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  gap: var(--space-500);
+}
+
+.mediaStacked .secondaryMedia {
+  flex: 0 0 auto;
+  aspect-ratio: 544 / 376;
 }
 
 /* Wrapper do MotionReveal em volta do CaseTypeSpecimenCard — precisa

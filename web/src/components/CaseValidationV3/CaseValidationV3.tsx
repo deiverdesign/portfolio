@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import { ButtonV3 } from "@/components/ButtonV3/ButtonV3";
 import { CarouselIndicatorsV3 } from "@/components/CarouselIndicatorsV3/CarouselIndicatorsV3";
 import { EyebrowV3 } from "@/components/EyebrowV3/EyebrowV3";
@@ -25,6 +27,10 @@ export interface CaseValidationV3Props {
   title: string;
   body: string;
   media: RasterAsset;
+  /** Substitui o `<img>` padrão — usado pelo Intuit, cuja mídia é uma
+   * composição (texto sobre fundo com ruído + imagem), não uma screenshot
+   * simples. Quando presente, `media` só fornece as dimensões do slot. */
+  mediaContent?: ReactNode;
   cards: CaseValidationV3Card[];
   conclusion: string;
 }
@@ -39,7 +45,15 @@ export interface CaseValidationV3Props {
  * cards (não sobrava espaço de rolagem pra colar sem deixar vazio
  * depois) — ver comentário em useRailCarousel.
  */
-export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusion }: CaseValidationV3Props) {
+export function CaseValidationV3({
+  eyebrow,
+  title,
+  body,
+  media,
+  mediaContent,
+  cards,
+  conclusion,
+}: CaseValidationV3Props) {
   // Lógica de scroll centralizada em useRailCarousel (não é gambiarra
   // local): mesmo componente vai ser copiado pros outros 4 cases, então
   // o fix precisa estar num lugar só pra não precisar ser reaplicado 4
@@ -60,7 +74,7 @@ export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusio
           </MotionReveal>
         </div>
         <MotionReveal as="div" className={styles.media} delayMs={200} offsetPx={40}>
-          <img src={media.src} width={media.width} height={media.height} alt="" />
+          {mediaContent ?? <img src={media.src} width={media.width} height={media.height} alt="" />}
         </MotionReveal>
       </div>
 
@@ -137,7 +151,17 @@ export function CaseValidationV3({ eyebrow, title, body, media, cards, conclusio
         </div>
       </div>
 
-      <p className={styles.conclusion}>{conclusion}</p>
+      <MotionReveal as="div" className={styles.statement} delayMs={80}>
+        <span className={styles.statementAccent} aria-hidden="true">
+          <span className={styles.accentLine} />
+          <span className={styles.accentMark}>
+            <img src="/images/v3/icons/statement-chevron-start.svg" width="6" height="5.25" alt="" />
+            <img src="/images/v3/icons/statement-chevron-end.svg" width="6" height="5.25" alt="" />
+          </span>
+          <span className={styles.accentLine} />
+        </span>
+        <p className={styles.conclusion}>{conclusion}</p>
+      </MotionReveal>
     </section>
   );
 }

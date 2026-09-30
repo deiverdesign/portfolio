@@ -11,6 +11,8 @@ export interface CaseContextV3Props {
   /** Imagem before/after (ou outro placeholder reservado, enquanto o
    * asset não existir). */
   media: ReactNode;
+  /** Para cases cujo Context é mais longo, reduz só a transição aos metadados. */
+  compactAfter?: boolean;
 }
 
 /**
@@ -19,9 +21,9 @@ export interface CaseContextV3Props {
  * `CaseMetaRowV3` (My Role/Collaboration) vem depois deste bloco, não faz
  * parte dele.
  */
-export function CaseContextV3({ eyebrow, title, paragraphs, media }: CaseContextV3Props) {
+export function CaseContextV3({ eyebrow, title, paragraphs, media, compactAfter = false }: CaseContextV3Props) {
   return (
-    <section className={styles.section}>
+    <section className={[styles.section, compactAfter && styles.compactAfter].filter(Boolean).join(" ")}>
       <div className={styles.grid}>
         <div className={styles.text}>
           <div className={styles.titleBlock}>

@@ -2,8 +2,11 @@ import styles from "./CaseTypeSpecimenCard.module.css";
 
 export interface CaseTypeSpecimenCardProps {
   labelSrc: string;
+  labelAlt?: string;
   glyphSrc: string;
   surfaceColor: string;
+  /** O label é um SVG exportado: cada case preserva as próprias medidas. */
+  labelSize?: { width: number; height: number };
 }
 
 /**
@@ -13,10 +16,15 @@ export interface CaseTypeSpecimenCardProps {
  * `--color-case-scrioo-accent`) — mesmo padrão dos ícones do IconV3, não
  * usam `currentColor`. Só o fundo é configurável.
  */
-export function CaseTypeSpecimenCard({ labelSrc, glyphSrc, surfaceColor }: CaseTypeSpecimenCardProps) {
+export function CaseTypeSpecimenCard({ labelSrc, labelAlt = "Noto Sans", glyphSrc, surfaceColor, labelSize }: CaseTypeSpecimenCardProps) {
   return (
     <div className={styles.root} style={{ background: surfaceColor }}>
-      <img src={labelSrc} alt="Noto Sans" className={styles.label} />
+      <img
+        src={labelSrc}
+        alt={labelAlt}
+        className={styles.label}
+        style={labelSize ? { width: labelSize.width, height: labelSize.height } : undefined}
+      />
       <img src={glyphSrc} alt="" aria-hidden="true" className={styles.glyph} />
     </div>
   );

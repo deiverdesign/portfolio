@@ -14,7 +14,12 @@ export interface CaseOutcomeV3Props {
   /** Evidência principal (ex.: handoff de acessibilidade). */
   primaryMedia: RasterAsset;
   /** Segunda evidência, menor — ex.: foto do produto em uso. */
-  secondaryMedia: RasterAsset;
+  secondaryMedia?: RasterAsset;
+  /** Evidência alternativa, como vídeo de protótipo. */
+  secondaryContent?: ReactNode;
+  /** Algumas composições do Figma usam as duas evidências empilhadas,
+   * em vez da fileira compacta usada pelo case HP. */
+  stackedMedia?: boolean;
   /** Peça extra pequena, ex.: cartão com amostra de tipografia. */
   extra?: ReactNode;
 }
@@ -32,6 +37,8 @@ export function CaseOutcomeV3({
   checklist,
   primaryMedia,
   secondaryMedia,
+  secondaryContent,
+  stackedMedia = false,
   extra,
 }: CaseOutcomeV3Props) {
   return (
@@ -55,18 +62,16 @@ export function CaseOutcomeV3({
           </ul>
         </div>
 
-        <div className={styles.media}>
+        <div className={`${styles.media} ${stackedMedia ? styles.mediaStacked : ""}`}>
           <MotionReveal as="div" className={styles.primaryMedia} delayMs={80} offsetPx={40}>
             <img src={primaryMedia.src} width={primaryMedia.width} height={primaryMedia.height} alt="" />
           </MotionReveal>
-          <div className={styles.mediaRow}>
-            <MotionReveal as="div" className={styles.secondaryMedia} delayMs={160} offsetPx={40}>
-              <img src={secondaryMedia.src} width={secondaryMedia.width} height={secondaryMedia.height} alt="" />
-            </MotionReveal>
-            <MotionReveal as="div" className={styles.extraMedia} delayMs={240} offsetPx={40}>
-              {extra}
-            </MotionReveal>
-          </div>
+          {(secondaryMedia || secondaryContent || extra) && <div className={styles.mediaRow}>
+            {(secondaryMedia || secondaryContent) && <MotionReveal as="div" className={styles.secondaryMedia} delayMs={160} offsetPx={40}>
+              {secondaryContent ?? <img src={secondaryMedia!.src} width={secondaryMedia!.width} height={secondaryMedia!.height} alt="" />}
+            </MotionReveal>}
+            {extra && <MotionReveal as="div" className={styles.extraMedia} delayMs={240} offsetPx={40}>{extra}</MotionReveal>}
+          </div>}
         </div>
       </div>
     </section>

@@ -265,18 +265,60 @@
   padding: 0;
 }
 
+.statement {
+  /* Componente Statement do Figma (2262:68520): não é uma borda simples.
+     A barra escura é interrompida por dois polígonos que formam o corte
+     geométrico em ampulheta — mesmo tratamento já usado em HP. */
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-800);
+  max-width: 1120px;
+  margin: var(--space-layout-300) auto 0;
+}
+
+.statementAccent {
+  display: flex;
+  flex: 0 0 6px;
+  flex-direction: column;
+  align-items: center;
+  width: 6px;
+}
+
+.accentLine {
+  flex: 1 1 auto;
+  width: 6px;
+  min-height: 1px;
+  background: var(--color-surface-neutral-inverse-default);
+}
+
+.accentMark {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  width: 6px;
+}
+
+.accentMark img {
+  display: block;
+  width: 6px;
+  height: 5.25px;
+}
+
+.accentMark img:first-child {
+  transform: scaleY(-1);
+}
+
 .conclusion {
-  /* Alinha à mesma borda esquerda do `.intro`/`.rail` (centralizados em
-     1348px), mas com o texto mais estreito — por isso não dá pra usar
-     `margin:auto` direto (centralizaria a citação inteira, não só
-     alinharia a borda). */
-  margin: var(--space-800) 0 0 max(0px, calc((100% - 1348px) / 2));
-  max-width: 680px;
+  margin: 0;
   font-family: var(--font-family-editorial);
   font-weight: var(--font-weight-editorial-medium);
   font-size: var(--font-size-body-lead);
   line-height: var(--line-height-body-lead);
   color: var(--color-foreground-neutral-default);
-  padding-left: var(--space-500);
-  border-left: 2px solid var(--color-border-neutral-default);
+}
+
+@media (max-width: 599px) {
+  .statement {
+    gap: var(--space-500);
+  }
 }

@@ -177,6 +177,8 @@
 .nextLogo {
   height: 32px;
   width: 32px;
+  object-fit: contain;
+  object-position: left top;
 }
 
 .nextBody {

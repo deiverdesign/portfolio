@@ -22,6 +22,10 @@ export interface CaseDecisionsV3Props {
   eyebrow: string;
   title: string;
   items: CaseDecisionsV3Item[];
+  /** Alguns cases têm uma única evidência grande, sem a faixa de miniaturas. */
+  showThumbnails?: boolean;
+  /** Quando as imagens de apoio não mapeiam 1:1 para os itens do acordeão. */
+  mediaThumbnails?: CaseDecisionsV3Item["media"][];
 }
 
 /**
@@ -33,10 +37,10 @@ export interface CaseDecisionsV3Props {
  * Media: composição estática de uma imagem principal e duas miniaturas;
  * ela não responde ao estado do acordeão.
  */
-export function CaseDecisionsV3({ locale, eyebrow, title, items }: CaseDecisionsV3Props) {
+export function CaseDecisionsV3({ locale, eyebrow, title, items, showThumbnails = true, mediaThumbnails }: CaseDecisionsV3Props) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const active = items[0];
-  const thumbnails = items.slice(1);
+  const thumbnails = mediaThumbnails ? mediaThumbnails.map((media) => ({ media })) : items.slice(1);
 
   return (
     <section className={styles.section}>
@@ -56,11 +60,11 @@ export function CaseDecisionsV3({ locale, eyebrow, title, items }: CaseDecisions
             alt=""
             className={styles.mediaMain}
           />
-          {thumbnails.length > 0 && (
+          {showThumbnails && thumbnails.length > 0 && (
             <div className={styles.mediaThumbs}>
               {thumbnails.map((item) => (
                 <div
-                  key={item.title}
+                  key={item.media.src}
                   className={styles.mediaThumbContainer}
                 >
                   <img

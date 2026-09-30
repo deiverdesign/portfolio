@@ -1,0 +1,32 @@
+.section { background: var(--color-surface-neutral-strong); padding: var(--space-layout-400) var(--space-layout-300); color: var(--color-foreground-neutral-stronger); overflow: hidden; }
+.intro { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: var(--space-layout-200); align-items: center; max-width: 1348px; margin: 0 auto var(--space-layout-400); }
+.text { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-500); max-width: 570px; }
+.title { margin: 0; font-family: var(--font-family-editorial); font-size: var(--font-size-display-page); font-weight: var(--font-weight-editorial-light); line-height: var(--line-height-display-page); }
+.body, .cardBody p { margin: 0; font-family: var(--font-family-body); font-size: var(--font-size-body-default); line-height: var(--line-height-body-default); color: var(--color-foreground-neutral-default); }
+.media img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+.rail { max-width: 1348px; margin: 0 auto; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+.rail::-webkit-scrollbar { display: none; }
+.track { display: flex; gap: var(--space-500); width: max-content; margin: 0; padding: 0; list-style: none; }
+.card { flex: 0 0 min(600px, 85vw); scroll-snap-align: start; display: flex; flex-direction: column; gap: var(--space-900); overflow: hidden; border: 1px solid var(--color-border-neutral-subtlest); border-radius: var(--radius-sm); background: var(--color-surface-neutral-default); }
+.banner { display: block; width: 100%; height: auto; }
+.cardBody { display: flex; flex-direction: column; gap: var(--space-700); padding: 0 var(--space-700) var(--space-800); }
+.name { margin: 0; font-family: var(--font-family-body); font-size: var(--font-size-heading-section); font-weight: 600; line-height: var(--line-height-heading-section); color: var(--color-foreground-neutral-default); }
+.label { display: block; margin-bottom: var(--space-200); font-family: var(--font-family-data); font-size: var(--font-size-meta-label); font-weight: var(--font-weight-meta-label); letter-spacing: var(--letter-spacing-meta-label); text-transform: uppercase; color: var(--color-foreground-neutral-default); }
+.divider { height: 1px; background: var(--color-border-neutral-subtle); }
+.details { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-700); }
+.controls { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-400); max-width: 1348px; padding-left: 80px; margin: var(--space-600) auto 0; }
+.dots { display: flex; flex: 1; justify-content: center; }
+.arrows { display: flex; gap: var(--space-300); }
+.arrowButton { width: 48px; height: 48px; padding: 0; }
+.statement { display: flex; align-items: stretch; gap: var(--space-800); max-width: 1120px; margin: var(--space-layout-300) auto 0; }
+.statementAccent { display: flex; flex: 0 0 6px; flex-direction: column; align-items: center; width: 6px; }
+.accentLine { flex: 1 1 auto; width: 6px; min-height: 1px; background: var(--color-surface-neutral-inverse-default); }
+.accentMark { display: flex; flex: 0 0 auto; flex-direction: column; width: 6px; }
+.accentMark img { display: block; width: 6px; height: 5.25px; }
+/* O primeiro polígono aponta PARA BAIXO e fecha a barra de cima; o
+   segundo aponta PARA CIMA e abre a barra de baixo. É o corte em
+   ampulheta do componente Statement do Figma, não um losango solto. */
+.accentMark img:first-child { transform: scaleY(-1); }
+.conclusion { margin: 0; white-space: pre-line; font-family: var(--font-family-editorial); font-size: var(--font-size-body-lead); font-weight: 500; line-height: var(--line-height-body-lead); color: var(--color-foreground-neutral-default); }
+@media (max-width: 1023px) { .section { padding: var(--space-800) var(--space-600); } .intro { grid-template-columns: 1fr; gap: var(--space-700); } .text { max-width: none; } .card { flex-basis: min(600px, 85vw); } }
+@media (max-width: 599px) { .cardBody { padding: var(--space-500); } .details { grid-template-columns: 1fr; gap: var(--space-500); } .controls { gap: var(--space-400); } .statement { gap: var(--space-500); } }

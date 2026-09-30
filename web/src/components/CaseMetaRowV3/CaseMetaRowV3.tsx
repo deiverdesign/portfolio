@@ -13,6 +13,7 @@ export interface CaseMetaRowV3Item {
 
 export interface CaseMetaRowV3Props {
   items: CaseMetaRowV3Item[];
+  compactBefore?: boolean;
 }
 
 function renderValue(value: string): ReactNode {
@@ -26,9 +27,9 @@ function renderValue(value: string): ReactNode {
  * ex. node 2262:65858 (SCRIOO Desktop). Estrutura genérica — qualquer
  * case pode passar 1 a N itens (hoje sempre 2: Role e Collaboration).
  */
-export function CaseMetaRowV3({ items }: CaseMetaRowV3Props) {
+export function CaseMetaRowV3({ items, compactBefore = false }: CaseMetaRowV3Props) {
   return (
-    <div className={styles.root}>
+    <div className={[styles.root, compactBefore && styles.compactBefore].filter(Boolean).join(" ")}>
       {items.map((item, index) => (
         <MotionReveal
           as="div"

@@ -33,6 +33,14 @@
   }
 }
 
+/* HP: o Context tem quatro parágrafos substantivos. A margem de 96px que
+   segue uma seção curta cria uma área vazia excessiva antes dos metadados. */
+@media (min-width: 1024px) {
+  .section.compactAfter {
+    padding-bottom: var(--space-800);
+  }
+}
+
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
