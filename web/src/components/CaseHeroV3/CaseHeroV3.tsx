@@ -17,6 +17,7 @@ type FrameStyle = CSSProperties & {
 
 type DevicesStyle = CSSProperties & {
   "--case-hero-device-position-tablet"?: string;
+  "--case-hero-device-fit-tablet"?: string;
 };
 
 export interface CaseHeroV3Props {
@@ -32,14 +33,16 @@ export interface CaseHeroV3Props {
    * usam um corte mais fechado. Opcional: os outros cases usam a mesma
    * imagem em todo breakpoint, como sempre. */
   devicesDesktop?: RasterAsset;
-  /** Alinhamento vertical da imagem do device dentro da caixa, só no
-   * tablet (600-1151px). Default "center", sem efeito na maioria dos
-   * casos porque `.devices` costuma ficar height-constrained (a imagem
-   * já enche a altura toda da caixa, sem sobra vertical — medido com o
-   * Deiver em 30/09/2026 pro caso da Intuit). Existe como reforço pra
-   * cases que precisem ficar colados na base caso a proporção da caixa
-   * mude dentro desse range. */
-  deviceAlignTablet?: "center" | "bottom";
+  /** Como a foto do device se encaixa na caixa, só no tablet
+   * (600-1151px). Default "center": `object-fit:contain`, a imagem
+   * inteira cabe dentro da caixa (pode sobrar fundo nas laterais se a
+   * proporção não bater — o comportamento de sempre pras outras
+   * cases). "fill": `object-fit:cover` ancorado no topo — acha do
+   * Deiver em 30/09/2026 comparando "como está" x "como deveria estar":
+   * a Intuit sobrava uma tira de fundo visível numa borda porque a foto
+   * não preenchia a caixa inteira; cover corta o excesso em vez de
+   * mostrar a imagem inteira com respiro. */
+  deviceAlignTablet?: "center" | "fill";
   /** Imagem de fundo (cor + gradiente + luz já incorporados) — desktop/tablet. */
   backgroundDesktop: RasterAsset;
   backgroundTablet: RasterAsset;
@@ -85,7 +88,9 @@ export function CaseHeroV3({
   };
 
   const devicesStyle: DevicesStyle | undefined =
-    deviceAlignTablet === "bottom" ? { "--case-hero-device-position-tablet": "bottom" } : undefined;
+    deviceAlignTablet === "fill"
+      ? { "--case-hero-device-fit-tablet": "cover", "--case-hero-device-position-tablet": "top" }
+      : undefined;
 
   return (
     <section className={styles.root}>

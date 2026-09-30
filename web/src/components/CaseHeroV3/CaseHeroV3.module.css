@@ -324,13 +324,18 @@
   .devices img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    /* Default "center": mantém o comportamento de sempre pras outras
-       cases. A Intuit passa "bottom" via `deviceAlignTablet` — não faz
-       diferença quando a imagem já enche a altura toda da caixa (sem
-       sobra vertical, medido com o Deiver em 30/09/2026), mas evita
-       regressão se a largura da caixa mudar dentro do range 600-1151px
-       e sobrar espaço vertical em algum ponto. */
+    /* Default "contain"/"center": mantém o comportamento de sempre pras
+       outras cases (a imagem inteira cabe na caixa, com respiro nas
+       laterais quando a proporção não bate). A Intuit usa
+       "cover"/"top" via `deviceAlignTablet="fill"` — achado do Deiver
+       em 30/09/2026, com mockup comparando "como está" x "como deveria
+       estar": o problema real não era falta de altura (já corrigido
+       antes), era a foto não preencher a caixa inteira, sobrando uma
+       tira de fundo visível numa das bordas. `cover` faz a imagem
+       preencher 100% da caixa sempre, cortando o excesso; `top` mantém
+       a cabeça inteira no enquadramento (a régua natural dessa foto já
+       corta no peito). */
+    object-fit: var(--case-hero-device-fit-tablet, contain);
     object-position: var(--case-hero-device-position-tablet, center);
   }
 

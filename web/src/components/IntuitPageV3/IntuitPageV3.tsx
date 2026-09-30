@@ -61,7 +61,7 @@ export function IntuitPageV3({ locale }: IntuitPageV3Props) {
           backHref={`${homeHref}#selected-work`}
           devices={INTUIT_ASSETS.hero.devices}
           devicesDesktop={INTUIT_ASSETS.hero.devicesDesktop}
-          deviceAlignTablet="bottom"
+          deviceAlignTablet="fill"
           backgroundDesktop={INTUIT_ASSETS.hero.backgroundDesktop}
           backgroundTablet={INTUIT_ASSETS.hero.backgroundTablet}
           backgroundMobile={`url(${INTUIT_ASSETS.hero.backgroundMobile.src})`}
