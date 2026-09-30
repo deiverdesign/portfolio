@@ -277,7 +277,13 @@
 
   .textBlock {
     width: 100%;
-    max-width: 554px;
+    /* Achado do Deiver em 30/09/2026: o max-width:554px (herdado do
+       tempo em que .body dividia as colunas lado a lado) não fazia
+       sentido aqui — nesse breakpoint .body já empilha em coluna
+       (flex-direction:column acima), então tags/título têm a largura
+       toda do frame disponível pra usar, e esse teto só encolhia o
+       título sem motivo. `.summary` abaixo ganhou o mesmo 554px
+       diretamente, pra manter a leitura do corpo como estava. */
     /* Mesma medição: 24px entre tags→título e título→resumo, não os
        16px do gap base (que valia pro desktop). flex:0 0 auto (não só
        flex-shrink:0) — a regra base tem flex:1 1 0, que sobrava sem
@@ -287,6 +293,10 @@
        espaço pra caber nos 700px é só a imagem do device, abaixo. */
     flex: 0 0 auto;
     gap: 24px;
+  }
+
+  .summary {
+    max-width: 554px;
   }
 
   .devices {
@@ -309,6 +319,14 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+    /* Default "center": mantém o comportamento de sempre pras outras
+       cases. A Intuit (retrato, sobra espaço vertical dentro da caixa
+       flex:1) passa "bottom" via `deviceAlignTablet` — achado do Deiver
+       em 30/09/2026: a pessoa "flutuava" no meio da caixa nesse
+       breakpoint específico, quando devia ficar colada na base do hero,
+       igual ao desktop e ao mobile (que não têm esse problema porque a
+       imagem já ocupa mais da altura disponível). */
+    object-position: var(--case-hero-device-position-tablet, center);
   }
 
   .title {

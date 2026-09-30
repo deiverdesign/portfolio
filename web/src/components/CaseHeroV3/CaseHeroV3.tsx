@@ -15,6 +15,10 @@ type FrameStyle = CSSProperties & {
   "--case-hero-bg-mobile"?: string;
 };
 
+type DevicesStyle = CSSProperties & {
+  "--case-hero-device-position-tablet"?: string;
+};
+
 export interface CaseHeroV3Props {
   locale: Locale;
   tags: string[];
@@ -28,6 +32,13 @@ export interface CaseHeroV3Props {
    * usam um corte mais fechado. Opcional: os outros cases usam a mesma
    * imagem em todo breakpoint, como sempre. */
   devicesDesktop?: RasterAsset;
+  /** Alinhamento vertical da imagem do device dentro da caixa, só no
+   * tablet (600-1151px) — ali `.devices` tem altura própria e
+   * `object-fit:contain` pode sobrar espaço em cima/embaixo. Default
+   * "center". Cases com foto de retrato (ex. Intuit) usam "bottom" pra
+   * colar na base do hero, igual desktop/mobile; a maioria dos cases
+   * (paisagem) já preenche a altura e não precisa disso. */
+  deviceAlignTablet?: "center" | "bottom";
   /** Imagem de fundo (cor + gradiente + luz já incorporados) — desktop/tablet. */
   backgroundDesktop: RasterAsset;
   backgroundTablet: RasterAsset;
@@ -58,6 +69,7 @@ export function CaseHeroV3({
   backHref,
   devices,
   devicesDesktop,
+  deviceAlignTablet = "center",
   backgroundDesktop,
   backgroundTablet,
   backgroundMobile,
@@ -70,6 +82,9 @@ export function CaseHeroV3({
     "--case-hero-bg-tablet": `url(${backgroundTablet.src})`,
     "--case-hero-bg-mobile": backgroundMobile,
   };
+
+  const devicesStyle: DevicesStyle | undefined =
+    deviceAlignTablet === "bottom" ? { "--case-hero-device-position-tablet": "bottom" } : undefined;
 
   return (
     <section className={styles.root}>
@@ -122,6 +137,7 @@ export function CaseHeroV3({
               delayMs={240}
               offsetPx={40}
               triggerIfInitiallyVisible
+              style={devicesStyle}
             >
               {devicesDesktop ? (
                 <picture>
