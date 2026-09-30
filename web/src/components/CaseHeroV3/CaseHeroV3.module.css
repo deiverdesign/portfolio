@@ -239,11 +239,17 @@
 
   .frame {
     /* Regra do Deiver em 30/09/2026: altura MÁXIMA de 700px no tablet
-       (era min-height:784, deixando o frame crescer livre). Os 6
-       espaçamentos ao redor do conteúdo (comentário abaixo) continuam
-       fixos — quem cede espaço pra caber em 700px é a imagem do device,
-       não o texto nem os respiros. */
-    height: 700px;
+       PRO CONTEÚDO (texto+imagem), sem contar os 24px de respiro em
+       cima/embaixo — não os 700px totais do card. Achado do próprio
+       Deiver em 30/09/2026 testando `box-sizing:content-box` no
+       DevTools: com `border-box` (padrão do projeto, correto em quase
+       tudo), `.content{height:100%}` desconta os 48px de padding de
+       DENTRO dos 700px, sobrando menos altura pra imagem do device (que
+       é quem cede espaço nessa composição) — por isso ela "flutuava",
+       pequena demais dentro da própria caixa. 700+24+24=748 mantém
+       border-box global intacto (não precisa da gambiarra de desligar
+       ele) e devolve pro conteúdo os 700px que eram a intenção real. */
+    height: 748px;
     min-height: 0;
   }
 
