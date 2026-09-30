@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "source": {
     "file": "site-copy.xlsx",
-    "sha256": "63677f79e651b789c6727b008a1a08b858c671a193b2c468f66d0359847c2b43",
+    "sha256": "aa1ce6c714db5c26ebcd075bd9effd255cf76f499f76686fbd42b320f9227cf8",
     "entryCount": 363,
     "ignoredRows": [
       73
@@ -1324,8 +1324,8 @@
       "note": "Nome do produto mantido em inglês."
     },
     "hp.hero.summary": {
-      "en": "The subscription already delivered ink and paper. This one delivered the printer. I worked out what that changed inside the account, and surfaced the questions nobody had answered yet.",
-      "pt": "A assinatura já entregava tinta e papel. Esta passou a entregar a impressora. Descobri o que isso mudava dentro da conta e trouxe à tona as perguntas que ninguém tinha respondido ainda.",
+      "en": "HP's subscription already delivered ink and paper. The All-In Plan added the printer itself. I designed how the account handles a printer the customer doesn't own, and raised the open questions that came with it.",
+      "pt": "A assinatura da HP já entregava tinta e papel. O All-In Plan passou a incluir a própria impressora. Desenhei como a conta lida com uma impressora que o cliente não é dono, e levantei as perguntas em aberto que isso trouxe.",
       "page": "HP",
       "section": "Hero",
       "status": "revisar",
@@ -1459,8 +1459,8 @@
       "note": null
     },
     "hp.decisions.2.proposal": {
-      "en": "I extended the delivery pattern into a lifecycle: each hardware state carries what it means and what the customer's next step is, rather than leaving the end of the term as a gap.",
-      "pt": "Transformei o padrão de entrega em um ciclo de vida: cada estado do hardware diz o que significa e qual é o próximo passo do cliente, em vez de deixar o fim do contrato como um vazio.",
+      "en": "I extended the delivery screens to cover the printer's whole life. Each state tells the customer two things: what's happening, and what to do next. That includes the end of the plan, when the printer has to go back.",
+      "pt": "Estendi as telas de entrega para cobrir toda a vida da impressora. Cada estado diz duas coisas ao cliente: o que está acontecendo e o que fazer a seguir. Isso inclui o fim do plano, quando a impressora precisa voltar.",
       "page": "HP",
       "section": "Key decisions",
       "status": "revisar",
@@ -1486,8 +1486,8 @@
       "note": null
     },
     "hp.questions.body": {
-      "en": "Ink and paper were adapted from a service that already worked. The hardware was new territory, and designing the account kept running into rules that didn't exist yet — because an object that has to be returned raises questions a consumable never does. We took each one to HP as it came up.",
-      "pt": "Tinta e papel foram adaptados de um serviço que já funcionava. O hardware era território novo, e desenhar a conta esbarrava o tempo todo em regras que ainda não existiam, porque um objeto que precisa ser devolvido levanta perguntas que um consumível nunca levanta. Levamos cada uma para a HP assim que apareceu.",
+      "en": "Ink and paper could follow the rules Instant Ink already had. The printer couldn't: a cartridge gets used up, but a printer has to come back. Whenever a screen needed a rule that was still being defined, we brought the question to HP's product team.",
+      "pt": "Tinta e papel podiam seguir as regras que o Instant Ink já tinha. A impressora não: um cartucho se esgota, mas uma impressora precisa voltar. Sempre que uma tela precisava de uma regra que ainda estava sendo definida, levamos a pergunta para o time de produto da HP.",
       "page": "HP",
       "section": "Open questions",
       "status": "revisar",
@@ -1504,8 +1504,8 @@
       "note": null
     },
     "hp.questions.1.question": {
-      "en": "What the account shows between the end of the term and the hardware leaving the house, and what the customer is expected to do.",
-      "pt": "O que a conta mostra entre o fim do contrato e a saída do hardware da casa, e o que se espera que o cliente faça.",
+      "en": "When the plan ends but the printer is still at home, what does the account show, and what should the customer do?",
+      "pt": "Quando o plano termina mas a impressora ainda está em casa, o que a conta mostra, e o que o cliente deve fazer?",
       "page": "HP",
       "section": "Open questions",
       "status": "revisar",
@@ -1576,8 +1576,8 @@
       "note": null
     },
     "hp.questions.3.question": {
-      "en": "What, if anything, the interface is expected to capture, and at what moment.",
-      "pt": "O que a interface deve registrar, se é que deve, e em que momento.",
+      "en": "Should the account record the printer's condition before it ships back (for example, a photo or a checklist)? If so, at which step?",
+      "pt": "A conta deveria registrar o estado da impressora antes da devolução (por exemplo, uma foto ou um checklist)? Se sim, em qual etapa?",
       "page": "HP",
       "section": "Open questions",
       "status": "revisar",
@@ -1603,8 +1603,8 @@
       "note": null
     },
     "hp.questions.conclusion": {
-      "en": "Some rules came back defined. Others came back as still being decided, and not in scope — which drew the line between what was ours to design and what was HP's to settle.\n\nAsking early is what turned a gap into a decision instead of an assumption.",
-      "pt": "Algumas regras voltaram definidas. Outras voltaram como ainda em decisão e fora do escopo, o que marcou a linha entre o que cabia a nós desenhar e o que cabia à HP resolver.\n\nPerguntar cedo foi o que transformou uma lacuna em decisão, e não em suposição.",
+      "en": "HP answered some questions right away. Others were still being worked out and stayed outside our scope. That made it clear what we would design now and what HP would decide later.\n\nAsking early is what turned a gap into a decision instead of an assumption.",
+      "pt": "A HP respondeu algumas perguntas na hora. Outras ainda estavam sendo definidas e ficaram fora do nosso escopo. Isso deixou claro o que cabia a nós desenhar agora e o que a HP decidiria depois.\n\nPerguntar cedo foi o que transformou uma lacuna em decisão, e não em suposição.",
       "page": "HP",
       "section": "Open questions",
       "status": "revisar",
@@ -1675,8 +1675,8 @@
       "note": null
     },
     "hp.reflection.lead": {
-      "en": "UI work can surface product questions nobody has answered yet.",
-      "pt": "O trabalho de UI pode trazer à tona perguntas de produto que ninguém respondeu ainda.",
+      "en": "Designing screens can reveal product questions early, while they're still easy to settle.",
+      "pt": "Desenhar telas pode revelar perguntas de produto cedo, enquanto ainda são fáceis de resolver.",
       "page": "HP",
       "section": "Reflection",
       "status": "revisar",
@@ -1684,8 +1684,8 @@
       "note": null
     },
     "hp.reflection.body": {
-      "en": "When a subscription includes physical operations, the interface isn't organizing choices. It's making the service logic explicit — often before the business has.",
-      "pt": "Quando uma assinatura inclui operações físicas, a interface não está organizando escolhas. Está tornando explícita a lógica do serviço, muitas vezes antes do próprio negócio.",
+      "en": "When a subscription includes a physical object, the interface does more than list options. It has to show how the service works, step by step, and that reveals where rules still need to be written.",
+      "pt": "Quando uma assinatura inclui um objeto físico, a interface faz mais do que listar opções. Ela precisa mostrar como o serviço funciona, passo a passo, e isso revela onde as regras ainda precisam ser escritas.",
       "page": "HP",
       "section": "Reflection",
       "status": "revisar",

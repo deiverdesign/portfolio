@@ -27,7 +27,13 @@ export function useRailCarousel<T extends HTMLElement = HTMLDivElement>() {
     const rail = railRef.current;
     if (!rail) return;
     const maxScrollLeft = rail.scrollWidth - rail.clientWidth;
-    const pages = Math.max(1, Math.ceil(rail.scrollWidth / rail.clientWidth));
+    /* clientWidth pode ser 0 na primeira medição (rail ainda sem layout,
+       ex. dentro de um container que só chega à largura final depois de
+       outro reflow) — scrollWidth/0 vira Infinity/NaN, e Math.max(1, NaN)
+       continua NaN, o que quebra o Array.from({length}) de
+       CarouselIndicatorsV3 (RangeError). Reproduzido no HP, não na
+       SCRIOO — achado ao verificar mudanças de texto em 30/09/2026. */
+    const pages = rail.clientWidth > 0 ? Math.max(1, Math.ceil(rail.scrollWidth / rail.clientWidth)) : 1;
     setPageCount(pages);
     setActivePage(maxScrollLeft > 0 ? Math.round((rail.scrollLeft / maxScrollLeft) * (pages - 1)) : 0);
   }, []);
