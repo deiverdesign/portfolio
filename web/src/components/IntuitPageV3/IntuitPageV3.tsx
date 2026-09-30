@@ -60,6 +60,7 @@ export function IntuitPageV3({ locale }: IntuitPageV3Props) {
           summary={getCopy(locale, "intuit.hero.summary")}
           backHref={`${homeHref}#selected-work`}
           devices={INTUIT_ASSETS.hero.devices}
+          devicesDesktop={INTUIT_ASSETS.hero.devicesDesktop}
           backgroundDesktop={INTUIT_ASSETS.hero.backgroundDesktop}
           backgroundTablet={INTUIT_ASSETS.hero.backgroundTablet}
           backgroundMobile={`url(${INTUIT_ASSETS.hero.backgroundMobile.src})`}

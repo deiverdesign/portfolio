@@ -21,7 +21,13 @@ export interface CaseHeroV3Props {
   title: string;
   summary: string;
   backHref: string;
+  /** Usada em tablet/mobile — e em desktop também, se `devicesDesktop` não for passado. */
   devices: RasterAsset;
+  /** Alguns cases (ex. Intuit) precisam de um crop diferente em desktop —
+   * a foto de corpo inteiro só cabe numa tela mais alta; tablet/mobile
+   * usam um corte mais fechado. Opcional: os outros cases usam a mesma
+   * imagem em todo breakpoint, como sempre. */
+  devicesDesktop?: RasterAsset;
   /** Imagem de fundo (cor + gradiente + luz já incorporados) — desktop/tablet. */
   backgroundDesktop: RasterAsset;
   backgroundTablet: RasterAsset;
@@ -51,6 +57,7 @@ export function CaseHeroV3({
   summary,
   backHref,
   devices,
+  devicesDesktop,
   backgroundDesktop,
   backgroundTablet,
   backgroundMobile,
@@ -116,7 +123,16 @@ export function CaseHeroV3({
               offsetPx={40}
               triggerIfInitiallyVisible
             >
-              <img src={devices.src} width={devices.width} height={devices.height} alt="" />
+              {devicesDesktop ? (
+                <picture>
+                  {/* Mesmo breakpoint que muda o layout pra duas colunas
+                     (ver .frame/.content em CaseHeroV3.module.css). */}
+                  <source media="(min-width: 1152px)" srcSet={devicesDesktop.src} />
+                  <img src={devices.src} width={devices.width} height={devices.height} alt="" />
+                </picture>
+              ) : (
+                <img src={devices.src} width={devices.width} height={devices.height} alt="" />
+              )}
             </MotionReveal>
           </div>
         </div>
