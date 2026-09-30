@@ -238,7 +238,13 @@
   }
 
   .frame {
-    min-height: 784px;
+    /* Regra do Deiver em 30/09/2026: altura MÁXIMA de 700px no tablet
+       (era min-height:784, deixando o frame crescer livre). Os 6
+       espaçamentos ao redor do conteúdo (comentário abaixo) continuam
+       fixos — quem cede espaço pra caber em 700px é a imagem do device,
+       não o texto nem os respiros. */
+    height: 700px;
+    min-height: 0;
   }
 
   .content {
@@ -256,7 +262,13 @@
   }
 
   .body {
-    flex: 0 0 auto;
+    /* flex:1 (não mais 0 0 auto) — precisa ocupar a altura real que
+       sobra dentro dos 700px fixos do frame, senão `.devices` abaixo
+       não tem uma altura de verdade pra encolher contra. Mesmo ajuste
+       de min-height:0 feito no desktop (achado de 30/09/2026: flex
+       items não encolhem abaixo do próprio conteúdo por padrão). */
+    flex: 1;
+    min-height: 0;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
@@ -267,13 +279,36 @@
     width: 100%;
     max-width: 554px;
     /* Mesma medição: 24px entre tags→título e título→resumo, não os
-       16px do gap base (que valia pro desktop). */
+       16px do gap base (que valia pro desktop). flex:0 0 auto (não só
+       flex-shrink:0) — a regra base tem flex:1 1 0, que sobrava sem
+       override e fazia o textBlock competir com `.devices` pelo espaço
+       e crescer além do próprio conteúdo (achado do Deiver em
+       30/09/2026, os dois acabavam com a mesma altura). Quem cede
+       espaço pra caber nos 700px é só a imagem do device, abaixo. */
+    flex: 0 0 auto;
     gap: 24px;
   }
 
   .devices {
-    width: min(100%, 615.645px);
+    /* Antes só limitava a LARGURA (max 615.645px) e a altura seguia a
+       proporção da imagem, livre — por isso o frame crescia acima de
+       700px. Agora ocupa o que sobra de `.body` (flex:1) e a imagem
+       usa object-fit:contain pra caber, do mesmo jeito que o desktop
+       (CaseHeroV3.module.css, achado do Deiver com a foto retrato da
+       Intuit em 30/09/2026) — esse teto de largura vira só um máximo,
+       não mais o valor que define a altura. */
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    max-width: 615.645px;
+    height: auto;
     align-self: center;
+  }
+
+  .devices img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 }
 
