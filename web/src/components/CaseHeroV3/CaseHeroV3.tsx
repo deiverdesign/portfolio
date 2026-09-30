@@ -33,11 +33,12 @@ export interface CaseHeroV3Props {
    * imagem em todo breakpoint, como sempre. */
   devicesDesktop?: RasterAsset;
   /** Alinhamento vertical da imagem do device dentro da caixa, só no
-   * tablet (600-1151px) — ali `.devices` tem altura própria e
-   * `object-fit:contain` pode sobrar espaço em cima/embaixo. Default
-   * "center". Cases com foto de retrato (ex. Intuit) usam "bottom" pra
-   * colar na base do hero, igual desktop/mobile; a maioria dos cases
-   * (paisagem) já preenche a altura e não precisa disso. */
+   * tablet (600-1151px). Default "center", sem efeito na maioria dos
+   * casos porque `.devices` costuma ficar height-constrained (a imagem
+   * já enche a altura toda da caixa, sem sobra vertical — medido com o
+   * Deiver em 30/09/2026 pro caso da Intuit). Existe como reforço pra
+   * cases que precisem ficar colados na base caso a proporção da caixa
+   * mude dentro desse range. */
   deviceAlignTablet?: "center" | "bottom";
   /** Imagem de fundo (cor + gradiente + luz já incorporados) — desktop/tablet. */
   backgroundDesktop: RasterAsset;

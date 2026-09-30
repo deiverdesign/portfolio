@@ -320,12 +320,11 @@
     height: 100%;
     object-fit: contain;
     /* Default "center": mantém o comportamento de sempre pras outras
-       cases. A Intuit (retrato, sobra espaço vertical dentro da caixa
-       flex:1) passa "bottom" via `deviceAlignTablet` — achado do Deiver
-       em 30/09/2026: a pessoa "flutuava" no meio da caixa nesse
-       breakpoint específico, quando devia ficar colada na base do hero,
-       igual ao desktop e ao mobile (que não têm esse problema porque a
-       imagem já ocupa mais da altura disponível). */
+       cases. A Intuit passa "bottom" via `deviceAlignTablet` — não faz
+       diferença quando a imagem já enche a altura toda da caixa (sem
+       sobra vertical, medido com o Deiver em 30/09/2026), mas evita
+       regressão se a largura da caixa mudar dentro do range 600-1151px
+       e sobrar espaço vertical em algum ponto. */
     object-position: var(--case-hero-device-position-tablet, center);
   }
 
