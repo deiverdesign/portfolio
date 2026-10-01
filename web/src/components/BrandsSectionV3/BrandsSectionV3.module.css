@@ -55,6 +55,7 @@
    no breakpoint mobile/tablet, onde o layout empilha e não sobra espaço
    pra esse tipo de sangria decorativa. */
 .hexagon {
+  --brands-hexagon-parallax-offset: 0px;
   position: absolute;
   z-index: -1;
   left: -282px;
@@ -64,6 +65,15 @@
   max-width: none;
   pointer-events: none;
   user-select: none;
+  transform: translate3d(0, var(--brands-hexagon-parallax-offset), 0);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hexagon {
+    transform: none;
+    will-change: auto;
+  }
 }
 
 .header {

@@ -64,9 +64,52 @@
   gap: var(--space-800);
   padding: var(--space-layout-100) var(--space-700) var(--space-800);
   border-radius: 7px;
-  background: var(--color-surface-neutral-default);
+  background: var(--capability-card-background);
   overflow: hidden;
   transition: background-color var(--dur-base) var(--ease-out-quart);
+}
+
+.research {
+  --capability-card-background: radial-gradient(
+    ellipse 115% 55% at 48.46% 0%,
+    var(--color-surface-accent-default) 0%,
+    var(--color-surface-neutral-subtle) 100%
+  );
+}
+
+.complex {
+  --capability-card-background: radial-gradient(
+    ellipse 115% 55% at 48.46% 0%,
+    var(--color-surface-brand-strong) 0%,
+    var(--color-surface-neutral-subtle) 100%
+  );
+}
+
+.designSystems {
+  --capability-card-background: radial-gradient(
+    ellipse 115% 55% at 48.46% 0%,
+    var(--color-surface-accent-default) 0%,
+    var(--color-surface-neutral-subtle) 100%
+  );
+}
+
+/* Keyframe, e não transition: se o IntersectionObserver entregar
+   `ready` e `visible` no mesmo commit (Safari faz isso com frequência),
+   ainda existe um ponto de partida explícito para o browser animar. */
+.card[data-motion-ready="true"][data-motion-visible="true"] {
+  animation: capability-card-enter var(--dur-slow) var(--ease-out-quart) var(--motion-reveal-delay, 0ms) backwards;
+}
+
+@keyframes capability-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .illustration {
@@ -90,10 +133,6 @@
 /* O card é informativo, não clicável: a resposta fica dentro da superfície,
    sem cursor, sombra, elevação ou deslocamento que sugira uma ação. */
 @media (hover: hover) and (pointer: fine) {
-  .card:hover {
-    background: var(--color-surface-neutral-subtle);
-  }
-
   .card:hover .illustration {
     transform: scale(1.02);
     filter: saturate(1.06) contrast(1.02);
@@ -147,6 +186,10 @@
   .card,
   .illustration {
     transition: none;
+  }
+
+  .card[data-motion-ready="true"][data-motion-visible="true"] {
+    animation: none;
   }
 
   .card:hover .illustration {

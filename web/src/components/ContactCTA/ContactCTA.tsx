@@ -1,4 +1,6 @@
-import type { AnchorHTMLAttributes } from "react";
+"use client";
+
+import { useEffect, useRef, type AnchorHTMLAttributes } from "react";
 
 import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
@@ -23,16 +25,60 @@ export interface ContactCTAProps {
  * "↓" de texto que eu tinha usado antes).
  */
 export function ContactCTA({ locale, className, contactHref }: ContactCTAProps) {
-  const eyebrow = getCopy(locale, "shared.cta.eyebrow");
   const title = getCopy(locale, "shared.cta.title");
   const button = getCopy(locale, "shared.cta.button");
-  const { portrait, graphismBackground } = HOME_ASSETS.contact;
+  const { portrait, graphismBackground, graphismBackgroundTablet } = HOME_ASSETS.contact;
 
   const classes = className ? `${styles.root} ${className}` : styles.root;
+  const graphismRef = useRef<HTMLPictureElement>(null);
+
+  useEffect(() => {
+    const graphism = graphismRef.current;
+    if (!graphism) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frameId: number | null = null;
+
+    const updateOffset = () => {
+      frameId = null;
+      if (reducedMotion.matches || window.innerWidth <= 1023) {
+        graphism.style.setProperty("--contact-graphism-parallax-offset", "0px");
+        return;
+      }
+
+      const section = graphism.closest("section");
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+      const viewportCenter = window.innerHeight / 2;
+      const sectionCenter = rect.top + rect.height / 2;
+      const offset = Math.max(-72, Math.min(72, ((viewportCenter - sectionCenter) / window.innerHeight) * 144));
+      graphism.style.setProperty("--contact-graphism-parallax-offset", `${offset.toFixed(2)}px`);
+    };
+
+    const requestUpdate = () => {
+      if (frameId === null) frameId = window.requestAnimationFrame(updateOffset);
+    };
+
+    requestUpdate();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    reducedMotion.addEventListener("change", requestUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      reducedMotion.removeEventListener("change", requestUpdate);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
+  }, []);
 
   return (
     <section className={classes} aria-labelledby="contact-cta-title">
-      <img src={graphismBackground} alt="" aria-hidden="true" className={styles.graphism} />
+      <picture ref={graphismRef} className={styles.graphism}>
+        <source media="(max-width: 1023px)" srcSet={graphismBackgroundTablet} />
+        <img src={graphismBackground} alt="" />
+      </picture>
       <div className={styles.row}>
         <img
           src={portrait.src}
@@ -42,7 +88,6 @@ export function ContactCTA({ locale, className, contactHref }: ContactCTAProps) 
           className={styles.portrait}
         />
         <div className={styles.content}>
-          <p className={styles.eyebrow}>{eyebrow}</p>
           <h2 id="contact-cta-title" className={styles.title}>
             {title}
           </h2>
@@ -51,6 +96,7 @@ export function ContactCTA({ locale, className, contactHref }: ContactCTAProps) 
               {button}
               <IconV3 name="arrow-right" size={16} />
             </ButtonV3>
+            <p className={styles.email}>hello@deiver.com.br</p>
           </div>
         </div>
       </div>

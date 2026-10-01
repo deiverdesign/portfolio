@@ -1,6 +1,8 @@
 import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
 import { TagV3 } from "@/components/TagV3/TagV3";
+import { MotionReveal } from "@/components/MotionReveal/MotionReveal";
+import { ABOUT_ASSETS } from "@/content/about-assets";
 import styles from "./AboutPageProcessV3.module.css";
 
 export interface AboutPageProcessV3Props {
@@ -16,40 +18,40 @@ const TAG_KEYS = [
 
 /**
  * Figma: "Design-Decisions-Section" (processo), node 2262:64712
- * (Desktop-Laptop). O banner à direita ("Complex Products Banner", node
- * 2148:8087) é um placeholder de verdade no próprio Figma — o Deiver
- * ainda não decidiu a imagem/vídeo (nota dele, em PT, cravada no
- * componente). Renderizado aqui como bloco reservado, sem inventar uma
- * imagem — trocar por `<img>`/`<video>` quando o asset existir.
+ * (Desktop-Laptop). O banner à direita usa o asset fornecido para a
+ * composição "Complex Products"; em tablet/mobile ele fica oculto.
  */
 export function AboutPageProcessV3({ locale }: AboutPageProcessV3Props) {
   return (
     <section className={styles.section}>
       <div className={styles.container}>
         <div className={styles.text}>
-          <h2 className={styles.title}>{getCopy(locale, "about.process.title")}</h2>
+          <MotionReveal as="h2" className={styles.title}>{getCopy(locale, "about.process.title")}</MotionReveal>
           <div className={styles.body}>
-            <p className={styles.subtitle}>{getCopy(locale, "about.process.subtitle")}</p>
-            <p className={styles.paragraph}>{getCopy(locale, "about.process.body")}</p>
+            <MotionReveal as="p" className={styles.subtitle} delayMs={80}>{getCopy(locale, "about.process.subtitle")}</MotionReveal>
+            <MotionReveal as="p" className={styles.paragraph} delayMs={140}>{getCopy(locale, "about.process.body")}</MotionReveal>
             <ul className={styles.tags}>
-              {TAG_KEYS.map((key) => (
-                <li key={key}>
+              {TAG_KEYS.map((key, index) => (
+                <MotionReveal as="li" key={key} delayMs={200 + index * 60}>
                   <TagV3 label={getCopy(locale, key)} />
-                </li>
+                </MotionReveal>
               ))}
             </ul>
           </div>
         </div>
-        {/* Placeholder puramente visual (listras diagonais, convenção comum
-            pra "imagem ainda não existe") — sem legenda cravada; o texto
-            ficava competindo com o resto da página. aria-label existe só
-            pra leitor de tela, não aparece na tela. Trocar por
-            `<img>`/`<video>` quando o asset existir. */}
-        <div
+        <MotionReveal
+          as="div"
           className={styles.banner}
-          role="img"
-          aria-label={locale === "pt" ? "Imagem a definir" : "Image to be decided"}
-        />
+          delayMs={180}
+          offsetPx={40}
+        >
+          <img
+            src={ABOUT_ASSETS.process.banner.src}
+            width={ABOUT_ASSETS.process.banner.width}
+            height={ABOUT_ASSETS.process.banner.height}
+            alt=""
+          />
+        </MotionReveal>
       </div>
     </section>
   );

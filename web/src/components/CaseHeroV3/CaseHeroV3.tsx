@@ -4,6 +4,7 @@ import type { RasterAsset } from "@/content/home-assets";
 import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
 import { CaseHeroNoise } from "@/components/CaseHeroBackground/CaseHeroNoise";
+import { CaseDisclaimerV3 } from "@/components/CaseDisclaimerV3/CaseDisclaimerV3";
 import { IconV3 } from "@/components/IconV3/IconV3";
 import { MotionReveal } from "@/components/MotionReveal/MotionReveal";
 import { TagV3 } from "@/components/TagV3/TagV3";
@@ -16,8 +17,10 @@ type FrameStyle = CSSProperties & {
 };
 
 type DevicesStyle = CSSProperties & {
+  "--case-hero-device-flex-tablet"?: string;
+  "--case-hero-device-image-height-tablet"?: string;
+  "--case-hero-device-margin-top-tablet"?: string;
   "--case-hero-device-position-tablet"?: string;
-  "--case-hero-device-fit-tablet"?: string;
 };
 
 export interface CaseHeroV3Props {
@@ -25,6 +28,9 @@ export interface CaseHeroV3Props {
   tags: string[];
   title: string;
   summary: string;
+  /** Aviso contextual opcional — usado no Aster para declarar os dados fictícios. */
+  disclaimer?: string;
+  disclaimerTooltip?: string;
   backHref: string;
   /** Usada em tablet/mobile — e em desktop também, se `devicesDesktop` não for passado. */
   devices: RasterAsset;
@@ -33,16 +39,8 @@ export interface CaseHeroV3Props {
    * usam um corte mais fechado. Opcional: os outros cases usam a mesma
    * imagem em todo breakpoint, como sempre. */
   devicesDesktop?: RasterAsset;
-  /** Como a foto do device se encaixa na caixa, só no tablet
-   * (600-1151px). Default "center": `object-fit:contain`, a imagem
-   * inteira cabe dentro da caixa (pode sobrar fundo nas laterais se a
-   * proporção não bater — o comportamento de sempre pras outras
-   * cases). "fill": `object-fit:cover` ancorado no topo — acha do
-   * Deiver em 30/09/2026 comparando "como está" x "como deveria estar":
-   * a Intuit sobrava uma tira de fundo visível numa borda porque a foto
-   * não preenchia a caixa inteira; cover corta o excesso em vez de
-   * mostrar a imagem inteira com respiro. */
-  deviceAlignTablet?: "center" | "fill";
+  /** Alinhamento vertical da arte no tablet (600–1151px). */
+  deviceAlignTablet?: "center" | "bottom";
   /** Imagem de fundo (cor + gradiente + luz já incorporados) — desktop/tablet. */
   backgroundDesktop: RasterAsset;
   backgroundTablet: RasterAsset;
@@ -70,6 +68,8 @@ export function CaseHeroV3({
   tags,
   title,
   summary,
+  disclaimer,
+  disclaimerTooltip,
   backHref,
   devices,
   devicesDesktop,
@@ -88,8 +88,13 @@ export function CaseHeroV3({
   };
 
   const devicesStyle: DevicesStyle | undefined =
-    deviceAlignTablet === "fill"
-      ? { "--case-hero-device-fit-tablet": "cover", "--case-hero-device-position-tablet": "top" }
+    deviceAlignTablet === "bottom"
+      ? {
+          "--case-hero-device-flex-tablet": "0 0 auto",
+          "--case-hero-device-image-height-tablet": "auto",
+          "--case-hero-device-margin-top-tablet": "auto",
+          "--case-hero-device-position-tablet": "center bottom",
+        }
       : undefined;
 
   return (
@@ -136,6 +141,8 @@ export function CaseHeroV3({
               <MotionReveal as="p" className={styles.summary} delayMs={160} triggerIfInitiallyVisible>
                 {summary}
               </MotionReveal>
+              {disclaimer && disclaimerTooltip && <CaseDisclaimerV3 label={disclaimer} tooltip={disclaimerTooltip} />}
+              {disclaimer && !disclaimerTooltip && <p className={styles.disclaimer}>{disclaimer}</p>}
             </div>
             <MotionReveal
               as="div"

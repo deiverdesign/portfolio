@@ -1,4 +1,4 @@
-import { Fragment, type CSSProperties } from "react";
+import { Fragment, type CSSProperties, type MouseEventHandler } from "react";
 
 import { CaseHeroNoise } from "@/components/CaseHeroBackground/CaseHeroNoise";
 import { IconV3 } from "@/components/IconV3/IconV3";
@@ -18,6 +18,8 @@ export interface CaseCardLargeV3Props {
    * Figma, não reflow automático de CSS. */
   titleLines: string[];
   href: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  ariaHasPopup?: "dialog";
   /** Renderizado mesmo quando `decorative` já tem uma marca desenhada nele
    * (ex.: SCRIOO) — o Figma real mostra os dois juntos, não é redundante.
    * Opcional só pra cases sem asset de logo próprio ainda. */
@@ -115,6 +117,8 @@ export function CaseCardLargeV3({
   size = "large",
   titleLines,
   href,
+  onClick,
+  ariaHasPopup,
   logoSrc,
   logoAlt,
   logoWidth,
@@ -144,7 +148,7 @@ export function CaseCardLargeV3({
   const resolvedBackground = background ?? `linear-gradient(to bottom, ${gradientFrom}, ${gradientTo})`;
 
   return (
-    <a href={href} className={classes} style={{ background: resolvedBackground }}>
+    <a href={href} className={classes} style={{ background: resolvedBackground }} onClick={onClick} aria-haspopup={ariaHasPopup}>
       {decorative && (
         <img
           src={decorative.src}

@@ -22,7 +22,7 @@ export const HOME_ASSETS = {
     graphismFooter: "/images/v3/home/identity/graphism-footer.svg",
   },
   hero: {
-    graphism: raster("/images/v3/home/hero/deiver-graphism.png", 3510, 2154),
+    graphism: raster("/images/v3/home/hero/deiver-graphism.png", 3040, 1864),
   },
   capabilities: [
     raster("/images/v3/home/capabilities/capability-01.png", 895, 510),
@@ -39,6 +39,7 @@ export const HOME_ASSETS = {
     // solto em volta que o antigo portrait.png tinha.
     portrait: raster("/images/v3/home/contact/portrait-hex.png", 1128, 1368),
     graphismBackground: "/images/v3/home/contact/graphism-background.svg",
+    graphismBackgroundTablet: "/images/v3/home/contact/graphism-tablet.svg",
   },
   decorative: {
     hexagonPattern: "/images/v3/home/decorative/hexagon-pattern.svg",

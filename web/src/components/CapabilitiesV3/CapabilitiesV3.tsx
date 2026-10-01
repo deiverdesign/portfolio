@@ -2,6 +2,7 @@ import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
 import { HOME_ASSETS } from "@/content/home-assets";
 import { SectionEntryV3 } from "@/components/SectionEntryV3/SectionEntryV3";
+import { MotionReveal } from "@/components/MotionReveal/MotionReveal";
 import styles from "./CapabilitiesV3.module.css";
 
 export interface CapabilitiesV3Props {
@@ -10,9 +11,9 @@ export interface CapabilitiesV3Props {
 }
 
 const CARDS = [
-  { titleKey: "shared.capabilities.complex.title", bodyKey: "shared.capabilities.complex.body" },
-  { titleKey: "shared.capabilities.research.title", bodyKey: "shared.capabilities.research.body" },
-  { titleKey: "shared.capabilities.ds.title", bodyKey: "shared.capabilities.ds.body" },
+  { titleKey: "shared.capabilities.research.title", bodyKey: "shared.capabilities.research.body", assetIndex: 1, variant: "research" },
+  { titleKey: "shared.capabilities.complex.title", bodyKey: "shared.capabilities.complex.body", assetIndex: 0, variant: "complex" },
+  { titleKey: "shared.capabilities.ds.title", bodyKey: "shared.capabilities.ds.body", assetIndex: 2, variant: "designSystems" },
 ] as const;
 
 /**
@@ -41,9 +42,15 @@ export function CapabilitiesV3({ locale, className }: CapabilitiesV3Props) {
         </SectionEntryV3>
         <ul className={styles.grid}>
           {CARDS.map((card, index) => {
-            const illustration = HOME_ASSETS.capabilities[index];
+            const illustration = HOME_ASSETS.capabilities[card.assetIndex];
             return (
-              <li key={card.titleKey} className={styles.card}>
+              <MotionReveal
+                as="li"
+                key={card.titleKey}
+                className={`${styles.card} ${styles[card.variant]}`}
+                delayMs={index * 160}
+                offsetPx={32}
+              >
                 <img
                   src={illustration.src}
                   width={illustration.width}
@@ -54,7 +61,7 @@ export function CapabilitiesV3({ locale, className }: CapabilitiesV3Props) {
                 />
                 <h3 className={styles.cardTitle}>{getCopy(locale, card.titleKey)}</h3>
                 <p className={styles.cardBody}>{getCopy(locale, card.bodyKey)}</p>
-              </li>
+              </MotionReveal>
             );
           })}
         </ul>

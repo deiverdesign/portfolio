@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 import type { Locale } from "@/content/i18n";
 import { IconV3 } from "@/components/IconV3/IconV3";
 import styles from "./LanguageSwitcherV3.module.css";
@@ -32,18 +34,63 @@ export function LanguageSwitcherV3({
   context = "default",
   className,
 }: LanguageSwitcherV3Props) {
+  const [isOpen, setIsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const target = OTHER_LOCALE[locale];
-  const classes = [styles.button, styles[context], className].filter(Boolean).join(" ");
+  const classes = [styles.root, styles[context], className].filter(Boolean).join(" ");
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setIsOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [isOpen]);
 
   return (
-    <a
-      href={href}
-      className={classes}
-      aria-label={target === "pt" ? "Mudar para português" : "Switch to English"}
-      lang={locale}
-    >
-      {locale.toUpperCase()}
-      <IconV3 name="caret-down" size={16} className={styles.caret} />
-    </a>
+    <div ref={rootRef} className={classes}>
+      <button
+        type="button"
+        className={styles.button}
+        aria-label={target === "pt" ? "Mudar para português" : "Switch to English"}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        onClick={() => setIsOpen((open) => !open)}
+      >
+        {locale.toUpperCase()}
+        <IconV3 name="caret-down" size={16} className={styles.caret} />
+      </button>
+
+      {isOpen && (
+        <div className={styles.dropdown} role="menu" aria-label={locale === "pt" ? "Idioma" : "Language"}>
+          <div className={styles.dropdownRule} aria-hidden="true" />
+          {(["en", "pt"] as const).map((option) => {
+            const isCurrent = option === locale;
+            const label = option === "en" ? "English" : "Português";
+
+            return isCurrent ? (
+              <span key={option} className={styles.dropdownItem} role="menuitem" aria-current="true">
+                {label}
+                <IconV3 name="check-2" size={14} className={styles.check} />
+              </span>
+            ) : (
+              <a key={option} href={href} className={styles.dropdownItem} role="menuitem" lang={option} onClick={() => setIsOpen(false)}>
+                {label}
+              </a>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }

@@ -55,7 +55,7 @@ export function FooterV3({
             {getCopy(locale, "shared.footer.resume")}
             <IconV3 name="download" size={16} />
           </ButtonV3>
-          <ButtonV3 href={linkedinHref} variant="secondary">
+          <ButtonV3 href={linkedinHref} variant="secondary" target="_blank" rel="noopener noreferrer">
             {getCopy(locale, "shared.footer.linkedin")}
             <IconV3 name="linkedin" size={16} />
           </ButtonV3>

@@ -1,13 +1,14 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { unlockAster, type UnlockAsterState } from "./actions";
 import type { Locale } from "@/components/NavBar/NavBar";
 import { DisplayText } from "@/components/DisplayText/DisplayText";
 import theme from "./aster-theme.module.css";
 import styles from "./PasswordGate.module.css";
 
-const initialState: UnlockAsterState = { error: null };
+const initialState: UnlockAsterState = { error: null, unlocked: false };
 
 const COPY: Record<Locale, {
   title: string;
@@ -41,6 +42,7 @@ const COPY: Record<Locale, {
  * essa checagem acontece no servidor, não escondendo o case com CSS.
  */
 export function PasswordGate({ locale }: { locale: Locale }) {
+  const router = useRouter();
   const t = COPY[locale];
   const boundUnlock = unlockAster.bind(null, locale);
   const [state, formAction, pending] = useActionState(boundUnlock, initialState);
@@ -52,6 +54,10 @@ export function PasswordGate({ locale }: { locale: Locale }) {
       inputRef.current?.select();
     }
   }, [state.error]);
+
+  useEffect(() => {
+    if (state.unlocked) router.refresh();
+  }, [router, state.unlocked]);
 
   return (
     <div className={`${theme.theme} ${styles.gate}`}>

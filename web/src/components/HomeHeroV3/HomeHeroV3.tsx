@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 
 import type { Locale } from "@/content/i18n";
@@ -45,6 +48,44 @@ export function HomeHeroV3({
     { label: getCopy(locale, "shared.nav.resume"), href: resumeHref },
   ];
   const titleLines = getCopy(locale, "home.hero.title").split("\n");
+  const graphismRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const graphism = graphismRef.current;
+    if (!graphism) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frameId: number | null = null;
+
+    const updateOffset = () => {
+      frameId = null;
+      if (!contentVisible || reducedMotion.matches || window.innerWidth <= 1023) {
+        graphism.style.setProperty("--home-hero-graphism-offset", "0px");
+        return;
+      }
+
+      const hero = graphism.closest("section");
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      const progress = Math.max(-1, Math.min(1, ((window.innerHeight / 2) - (rect.top + rect.height / 2)) / window.innerHeight));
+      graphism.style.setProperty("--home-hero-graphism-offset", `${(progress * 320).toFixed(2)}px`);
+    };
+
+    const requestUpdate = () => {
+      if (frameId === null) frameId = window.requestAnimationFrame(updateOffset);
+    };
+
+    requestUpdate();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    reducedMotion.addEventListener("change", requestUpdate);
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      reducedMotion.removeEventListener("change", requestUpdate);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
+  }, [contentVisible]);
 
   return (
     <section
@@ -54,6 +95,7 @@ export function HomeHeroV3({
       inert={contentVisible ? undefined : true}
     >
       <Image
+        ref={graphismRef}
         className={styles.graphism}
         src={HOME_ASSETS.hero.graphism.src}
         width={HOME_ASSETS.hero.graphism.width}
@@ -61,9 +103,11 @@ export function HomeHeroV3({
         alt=""
         aria-hidden="true"
         priority
+        unoptimized
       />
 
       <NavBarV3
+        id="home-nav"
         locale={locale}
         identityHref={homeHref}
         languageHref={languageHref}

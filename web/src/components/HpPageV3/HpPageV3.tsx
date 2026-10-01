@@ -65,6 +65,8 @@ export function HpPageV3({ locale }: HpPageV3Props) {
           title={getCopy(locale, "hp.hero.title")}
           summary={getCopy(locale, "hp.hero.summary")}
           backHref={`${homeHref}#selected-work`}
+          prevCaseHref={locale === "pt" ? "/pt/v3/cases/scrioo" : "/v3/cases/scrioo"}
+          nextCaseHref={locale === "pt" ? "/pt/v3/cases/theodoor" : "/v3/cases/theodoor"}
           devices={HP_ASSETS.hero.devices}
           backgroundDesktop={HP_ASSETS.hero.backgroundDesktop}
           backgroundTablet={HP_ASSETS.hero.backgroundTablet}

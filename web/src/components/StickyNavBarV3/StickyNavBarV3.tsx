@@ -15,6 +15,9 @@ export interface StickyNavBarV3Props {
   languageHref?: string;
   contactHref?: string;
   resumeHref?: string;
+  /** Seletor do header original: o menu fixo entra quando ele sai da viewport. */
+  triggerSelector?: string;
+  activePage?: "home" | "about";
 }
 
 /**
@@ -36,6 +39,8 @@ export function StickyNavBarV3({
   languageHref,
   contactHref = "#contact",
   resumeHref = RESUME_HREF[locale],
+  triggerSelector,
+  activePage = "home",
 }: StickyNavBarV3Props) {
   const [visible, setVisible] = useState(false);
 
@@ -45,17 +50,19 @@ export function StickyNavBarV3({
        esperar ele sumir por completo deixaria um vão enorme sem nenhum
        header visível. Observando só a faixa do nav (72-88px no topo),
        o header fixo aparece exatamente quando o original sai da tela. */
-    const heroNav = document.getElementById("home-hero-title")?.closest("section")?.querySelector("header");
-    if (!heroNav) return;
+    const originalNav = triggerSelector
+      ? document.querySelector(triggerSelector)
+      : document.getElementById("home-hero-title")?.closest("section")?.querySelector("header");
+    if (!originalNav) return;
 
     const observer = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting));
-    observer.observe(heroNav);
+    observer.observe(originalNav);
     return () => observer.disconnect();
-  }, []);
+  }, [triggerSelector]);
 
   const links: NavBarV3Link[] = [
-    { label: getCopy(locale, "shared.nav.home"), href: homeHref, active: true },
-    { label: getCopy(locale, "shared.nav.about"), href: aboutHref },
+    { label: getCopy(locale, "shared.nav.home"), href: homeHref, active: activePage === "home" },
+    { label: getCopy(locale, "shared.nav.about"), href: aboutHref, active: activePage === "about" },
     { label: getCopy(locale, "shared.nav.contact"), href: contactHref },
     { label: getCopy(locale, "shared.nav.resume"), href: resumeHref },
   ];

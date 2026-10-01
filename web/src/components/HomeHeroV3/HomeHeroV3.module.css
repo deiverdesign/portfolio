@@ -37,6 +37,7 @@
 }
 
 .graphism {
+  --home-hero-graphism-offset: 0px;
   position: absolute;
   z-index: -1;
   top: calc(50% + 23.47px);
@@ -45,9 +46,10 @@
   height: 1076.937px;
   max-width: none;
   object-fit: contain;
-  transform: translate(-50%, -50%);
+  transform: translate3d(-50%, calc(-50% + var(--home-hero-graphism-offset)), 0);
   pointer-events: none;
   user-select: none;
+  will-change: transform;
 }
 
 /* A NavBarV3 continua sendo a fonte única do componente. Aqui só aplicamos
@@ -181,6 +183,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .graphism {
+    transform: translate(-50%, -50%);
+    will-change: auto;
+  }
+
   .root .navigation,
   .intro,
   .summary {

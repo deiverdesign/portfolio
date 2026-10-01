@@ -22,13 +22,19 @@
 
 .content {
   position: relative;
+  clip-path: inset(0 100% 0 0);
   opacity: 0;
-  transition: opacity calc(var(--hexagon-bracket-duration, 640ms) * 0.55)
-    var(--hexagon-bracket-content-ease, ease)
-    calc(var(--hexagon-bracket-duration, 640ms) * 0.35);
+  transition:
+    clip-path calc(var(--hexagon-bracket-duration, 640ms) * 0.62)
+      var(--hexagon-bracket-content-ease, ease)
+      calc(var(--hexagon-bracket-duration, 640ms) * 0.2),
+    opacity calc(var(--hexagon-bracket-duration, 640ms) * 0.3)
+      var(--hexagon-bracket-content-ease, ease)
+      calc(var(--hexagon-bracket-duration, 640ms) * 0.2);
 }
 
 .frame[data-open="true"] .content {
+  clip-path: inset(0 0 0 0);
   opacity: 1;
 }
 

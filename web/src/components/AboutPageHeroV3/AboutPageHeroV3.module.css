@@ -122,6 +122,35 @@
   display: block;
 }
 
+.statementSequence .heroLine {
+  display: block;
+  animation: about-hero-text-enter var(--dur-hero-reveal) var(--ease-out-quart) backwards;
+}
+
+.statementSequence .heroLine:nth-child(1) {
+  animation-delay: 140ms;
+}
+
+.statementSequence .heroLine:nth-child(2) {
+  animation-delay: 220ms;
+}
+
+.statement .heroLine {
+  animation-delay: 340ms;
+}
+
+@keyframes about-hero-text-enter {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .statement {
   margin: 0;
   font-family: var(--font-family-editorial);
@@ -187,8 +216,14 @@
   }
 
   .imageContainer {
-    width: 100%;
-    max-width: none;
+    /* No tablet, foto e grafismo continuam sendo uma composição única.
+       Limitar a largura pelo aspect-ratio evita que ela chegue a ~680px
+       de altura em tablets largos (altura máxima: 430px). */
+    /* O container pai passa a ser coluna no tablet: flex-basis aqui
+       viraria altura. Deixamos o aspect-ratio calcular os 430px. */
+    flex: 0 0 auto;
+    width: min(100%, 633px);
+    max-width: 633px;
   }
 
   .content {
@@ -214,5 +249,11 @@
   .identity {
     flex-wrap: wrap;
     row-gap: var(--space-300);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statementSequence .heroLine {
+    animation: none;
   }
 }

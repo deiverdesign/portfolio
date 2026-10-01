@@ -1,0 +1,12 @@
+.selectedWorkDivider {
+  width: min(1348px, calc(100% - (2 * var(--space-layout-100))));
+  height: 1px;
+  margin: 0 auto;
+  background: var(--color-border-neutral-stronger);
+}
+
+@media (max-width: 599px) {
+  .selectedWorkDivider {
+    width: calc(100% - (2 * var(--space-600)));
+  }
+}

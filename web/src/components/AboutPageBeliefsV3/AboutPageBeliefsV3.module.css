@@ -67,6 +67,8 @@
 }
 
 .collage {
+  --about-collage-row-offset: 0px;
+  --about-collage-badge-offset: 0px;
   position: relative;
   flex: 1 0 0;
   min-width: 450px;
@@ -87,6 +89,8 @@
   align-items: center;
   gap: var(--space-500);
   margin-top: var(--space-500);
+  transform: translate3d(0, var(--about-collage-row-offset), 0);
+  will-change: transform;
 }
 
 .photo2 {
@@ -119,6 +123,16 @@
   right: calc(-1 * var(--space-700));
   width: 101.85px;
   height: 101.82px;
+  transform: translate3d(0, var(--about-collage-badge-offset), 0);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photoRow,
+  .badge {
+    transform: none;
+    will-change: auto;
+  }
 }
 
 @media (max-width: 1023px) {

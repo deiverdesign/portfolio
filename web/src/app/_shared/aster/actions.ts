@@ -11,6 +11,7 @@ import {
 
 export interface UnlockAsterState {
   error: string | null;
+  unlocked?: boolean;
 }
 
 const WRONG_PASSWORD_MESSAGE: Record<Locale, string> = {
@@ -29,17 +30,19 @@ export async function unlockAster(
   const password = formData.get("password");
 
   if (typeof password !== "string" || password.length === 0 || !verifyAsterPassword(password)) {
-    return { error: WRONG_PASSWORD_MESSAGE[locale] };
+    return { error: WRONG_PASSWORD_MESSAGE[locale], unlocked: false };
   }
 
   const store = await cookies();
   store.set(ASTER_SESSION_COOKIE, createAsterSessionValue(), {
     httpOnly: true,
-    secure: true,
+    // `secure` em HTTP impede o fluxo de funcionar no localhost. Em
+    // produção o cookie continua restrito a HTTPS.
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: ASTER_COOKIE_PATH,
     // Sem maxAge/expires: cookie de sessão — some quando o navegador fecha.
   });
 
-  return { error: null };
+  return { error: null, unlocked: true };
 }

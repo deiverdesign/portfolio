@@ -13,6 +13,11 @@ const LEGACY_ALLOWLIST = new Map([
   ["components/CaseCardLarge/CaseCardLarge.module.css|min:1025", 1],
   ["components/LensBlurGlow/LensBlurGlow.tsx|min:1025", 1],
   ["components/LensBlurGlow/LensBlurGlow.tsx|max:767", 1],
+  // Case hero muda para a composição horizontal só em 1152px: esse corte
+  // é uma decisão de layout do Figma, não um breakpoint global novo.
+  ["components/CaseHeroV3/CaseHeroV3.module.css|min:1152", 3],
+  ["components/CaseHeroV3/CaseHeroV3.module.css|max:1151", 1],
+  ["components/CaseHeroV3/CaseHeroV3.tsx|min:1152", 1],
 ]);
 const observedLegacy = new Map();
 const violations = [];

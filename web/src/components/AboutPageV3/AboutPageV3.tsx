@@ -8,6 +8,7 @@ import { CapabilitiesV3 } from "@/components/CapabilitiesV3/CapabilitiesV3";
 import { FooterV3 } from "@/components/FooterV3/FooterV3";
 import { NavBarV3, type NavBarV3Link } from "@/components/NavBarV3/NavBarV3";
 import { RESUME_HREF } from "@/components/NavBar/constants";
+import { StickyNavBarV3 } from "@/components/StickyNavBarV3/StickyNavBarV3";
 
 export interface AboutPageV3Props {
   locale: Locale;
@@ -33,7 +34,17 @@ export function AboutPageV3({ locale }: AboutPageV3Props) {
 
   return (
     <>
+      <StickyNavBarV3
+        locale={locale}
+        homeHref={homeHref}
+        aboutHref={aboutHref}
+        languageHref={languageHref}
+        contactHref={contactHref}
+        triggerSelector="#about-nav"
+        activePage="about"
+      />
       <NavBarV3
+        id="about-nav"
         locale={locale}
         identityHref={homeHref}
         languageHref={languageHref}

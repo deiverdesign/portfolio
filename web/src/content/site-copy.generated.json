@@ -3,7 +3,7 @@
   "source": {
     "file": "site-copy.xlsx",
     "sha256": "aa1ce6c714db5c26ebcd075bd9effd255cf76f499f76686fbd42b320f9227cf8",
-    "entryCount": 363,
+    "entryCount": 364,
     "ignoredRows": [
       73
     ]
@@ -380,7 +380,7 @@
     },
     "shared.footer.tagline": {
       "en": "Design from Spark to Finish",
-      "pt": "Design da ideia à entrega",
+      "pt": "Design da centelha à entrega",
       "page": "Shared",
       "section": "Footer",
       "status": "decidir",
@@ -2681,6 +2681,15 @@
       "status": "revisar",
       "figma": "abrir",
       "note": null
+    },
+    "aster.hero.disclaimer.tooltip": {
+      "en": "Aster is a portfolio reconstruction using fictional data. The interface and interactions were independently recreated to communicate the concept and do not reproduce a confidential client system. Clinical, legal, regulatory and ethical validation would require broader multidisciplinary work.",
+      "pt": "Aster é uma reconstrução para portfólio usando dados fictícios. A interface e as interações foram recriadas de forma independente para comunicar o conceito e não reproduzem um sistema confidencial de cliente. A validação clínica, legal, regulatória e ética exigiria um trabalho multidisciplinar mais amplo.",
+      "page": "Aster",
+      "section": "Hero",
+      "status": "revisar",
+      "figma": "2262:70848",
+      "note": "Conteúdo do tooltip de disclaimer."
     },
     "aster.context.title": {
       "en": "The Hard Part Wasn't Making the AI Do More",

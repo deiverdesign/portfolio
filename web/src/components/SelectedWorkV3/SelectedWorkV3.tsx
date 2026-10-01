@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ButtonV3 } from "@/components/ButtonV3/ButtonV3";
+import { AsterAccessModal } from "@/components/AsterAccessModal/AsterAccessModal";
 import { CarouselIndicatorsV3 } from "@/components/CarouselIndicatorsV3/CarouselIndicatorsV3";
 import { CaseCardLargeV3, type CaseCardLargeV3Props } from "@/components/CaseCardLargeV3/CaseCardLargeV3";
 import { IconV3 } from "@/components/IconV3/IconV3";
+import { MotionReveal } from "@/components/MotionReveal/MotionReveal";
 import { SectionEntryV3 } from "@/components/SectionEntryV3/SectionEntryV3";
 import { HOME_ASSETS, getHomeBrandLogo, getHomeBrandLogoSize, type HomeBrand } from "@/content/home-assets";
 import type { Locale } from "@/content/i18n";
@@ -167,6 +169,7 @@ export interface SelectedWorkV3Props {
  * 2262:62051 and 2262:62192. */
 export function SelectedWorkV3({ locale }: SelectedWorkV3Props) {
   const cards = getCards(locale);
+  const asterCaseHref = locale === "pt" ? "/pt/v3/cases/aster" : "/v3/cases/aster";
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   /* Estado de scroll de verdade, não só índice — achado do Deiver em
@@ -186,6 +189,7 @@ export function SelectedWorkV3({ locale }: SelectedWorkV3Props) {
      conta usada pelos botões Prev/Next (rail.clientWidth por "página"). */
   const [pageCount, setPageCount] = useState(1);
   const [activePage, setActivePage] = useState(0);
+  const [asterModalOpen, setAsterModalOpen] = useState(false);
 
   const updateScrollState = useCallback(() => {
     const rail = railRef.current;
@@ -279,14 +283,25 @@ export function SelectedWorkV3({ locale }: SelectedWorkV3Props) {
         >
           <div className={styles.track}>
             {cards.map(({ slug, ...card }, index) => (
-              <div
+              <MotionReveal
+                as="div"
                 key={slug}
                 className={styles.cardSlot}
                 role="group"
                 aria-label={`${index + 1} / ${cards.length}`}
+                delayMs={160 + index * 80}
+                offsetPx={40}
               >
-                <CaseCardLargeV3 {...card} href={caseHref(locale, slug)} />
-              </div>
+                <CaseCardLargeV3
+                  {...card}
+                  href={slug === "aster" ? asterCaseHref : caseHref(locale, slug)}
+                  ariaHasPopup={slug === "aster" ? "dialog" : undefined}
+                  onClick={slug === "aster" ? (event) => {
+                    event.preventDefault();
+                    setAsterModalOpen(true);
+                  } : undefined}
+                />
+              </MotionReveal>
             ))}
           </div>
         </div>
@@ -295,7 +310,7 @@ export function SelectedWorkV3({ locale }: SelectedWorkV3Props) {
             28/09/2026, node 2299:71172 "Navigation - Case navigation"):
             agora é uma linha própria abaixo do rail, com bullets por
             página à esquerda e os botões Prev/Next à direita. */}
-        <div className={styles.footerNav}>
+        <MotionReveal as="div" className={styles.footerNav} delayMs={400}>
           <CarouselIndicatorsV3
             count={pageCount}
             activeIndex={activePage}
@@ -324,8 +339,15 @@ export function SelectedWorkV3({ locale }: SelectedWorkV3Props) {
               <IconV3 name="arrow-right" size={16} />
             </ButtonV3>
           </div>
-        </div>
+        </MotionReveal>
       </div>
+      {asterModalOpen && (
+        <AsterAccessModal
+          locale={locale}
+          caseHref={asterCaseHref}
+          onClose={() => setAsterModalOpen(false)}
+        />
+      )}
     </section>
   );
 }

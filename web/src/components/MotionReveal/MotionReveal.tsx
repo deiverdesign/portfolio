@@ -40,7 +40,10 @@ export function MotionReveal({
   const classes = [styles.root, className].filter(Boolean).join(" ");
 
   const mergedStyle: CSSProperties = { ...style };
-  if (delayMs) mergedStyle.transitionDelay = `${delayMs}ms`;
+  if (delayMs) {
+    mergedStyle.transitionDelay = `${delayMs}ms`;
+    (mergedStyle as CSSProperties & { "--motion-reveal-delay"?: string })["--motion-reveal-delay"] = `${delayMs}ms`;
+  }
   if (offsetPx !== undefined) {
     (mergedStyle as CSSProperties & { "--motion-reveal-offset"?: string })["--motion-reveal-offset"] =
       `${offsetPx}px`;

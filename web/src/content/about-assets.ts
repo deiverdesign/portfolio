@@ -27,4 +27,7 @@ export const ABOUT_ASSETS = {
     // Figma, não presumido igual ao do Home.
     availableBadge: "/images/v3/about/beliefs/available-badge.svg",
   },
+  process: {
+    banner: raster("/images/v3/about/complex-products-banner.png", 1336, 846),
+  },
 } as const;

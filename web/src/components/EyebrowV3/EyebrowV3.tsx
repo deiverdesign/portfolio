@@ -1,6 +1,6 @@
 "use client";
 
-import type { HTMLAttributes, ReactNode } from "react";
+import { useLayoutEffect, useState, type HTMLAttributes, type ReactNode } from "react";
 
 import { HexagonBracket } from "@/components/HexagonBracket/HexagonBracket";
 import { useInView } from "@/hooks/useInView";
@@ -21,13 +21,32 @@ export interface EyebrowV3Props extends Omit<HTMLAttributes<HTMLSpanElement>, "c
  * movimento reduzido, o estado final permanece legível.
  */
 export function EyebrowV3({ children, gap = 8, className, ...props }: EyebrowV3Props) {
-  const { ref, isInView, isReady } = useInView<HTMLSpanElement>();
+  const [hasMounted, setHasMounted] = useState(false);
+  const { ref, isInView } = useInView<HTMLSpanElement>({
+    threshold: 0.6,
+    rootMargin: "0px 0px -20% 0px",
+    triggerIfInitiallyVisible: true,
+  });
+  /* Fecha antes do primeiro paint do cliente. Assim, um eyebrow já na tela
+     pode fazer a transição de verdade em vez de começar aberto e só reagir
+     quando o usuário rola alguns pixels. Sem JavaScript, o HTML do servidor
+     preserva o estado aberto e legível. */
+  useLayoutEffect(() => {
+    const frame = window.requestAnimationFrame(() => setHasMounted(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
   const classes = [styles.root, className].filter(Boolean).join(" ");
-  const open = !isReady || isInView;
+  const open = !hasMounted || isInView;
 
   return (
     <span {...props} ref={ref} className={classes}>
-      <HexagonBracket open={open} gap={gap} strokeWidth={1.5} className={styles.frame}>
+      <HexagonBracket
+        open={open}
+        gap={gap}
+        strokeWidth={1.5}
+        anchorLeft
+        className={styles.frame}
+      >
         {children}
       </HexagonBracket>
     </span>

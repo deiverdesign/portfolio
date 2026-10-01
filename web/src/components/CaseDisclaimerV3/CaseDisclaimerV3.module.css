@@ -1,0 +1,78 @@
+.root {
+  position: relative;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  gap: var(--space-500);
+  padding: 9px 17px;
+  border: 1px solid var(--feedback-info-border);
+  background: var(--feedback-info-background);
+  color: var(--feedback-info-content);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-ui-action);
+  font-weight: 500;
+  line-height: var(--line-height-ui-action);
+}
+
+.root p, .tooltip p { margin: 0; }
+
+.trigger {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.trigger:focus-visible { outline: 2px solid var(--color-border-brand-default); outline-offset: 3px; }
+
+.tooltip {
+  position: absolute;
+  z-index: 3;
+  bottom: calc(100% + 17px);
+  left: 50%;
+  width: min(480px, calc(100vw - 48px));
+  box-sizing: border-box;
+  padding: var(--space-600);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-neutral-subtle);
+  box-shadow: 0 4px 4px rgb(0 0 0 / 10%), 0 10px 24px rgb(17 62 58 / 10%);
+  color: var(--color-foreground-neutral-subtle);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  font-weight: 400;
+  line-height: var(--line-height-body-default);
+  transform: translateX(-50%);
+  animation: tooltip-enter 180ms var(--ease-out-quart) both;
+}
+
+.pointer {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 25px;
+  height: 10px;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+@keyframes tooltip-enter {
+  from { opacity: 0; transform: translate(-50%, 6px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 599px) {
+  .root { width: 100%; align-items: flex-start; }
+  .trigger { margin-top: 1px; }
+  .tooltip { left: auto; right: 0; transform: none; }
+  .pointer { left: auto; right: 6px; transform: rotate(180deg); }
+  @keyframes tooltip-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+}
+
+@media (prefers-reduced-motion: reduce) { .tooltip { animation: none; } }

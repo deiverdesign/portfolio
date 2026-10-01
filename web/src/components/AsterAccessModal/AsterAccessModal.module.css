@@ -1,0 +1,77 @@
+.backdrop {
+  position: fixed;
+  z-index: 1100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-600);
+  overflow-y: auto;
+  background: var(--color-overlay-neutral-strong);
+}
+
+.dialog {
+  display: flex;
+  width: min(420px, 100%);
+  min-height: 450px;
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: var(--space-700);
+  padding: var(--space-400) var(--space-600) var(--space-600);
+  overflow: hidden;
+  border-radius: 7px;
+  background: radial-gradient(28.094px 11.25px at 48.46% -0.99%, #aadad6 0%, #d5edeb 50%, #fff 100%);
+  animation: modal-enter var(--dur-base) var(--ease-out-quart) both;
+}
+
+.errorState {
+  min-height: 514px;
+  background: radial-gradient(28.094px 12.85px at 48.46% -0.99%, #aadad6 0%, #d5edeb 50%, #fff 100%);
+}
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.closeRow { display: flex; height: 48px; justify-content: flex-end; }
+
+.closeButton {
+  display: inline-flex;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-400) var(--space-300);
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  cursor: pointer;
+}
+
+.closeButton:focus-visible { outline: 2px solid var(--color-border-brand-default); outline-offset: 2px; }
+
+.logoWrap { display: flex; height: 60px; align-items: flex-start; justify-content: center; padding-bottom: var(--space-600); box-sizing: border-box; }
+.logo { width: 121px; height: 40px; object-fit: contain; }
+
+.form { display: flex; flex: 1; flex-direction: column; gap: var(--space-900); }
+.copy { display: flex; flex-direction: column; gap: var(--space-300); }
+.copy h2, .copy p, .error, .help { margin: 0; }
+.copy h2 { color: var(--color-foreground-neutral-default); font-family: var(--font-family-body); font-size: var(--font-size-heading-card); font-weight: 600; line-height: var(--line-height-heading-card); }
+.copy p, .help { color: var(--color-foreground-neutral-default); font-family: var(--font-family-body); font-size: var(--font-size-body-default); font-weight: 400; line-height: var(--line-height-body-default); }
+
+.formControls { display: flex; flex-direction: column; gap: var(--space-300); }
+.fieldGroup { display: flex; flex-direction: column; gap: var(--space-300); }
+.field { display: flex; width: 100%; height: 44px; box-sizing: border-box; align-items: center; gap: var(--space-400); padding: var(--space-300) var(--space-500); border: 1px solid var(--color-border-neutral-stronger); border-radius: var(--radius-xxs); background: var(--color-surface-neutral-subtle); }
+.fieldError { outline: 2px solid var(--color-border-error-default); outline-offset: -1px; }
+.field input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: var(--color-foreground-neutral-strong); font: inherit; font-family: var(--font-family-body); font-size: var(--font-size-body-default); line-height: var(--line-height-body-default); }
+.field input::placeholder { color: var(--color-foreground-neutral-subtle); opacity: 1; }
+.lock { flex: 0 0 auto; }
+.error { display: flex; align-items: center; gap: var(--space-300); color: var(--color-foreground-error-default); font-family: var(--font-family-body); font-size: var(--font-size-ui-action); font-weight: 500; line-height: var(--line-height-ui-action); }
+.error img { flex: 0 0 auto; }
+
+.submit { width: 100%; margin-top: auto; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+@media (max-width: 599px) { .backdrop { padding: var(--space-400); } .dialog { min-height: 0; } }
+@media (prefers-reduced-motion: reduce) { .dialog { animation: none; } }

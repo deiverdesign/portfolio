@@ -52,6 +52,9 @@
      em vez de duplicar o valor. */
   --color-surface-brand-strong: var(--primary-300);
   --color-surface-brand-stronger: #246963;
+  /* Surface/accent/default — usado no gradiente do card Design systems
+     (Figma node 1946:13243). */
+  --color-surface-accent-default: #ffe1cc;
   --color-border-brand-subtler: #aadad6;
   /* Mesma variável do Figma (border/brand/subtler) resolvida no modo
      escuro — usada na linha divisória do NavBarV3 sobre o hero (fundo
@@ -117,6 +120,15 @@
      desktop 2262:61722 e 2262:61863 em 27/09/2026. */
   --font-size-display-feature: 6.125rem; /* 98px */
   --line-height-display-feature: 5.81875rem; /* 93.1px */
+  /* Case Hero — mesmo papel editorial, com escala própria confirmada
+     nos frames tablet/mobile do Figma. */
+  --font-size-case-hero-tablet: 4.75rem; /* 76px */
+  --font-size-case-hero-mobile: 3.25rem; /* 52px */
+  --font-size-case-hero-tablet-responsive: clamp(
+    var(--font-size-case-hero-mobile),
+    9.9vw,
+    var(--font-size-case-hero-tablet)
+  );
   /* Entre 1024 e 1327px, o hero da Home perde largura para o resumo.
      A escala acompanha a largura disponível: 70px no início do desktop
      e os 98px do frame de 1327px em diante. */

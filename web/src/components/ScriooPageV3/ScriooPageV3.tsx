@@ -87,6 +87,8 @@ export function ScriooPageV3({ locale }: ScriooPageV3Props) {
           title={getCopy(locale, "scrioo.hero.title")}
           summary={getCopy(locale, "scrioo.hero.summary")}
           backHref={`${homeHref}#selected-work`}
+          prevCaseHref={locale === "pt" ? "/pt/v3/cases/aster" : "/v3/cases/aster"}
+          nextCaseHref={locale === "pt" ? "/pt/v3/cases/hp" : "/v3/cases/hp"}
           devices={SCRIOO_ASSETS.hero.devices}
           backgroundDesktop={SCRIOO_ASSETS.hero.backgroundDesktop}
           backgroundTablet={SCRIOO_ASSETS.hero.backgroundTablet}

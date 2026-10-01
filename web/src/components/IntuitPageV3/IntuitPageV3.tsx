@@ -59,9 +59,11 @@ export function IntuitPageV3({ locale }: IntuitPageV3Props) {
           title={getCopy(locale, "intuit.hero.title")}
           summary={getCopy(locale, "intuit.hero.summary")}
           backHref={`${homeHref}#selected-work`}
+          prevCaseHref={locale === "pt" ? "/pt/v3/cases/theodoor" : "/v3/cases/theodoor"}
+          nextCaseHref={locale === "pt" ? "/pt/v3/cases/aster" : "/v3/cases/aster"}
           devices={INTUIT_ASSETS.hero.devices}
           devicesDesktop={INTUIT_ASSETS.hero.devicesDesktop}
-          deviceAlignTablet="fill"
+          deviceAlignTablet="bottom"
           backgroundDesktop={INTUIT_ASSETS.hero.backgroundDesktop}
           backgroundTablet={INTUIT_ASSETS.hero.backgroundTablet}
           backgroundMobile={`url(${INTUIT_ASSETS.hero.backgroundMobile.src})`}

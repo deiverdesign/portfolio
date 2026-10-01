@@ -79,6 +79,7 @@ const LOGO_SCALE = 1.3;
 export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
   const classes = className ? `${styles.root} ${className}` : styles.root;
   const gridRef = useRef<HTMLUListElement>(null);
+  const hexagonRef = useRef<HTMLImageElement>(null);
   const frameRef = useRef<number | null>(null);
   const [activeDot, setActiveDot] = useState(0);
 
@@ -100,6 +101,49 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
     },
     [],
   );
+
+  useEffect(() => {
+    const hexagon = hexagonRef.current;
+    if (!hexagon) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frameId: number | null = null;
+
+    const updateOffset = () => {
+      frameId = null;
+      if (reducedMotion.matches || window.innerWidth <= 1023) {
+        hexagon.style.setProperty("--brands-hexagon-parallax-offset", "0px");
+        return;
+      }
+
+      const section = hexagon.closest("section");
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+      const viewportCenter = window.innerHeight / 2;
+      const sectionCenter = rect.top + rect.height / 2;
+      // Como é um elemento puramente decorativo de fundo, ele pode ter
+      // uma amplitude maior do que o texto sem comprometer legibilidade.
+      const offset = Math.max(-64, Math.min(64, ((viewportCenter - sectionCenter) / window.innerHeight) * 128));
+      hexagon.style.setProperty("--brands-hexagon-parallax-offset", `${offset.toFixed(2)}px`);
+    };
+
+    const requestUpdate = () => {
+      if (frameId === null) frameId = window.requestAnimationFrame(updateOffset);
+    };
+
+    requestUpdate();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    reducedMotion.addEventListener("change", requestUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      reducedMotion.removeEventListener("change", requestUpdate);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
+  }, []);
 
   const handleScroll = () => {
     if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
@@ -129,6 +173,7 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
             node 2262:61790 ("Frame 475", = este .container), não
             aproximada — ver `.hexagon` no CSS. */}
         <img
+          ref={hexagonRef}
           src={HOME_ASSETS.decorative.hexagonPattern}
           alt=""
           aria-hidden="true"

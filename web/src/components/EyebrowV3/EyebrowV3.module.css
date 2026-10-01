@@ -13,9 +13,37 @@
 .frame {
   --hexagon-bracket-size: 21px;
   --hexagon-bracket-gap: 0;
-  --hexagon-bracket-duration: var(--dur-base);
-  --hexagon-bracket-ease: var(--ease-out-expo);
-  --hexagon-bracket-content-ease: var(--ease-out-expo);
+  /* O eyebrow é uma transição de atenção, não um hover: ganha tempo para
+     a abertura ser percebida e usa aceleração/desaceleração suave em vez
+     do snap de --ease-out-expo. */
+  --hexagon-bracket-duration: 560ms;
+  --hexagon-bracket-ease: var(--ease-in-out-quart);
+  --hexagon-bracket-content-ease: var(--ease-in-out-quart);
   min-height: 21px;
   padding-inline: 0;
+  /* Os colchetes são posicionados com `position:absolute` dentro do
+     HexagonBracket; a caixa do `.frame` só mede o texto ("content"),
+     nunca o traço do colchete. No estado aberto, o traço esquerdo pinta
+     17px pra fora da própria caixa — constante, não depende do
+     tamanho do rótulo (confirmado medindo "CONTEXT", "Decisions",
+     "Usability validation", "Outcome" e "Reflection": todos os 5
+     abrem para a mesma posição de tela, porque o deslocamento do
+     colchete cresce exatamente na mesma proporção que a caixa do
+     texto). Medição anterior que sugeria variar por rótulo foi
+     artefato de medir no meio da transição de abertura (29/09/2026).
+     Este `margin-left` empurra a caixa inteira pra a direita até o
+     TRAÇO (não o texto) ficar na borda do grid. */
+  margin-left: 17px;
+}
+
+/* A caixa do texto já está centralizada matematicamente em relação ao
+   colchete (confirmado medindo: mesmo centro vertical em ambos) — o
+   deslocamento visual que o Deiver viu é a métrica da fonte DM Mono:
+   o line-box reserva espaço de descendente que letras caixa-alta não
+   usam, fazendo o traço parecer "subido". Ajuste fino óptico, não
+   estrutural. Seletor por atributo (não classe) porque `content` vem
+   de um componente diferente (HexagonBracket), cujo CSS Module tem um
+   hash próprio. */
+.frame [class*="HexagonBracket_content"] {
+  transform: translateY(1.5px);
 }

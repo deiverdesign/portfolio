@@ -185,6 +185,20 @@
   color: var(--color-foreground-neutral-inverse-default);
 }
 
+.disclaimer {
+  box-sizing: border-box;
+  margin: 0;
+  max-width: 512px;
+  padding: 9px 17px;
+  border: 1px solid var(--feedback-info-border);
+  background: var(--feedback-info-background);
+  color: var(--feedback-info-content);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-ui-action);
+  font-weight: var(--font-weight-sans-medium);
+  line-height: var(--line-height-ui-action);
+}
+
 .devices {
   /* Figma Desktop Small (1288px): 498.141px em uma área interna de
      1208px. O percentual abaixo preserva essa proporção e o teto mantém
@@ -313,29 +327,22 @@
        (CaseHeroV3.module.css, achado do Deiver com a foto retrato da
        Intuit em 30/09/2026) — esse teto de largura vira só um máximo,
        não mais o valor que define a altura. */
-    flex: 1;
+    flex: var(--case-hero-device-flex-tablet, 1);
     min-height: 0;
     width: 100%;
     max-width: 615.645px;
     height: auto;
+    margin-top: var(--case-hero-device-margin-top-tablet, 0);
     align-self: center;
   }
 
   .devices img {
     width: 100%;
-    height: 100%;
-    /* Default "contain"/"center": mantém o comportamento de sempre pras
-       outras cases (a imagem inteira cabe na caixa, com respiro nas
-       laterais quando a proporção não bate). A Intuit usa
-       "cover"/"top" via `deviceAlignTablet="fill"` — achado do Deiver
-       em 30/09/2026, com mockup comparando "como está" x "como deveria
-       estar": o problema real não era falta de altura (já corrigido
-       antes), era a foto não preencher a caixa inteira, sobrando uma
-       tira de fundo visível numa das bordas. `cover` faz a imagem
-       preencher 100% da caixa sempre, cortando o excesso; `top` mantém
-       a cabeça inteira no enquadramento (a régua natural dessa foto já
-       corta no peito). */
-    object-fit: var(--case-hero-device-fit-tablet, contain);
+    height: var(--case-hero-device-image-height-tablet, 100%);
+    /* A arte sempre mantém sua proporção. Para a Intuit, a imagem é
+       ancorada na base da caixa: não usamos `cover`, pois isso aumenta
+       e corta o corpo para preencher uma proporção que não é a dela. */
+    object-fit: contain;
     object-position: var(--case-hero-device-position-tablet, center);
   }
 
@@ -348,7 +355,12 @@
        outros valores deste bloco (o range 600-1151px deste componente
        não é coberto pela tabela de tokens de tablet, que vai só até
        1023px). */
-    font-size: 4.75rem; /* 76px */
+    /* Em 768px (iPad Mini) mantém os 76px do Figma e permanece em uma
+       linha. Perto do limite inferior do tablet o tamanho reduz junto
+       com a largura disponível; a quebra volta a ser permitida somente
+       no breakpoint mobile abaixo. */
+    font-size: var(--font-size-case-hero-tablet-responsive);
+    white-space: nowrap;
   }
 }
 
@@ -370,8 +382,9 @@
        mesma tabela que motivou o fix do tablet acima. Literal pelo
        mesmo motivo: não existe token de --font-size-display-feature
        pra esse breakpoint em tokens-v3.css. */
-    font-size: 3.25rem; /* 52px */
+    font-size: var(--font-size-case-hero-mobile);
     line-height: 1.05;
+    white-space: normal;
   }
 
   .devices {

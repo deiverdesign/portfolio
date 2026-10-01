@@ -24,6 +24,8 @@ export interface HexagonBracketProps {
   gap?: number;
   /** Espessura do traço; o eyebrow compacto usa 1.5px. */
   strokeWidth?: number;
+  /** Mantém o colchete esquerdo parado; o direito revela o conteúdo. */
+  anchorLeft?: boolean;
   className?: string;
 }
 
@@ -42,6 +44,7 @@ export function HexagonBracket({
   open = true,
   gap = 24,
   strokeWidth = 3,
+  anchorLeft = false,
   className,
 }: HexagonBracketProps) {
   const contentRef = useRef<HTMLSpanElement | null>(null);
@@ -61,14 +64,15 @@ export function HexagonBracket({
     return () => observer.disconnect();
   }, [gap]);
 
-  const travel = open ? shift : 0;
+  const leftTravel = anchorLeft ? -shift : open ? -shift : 0;
+  const rightTravel = anchorLeft ? (open ? shift : -shift) : open ? shift : 0;
   const classes = [styles.frame, className].filter(Boolean).join(" ");
 
   return (
     <span className={classes} data-open={open}>
       <svg
         className={styles.bracket}
-        style={{ "--shift": `${-travel}px` } as CSSProperties}
+        style={{ "--shift": `${leftTravel}px` } as CSSProperties}
         viewBox={VIEW_BOX}
         fill="none"
         aria-hidden="true"
@@ -83,7 +87,7 @@ export function HexagonBracket({
       </svg>
       <svg
         className={styles.bracket}
-        style={{ "--shift": `${travel}px` } as CSSProperties}
+        style={{ "--shift": `${rightTravel}px` } as CSSProperties}
         viewBox={VIEW_BOX}
         fill="none"
         aria-hidden="true"

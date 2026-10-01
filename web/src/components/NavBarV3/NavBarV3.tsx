@@ -1,10 +1,12 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
 import { HOME_ASSETS } from "@/content/home-assets";
+import { RESUME_DOWNLOAD_NAME } from "@/components/NavBar/constants";
 import { IconV3 } from "@/components/IconV3/IconV3";
 import { LanguageSwitcherV3 } from "@/components/LanguageSwitcherV3/LanguageSwitcherV3";
 import styles from "./NavBarV3.module.css";
@@ -23,6 +25,7 @@ export interface NavBarV3Props {
   context?: "light" | "dark";
   links: NavBarV3Link[];
   className?: string;
+  id?: string;
 }
 
 /**
@@ -40,6 +43,7 @@ export function NavBarV3({
   context = "light",
   links,
   className,
+  id,
 }: NavBarV3Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const classes = [styles.root, styles[context], className].filter(Boolean).join(" ");
@@ -59,7 +63,7 @@ export function NavBarV3({
   }, [mobileOpen]);
 
   return (
-    <header className={classes}>
+    <header id={id} className={classes}>
       <div className={styles.row}>
         <a href={identityHref} className={styles.identity}>
           <img src={logo} alt="Deiver Brito" className={styles.name} />
@@ -67,23 +71,29 @@ export function NavBarV3({
         </a>
 
         <nav className={styles.desktopNav} aria-label={locale === "pt" ? "Navegação principal" : "Main navigation"}>
-          {links.map((link) => (
-            <a
+          {links.map((link) => {
+            const isResume = link.label === getCopy(locale, "shared.nav.resume");
+            return <a
               key={link.href}
               href={link.href}
               className={styles.navLink}
               aria-current={link.active ? "page" : undefined}
+              download={isResume ? RESUME_DOWNLOAD_NAME[locale] : undefined}
             >
               {link.label}
-            </a>
-          ))}
+              {isResume && <IconV3 name="download" size={16} className={styles.navLinkIcon} />}
+            </a>;
+          })}
+        </nav>
+
+        <div className={styles.desktopLanguage}>
           <LanguageSwitcherV3
             locale={locale}
             href={languageHref}
             context={context === "dark" ? "inverted" : "default"}
             className={styles.languageSwitcher}
           />
-        </nav>
+        </div>
 
         <button
           type="button"
@@ -99,8 +109,8 @@ export function NavBarV3({
         </button>
       </div>
 
-      {mobileOpen && (
-        <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label={locale === "pt" ? "Menu" : "Menu"}>
+      {mobileOpen && createPortal(
+        <div className={`${styles.mobileOverlay} ${styles[context]}`} role="dialog" aria-modal="true" aria-label={locale === "pt" ? "Menu" : "Menu"}>
           <div className={styles.mobileHeader}>
             <a href={identityHref} className={styles.identity} onClick={() => setMobileOpen(false)}>
               <img src={logo} alt="Deiver Brito" className={styles.name} />
@@ -125,6 +135,7 @@ export function NavBarV3({
                     href={link.href}
                     className={styles.mobileNavLink}
                     aria-current={link.active ? "page" : undefined}
+                    download={isResume ? RESUME_DOWNLOAD_NAME[locale] : undefined}
                     onClick={() => setMobileOpen(false)}
                   >
                     <span className={styles.mobileNavLabel}>{link.label}</span>
@@ -157,7 +168,8 @@ export function NavBarV3({
               <a href={languageHref} className={styles.mobileLanguage}>Portuguese</a>
             )}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </header>
   );

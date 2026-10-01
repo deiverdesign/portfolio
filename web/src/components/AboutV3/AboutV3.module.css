@@ -44,6 +44,15 @@
   color: var(--color-foreground-neutral-stronger);
 }
 
+.parallaxStatement {
+  /* O deslocamento é calculado pelo scroll no componente: 48px para
+     cada lado no máximo, para a coluna direita se mover numa cadência
+     mais lenta que o statement da esquerda sem parecer flutuar. */
+  --about-parallax-offset: 0px;
+  transform: translate3d(0, var(--about-parallax-offset), 0);
+  will-change: transform;
+}
+
 .badge {
   width: 96px;
   height: 96px;
@@ -64,6 +73,18 @@
     max-width: none;
     min-width: 0;
     padding-top: 0;
+  }
+
+  .parallaxStatement {
+    transform: none;
+    will-change: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallaxStatement {
+    transform: none;
+    will-change: auto;
   }
 }
 

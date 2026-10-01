@@ -9,13 +9,14 @@
   justify-content: center;
   overflow: hidden;
   background: var(--color-surface-brand-strong);
-  padding: var(--space-layout-500) var(--space-layout-400);
+  padding: var(--space-layout-500) var(--space-layout-400) var(--space-layout-300);
 }
 
 .graphism {
+  --contact-graphism-parallax-offset: 0px;
   position: absolute;
   z-index: 0;
-  /* left/right 10.74%, top calc(50% + 61.6px) — valores reais do Figma,
+  /* left/right 10.74%, top calc(50% + 74.1px) — valores reais do Figma,
      não centralização aproximada. O SVG já vem com opacity 0.4 embutida
      no próprio path; aplicar opacity de novo aqui era um bug de
      "dupla opacidade" (mesma classe de erro já documentada no NORTE.md
@@ -23,12 +24,26 @@
      devia. Corrigido: nenhuma opacidade extra aqui. */
   left: 10.74%;
   right: 10.74%;
-  top: calc(50% + 61.6px);
-  transform: translateY(-50%);
+  top: calc(50% + 74.1px);
+  transform: translate3d(0, calc(-50% + var(--contact-graphism-parallax-offset)), 0);
   aspect-ratio: 1242.99 / 818.54;
   width: auto;
   height: auto;
   pointer-events: none;
+  will-change: transform;
+}
+
+.graphism img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graphism {
+    transform: translateY(-50%);
+    will-change: auto;
+  }
 }
 
 .row {
@@ -37,15 +52,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1 0 0;
   gap: var(--space-layout-400);
   max-width: 1348px;
+  min-width: 1px;
   width: 100%;
 }
 
 .portrait {
   flex-shrink: 0;
-  width: clamp(140px, 18vw, 255px);
-  height: auto;
+  width: 235px;
+  height: 285px;
+  object-fit: cover;
 }
 
 .content {
@@ -53,19 +71,8 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-500);
-  flex: 1;
-  min-width: 0;
-}
-
-.eyebrow {
-  margin: 0;
-  font-family: var(--font-family-data);
-  font-size: var(--font-size-meta-label);
-  font-weight: var(--font-weight-meta-label);
-  line-height: var(--line-height-meta-label);
-  letter-spacing: var(--letter-spacing-meta-label);
-  text-transform: uppercase;
-  color: var(--color-foreground-neutral-default);
+  flex: 0 0 621px;
+  width: 621px;
 }
 
 .title {
@@ -73,9 +80,9 @@
   font-family: var(--font-family-editorial);
   font-weight: var(--font-weight-editorial-light);
   font-style: normal;
-  font-size: var(--font-size-editorial-title);
-  line-height: var(--line-height-editorial-title);
-  color: var(--color-foreground-neutral-stronger);
+  font-size: var(--font-size-display-cta);
+  line-height: var(--line-height-display-cta);
+  color: var(--color-foreground-neutral-default);
 }
 
 .buttonWrap {
@@ -84,17 +91,62 @@
      direita — node 1729:13195). Comentário antigo mantido pra registrar
      a mudança, não porque o valor antigo ainda vale. */
   display: flex;
+  align-items: center;
+  gap: var(--space-500);
   justify-content: flex-start;
   width: 100%;
 }
 
+.email {
+  flex: 1 0 0;
+  min-width: 1px;
+  margin: 0;
+  font-family: var(--font-family-data);
+  font-size: var(--font-size-meta-label);
+  font-weight: var(--font-weight-mono-medium);
+  line-height: var(--line-height-meta-label);
+  letter-spacing: var(--letter-spacing-meta-label);
+  text-transform: uppercase;
+  color: var(--color-foreground-neutral-default);
+}
+
 @media (min-width: 600px) and (max-width: 1023px) {
   .root {
-    padding: var(--space-layout-200) var(--space-layout-300);
+    padding: var(--space-900) var(--space-layout-300) var(--space-layout-300);
   }
 
   .row {
-    gap: var(--space-layout-200);
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .graphism {
+    left: calc(50% - 8.5px);
+    right: auto;
+    top: calc(50% + 42px);
+    width: 997.507px;
+    height: 654.565px;
+    aspect-ratio: auto;
+    transform: translate3d(-50%, calc(-50% + var(--contact-graphism-parallax-offset)), 0);
+  }
+
+  .portrait {
+    width: 200px;
+    height: 242px;
+  }
+
+  .content {
+    flex: none;
+    gap: var(--space-700);
+    max-width: 684px;
+    padding-inline: var(--space-800);
+    width: 100%;
+  }
+
+  .title {
+    max-width: 500px;
+    font-size: var(--font-size-display-page);
+    line-height: var(--line-height-display-page);
   }
 }
 
@@ -111,6 +163,17 @@
 
   .portrait {
     width: clamp(120px, 40vw, 180px);
+    height: auto;
+  }
+
+  .content {
+    flex: none;
+    width: 100%;
+  }
+
+  .title {
+    font-size: var(--font-size-display-page);
+    line-height: var(--line-height-display-page);
   }
 
   .buttonWrap {

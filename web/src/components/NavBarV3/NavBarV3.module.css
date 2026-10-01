@@ -80,6 +80,10 @@
   gap: var(--space-700);
 }
 
+.desktopLanguage {
+  display: none;
+}
+
 /* O LanguageSwitcherV3 tem altura própria fixa (44px) — com a nav agora
    esticada, ele ficaria "empurrado" pro topo em vez de centralizado
    (comportamento do align-items:stretch quando o item tem altura
@@ -92,6 +96,11 @@
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  box-sizing: border-box;
+  border-bottom: 3px solid transparent;
+  gap: var(--space-300);
   font-size: var(--font-size-ui-action);
   font-weight: var(--font-weight-ui-action);
   line-height: var(--line-height-ui-action);
@@ -100,26 +109,18 @@
   transition: color var(--dur-fast) var(--ease-out-quart);
 }
 
-/* O traço vira um ::after posicionado, não mais border-bottom: mesmo
-   esticado (via .desktopNav acima), o link só preenche a altura do
-   CONTEÚDO da row — sobra ainda o padding-bottom da própria .row antes
-   da borda "div-bottom" de verdade. Empurra o traço por -var(--space-500)
-   (o padding-bottom da row, mesmo token) pra ele cair bem em cima dessa
-   linha em vez de flutuar acima dela — achado do Deiver em 28/09/2026,
-   comparando com o Figma. */
-.navLink::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(-1 * var(--space-500));
-  height: 1px;
-  background: transparent;
-  transition: background-color var(--dur-fast) var(--ease-out-quart);
+.navLinkIcon {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.dark .navLinkIcon {
+  filter: invert(1);
 }
 
 .navLink:hover {
   color: var(--color-foreground-neutral-stronger);
+  border-bottom-color: currentColor;
   /* A troca de opacidade sozinha (spec do Figma pro Hover) é sutil
      demais sobre o fundo escuro do hero — decisão do Deiver em
      28/09/2026: reforçar com o mesmo traço que o link ativo ("Home")
@@ -129,16 +130,19 @@
      elemento, não precisa duplicar a regra por contexto. */
 }
 
-.navLink:hover::after {
-  background: currentColor;
-}
-
 .dark .navLink:hover {
   color: var(--color-foreground-neutral-inverse-strong);
 }
 
-.navLink[aria-current="page"]::after {
-  background: currentColor;
+.navLink[aria-current="page"] {
+  border-bottom-color: var(--color-border-neutral-stronger);
+}
+
+/* Só o header inicial da Home usa o contexto escuro. A borda ativa
+   precisa ser clara sobre o hero verde; o header fixo muda para contexto
+   light ao surgir, portanto não recebe esta regra. */
+.dark .navLink[aria-current="page"] {
+  border-bottom-color: var(--color-foreground-neutral-inverse-strong);
 }
 
 .menuToggle {
@@ -169,7 +173,12 @@
 }
 
 .mobileNav {
+  position: relative;
+  z-index: 1;
   display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-content: start;
   /* Valores literais (12px/16px), não os tokens --space-400/500: esses
      tokens INVERTEM em telas menores (crescem no lugar de encolher — bug
      documentado no tokens.css) e esse overlay só existe abaixo de
@@ -186,21 +195,48 @@
 
 .mobileOverlay {
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
   inset: 0;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   min-height: 100dvh;
+  box-sizing: border-box;
+  flex-direction: column;
+  overflow: hidden;
   padding-bottom: 24px;
   background: var(--color-surface-neutral-default);
   color: var(--color-foreground-neutral-stronger);
 }
 
-.dark .mobileOverlay {
+.mobileOverlay::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 47.925dvh;
+  left: 7.028vw;
+  width: 85.943vw;
+  aspect-ratio: 858 / 1198;
+  background: url("/images/navigation/menu-hamburger-open-light.png") center / contain no-repeat;
+  pointer-events: none;
+}
+
+.mobileOverlay.dark {
   background: linear-gradient(208.5867deg, #1c5550 11.658%, #073237 97.956%);
   color: var(--color-foreground-neutral-inverse-strong);
 }
 
+.mobileOverlay.dark::before {
+  aspect-ratio: 670 / 1052;
+  background-image: url("/images/navigation/menu-hamburger-open-dark.png");
+}
+
 .mobileHeader {
+  position: relative;
+  z-index: 1;
   display: flex;
+  flex: 0 0 72px;
   height: 72px;
   align-items: center;
   justify-content: space-between;
@@ -211,7 +247,7 @@
   border-bottom: 1px solid var(--color-border-brand-subtler);
 }
 
-.dark .mobileHeader {
+.mobileOverlay.dark .mobileHeader {
   border-bottom-color: var(--color-border-brand-inverse-subtler);
 }
 
@@ -261,7 +297,7 @@
   background: var(--color-border-neutral-subtle);
 }
 
-.dark .mobileNavDivider {
+.mobileOverlay.dark .mobileNavDivider {
   background: var(--color-border-brand-inverse-subtler);
 }
 
@@ -280,13 +316,16 @@
   flex: 0 0 auto;
 }
 
-.dark .mobileNavIcon,
-.dark .mobileCloseIcon {
+.mobileOverlay.dark .mobileNavIcon,
+.mobileOverlay.dark .mobileCloseIcon {
   filter: invert(1);
 }
 
 .mobileLanguages {
+  position: relative;
+  z-index: 1;
   display: flex;
+  flex: 0 0 auto;
   justify-content: center;
   /* Sem gap: no Figma os dois itens ficam colados (gap-0), o respiro
      entre "English" e "Portuguese" vem do padding-inline de cada um
@@ -294,7 +333,13 @@
      bloco no Figma) = 28px acima, mesmo raciocínio de valor literal do
      .mobileNav. */
   gap: 0;
-  margin-top: 28px;
+  margin-top: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-neutral-subtle);
+}
+
+.mobileOverlay.dark .mobileLanguages {
+  border-top-color: var(--color-border-brand-inverse-subtler);
 }
 
 .mobileLanguage,
@@ -321,8 +366,26 @@
 }
 
 @media (min-width: 1024px) {
+  .row {
+    display: grid;
+    grid-template-columns: 182px minmax(0, 1fr) 182px;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .identity {
+    align-self: center;
+  }
+
   .desktopNav {
     display: flex;
+    justify-self: center;
+  }
+
+  .desktopLanguage {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   .menuToggle {
@@ -343,23 +406,34 @@
        HomeHeroV3.module.css; agora está aqui, no componente, pra
        qualquer uso do NavBarV3 (incluindo o header fixo) sair correto
        sem precisar duplicar a lógica. */
+    box-sizing: border-box;
+    height: 72px;
     max-width: 1396px;
     margin-inline: auto;
-    padding: var(--space-500) 24px;
-    /* Corrigido em 28/09/2026 — não é --color-border-neutral-stronger
-       (chute inicial copiando o padrão do Footer). É border/brand/subtler
-       no Figma (node 2262:61755, conferido via get_variable_defs), que
-       resolve diferente por contexto — ver as duas regras abaixo. */
-    border-bottom: 1px solid var(--color-border-brand-subtler);
+    padding: 0 24px;
+    /* Figma node 2400:103324 (Vector 79): #171B1A em 50% de opacidade. */
+    border-bottom: 1px solid color-mix(in srgb, var(--color-foreground-neutral-stronger) 50%, transparent);
   }
 
   .dark .row {
-    border-bottom-color: var(--color-border-brand-inverse-subtler);
+    border-bottom-color: color-mix(in srgb, var(--color-foreground-neutral-inverse-strong) 50%, transparent);
+  }
+
+  .navLink {
+    height: 72px;
   }
 }
 
 @media (max-width: 1023px) {
   .row {
     padding: var(--space-500) var(--space-600);
+  }
+}
+
+/* No tablet, o overlay aberto é uma superfície limpa: o grafismo continua
+   na composição mobile, mas não deve competir com os itens de navegação. */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .mobileOverlay::before {
+    display: none;
   }
 }

@@ -8,6 +8,7 @@ import { HomeIntroV3 } from "@/components/HomeIntroV3/HomeIntroV3";
 import { SelectedWorkV3 } from "@/components/SelectedWorkV3/SelectedWorkV3";
 import { StickyNavBarV3 } from "@/components/StickyNavBarV3/StickyNavBarV3";
 import { RESUME_HREF } from "@/components/NavBar/constants";
+import styles from "./HomeV3.module.css";
 
 export interface HomeV3Props {
   locale: Locale;
@@ -32,6 +33,7 @@ export function HomeV3({ locale, introEnabled = true, introSessionKey }: HomeV3P
         homeHref={homeHref}
         aboutHref={aboutHref}
         languageHref={languageHref}
+        triggerSelector="#home-nav"
       />
       <main>
         <HomeIntroV3
@@ -43,6 +45,7 @@ export function HomeV3({ locale, introEnabled = true, introSessionKey }: HomeV3P
           sessionKey={introSessionKey}
         />
         <SelectedWorkV3 locale={locale} />
+        <div className={styles.selectedWorkDivider} aria-hidden="true" />
         <BrandsSectionV3 locale={locale} />
         <CapabilitiesV3 locale={locale} />
         <AboutV3 locale={locale} />

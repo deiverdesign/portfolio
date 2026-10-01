@@ -71,18 +71,15 @@
   width: 668px;
   max-width: 100%;
   height: 423px;
+  overflow: hidden;
   border-radius: var(--radius-sm);
-  /* Listras diagonais — convenção visual comum pra "imagem ainda não
-     existe" (o Deiver pediu placeholder visual, não texto escrito em
-     cima). Duas cores lisas do próprio sistema, sem inventar token
-     novo: --color-surface-decorative-default e um tom vizinho dela. */
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--color-surface-decorative-default),
-    var(--color-surface-decorative-default) 12px,
-    var(--color-surface-neutral-strong) 12px,
-    var(--color-surface-neutral-strong) 24px
-  );
+}
+
+.banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 @media (max-width: 1023px) {
@@ -104,7 +101,5 @@
     padding-right: 0;
   }
 
-  .banner {
-    width: 100%;
-  }
+  .banner { display: none; }
 }

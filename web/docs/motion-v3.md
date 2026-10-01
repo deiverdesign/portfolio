@@ -65,7 +65,7 @@ renderizar explicitamente o estado final para que a sequência intermediária n�
 ### 4.1 Hero Intro — Home
 
 - O `HexagonIntro` em direção `reverse` termina no retângulo que inicia o handoff para o hero.
-- O retângulo expande horizontalmente em `600ms` com `--ease-out-expo` e verticalmente em `700ms` com
+- Após o hexágono resolver no quadrado, o retângulo expande horizontalmente em `300ms` com `--ease-out-expo` e verticalmente em `350ms` com
   `--ease-in-out-quart`, sem hold entre as fases.
 - Gradiente, grafismo e lettering de fundo já existem no campo do hero; não recebem entrada própria.
 - Depois que o campo se estabelece, NavBar e grupos de conteúdo entram em `600ms`, com `60ms` entre
