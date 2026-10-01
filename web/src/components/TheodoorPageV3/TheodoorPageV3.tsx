@@ -22,9 +22,9 @@ const INTUIT_CARD_BACKGROUND = "linear-gradient(160.570626deg, rgb(35 108 255) 3
 /** Case Theodoor: conteúdo particular, composição construída apenas com os
  * blocos compartilhados que já passaram pelos refinamentos de SCRIOO e HP. */
 export function TheodoorPageV3({ locale }: TheodoorPageV3Props) {
-  const homeHref = locale === "pt" ? "/pt/v3" : "/v3";
-  const aboutHref = locale === "pt" ? "/pt/v3/sobre" : "/v3/about";
-  const languageHref = locale === "pt" ? "/v3/cases/theodoor" : "/pt/v3/cases/theodoor";
+  const homeHref = locale === "pt" ? "/pt" : "/";
+  const aboutHref = locale === "pt" ? "/pt/sobre" : "/about";
+  const languageHref = locale === "pt" ? "/cases/theodoor" : "/pt/cases/theodoor";
   const links: NavBarV3Link[] = [
     { label: getCopy(locale, "shared.nav.home"), href: homeHref },
     { label: getCopy(locale, "shared.nav.about"), href: aboutHref },
@@ -41,8 +41,8 @@ export function TheodoorPageV3({ locale }: TheodoorPageV3Props) {
         title={getCopy(locale, "theodoor.hero.title")}
         summary={getCopy(locale, "theodoor.hero.summary")}
         backHref={`${homeHref}#selected-work`}
-        prevCaseHref={locale === "pt" ? "/pt/v3/cases/hp" : "/v3/cases/hp"}
-        nextCaseHref={locale === "pt" ? "/pt/v3/cases/intuit" : "/v3/cases/intuit"}
+        prevCaseHref={locale === "pt" ? "/pt/cases/hp" : "/cases/hp"}
+        nextCaseHref={locale === "pt" ? "/pt/cases/intuit" : "/cases/intuit"}
         devices={THEODOOR_ASSETS.hero.devices}
         backgroundDesktop={THEODOOR_ASSETS.hero.backgroundDesktop}
         backgroundTablet={THEODOOR_ASSETS.hero.backgroundTablet}
@@ -105,7 +105,7 @@ export function TheodoorPageV3({ locale }: TheodoorPageV3Props) {
         quote={getCopy(locale, "theodoor.reflection.body")}
         nextLabel={getCopy(locale, "shared.case.next")}
         next={{
-          href: locale === "pt" ? "/pt/v3/cases/intuit" : "/v3/cases/intuit",
+          href: locale === "pt" ? "/pt/cases/intuit" : "/cases/intuit",
           logoSrc: "/images/v3/home/brands/white/intuit.svg",
           logoAlt: "Intuit",
           logoWidth: 71,

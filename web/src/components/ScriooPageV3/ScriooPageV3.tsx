@@ -59,10 +59,10 @@ function validationCard(locale: Locale, index: 1 | 2 | 3) {
  * preview até o cutover, mesmo padrão do HomeV3/AboutPageV3.
  */
 export function ScriooPageV3({ locale }: ScriooPageV3Props) {
-  const homeHref = locale === "pt" ? "/pt/v3" : "/v3";
-  const aboutHref = locale === "pt" ? "/pt/v3/sobre" : "/v3/about";
+  const homeHref = locale === "pt" ? "/pt" : "/";
+  const aboutHref = locale === "pt" ? "/pt/sobre" : "/about";
   const contactHref = `${homeHref}#contact`;
-  const languageHref = locale === "pt" ? "/v3/cases/scrioo" : "/pt/v3/cases/scrioo";
+  const languageHref = locale === "pt" ? "/cases/scrioo" : "/pt/cases/scrioo";
 
   const links: NavBarV3Link[] = [
     { label: getCopy(locale, "shared.nav.home"), href: homeHref },
@@ -87,8 +87,8 @@ export function ScriooPageV3({ locale }: ScriooPageV3Props) {
           title={getCopy(locale, "scrioo.hero.title")}
           summary={getCopy(locale, "scrioo.hero.summary")}
           backHref={`${homeHref}#selected-work`}
-          prevCaseHref={locale === "pt" ? "/pt/v3/cases/aster" : "/v3/cases/aster"}
-          nextCaseHref={locale === "pt" ? "/pt/v3/cases/hp" : "/v3/cases/hp"}
+          prevCaseHref={locale === "pt" ? "/pt/cases/aster" : "/cases/aster"}
+          nextCaseHref={locale === "pt" ? "/pt/cases/hp" : "/cases/hp"}
           devices={SCRIOO_ASSETS.hero.devices}
           backgroundDesktop={SCRIOO_ASSETS.hero.backgroundDesktop}
           backgroundTablet={SCRIOO_ASSETS.hero.backgroundTablet}
@@ -172,7 +172,7 @@ export function ScriooPageV3({ locale }: ScriooPageV3Props) {
           close={getCopy(locale, "scrioo.reflection.close")}
           nextLabel={getCopy(locale, "shared.case.next")}
           next={{
-            href: locale === "pt" ? "/pt/v3/cases/hp" : "/v3/cases/hp",
+            href: locale === "pt" ? "/pt/cases/hp" : "/cases/hp",
             // Figma usa um badge circular ("Brands/HP 1", 32px), não o
             // wordmark branco do card da Home — asset legado do v2 já
             // existente no repo, mesma marca.

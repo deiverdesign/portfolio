@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { isAsterUnlocked } from "@/app/_shared/aster/session";
 import { PasswordGate } from "@/app/_shared/aster/PasswordGate";
-import { AsterCase } from "@/app/_shared/aster/AsterCase";
+import { AsterPageV3 } from "@/components/AsterPageV3/AsterPageV3";
 
 // Metadata genérica de propósito: não muda com o estado de desbloqueio
 // (não dá nenhuma dica de conteúdo protegido pra quem só vê a aba do
@@ -21,5 +21,5 @@ export default async function EnAsterPage() {
     return <PasswordGate locale="en" />;
   }
 
-  return <AsterCase locale="en" />;
+  return <AsterPageV3 locale="en" />;
 }

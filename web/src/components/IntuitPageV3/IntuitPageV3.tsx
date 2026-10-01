@@ -39,9 +39,9 @@ const ASTER_CARD_BACKGROUND =
  * liderança de design da ArcTouch confirmada pelo Deiver em 30/09/2026.
  */
 export function IntuitPageV3({ locale }: IntuitPageV3Props) {
-  const homeHref = locale === "pt" ? "/pt/v3" : "/v3";
-  const aboutHref = locale === "pt" ? "/pt/v3/sobre" : "/v3/about";
-  const languageHref = locale === "pt" ? "/v3/cases/intuit" : "/pt/v3/cases/intuit";
+  const homeHref = locale === "pt" ? "/pt" : "/";
+  const aboutHref = locale === "pt" ? "/pt/sobre" : "/about";
+  const languageHref = locale === "pt" ? "/cases/intuit" : "/pt/cases/intuit";
   const links: NavBarV3Link[] = [
     { label: getCopy(locale, "shared.nav.home"), href: homeHref },
     { label: getCopy(locale, "shared.nav.about"), href: aboutHref },
@@ -59,8 +59,8 @@ export function IntuitPageV3({ locale }: IntuitPageV3Props) {
           title={getCopy(locale, "intuit.hero.title")}
           summary={getCopy(locale, "intuit.hero.summary")}
           backHref={`${homeHref}#selected-work`}
-          prevCaseHref={locale === "pt" ? "/pt/v3/cases/theodoor" : "/v3/cases/theodoor"}
-          nextCaseHref={locale === "pt" ? "/pt/v3/cases/aster" : "/v3/cases/aster"}
+          prevCaseHref={locale === "pt" ? "/pt/cases/theodoor" : "/cases/theodoor"}
+          nextCaseHref={locale === "pt" ? "/pt/cases/aster" : "/cases/aster"}
           devices={INTUIT_ASSETS.hero.devices}
           devicesDesktop={INTUIT_ASSETS.hero.devicesDesktop}
           deviceAlignTablet="bottom"
@@ -148,7 +148,7 @@ export function IntuitPageV3({ locale }: IntuitPageV3Props) {
           close={getCopy(locale, "intuit.reflection.body")}
           nextLabel={getCopy(locale, "shared.case.next")}
           next={{
-            href: locale === "pt" ? "/pt/v3/cases/aster" : "/v3/cases/aster",
+            href: locale === "pt" ? "/pt/cases/aster" : "/cases/aster",
             logoSrc: "/images/v3/home/brands/white/aster.svg",
             logoAlt: "Aster",
             name: getCopy(locale, "shared.cases.aster.name"),

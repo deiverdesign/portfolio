@@ -19,6 +19,7 @@ const PT_ROUTES = [
   "/pt/sobre",
   "/pt/competencias",
   "/pt/cases/cure",
+  "/pt/cases/scrioo",
   "/pt/cases/hp",
   "/pt/cases/theodoor",
   "/pt/cases/intuit",
@@ -31,6 +32,7 @@ const EN_ROUTES = [
   "/about",
   "/capabilities",
   "/cases/cure",
+  "/cases/scrioo",
   "/cases/hp",
   "/cases/theodoor",
   "/cases/intuit",
@@ -107,7 +109,7 @@ function checkLinksStayInLocale(links, locale) {
   const violations = [];
   for (const href of links) {
     if (STATIC_ASSET.test(href)) continue;
-    const isPtHref = href === "/pt" || href.startsWith("/pt/");
+    const isPtHref = href === "/pt" || href.startsWith("/pt/") || href.startsWith("/pt#");
     if (locale === "pt" && !isPtHref) violations.push(href);
     if (locale === "en" && isPtHref) violations.push(href);
   }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TheodoorContent } from "../../../_shared/TheodoorContent";
+import { TheodoorPageV3 } from "@/components/TheodoorPageV3/TheodoorPageV3";
 
 export const metadata: Metadata = {
   title: "Theodoor — Deiver Brito",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function EnTheodoorCase() {
-  return <TheodoorContent locale="en" />;
+  return <TheodoorPageV3 locale="en" />;
 }

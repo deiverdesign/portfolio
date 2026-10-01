@@ -62,7 +62,7 @@ export function LanguageSwitcherV3({
       <button
         type="button"
         className={styles.button}
-        aria-label={target === "pt" ? "Mudar para português" : "Switch to English"}
+        aria-label={locale === "pt" ? "Mudar para inglês" : "Switch to Portuguese"}
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={() => setIsOpen((open) => !open)}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IntuitContent } from "../../../_shared/IntuitContent";
+import { IntuitPageV3 } from "@/components/IntuitPageV3/IntuitPageV3";
 
 export const metadata: Metadata = {
   title: "Intuit for Education — Deiver Brito",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function IntuitCase() {
-  return <IntuitContent locale="pt" />;
+  return <IntuitPageV3 locale="pt" />;
 }

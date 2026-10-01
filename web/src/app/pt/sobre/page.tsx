@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AboutContent } from "../../_shared/AboutContent";
+import { AboutPageV3 } from "@/components/AboutPageV3/AboutPageV3";
 
 export const metadata: Metadata = {
   title: "Sobre — Deiver Brito",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function SobrePage() {
-  return <AboutContent locale="pt" />;
+  return <AboutPageV3 locale="pt" />;
 }

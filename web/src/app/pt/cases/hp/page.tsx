@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HpContent } from "../../../_shared/HpContent";
+import { HpPageV3 } from "@/components/HpPageV3/HpPageV3";
 
 export const metadata: Metadata = {
   title: "HP Subscription Onboarding — Deiver Brito",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function HpCase() {
-  return <HpContent locale="pt" />;
+  return <HpPageV3 locale="pt" />;
 }

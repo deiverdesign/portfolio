@@ -169,7 +169,7 @@ export interface SelectedWorkV3Props {
  * 2262:62051 and 2262:62192. */
 export function SelectedWorkV3({ locale }: SelectedWorkV3Props) {
   const cards = getCards(locale);
-  const asterCaseHref = locale === "pt" ? "/pt/v3/cases/aster" : "/v3/cases/aster";
+  const asterCaseHref = locale === "pt" ? "/pt/cases/aster" : "/cases/aster";
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   /* Estado de scroll de verdade, não só índice — achado do Deiver em

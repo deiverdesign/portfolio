@@ -20,10 +20,10 @@ const LINKEDIN_HREF = "https://linkedin.com/in/deiverbrito";
  * About", node 2262:64510. Isolada em rota de preview até o cutover,
  * mesmo padrão do HomeV3. */
 export function AboutPageV3({ locale }: AboutPageV3Props) {
-  const homeHref = locale === "pt" ? "/pt/v3" : "/v3";
-  const aboutHref = locale === "pt" ? "/pt/v3/sobre" : "/v3/about";
+  const homeHref = locale === "pt" ? "/pt" : "/";
+  const aboutHref = locale === "pt" ? "/pt/sobre" : "/about";
   const contactHref = `${homeHref}#contact`;
-  const languageHref = locale === "pt" ? "/v3/about" : "/pt/v3/sobre";
+  const languageHref = locale === "pt" ? "/about" : "/pt/sobre";
 
   const links: NavBarV3Link[] = [
     { label: getCopy(locale, "shared.nav.home"), href: homeHref },

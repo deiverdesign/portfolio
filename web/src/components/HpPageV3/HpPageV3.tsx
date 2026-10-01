@@ -45,9 +45,9 @@ const HP_HERO_MOBILE_BACKGROUND = `radial-gradient(
  * sem forçar uma abstração errada no contrato compartilhado.
  */
 export function HpPageV3({ locale }: HpPageV3Props) {
-  const homeHref = locale === "pt" ? "/pt/v3" : "/v3";
-  const aboutHref = locale === "pt" ? "/pt/v3/sobre" : "/v3/about";
-  const languageHref = locale === "pt" ? "/v3/cases/hp" : "/pt/v3/cases/hp";
+  const homeHref = locale === "pt" ? "/pt" : "/";
+  const aboutHref = locale === "pt" ? "/pt/sobre" : "/about";
+  const languageHref = locale === "pt" ? "/cases/hp" : "/pt/cases/hp";
   const links: NavBarV3Link[] = [
     { label: getCopy(locale, "shared.nav.home"), href: homeHref },
     { label: getCopy(locale, "shared.nav.about"), href: aboutHref },
@@ -65,8 +65,8 @@ export function HpPageV3({ locale }: HpPageV3Props) {
           title={getCopy(locale, "hp.hero.title")}
           summary={getCopy(locale, "hp.hero.summary")}
           backHref={`${homeHref}#selected-work`}
-          prevCaseHref={locale === "pt" ? "/pt/v3/cases/scrioo" : "/v3/cases/scrioo"}
-          nextCaseHref={locale === "pt" ? "/pt/v3/cases/theodoor" : "/v3/cases/theodoor"}
+          prevCaseHref={locale === "pt" ? "/pt/cases/scrioo" : "/cases/scrioo"}
+          nextCaseHref={locale === "pt" ? "/pt/cases/theodoor" : "/cases/theodoor"}
           devices={HP_ASSETS.hero.devices}
           backgroundDesktop={HP_ASSETS.hero.backgroundDesktop}
           backgroundTablet={HP_ASSETS.hero.backgroundTablet}
@@ -143,7 +143,7 @@ export function HpPageV3({ locale }: HpPageV3Props) {
           quote={getCopy(locale, "hp.reflection.body")}
           nextLabel={getCopy(locale, "shared.case.next")}
           next={{
-            href: locale === "pt" ? "/pt/v3/cases/theodoor" : "/v3/cases/theodoor",
+            href: locale === "pt" ? "/pt/cases/theodoor" : "/cases/theodoor",
             logoSrc: "/images/v3/home/brands/white/theodoor.svg",
             logoAlt: "Theodoor",
             logoWidth: 104,
