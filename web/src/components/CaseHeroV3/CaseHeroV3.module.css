@@ -371,9 +371,9 @@
     gap: 8px;
   }
 
-  /* A navegação do case precisa permanecer em uma única linha: o grupo
-     "Other Cases" com as duas setas é prioritário; o link de volta é o
-     único item que pode encurtar em larguras excepcionalmente pequenas. */
+  /* A navegação do case precisa permanecer em uma única linha. No mobile,
+     o rótulo "Other Cases" não faz parte do layout: ficam apenas o link
+     de volta e as duas setas. */
   .backLink {
     min-width: 0;
     overflow: hidden;
@@ -385,6 +385,10 @@
     flex-shrink: 0;
     gap: 8px;
     white-space: nowrap;
+  }
+
+  .otherCasesLabel {
+    display: none;
   }
 
   /* Mobile usa só os dois primeiros assuntos para não criar uma segunda
