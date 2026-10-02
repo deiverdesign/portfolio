@@ -25,7 +25,9 @@
     /* Achado do Deiver em 30/09/2026: a regra dos 80px mínimos (29/09)
        só tinha sido aplicada no desktop — aqui não tinha override
        nenhum, herdava --space-800 (32/36/40px) do `.root` base. */
-    padding-top: var(--space-layout-400);
+    /* Completa os 32px deixados pelo Context anterior: a transição inteira
+       até os cards fica em 64px, em vez de acumular dois respiros grandes. */
+    padding-top: var(--space-800);
     padding-bottom: var(--space-layout-400);
     max-width: calc(1348px + 2 * var(--space-600));
   }
@@ -33,11 +35,7 @@
 
 @media (min-width: 1024px) {
   .root {
-    /* Regra do Deiver em 29/09/2026: toda "área" leva no mínimo 80px de
-       respiro vertical — o top/bottom de 32px (space-800) subiu pra
-       space-layout-400; a lateral (space-900) não muda, não fazia parte
-       do pedido. */
-    padding: var(--space-layout-400) var(--space-900);
+    padding: var(--space-800) var(--space-900) var(--space-layout-400);
     max-width: calc(1348px + 2 * var(--space-900));
   }
 }

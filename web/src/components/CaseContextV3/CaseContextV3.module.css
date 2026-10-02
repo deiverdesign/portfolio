@@ -22,17 +22,16 @@
        só tinha sido aplicada no desktop — aqui ficou com o valor antigo
        (--space-800, 32/36/40px conforme o breakpoint). */
     padding-top: var(--space-layout-400);
-    padding-bottom: var(--space-layout-400);
+    /* A próxima seção é sempre o bloco My Role/Collaboration. Mantemos
+       32px deste lado e 32px nele: 64px no total, sem o vão duplicado de
+       160px que separava a imagem dos cards no tablet/mobile. */
+    padding-bottom: var(--space-800);
   }
 }
 
 @media (min-width: 1024px) {
   .section {
-    /* Regra do Deiver em 29/09/2026: toda "área" de case section leva no
-       mínimo 80px de respiro vertical (space-layout-400) — o que já era
-       maior que isso (aqui, o bottom de 96px/space-layout-500, vindo do
-       Figma) fica como está; só o top (64px/space-layout-300) subiu. */
-    padding: var(--space-layout-400) var(--space-layout-300) var(--space-layout-500);
+    padding: var(--space-layout-400) var(--space-layout-300) var(--space-800);
   }
 }
 
