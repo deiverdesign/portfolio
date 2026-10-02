@@ -96,7 +96,10 @@
      comportamento. O scroll agora é "por página" (ver scrollByPage em
      SelectedWorkV3.tsx), não card a card. */
   overscroll-behavior-inline: contain;
-  touch-action: pan-x;
+  /* O trilho pode receber arrasto horizontal, mas não pode tomar gestos
+     verticais da página. `pan-x` sozinho desabilitava a rolagem vertical
+     iniciada sobre qualquer card no mobile. */
+  touch-action: pan-x pan-y;
 }
 
 .rail::-webkit-scrollbar {
