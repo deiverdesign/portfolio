@@ -206,8 +206,11 @@
   flex-direction: column;
   overflow: hidden;
   padding-bottom: 24px;
-  background: var(--color-surface-neutral-default);
-  color: var(--color-foreground-neutral-stronger);
+  /* O menu aberto tem um único contrato visual: superfície verde, tanto
+     em páginas claras quanto escuras. Não herda o contexto do header que
+     o abriu. */
+  background: linear-gradient(208.5867deg, #1c5550 11.658%, #073237 97.956%);
+  color: var(--color-foreground-neutral-inverse-strong);
 }
 
 .mobileOverlay::before {
@@ -217,19 +220,9 @@
   top: 47.925dvh;
   left: 7.028vw;
   width: 85.943vw;
-  aspect-ratio: 858 / 1198;
-  background: url("/images/navigation/menu-hamburger-open-light.png") center / contain no-repeat;
-  pointer-events: none;
-}
-
-.mobileOverlay.dark {
-  background: linear-gradient(208.5867deg, #1c5550 11.658%, #073237 97.956%);
-  color: var(--color-foreground-neutral-inverse-strong);
-}
-
-.mobileOverlay.dark::before {
   aspect-ratio: 670 / 1052;
-  background-image: url("/images/navigation/menu-hamburger-open-dark.png");
+  background: url("/images/navigation/menu-hamburger-open-dark.png") center / contain no-repeat;
+  pointer-events: none;
 }
 
 .mobileHeader {
@@ -244,11 +237,7 @@
      padding próprio, então 12 à direita fica visualmente igual aos 16
      da esquerda). */
   padding-inline: 16px 12px;
-  border-bottom: 1px solid var(--color-border-brand-subtler);
-}
-
-.mobileOverlay.dark .mobileHeader {
-  border-bottom-color: var(--color-border-brand-inverse-subtler);
+  border-bottom: 1px solid var(--color-border-brand-inverse-subtler);
 }
 
 .mobileClose {
@@ -294,10 +283,6 @@
    29/09/2026 comparando com o Figma). */
 .mobileNavDivider {
   height: 1px;
-  background: var(--color-border-neutral-subtle);
-}
-
-.mobileOverlay.dark .mobileNavDivider {
   background: var(--color-border-brand-inverse-subtler);
 }
 
@@ -316,8 +301,8 @@
   flex: 0 0 auto;
 }
 
-.mobileOverlay.dark .mobileNavIcon,
-.mobileOverlay.dark .mobileCloseIcon {
+.mobileNavIcon,
+.mobileCloseIcon {
   filter: invert(1);
 }
 
@@ -335,11 +320,7 @@
   gap: 0;
   margin-top: 0;
   padding-top: 16px;
-  border-top: 1px solid var(--color-border-neutral-subtle);
-}
-
-.mobileOverlay.dark .mobileLanguages {
-  border-top-color: var(--color-border-brand-inverse-subtler);
+  border-top: 1px solid var(--color-border-brand-inverse-subtler);
 }
 
 .mobileLanguage,

@@ -51,6 +51,9 @@ export function NavBarV3({
      (invert+brightness) — achado do Deiver em 28/09/2026: o filtro
      deixava o logo serrilhado sobre o fundo escuro do hero. */
   const logo = context === "dark" ? HOME_ASSETS.identity.logoInverse : HOME_ASSETS.identity.logo;
+  // O menu aberto é sempre verde, mesmo quando o header de origem está
+  // sobre uma página clara. Portanto ele sempre usa a versão clara da marca.
+  const mobileMenuLogo = HOME_ASSETS.identity.logoInverse;
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -113,7 +116,7 @@ export function NavBarV3({
         <div className={`${styles.mobileOverlay} ${styles[context]}`} role="dialog" aria-modal="true" aria-label={locale === "pt" ? "Menu" : "Menu"}>
           <div className={styles.mobileHeader}>
             <a href={identityHref} className={styles.identity} onClick={() => setMobileOpen(false)}>
-              <img src={logo} alt="Deiver Brito" className={styles.name} />
+              <img src={mobileMenuLogo} alt="Deiver Brito" className={styles.name} />
               <p className={styles.role}>{getCopy(locale, "shared.identity.job-title")}</p>
             </a>
             <button
