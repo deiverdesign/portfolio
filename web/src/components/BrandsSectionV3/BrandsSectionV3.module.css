@@ -232,9 +232,16 @@
     grid-auto-columns: 171px;
     gap: 10px;
     overflow-x: auto;
+    /* O trilho continua arrastável; só não expõe a barra nativa no
+       mobile, como o rail de Selected Work. */
+    scrollbar-width: none;
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
     justify-content: flex-start;
+  }
+
+  .grid::-webkit-scrollbar {
+    display: none;
   }
 
   .card {
