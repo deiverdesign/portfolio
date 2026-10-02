@@ -260,11 +260,13 @@
     padding-bottom: var(--space-700);
   }
 
-  /* No header que vive sobre o hero da Home, o menu precisa acompanhar o
-     inset compacto do frame mobile. Mantém essa exceção local: o header
-     fixo e os headers das demais páginas continuam no espaçamento padrão. */
+  /* O logo começa no grid de 20px. À direita, o botão de menu tem uma
+     área clicável de 44px, mas o ícone de 24px fica centralizado e ganha
+     10px internos invisíveis. Com 10px no container, a ponta visível do
+     ícone termina no mesmo grid óptico de 20px do logo. */
   .root .navigation > div {
-    padding-inline: 12px;
+    padding-left: 20px;
+    padding-right: 10px;
   }
 
   .graphism {
