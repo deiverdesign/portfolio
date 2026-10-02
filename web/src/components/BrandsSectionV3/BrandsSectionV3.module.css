@@ -137,6 +137,19 @@
    aqui no CSS. */
 .logo {
   display: block;
+  animation: brand-logo-enter 420ms var(--ease-out-quart) both;
+}
+
+@keyframes brand-logo-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @media (max-width: 1023px) {
@@ -244,5 +257,11 @@
     justify-content: space-between;
     width: 100%;
     margin-top: var(--space-700);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo {
+    animation: none;
   }
 }

@@ -245,3 +245,27 @@
     margin-bottom: 24px;
   }
 }
+
+@media (max-width: 599px) {
+  .root {
+    /* Mantém todos os elementos do hero, mas libera uma prévia real de
+       Selected Work no primeiro viewport de celular. */
+    height: 640px;
+    min-height: 640px;
+    padding-bottom: var(--space-700);
+  }
+
+  .graphism {
+    /* 35% menor que o asset desktop e ancorado à direita — não ao centro. */
+    top: 50%;
+    right: -140px;
+    left: auto;
+    width: 1140px;
+    height: auto;
+    transform: translate3d(0, calc(-50% + var(--home-hero-graphism-offset)), 0);
+  }
+
+  .summary {
+    margin-bottom: var(--space-500);
+  }
+}

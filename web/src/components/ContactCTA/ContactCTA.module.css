@@ -155,6 +155,16 @@
     padding: var(--space-layout-100) var(--space-600);
   }
 
+  .graphism {
+    /* O recorte é intencional: 110% da viewport, centralizado no CTA. */
+    top: 50%;
+    right: auto;
+    left: 50%;
+    width: 110vw;
+    height: auto;
+    transform: translate3d(-50%, calc(-50% + var(--contact-graphism-parallax-offset)), 0);
+  }
+
   .row {
     flex-direction: column;
     align-items: flex-start;

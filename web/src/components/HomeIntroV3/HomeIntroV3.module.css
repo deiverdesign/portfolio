@@ -89,6 +89,20 @@
   }
 }
 
+@media (max-width: 599px) {
+  .root {
+    height: 640px;
+    min-height: 640px;
+  }
+
+  /* O canvas do símbolo estava ocupando só a largura do viewport; por isso
+     a abertura parecia minúscula em celulares. Triplicamos o palco e o
+     mantemos centralizado/cortado pelo hero, sem alterar tablet/desktop. */
+  .root .introStage {
+    width: 300%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .curtain {
     display: none;

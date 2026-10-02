@@ -6,6 +6,7 @@ import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
 import {
   HOME_ASSETS,
+  HOME_BRANDS,
   getHomeBrandLogo,
   HOME_BRAND_LOGO_SIZE,
   type HomeBrand,
@@ -83,6 +84,32 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
   const hexagonRef = useRef<HTMLImageElement>(null);
   const frameRef = useRef<number | null>(null);
   const [activeDot, setActiveDot] = useState(0);
+  const [visibleBrands, setVisibleBrands] = useState<HomeBrand[]>(BRANDS);
+
+  /* Mesmo princípio do rotator da Home V2: uma marca de cada vez dá lugar
+     a outra, com intervalo e escolha aleatórios. Preservamos os 10 cards
+     desta versão e evitamos duplicatas na grade. */
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches) return;
+
+    const rotateLogo = () => {
+      setVisibleBrands((current) => {
+        const available = HOME_BRANDS.filter((brand) => !current.includes(brand));
+        if (available.length === 0) return current;
+        const cardIndex = Math.floor(Math.random() * current.length);
+        const incoming = available[Math.floor(Math.random() * available.length)];
+        return current.map((brand, index) => (index === cardIndex ? incoming : brand));
+      });
+    };
+
+    const initialDelay = window.setTimeout(rotateLogo, 1800 + Math.random() * 1400);
+    const interval = window.setInterval(rotateLogo, 4200 + Math.random() * 1000);
+    return () => {
+      window.clearTimeout(initialDelay);
+      window.clearInterval(interval);
+    };
+  }, []);
 
   const updateActiveDot = useCallback(() => {
     const grid = gridRef.current;
@@ -189,11 +216,12 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
           </p>
         </SectionEntryV3>
         <ul ref={gridRef} className={styles.grid} onScroll={handleScroll}>
-          {BRANDS.map((brand) => {
+          {visibleBrands.map((brand, index) => {
             const size = HOME_BRAND_LOGO_SIZE[brand];
             return (
-              <li key={brand} className={styles.card}>
+              <li key={index} className={styles.card}>
                 <img
+                  key={brand}
                   src={getHomeBrandLogo(brand, "original")}
                   alt={brand}
                   className={styles.logo}
