@@ -61,6 +61,17 @@
   will-change: height;
 }
 
+/* O hero troca para uma composição empilhada abaixo de 1024px e passa a
+   ter min-height de 790px. Este wrapper precisa acompanhar a mesma medida:
+   quando preservava a altura desktop, o overflow do handoff recortava o
+   texto e o CTA no mobile. */
+@media (max-width: 1023px) {
+  .root {
+    height: auto;
+    min-height: 790px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .curtain {
     display: none;
