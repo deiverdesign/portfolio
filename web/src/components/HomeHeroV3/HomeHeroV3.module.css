@@ -218,6 +218,7 @@
 
   .content {
     align-items: flex-start;
+    gap: 24px;
     width: 100%;
     height: auto;
     flex-direction: column;
@@ -226,6 +227,7 @@
   .intro {
     width: 100%;
     height: auto;
+    gap: 20px;
   }
 
   .title {
@@ -236,5 +238,10 @@
   .summary {
     flex-basis: auto;
     max-width: 392px;
+    gap: 24px;
+    /* Reserva respiro visível entre a última linha do texto e a base do
+       hero. Como compactamos os dois gaps acima, isto continua cabendo nos
+       mesmos 790px do contrato mobile — não aumenta a altura do hero. */
+    margin-bottom: 24px;
   }
 }
