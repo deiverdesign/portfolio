@@ -209,6 +209,11 @@
      A navegação ocupa a largura do hero, mas mantém um único inset de 20px,
      igual ao conteúdo abaixo. */
   .root .navigation {
+    /* A margem negativa por si só só desloca o header: sua caixa continuava
+       com a largura útil do conteúdo (353px em uma viewport de 393px),
+       deixando 40px vazios à direita. Recupera explicitamente os dois
+       insets do hero para o menu alcançar a borda correta. */
+    width: calc(100% + 40px);
     margin-inline: -20px;
   }
 
