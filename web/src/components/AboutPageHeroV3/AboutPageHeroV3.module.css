@@ -206,7 +206,9 @@
 
 @media (max-width: 1023px) {
   .section {
-    padding: var(--space-layout-100) var(--space-600) 0;
+    /* Figma tablet (778px): 32px em todos os lados, não o espaçamento
+       vertical maior usado anteriormente. */
+    padding: var(--space-800) var(--space-800) 0;
   }
 
   .container {
@@ -216,18 +218,43 @@
   }
 
   .imageContainer {
-    /* No tablet, foto e grafismo continuam sendo uma composição única.
-       Limitar a largura pelo aspect-ratio evita que ela chegue a ~680px
-       de altura em tablets largos (altura máxima: 430px). */
-    /* O container pai passa a ser coluna no tablet: flex-basis aqui
-       viraria altura. Deixamos o aspect-ratio calcular os 430px. */
+    /* No tablet a composição usa a grade inteira de 714px. A linha abaixo
+       dela é parte do bloco visual e define a base comum da foto e do
+       grafismo. As proporções abaixo vêm do frame 2418:18819. */
     flex: 0 0 auto;
-    width: min(100%, 633px);
-    max-width: 633px;
+    width: 100%;
+    max-width: 714px;
+    aspect-ratio: 714 / 426;
+    height: auto;
+    margin: 0 auto;
+    padding-bottom: var(--space-400);
+    border-bottom: 2px solid var(--color-border-neutral-subtlest);
+  }
+
+  .graphismFrame {
+    top: 0;
+    right: auto;
+    bottom: var(--space-400);
+    left: 50%;
+    width: 82.47%;
+    height: auto;
+    aspect-ratio: 588.828 / 413.811;
+    transform: translateX(-50%);
+  }
+
+  .photo {
+    /* 311.63×350.59, com base 12px acima da linha no frame de 714px. */
+    left: 12.57%;
+    bottom: var(--space-400);
+    width: 43.65%;
+    height: 82.3%;
   }
 
   .content {
-    max-width: none;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    padding-bottom: var(--space-900);
   }
 }
 
@@ -238,12 +265,30 @@
 
   .imageContainer {
     aspect-ratio: 343 / 317;
+    margin: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .graphismFrame {
+    inset: 0;
+    width: 94.01%;
+    height: 97.35%;
+    aspect-ratio: auto;
+    transform: none;
   }
 
   .photo {
     left: 19%;
+    bottom: 0;
     width: 56%;
     height: 68%;
+  }
+
+  .content {
+    max-width: none;
+    margin: 0;
+    padding-bottom: 0;
   }
 
   .identity {

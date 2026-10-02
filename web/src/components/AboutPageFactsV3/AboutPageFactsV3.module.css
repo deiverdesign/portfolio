@@ -83,6 +83,34 @@
   color: var(--color-foreground-neutral-default);
 }
 
+/* Tablet — frame 2418:18819: duas informações lado a lado, seguida pelo
+   card de idiomas centralizado. Não é a grade de três colunas do desktop
+   nem a pilha integral do mobile. */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .section {
+    padding: 0 var(--space-800) var(--space-800);
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-500);
+    max-width: 714px;
+    margin: 0 auto;
+  }
+
+  .card {
+    min-width: 0;
+  }
+
+  .card:nth-child(3) {
+    grid-column: 1 / -1;
+    width: 394px;
+    max-width: 100%;
+    justify-self: center;
+  }
+}
+
 @media (max-width: 599px) {
   .card {
     min-width: 100%;
