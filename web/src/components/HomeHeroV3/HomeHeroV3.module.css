@@ -255,6 +255,13 @@
     padding-bottom: var(--space-700);
   }
 
+  /* No header que vive sobre o hero da Home, o menu precisa acompanhar o
+     inset compacto do frame mobile. Mantém essa exceção local: o header
+     fixo e os headers das demais páginas continuam no espaçamento padrão. */
+  .root .navigation > div {
+    padding-inline: 12px;
+  }
+
   .graphism {
     /* 35% menor que o asset desktop e ancorado à direita — não ao centro. */
     top: 50%;
