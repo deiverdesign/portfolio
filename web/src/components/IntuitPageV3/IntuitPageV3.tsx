@@ -19,13 +19,10 @@ export interface IntuitPageV3Props {
 
 const LINKEDIN_HREF = "https://linkedin.com/in/deiverbrito";
 const TAG_KEYS = ["shared.tags.design-systems", "shared.tags.research", "shared.tags.financial-education"] as const;
-// Mesmo gradiente usado no card "Next case" que já aponta pro Intuit (ver
-// TheodoorPageV3) — token de superfície do Aster ainda não tem um par de
-// stops de gradiente próprio verificado no Figma pra esse card pequeno,
-// então uso os dois tokens de cor que já existem (`--color-case-aster-
-// card-gradient-from/to`) num degradê simples, não um valor cravado.
+// Figma 1907:8578 — card protegido do Aster no Next da Intuit. É um
+// gradiente de três stops, distinto do tratamento usado no card da Home.
 const ASTER_CARD_BACKGROUND =
-  "linear-gradient(160deg, var(--color-case-aster-card-gradient-from) 20%, var(--color-case-aster-card-gradient-to) 100%)";
+  "linear-gradient(124.44665889967976deg, #7e61df 29.643%, #2e7acc 57.345%, #03979a 85.046%)";
 
 /**
  * Case Intuit: mesmo padrão de composição de Theodoor/SCRIOO/HP, só com
@@ -151,6 +148,8 @@ export function IntuitPageV3({ locale }: IntuitPageV3Props) {
             href: locale === "pt" ? "/pt/cases/aster" : "/cases/aster",
             logoSrc: "/images/v3/home/brands/white/aster.svg",
             logoAlt: "Aster",
+            logoWidth: 61,
+            locked: true,
             name: getCopy(locale, "shared.cases.aster.name"),
             summary: getCopy(locale, "shared.cases.aster.summary"),
             background: ASTER_CARD_BACKGROUND,

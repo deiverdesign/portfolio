@@ -12,6 +12,8 @@ export interface CaseReflectionV3NextCase {
   background: string;
   /** Logos circulares usam 32px; wordmarks precisam preservar proporção. */
   logoWidth?: number;
+  /** Mostra o selo visual de acesso protegido, usado pelo case Aster. */
+  locked?: boolean;
 }
 
 export interface CaseReflectionV3Props {
@@ -78,6 +80,11 @@ export function CaseReflectionV3({ eyebrow, title, lead, quote, close, nextLabel
               className={styles.nextLogo}
               style={next.logoWidth ? { width: next.logoWidth, height: "auto" } : undefined}
             />
+            {next.locked && (
+              <span className={styles.nextLock} aria-hidden="true">
+                <IconV3 name="lock" size={18} />
+              </span>
+            )}
             <div className={styles.nextBody}>
               <h3 className={styles.nextName}>{next.name}</h3>
               <p className={styles.nextSummary}>{next.summary}</p>

@@ -174,7 +174,8 @@
 
 .nextLogo,
 .nextBody,
-.nextArrow {
+.nextArrow,
+.nextLock {
   position: relative;
   z-index: 1;
 }
@@ -184,6 +185,25 @@
   width: 32px;
   object-fit: contain;
   object-position: left top;
+}
+
+/* Estado protegido do card Aster (Figma 1907:8578): selo escuro de 34px
+   no canto superior direito, independente da seta de navegação abaixo. */
+.nextLock {
+  position: absolute;
+  top: var(--space-700);
+  right: var(--space-700);
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-overlay-neutral-strong);
+}
+
+.nextLock img {
+  filter: invert(1);
 }
 
 .nextBody {
