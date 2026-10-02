@@ -204,6 +204,18 @@
     padding-inline: 20px;
   }
 
+  /* O hero já tem 20px de inset. Sem compensar aqui, a `.row` do NavBar
+     acrescenta mais 25px no mobile e desloca logo/menu para o centro.
+     A navegação ocupa a largura do hero, mas mantém um único inset de 20px,
+     igual ao conteúdo abaixo. */
+  .root .navigation {
+    margin-inline: -20px;
+  }
+
+  .root .navigation > div {
+    padding-inline: 20px;
+  }
+
   .content {
     align-items: flex-start;
     width: 100%;
