@@ -366,8 +366,31 @@
 
 @media (max-width: 599px) {
   .topNav {
-    flex-wrap: wrap;
-    gap: var(--space-300);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  /* A navegação do case precisa permanecer em uma única linha: o grupo
+     "Other Cases" com as duas setas é prioritário; o link de volta é o
+     único item que pode encurtar em larguras excepcionalmente pequenas. */
+  .backLink {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .otherCases {
+    flex-shrink: 0;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  /* Mobile usa só os dois primeiros assuntos para não criar uma segunda
+     linha de tags antes do título em nenhum dos cases. */
+  .tags > :nth-child(n + 3) {
+    display: none;
   }
 
   .body {
