@@ -201,7 +201,11 @@ export function HomeIntroV3({
   const overlayVisible = phase !== "reveal" && phase !== "complete" && phase !== "skipped";
 
   return (
-    <div className={styles.root} data-phase={phase}>
+    <div
+      className={styles.root}
+      data-phase={phase}
+      data-home-intro-scroll-locked={scrollLocked ? "true" : undefined}
+    >
       <HomeHeroV3
         locale={locale}
         homeHref={homeHref}

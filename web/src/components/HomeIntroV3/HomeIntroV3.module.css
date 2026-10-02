@@ -13,6 +13,23 @@
   background: var(--color-surface-neutral-subtle);
 }
 
+/*
+ * This attribute is rendered by the server, before the intro JavaScript has
+ * downloaded. It closes the slow-network window in which the rest of Home
+ * could otherwise be scrolled into view before hydration takes control.
+ */
+:global(html):has(.root[data-home-intro-scroll-locked="true"]),
+:global(body):has(.root[data-home-intro-scroll-locked="true"]) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+:global(body):has(.root[data-home-intro-scroll-locked="true"]) {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+}
+
 .curtain {
   position: absolute;
   z-index: 10;
