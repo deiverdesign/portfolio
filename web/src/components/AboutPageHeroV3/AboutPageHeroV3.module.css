@@ -272,11 +272,24 @@
   }
 
   .graphismFrame {
-    inset: 0;
-    width: 94.01%;
-    height: 97.35%;
-    aspect-ratio: auto;
+    top: 0;
+    right: auto;
+    bottom: auto;
+    left: 0;
+    width: 100%;
+    height: auto;
+    /* No mobile, nunca forçar largura e altura independentes: o PNG é
+       2145×1472 e a dupla anterior 94.01%/97.35% o comprimia na largura,
+       produzindo exatamente o alongamento vertical visto no screenshot. */
+    aspect-ratio: 2145 / 1472;
     transform: none;
+  }
+
+  .graphism {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
   }
 
   .photo {
