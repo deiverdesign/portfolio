@@ -181,31 +181,6 @@
   display: none;
 }
 
-.dots {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.dot,
-.dotActive {
-  padding: 0;
-  border: none;
-  border-radius: 999px;
-  height: 7px;
-  cursor: pointer;
-}
-
-.dot {
-  width: 7px;
-  background: var(--color-border-neutral-default);
-}
-
-.dotActive {
-  width: 28px;
-  background: var(--color-foreground-neutral-default);
-}
-
 .controls {
   display: flex;
   gap: var(--space-300);

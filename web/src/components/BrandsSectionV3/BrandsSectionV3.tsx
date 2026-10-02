@@ -11,6 +11,7 @@ import {
   type HomeBrand,
 } from "@/content/home-assets";
 import { ButtonV3 } from "@/components/ButtonV3/ButtonV3";
+import { CarouselIndicatorsV3 } from "@/components/CarouselIndicatorsV3/CarouselIndicatorsV3";
 import { IconV3 } from "@/components/IconV3/IconV3";
 import { SectionEntryV3 } from "@/components/SectionEntryV3/SectionEntryV3";
 import styles from "./BrandsSectionV3.module.css";
@@ -204,18 +205,15 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
               </li>
             );
           })}
-        </ul>
+          </ul>
         <div className={styles.mobileNav} aria-hidden={false}>
           <div className={styles.dots}>
-            {Array.from({ length: MOBILE_DOT_COUNT }, (_, index) => (
-              <button
-                key={index}
-                type="button"
-                className={index === activeDot ? styles.dotActive : styles.dot}
-                aria-label={`${locale === "pt" ? "Página" : "Page"} ${index + 1}`}
-                onClick={() => moveToDot(index)}
-              />
-            ))}
+            <CarouselIndicatorsV3
+              count={MOBILE_DOT_COUNT}
+              activeIndex={activeDot}
+              onSelect={moveToDot}
+              getLabel={(index) => `${locale === "pt" ? "Página" : "Page"} ${index + 1}`}
+            />
           </div>
           <div className={styles.controls}>
             <ButtonV3
