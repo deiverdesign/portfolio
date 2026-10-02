@@ -137,7 +137,24 @@
    aqui no CSS. */
 .logo {
   display: block;
+}
+
+.logoStack {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoEntering {
   animation: brand-logo-enter 420ms var(--ease-out-quart) both;
+  animation-delay: var(--brand-swap-delay, 0ms);
+}
+
+.logoLeaving {
+  position: absolute;
+  animation: brand-logo-leave 260ms var(--ease-out-quart) both;
+  animation-delay: var(--brand-swap-delay, 0ms);
 }
 
 @keyframes brand-logo-enter {
@@ -149,6 +166,18 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes brand-logo-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.96);
   }
 }
 
@@ -268,7 +297,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .logo {
+  .logoEntering {
     animation: none;
+  }
+
+  .logoLeaving {
+    display: none;
   }
 }

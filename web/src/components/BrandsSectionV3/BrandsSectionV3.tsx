@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 
 import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
@@ -44,6 +44,12 @@ const BRANDS: HomeBrand[] = [
  * navigation"): 3 indicadores de página, não um por logo. */
 const MOBILE_DOT_COUNT = 3;
 
+interface BrandSlot {
+  current: HomeBrand;
+  outgoing?: HomeBrand;
+  delay: number;
+}
+
 /**
  * Escala uniforme sobre `HOME_BRAND_LOGO_SIZE` (tamanho do componente raiz
  * no Figma) pra chegar no tamanho renderizado aqui. Medida em 28/09/2026
@@ -84,27 +90,46 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
   const hexagonRef = useRef<HTMLImageElement>(null);
   const frameRef = useRef<number | null>(null);
   const [activeDot, setActiveDot] = useState(0);
-  const [visibleBrands, setVisibleBrands] = useState<HomeBrand[]>(BRANDS);
+  const [brandSlots, setBrandSlots] = useState<BrandSlot[]>(() =>
+    BRANDS.map((brand) => ({ current: brand, delay: 0 })),
+  );
 
-  /* Mesmo princípio do rotator da Home V2: uma marca de cada vez dá lugar
-     a outra, com intervalo e escolha aleatórios. Preservamos os 10 cards
-     desta versão e evitamos duplicatas na grade. */
+  /* Mesmo princípio do rotator da Home V2: trocas perceptíveis em posições
+     aleatórias, com uma saída e uma entrada por cima. A implementação
+     anterior substituía só UMA marca a cada 4–5 segundos; tecnicamente
+     aleatória, mas visualmente parecia uma grade estática. Como existem 13
+     marcas para 10 cards, as três fora da grade entram juntas a cada ciclo,
+     sem criar duplicatas. */
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (reducedMotion.matches) return;
 
     const rotateLogo = () => {
-      setVisibleBrands((current) => {
-        const available = HOME_BRANDS.filter((brand) => !current.includes(brand));
-        if (available.length === 0) return current;
-        const cardIndex = Math.floor(Math.random() * current.length);
-        const incoming = available[Math.floor(Math.random() * available.length)];
-        return current.map((brand, index) => (index === cardIndex ? incoming : brand));
+      setBrandSlots((slots) => {
+        const visible = slots.map((slot) => slot.current);
+        const incoming = HOME_BRANDS.filter((brand) => !visible.includes(brand));
+        if (incoming.length === 0) return slots;
+
+        const cardIndexes = slots
+          .map((_, index) => index)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, incoming.length);
+        const shuffledIncoming = [...incoming].sort(() => Math.random() - 0.5);
+
+        return slots.map((slot, index) => {
+          const swapOrder = cardIndexes.indexOf(index);
+          if (swapOrder === -1) return slot;
+          return {
+            current: shuffledIncoming[swapOrder],
+            outgoing: slot.current,
+            delay: swapOrder * 100,
+          };
+        });
       });
     };
 
-    const initialDelay = window.setTimeout(rotateLogo, 1800 + Math.random() * 1400);
-    const interval = window.setInterval(rotateLogo, 4200 + Math.random() * 1000);
+    const initialDelay = window.setTimeout(rotateLogo, 1400 + Math.random() * 600);
+    const interval = window.setInterval(rotateLogo, 4200);
     return () => {
       window.clearTimeout(initialDelay);
       window.clearInterval(interval);
@@ -216,20 +241,34 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
           </p>
         </SectionEntryV3>
         <ul ref={gridRef} className={styles.grid} onScroll={handleScroll}>
-          {visibleBrands.map((brand, index) => {
-            const size = HOME_BRAND_LOGO_SIZE[brand];
+          {brandSlots.map((slot, index) => {
+            const currentSize = HOME_BRAND_LOGO_SIZE[slot.current];
+            const motionStyle = { "--brand-swap-delay": `${slot.delay}ms` } as CSSProperties;
             return (
               <li key={index} className={styles.card}>
-                <img
-                  key={brand}
-                  src={getHomeBrandLogo(brand, "original")}
-                  alt={brand}
-                  className={styles.logo}
-                  style={{
-                    width: `calc(${size.width * LOGO_SCALE}px * var(--brands-logo-scale, 1))`,
-                    height: `calc(${size.height * LOGO_SCALE}px * var(--brands-logo-scale, 1))`,
-                  }}
-                />
+                <span className={styles.logoStack} style={motionStyle}>
+                  {slot.outgoing && (
+                    <img
+                      src={getHomeBrandLogo(slot.outgoing, "original")}
+                      alt=""
+                      aria-hidden="true"
+                      className={`${styles.logo} ${styles.logoLeaving}`}
+                      style={{
+                        width: `calc(${HOME_BRAND_LOGO_SIZE[slot.outgoing].width * LOGO_SCALE}px * var(--brands-logo-scale, 1))`,
+                        height: `calc(${HOME_BRAND_LOGO_SIZE[slot.outgoing].height * LOGO_SCALE}px * var(--brands-logo-scale, 1))`,
+                      }}
+                    />
+                  )}
+                  <img
+                    src={getHomeBrandLogo(slot.current, "original")}
+                    alt={slot.current}
+                    className={`${styles.logo} ${slot.outgoing ? styles.logoEntering : ""}`}
+                    style={{
+                      width: `calc(${currentSize.width * LOGO_SCALE}px * var(--brands-logo-scale, 1))`,
+                      height: `calc(${currentSize.height * LOGO_SCALE}px * var(--brands-logo-scale, 1))`,
+                    }}
+                  />
+                </span>
               </li>
             );
           })}
