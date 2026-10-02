@@ -227,14 +227,15 @@
     aspect-ratio: 714 / 426;
     height: auto;
     margin: 0 auto;
-    padding-bottom: var(--space-400);
+    box-sizing: border-box;
+    padding-bottom: 0;
     border-bottom: 2px solid var(--color-border-neutral-subtlest);
   }
 
   .graphismFrame {
     top: 0;
     right: auto;
-    bottom: var(--space-400);
+    bottom: 0;
     left: 50%;
     width: 82.47%;
     height: auto;
@@ -243,9 +244,9 @@
   }
 
   .photo {
-    /* 311.63×350.59, com base 12px acima da linha no frame de 714px. */
+    /* A foto encosta diretamente na linha, sem uma faixa vazia abaixo. */
     left: 12.57%;
-    bottom: var(--space-400);
+    bottom: 0;
     width: 43.65%;
     height: 82.3%;
   }
@@ -254,7 +255,7 @@
     width: 100%;
     max-width: 640px;
     margin: 0 auto;
-    padding-bottom: var(--space-900);
+    padding-bottom: var(--space-400);
   }
 }
 
