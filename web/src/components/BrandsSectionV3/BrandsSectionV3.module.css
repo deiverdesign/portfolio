@@ -147,20 +147,20 @@
 }
 
 .logoEntering {
-  animation: brand-logo-enter 420ms var(--ease-out-quart) both;
+  animation: brand-logo-enter 620ms var(--ease-out-quart) both;
   animation-delay: var(--brand-swap-delay, 0ms);
 }
 
 .logoLeaving {
   position: absolute;
-  animation: brand-logo-leave 260ms var(--ease-out-quart) both;
+  animation: brand-logo-leave 460ms var(--ease-out-quart) both;
   animation-delay: var(--brand-swap-delay, 0ms);
 }
 
 @keyframes brand-logo-enter {
   from {
     opacity: 0;
-    transform: translateY(6px) scale(0.96);
+    transform: translateY(3px) scale(0.985);
   }
 
   to {
@@ -177,7 +177,7 @@
 
   to {
     opacity: 0;
-    transform: translateY(-5px) scale(0.96);
+    transform: translateY(-3px) scale(0.985);
   }
 }
 
@@ -199,7 +199,16 @@
   }
 
   .hexagon {
-    display: none;
+    /* O grafismo continua como fundo no tablet/mobile; antes ele era
+       removido por completo e, por isso, não havia nada para parallaxar.
+       A composição é centralizada e maior que o conteúdo para manter a
+       leitura livre nas bordas. */
+    display: block;
+    left: 50%;
+    top: 50%;
+    width: min(820px, 108vw);
+    height: auto;
+    transform: translate3d(-50%, calc(-50% + var(--brands-hexagon-parallax-offset)), 0);
   }
 
   .grid {
@@ -285,6 +294,11 @@
      card menor. */
   .root {
     --brands-logo-scale: 0.8519;
+  }
+
+  .hexagon {
+    top: 46%;
+    width: 150vw;
   }
 
   .mobileNav {

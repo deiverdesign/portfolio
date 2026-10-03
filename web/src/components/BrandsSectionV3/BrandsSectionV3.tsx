@@ -164,7 +164,7 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
 
     const updateOffset = () => {
       frameId = null;
-      if (reducedMotion.matches || window.innerWidth <= 1023) {
+      if (reducedMotion.matches) {
         hexagon.style.setProperty("--brands-hexagon-parallax-offset", "0px");
         return;
       }
@@ -175,9 +175,13 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
       const rect = section.getBoundingClientRect();
       const viewportCenter = window.innerHeight / 2;
       const sectionCenter = rect.top + rect.height / 2;
-      // Como é um elemento puramente decorativo de fundo, ele pode ter
-      // uma amplitude maior do que o texto sem comprometer legibilidade.
-      const offset = Math.max(-64, Math.min(64, ((viewportCenter - sectionCenter) / window.innerHeight) * 128));
+      // Em touch a amplitude é menor para o movimento continuar de fundo,
+      // sem competir com a leitura e com o arrasto horizontal da grade.
+      const maxOffset = window.innerWidth <= 599 ? 22 : window.innerWidth <= 1023 ? 36 : 64;
+      const offset = Math.max(
+        -maxOffset,
+        Math.min(maxOffset, ((viewportCenter - sectionCenter) / window.innerHeight) * maxOffset * 2),
+      );
       hexagon.style.setProperty("--brands-hexagon-parallax-offset", `${offset.toFixed(2)}px`);
     };
 

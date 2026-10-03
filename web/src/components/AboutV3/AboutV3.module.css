@@ -75,10 +75,6 @@
     padding-top: 0;
   }
 
-  .parallaxStatement {
-    transform: none;
-    will-change: auto;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

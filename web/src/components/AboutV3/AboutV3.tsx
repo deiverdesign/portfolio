@@ -33,7 +33,7 @@ export function AboutV3({ locale, className }: AboutV3Props) {
 
     const updateOffset = () => {
       frameId = null;
-      if (reducedMotion.matches || window.innerWidth <= 1023) {
+      if (reducedMotion.matches) {
         statement.style.setProperty("--about-parallax-offset", "0px");
         return;
       }
@@ -44,9 +44,13 @@ export function AboutV3({ locale, className }: AboutV3Props) {
       const rect = section.getBoundingClientRect();
       const viewportCenter = window.innerHeight / 2;
       const sectionCenter = rect.top + rect.height / 2;
-      // Máximo de 48px: o texto da direita acompanha o scroll em uma
-      // cadência diferente, sem competir com a leitura do statement.
-      const offset = Math.max(-48, Math.min(48, ((viewportCenter - sectionCenter) / window.innerHeight) * 96));
+      // No tablet/mobile a amplitude cai para o texto não parecer solto
+      // quando as duas colunas viram uma pilha vertical.
+      const maxOffset = window.innerWidth <= 599 ? 14 : window.innerWidth <= 1023 ? 26 : 48;
+      const offset = Math.max(
+        -maxOffset,
+        Math.min(maxOffset, ((viewportCenter - sectionCenter) / window.innerHeight) * maxOffset * 2),
+      );
       statement.style.setProperty("--about-parallax-offset", `${offset.toFixed(2)}px`);
     };
 

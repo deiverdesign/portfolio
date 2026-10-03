@@ -41,7 +41,7 @@ export function ContactCTA({ locale, className, contactHref }: ContactCTAProps) 
 
     const updateOffset = () => {
       frameId = null;
-      if (reducedMotion.matches || window.innerWidth <= 1023) {
+      if (reducedMotion.matches) {
         graphism.style.setProperty("--contact-graphism-parallax-offset", "0px");
         return;
       }
@@ -52,7 +52,11 @@ export function ContactCTA({ locale, className, contactHref }: ContactCTAProps) 
       const rect = section.getBoundingClientRect();
       const viewportCenter = window.innerHeight / 2;
       const sectionCenter = rect.top + rect.height / 2;
-      const offset = Math.max(-72, Math.min(72, ((viewportCenter - sectionCenter) / window.innerHeight) * 144));
+      const maxOffset = window.innerWidth <= 599 ? 20 : window.innerWidth <= 1023 ? 38 : 72;
+      const offset = Math.max(
+        -maxOffset,
+        Math.min(maxOffset, ((viewportCenter - sectionCenter) / window.innerHeight) * maxOffset * 2),
+      );
       graphism.style.setProperty("--contact-graphism-parallax-offset", `${offset.toFixed(2)}px`);
     };
 
