@@ -46,7 +46,7 @@ export function AboutV3({ locale, className }: AboutV3Props) {
       const sectionCenter = rect.top + rect.height / 2;
       // No tablet/mobile a amplitude cai para o texto não parecer solto
       // quando as duas colunas viram uma pilha vertical.
-      const maxOffset = window.innerWidth <= 599 ? 14 : window.innerWidth <= 1023 ? 26 : 48;
+      const maxOffset = window.innerWidth <= 599 ? 42 : window.innerWidth <= 1023 ? 58 : 48;
       const offset = Math.max(
         -maxOffset,
         Math.min(maxOffset, ((viewportCenter - sectionCenter) / window.innerHeight) * maxOffset * 2),

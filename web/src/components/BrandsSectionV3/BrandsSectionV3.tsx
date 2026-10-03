@@ -177,7 +177,7 @@ export function BrandsSectionV3({ locale, className }: BrandsSectionV3Props) {
       const sectionCenter = rect.top + rect.height / 2;
       // Em touch a amplitude é menor para o movimento continuar de fundo,
       // sem competir com a leitura e com o arrasto horizontal da grade.
-      const maxOffset = window.innerWidth <= 599 ? 22 : window.innerWidth <= 1023 ? 36 : 64;
+      const maxOffset = window.innerWidth <= 599 ? 56 : window.innerWidth <= 1023 ? 76 : 64;
       const offset = Math.max(
         -maxOffset,
         Math.min(maxOffset, ((viewportCenter - sectionCenter) / window.innerHeight) * maxOffset * 2),

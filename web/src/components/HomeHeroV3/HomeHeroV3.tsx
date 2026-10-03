@@ -59,7 +59,7 @@ export function HomeHeroV3({
 
     const updateOffset = () => {
       frameId = null;
-      if (!contentVisible || reducedMotion.matches || window.innerWidth <= 1023) {
+      if (!contentVisible || reducedMotion.matches) {
         graphism.style.setProperty("--home-hero-graphism-offset", "0px");
         return;
       }
@@ -68,7 +68,11 @@ export function HomeHeroV3({
       if (!hero) return;
       const rect = hero.getBoundingClientRect();
       const progress = Math.max(-1, Math.min(1, ((window.innerHeight / 2) - (rect.top + rect.height / 2)) / window.innerHeight));
-      graphism.style.setProperty("--home-hero-graphism-offset", `${(progress * 320).toFixed(2)}px`);
+      /* Contramovimento: ao descer a página, o fundo sobe ainda mais rápido
+         que o conteúdo. A amplitude é reduzida no toque para não expor
+         bordas do asset, mas continua claramente perceptível. */
+      const amplitude = window.innerWidth <= 599 ? 110 : window.innerWidth <= 1023 ? 180 : 360;
+      graphism.style.setProperty("--home-hero-graphism-offset", `${(-progress * amplitude).toFixed(2)}px`);
     };
 
     const requestUpdate = () => {
