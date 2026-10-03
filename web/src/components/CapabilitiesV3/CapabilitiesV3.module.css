@@ -115,7 +115,13 @@
 .illustration {
   width: 100%;
   max-width: 358px;
-  height: auto;
+  /* Os três exports não têm a mesma razão (895×510 e 895×551). Sem uma
+     faixa de mídia estável, cada título começa logo depois da sua própria
+     imagem e quebra o alinhamento vertical dos cards. `contain` preserva
+     o desenho sem esticá-lo, dentro da mesma área de 220px. */
+  height: 220px;
+  object-fit: contain;
+  object-position: center;
   /* Os PNGs são exportados com fundo branco puro (#fff), mas o card usa
      --color-surface-neutral-default (creme, não branco puro) — sem isso
      dava pra ver o quadrado branco da imagem destacado do card. Multiply
