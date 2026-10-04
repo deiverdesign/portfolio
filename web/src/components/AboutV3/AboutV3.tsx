@@ -47,7 +47,10 @@ export function AboutV3({ locale, className }: AboutV3Props) {
       // No tablet/mobile a amplitude cai para o texto não parecer solto
       // quando as duas colunas viram uma pilha vertical.
       const maxOffset = window.innerWidth <= 599 ? 42 : window.innerWidth <= 1023 ? 58 : 48;
-      const offset = Math.max(
+      /* Ao descer a página, o texto acompanha a subida normal e recebe um
+         deslocamento negativo adicional: parece subir mais rápido, nunca
+         ficar parado nem caminhar na direção oposta ao conteúdo. */
+      const offset = -Math.max(
         -maxOffset,
         Math.min(maxOffset, ((viewportCenter - sectionCenter) / window.innerHeight) * maxOffset * 2),
       );

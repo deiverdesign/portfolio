@@ -53,7 +53,7 @@ export function ContactCTA({ locale, className, contactHref }: ContactCTAProps) 
       const viewportCenter = window.innerHeight / 2;
       const sectionCenter = rect.top + rect.height / 2;
       const maxOffset = window.innerWidth <= 599 ? 52 : window.innerWidth <= 1023 ? 72 : 72;
-      const offset = Math.max(
+      const offset = -Math.max(
         -maxOffset,
         Math.min(maxOffset, ((viewportCenter - sectionCenter) / window.innerHeight) * maxOffset * 2),
       );

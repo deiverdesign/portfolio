@@ -81,7 +81,7 @@ export function HomeIntroV3({
   sessionKey = DEFAULT_SESSION_KEY,
 }: HomeIntroV3Props) {
   const [phase, setPhase] = useState<IntroPhase>("checking");
-  const [scrollLocked, setScrollLocked] = useState(true);
+  const [scrollReleaseReached, setScrollReleaseReached] = useState(false);
   const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollReleaseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -123,21 +123,18 @@ export function HomeIntroV3({
       scrollReleaseTimerRef.current = null;
     }
 
-    if (phase === "skipped" || phase === "complete") {
-      setScrollLocked(false);
-      return;
-    }
-
     if (phase === "reveal") {
       scrollReleaseTimerRef.current = setTimeout(
-        () => setScrollLocked(false),
+        () => setScrollReleaseReached(true),
         HERO_LAST_REVEAL_DELAY_MS + CONTENT_REVEAL_MS * SCROLL_RELEASE_RATIO,
       );
-      return;
     }
-
-    setScrollLocked(true);
   }, [phase]);
+
+  const scrollLocked =
+    phase !== "skipped" &&
+    phase !== "complete" &&
+    (phase !== "reveal" || !scrollReleaseReached);
 
   useLayoutEffect(() => {
     if (!scrollLocked) return;
@@ -161,10 +158,13 @@ export function HomeIntroV3({
     const preventScrollKey = (event: KeyboardEvent) => {
       if (BLOCKED_SCROLL_KEYS.has(event.key)) event.preventDefault();
     };
+    const preventTouchScroll = (event: TouchEvent) => event.preventDefault();
 
     window.addEventListener("keydown", preventScrollKey, { passive: false });
+    window.addEventListener("touchmove", preventTouchScroll, { passive: false });
     return () => {
       window.removeEventListener("keydown", preventScrollKey);
+      window.removeEventListener("touchmove", preventTouchScroll);
       body.style.position = previous.bodyPosition;
       body.style.top = previous.bodyTop;
       body.style.width = previous.bodyWidth;
