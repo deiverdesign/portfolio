@@ -3,6 +3,7 @@ import { getCopy } from "@/content/site-copy";
 import { TagV3 } from "@/components/TagV3/TagV3";
 import { MotionReveal } from "@/components/MotionReveal/MotionReveal";
 import { ABOUT_ASSETS } from "@/content/about-assets";
+import { AboutProcessVideo } from "./AboutProcessVideo";
 import styles from "./AboutPageProcessV3.module.css";
 
 export interface AboutPageProcessV3Props {
@@ -45,12 +46,7 @@ export function AboutPageProcessV3({ locale }: AboutPageProcessV3Props) {
           delayMs={180}
           offsetPx={40}
         >
-          <img
-            src={ABOUT_ASSETS.process.banner.src}
-            width={ABOUT_ASSETS.process.banner.width}
-            height={ABOUT_ASSETS.process.banner.height}
-            alt=""
-          />
+          <AboutProcessVideo {...ABOUT_ASSETS.process.showreel} />
         </MotionReveal>
       </div>
     </section>

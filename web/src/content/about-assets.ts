@@ -29,5 +29,9 @@ export const ABOUT_ASSETS = {
   },
   process: {
     banner: raster("/images/v3/about/complex-products-banner.png", 1336, 846),
+    showreel: {
+      src: "/video/deiver-showreel.mp4",
+      poster: "/video/deiver-showreel-poster.jpg",
+    },
   },
 } as const;
