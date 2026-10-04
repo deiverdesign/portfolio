@@ -70,9 +70,17 @@
   flex-shrink: 0;
   width: 668px;
   max-width: 100%;
-  height: 423px;
+  /* Thumb-video no Figma: 1303 × 733. O showreel é 16:9; manter essa
+     proporção impede que o conteúdo editorial seja recortado nas laterais. */
+  aspect-ratio: 1303 / 733;
   overflow: hidden;
   border-radius: var(--radius-sm);
+}
+
+.videoFrame {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .videoControl {
@@ -91,7 +99,11 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+}
+
+.thumbnailControl {
+  display: none;
 }
 
 .videoStatus {
@@ -137,5 +149,38 @@
     padding-right: 0;
   }
 
-  .banner { display: none; }
+  .banner {
+    width: 100%;
+    max-width: 1303px;
+    margin-inline: auto;
+  }
+
+  .thumbnailControl {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .thumbnailControl img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .videoControl {
+    display: none;
+  }
+
+  .videoFrame[data-compact-started] .thumbnailControl {
+    display: none;
+  }
+
+  .videoFrame[data-compact-started] .videoControl {
+    display: block;
+  }
 }

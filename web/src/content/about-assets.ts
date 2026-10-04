@@ -32,6 +32,7 @@ export const ABOUT_ASSETS = {
     showreel: {
       src: "/video/deiver-showreel.mp4",
       poster: "/video/deiver-showreel-poster.jpg",
+      thumbnail: "/images/v3/about/showreel-thumbnail.png",
     },
   },
 } as const;
