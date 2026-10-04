@@ -124,7 +124,9 @@ function getCards(locale: Locale): CaseCardDefinition[] {
       devices: HOME_ASSETS.cases.intuit.device,
       mobileDevices: HOME_ASSETS.cases.intuit.deviceMobile,
       devicesStyle: { left: 173, top: 69, width: 299, height: 411, objectFit: "cover" },
-      mobileDevicesStyle: { left: 17, top: 112, width: 271 },
+      /* O PNG termina na própria base visual da foto. Ancorar pelo rodapé
+         evita a faixa azul de 14px que surgia ao posicioná-lo pelo topo. */
+      mobileDevicesStyle: { left: 17, bottom: 0, width: 271 },
       background: "var(--gradient-case-intuit-card)",
       noiseColor: "var(--color-case-intuit-surface)",
       titleColor: "var(--color-foreground-neutral-inverse-strong)",
