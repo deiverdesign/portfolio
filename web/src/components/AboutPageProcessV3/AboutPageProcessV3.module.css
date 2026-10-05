@@ -1,4 +1,7 @@
 .section {
+  --process-video-scale: 1;
+  --process-content-opacity: 1;
+  --process-content-translate: 0px;
   /* Reconferido no Figma (node 2262:64712): fundo branco puro, não o
      cream padrão — e padding era var(--space-layout-300/100) (64/48),
      o real é var(--space-layout-400) (80) vertical e var(--space-800)
@@ -9,23 +12,18 @@
 
 .container {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  row-gap: var(--space-layout-500);
+  flex-direction: column;
+  gap: var(--space-layout-300);
   max-width: 1348px;
   margin: 0 auto;
 }
 
-.text {
-  flex: 1 0 0;
-  min-width: 500px;
-  max-width: 648px;
-  padding-right: var(--space-layout-300);
+.titleMotion {
+  order: 0;
 }
 
 .title {
-  margin: 0 0 var(--space-layout-100);
+  margin: 0;
   font-family: var(--font-family-editorial);
   font-weight: var(--font-weight-editorial-regular);
   font-size: var(--font-size-display-section);
@@ -34,6 +32,7 @@
 }
 
 .body {
+  order: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-700);
@@ -58,6 +57,7 @@
 }
 
 .tags {
+  order: 2;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-300);
@@ -67,9 +67,9 @@
 }
 
 .banner {
-  flex-shrink: 0;
-  width: 668px;
-  max-width: 100%;
+  order: 3;
+  width: 100%;
+  max-width: 1303px;
   /* Thumb-video no Figma: 1303 × 733. O showreel é 16:9; manter essa
      proporção impede que o conteúdo editorial seja recortado nas laterais. */
   aspect-ratio: 1303 / 733;
@@ -131,30 +131,6 @@
 }
 
 @media (max-width: 1023px) {
-  /* Empilha texto sobre banner (confirmado no Figma em 778 e 393px —
-     as duas larguras ficam lado a lado só no desktop). Sem isso, o
-     banner (com max-width:100%) por acaso preenchia a linha inteira
-     sozinho em telas bem estreitas, e o texto — com flex-basis:0 —
-     nunca sobrava espaço pra crescer e ficava com largura 0 (achado ao
-     testar em 393px: o título "I join the conversation..." quebrava
-     uma letra por linha). */
-  .container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .text {
-    min-width: 0;
-    max-width: none;
-    padding-right: 0;
-  }
-
-  .banner {
-    width: 100%;
-    max-width: 1303px;
-    margin-inline: auto;
-  }
-
   .thumbnailControl {
     display: block;
     width: 100%;
@@ -182,5 +158,82 @@
 
   .videoFrame[data-compact-started] .videoControl {
     display: block;
+  }
+}
+
+@media (min-width: 1200px) {
+  .section {
+    min-height: calc(100svh + clamp(520px, 52vw, 780px));
+    padding-block: 0;
+  }
+
+  .container {
+    position: sticky;
+    top: 0;
+    display: grid;
+    grid-template-areas:
+      "title banner body"
+      "tags banner body";
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 428px) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: clamp(32px, 4.4vw, 64px);
+    align-content: center;
+    align-items: center;
+    width: min(100%, 1465px);
+    min-height: 100svh;
+    overflow: visible;
+  }
+
+  .titleMotion,
+  .body,
+  .tags {
+    opacity: var(--process-content-opacity);
+    transform: translateY(var(--process-content-translate));
+    will-change: opacity, transform;
+  }
+
+  .titleMotion {
+    grid-area: title;
+    align-self: end;
+    margin-bottom: var(--space-500);
+  }
+
+  .title {
+    font-size: clamp(52px, 4.1vw, 60px);
+    line-height: var(--line-height-display-page);
+  }
+
+  .body {
+    grid-area: body;
+    align-self: center;
+    gap: var(--space-700);
+  }
+
+  .tags {
+    grid-area: tags;
+    align-self: start;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-500);
+  }
+
+  .banner {
+    grid-area: banner;
+    align-self: center;
+    width: clamp(360px, 29.22vw, 428px);
+    max-width: none;
+    margin: 0;
+    transform: scale(var(--process-video-scale));
+    transform-origin: center;
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner,
+  .titleMotion,
+  .body,
+  .tags {
+    transition: none;
   }
 }
