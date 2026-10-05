@@ -1,6 +1,8 @@
 .section {
   --process-video-scale: 1;
-  --process-content-translate: 0px;
+  --process-title-translate: 0px;
+  --process-tags-translate: 0px;
+  --process-body-translate: 0px;
   /* Reconferido no Figma (node 2262:64712): fundo branco puro, não o
      cream padrão — e padding era var(--space-layout-300/100) (64/48),
      o real é var(--space-layout-400) (80) vertical e var(--space-800)
@@ -183,17 +185,12 @@
     overflow: visible;
   }
 
-  .titleMotion,
-  .body,
-  .tags {
-    transform: translateY(var(--process-content-translate));
-    will-change: transform;
-  }
-
   .titleMotion {
     grid-area: title;
     align-self: end;
     margin-bottom: var(--space-500);
+    transform: translateY(var(--process-title-translate));
+    will-change: transform;
   }
 
   .title {
@@ -205,6 +202,8 @@
     grid-area: body;
     align-self: center;
     gap: var(--space-700);
+    transform: translateY(var(--process-body-translate));
+    will-change: transform;
   }
 
   .tags {
@@ -213,6 +212,8 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-500);
+    transform: translateY(var(--process-tags-translate));
+    will-change: transform;
   }
 
   .banner {

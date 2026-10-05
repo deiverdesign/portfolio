@@ -45,7 +45,9 @@ export function AboutPageProcessV3({ locale }: AboutPageProcessV3Props) {
 
       if (!desktopQuery.matches || reducedMotionQuery.matches) {
         section.style.setProperty("--process-video-scale", "1");
-        section.style.setProperty("--process-content-translate", "0px");
+        section.style.setProperty("--process-title-translate", "0px");
+        section.style.setProperty("--process-tags-translate", "0px");
+        section.style.setProperty("--process-body-translate", "0px");
         return;
       }
 
@@ -54,10 +56,15 @@ export function AboutPageProcessV3({ locale }: AboutPageProcessV3Props) {
       const progress = Math.min(Math.max(-rect.top / scrollDistance, 0), 1);
       const contentProgress = Math.min(Math.max((progress - 0.16) / 0.84, 0), 1);
       const scale = 1040 / 428 - (1040 / 428 - 1) * progress;
-      const contentOffset = Math.min(window.innerHeight * 0.95, 760);
+      const titleOffset = Math.min(window.innerHeight * 0.95, 760);
 
       section.style.setProperty("--process-video-scale", scale.toFixed(4));
-      section.style.setProperty("--process-content-translate", `${Math.round((1 - contentProgress) * contentOffset)}px`);
+      // Os três blocos têm o mesmo ponto de chegada, mas percorrem distâncias
+      // diferentes — igual ao protótipo do Figma. As tags começam mais perto,
+      // o título vem de baixo e o texto da direita entra por último.
+      section.style.setProperty("--process-title-translate", `${Math.round((1 - contentProgress) * titleOffset)}px`);
+      section.style.setProperty("--process-tags-translate", `${Math.round((1 - contentProgress) * titleOffset * 0.44)}px`);
+      section.style.setProperty("--process-body-translate", `${Math.round((1 - contentProgress) * titleOffset * 1.55)}px`);
     };
 
     const requestUpdate = () => {
