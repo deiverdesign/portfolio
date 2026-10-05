@@ -1,6 +1,5 @@
 .section {
   --process-video-scale: 1;
-  --process-content-opacity: 1;
   --process-content-translate: 0px;
   /* Reconferido no Figma (node 2262:64712): fundo branco puro, não o
      cream padrão — e padding era var(--space-layout-300/100) (64/48),
@@ -187,9 +186,8 @@
   .titleMotion,
   .body,
   .tags {
-    opacity: var(--process-content-opacity);
     transform: translateY(var(--process-content-translate));
-    will-change: opacity, transform;
+    will-change: transform;
   }
 
   .titleMotion {
