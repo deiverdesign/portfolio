@@ -71,6 +71,10 @@
 .error img { flex: 0 0 auto; }
 
 .submit { width: 100%; margin-top: auto; }
+.requestAccess { display: flex; flex-direction: column; align-items: center; gap: var(--space-100); }
+.requestButton { min-height: 36px; }
+.requestEmail { color: var(--color-foreground-neutral-stronger); font-family: var(--font-family-mono); font-size: var(--font-size-ui-action); font-weight: var(--font-weight-ui-action); line-height: var(--line-height-ui-action); text-underline-offset: 3px; }
+.requestEmail:focus-visible { outline: 2px solid var(--color-border-brand-default); outline-offset: 3px; }
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 @media (max-width: 599px) { .backdrop { padding: var(--space-400); } .dialog { min-height: 0; } }

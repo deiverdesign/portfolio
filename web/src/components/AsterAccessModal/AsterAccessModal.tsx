@@ -21,6 +21,9 @@ const COPY: Record<Locale, {
   retry: string;
   wrong: string;
   help: string;
+  requestAccess: string;
+  emailSubject: string;
+  emailBody: string;
   close: string;
 }> = {
   en: {
@@ -32,6 +35,9 @@ const COPY: Record<Locale, {
     retry: "Try again",
     wrong: "This password doesn’t look right.",
     help: "Try again or email me at: hello@deiver.com.br",
+    requestAccess: "Need access? Request the password",
+    emailSubject: "Aster case study access",
+    emailBody: "Hi Deiver, I'd like access to the Aster case study.",
     close: "Close dialog",
   },
   pt: {
@@ -43,6 +49,9 @@ const COPY: Record<Locale, {
     retry: "Tentar novamente",
     wrong: "Essa senha não parece correta.",
     help: "Tente novamente ou me escreva em: hello@deiver.com.br",
+    requestAccess: "Precisa de acesso? Peça a senha",
+    emailSubject: "Acesso ao case Aster",
+    emailBody: "Oi, Deiver. Gostaria de solicitar acesso ao case Aster.",
     close: "Fechar diálogo",
   },
 };
@@ -59,9 +68,11 @@ export function AsterAccessModal({ locale, caseHref, onClose }: AsterAccessModal
   const boundUnlock = unlockAster.bind(null, locale);
   const [state, formAction, pending] = useActionState(boundUnlock, INITIAL_STATE);
   const [editedSinceError, setEditedSinceError] = useState(false);
+  const [isAccessRequestVisible, setIsAccessRequestVisible] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const hasError = Boolean(state.error) && !editedSinceError;
+  const requestEmailHref = `mailto:hello@deiver.com.br?subject=${encodeURIComponent(t.emailSubject)}&body=${encodeURIComponent(t.emailBody)}`;
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -151,6 +162,24 @@ export function AsterAccessModal({ locale, caseHref, onClose }: AsterAccessModal
             {pending ? t.checking : hasError ? t.retry : t.submit}
             {!pending && !hasError && <IconV3 name="arrow-right" size={16} />}
           </ButtonV3>
+
+          <div className={styles.requestAccess}>
+            <ButtonV3
+              variant="tertiary"
+              size="medium"
+              type="button"
+              className={styles.requestButton}
+              aria-expanded={isAccessRequestVisible}
+              onClick={() => setIsAccessRequestVisible(true)}
+            >
+              {t.requestAccess}
+            </ButtonV3>
+            {isAccessRequestVisible && (
+              <a className={styles.requestEmail} href={requestEmailHref}>
+                hello@deiver.com.br
+              </a>
+            )}
+          </div>
         </form>
       </div>
     </div>,
