@@ -101,7 +101,8 @@ const kitchenFragmentBody = /* glsl */ `
       // desce indo para a direita. uOwnSplit = (x da linha, na altura y, inclinação, escurecimento).
       vec3 helenaPoint = (vKitchenWorld - uOrigin) / uMeter;
       float splitX = uOwnSplit.x + (uOwnSplit.y - helenaPoint.y) * uOwnSplit.z;
-      tone *= mix(uOwnSplit.w, 1.0, smoothstep(splitX - .004, splitX + .004, helenaPoint.x));
+      float helenaLitSide = smoothstep(splitX - .004, splitX + .004, helenaPoint.x);
+      tone *= mix(uOwnSplit.w, 1.0, helenaLitSide);
     #endif
     // O rejunte do azulejo e do piso é a parte escura da textura.
     tone *= mix(.3, 1.0, smoothstep(.25, .9, texel));
@@ -124,7 +125,15 @@ const kitchenFragmentBody = /* glsl */ `
     // muda de um pixel para o outro (fwidth = 0), e as quinas retas já têm a linha vermelha.
     float curved = smoothstep(.002, .02, length(fwidth(n)));
     float rim = curved * step(.3, dot(n, toCenter / centerDistance)) * smoothstep(.74, .8, 1.0 - abs(dot(n, viewDirection))) * (1.0 - smoothstep(3.5, 5.5, centerDistance));
-    outgoingLight = mix(tone, uRed, max(spill * .8, rim) * uRedOn);
+    vec3 red = uRed;
+    #ifdef FOUR_TONES
+      // Helena: contorno vermelho mais largo, cheio e mais saturado (pedido do Deiver).
+      // Vale para quase toda borda que não esteja de costas para a janela, mas só no lado
+      // iluminado: o lado esquerdo, na sombra, fica sem vermelho.
+      rim = step(-.1, dot(n, toCenter / centerDistance)) * smoothstep(.5, .56, 1.0 - abs(dot(n, viewDirection))) * helenaLitSide;
+      red = vec3(1.0, .0, .16);
+    #endif
+    outgoingLight = mix(tone, red, max(spill * .8, rim) * uRedOn);
   }
   #include <opaque_fragment>
 `;
@@ -533,7 +542,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
     // mais escuras e com a mesma saturação, a pedido dele:
     // luz azul claro, meio roxo-azulado, sombra rosa-magenta, fundo das dobras quase preto.
     // Faixas pela direção da superfície (não pela luz da cena, que deixava as costas só escuras).
-    const body = new THREE.Mesh(geometry, violetMaterial(GRAY.dress, null, THREE.FrontSide, ["#2481be", "#3d38ae", "#861066", "#150627"], [.36, .52, .86], [hx - .05, 1.35, .3, .55]));
+    const body = new THREE.Mesh(geometry, violetMaterial(GRAY.dress, null, THREE.FrontSide, ["#2481be", "#3d38ae", "#861066", "#150627"], [.36, .52, .86], [hx - .05, 1.35, .3, .3]));
     body.scale.setScalar(scale);
     body.rotation.y = Math.PI;
     body.position.set(hx, .95 * scale, helenaChairZ + .13 - .51 * scale);
