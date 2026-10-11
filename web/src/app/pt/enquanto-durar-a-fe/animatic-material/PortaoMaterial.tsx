@@ -101,6 +101,14 @@ const AMAZON_URL = "https://www.amazon.com.br/Enquanto-durar-f%C3%A9-Deiver-Brit
 // Trechos do capítulo 1 (a cena do portão), na ordem em que a câmera passa por eles.
 // Nada aqui entrega o que vem depois na história. z = onde o papel fica na ladeira; o
 // último fica a 10 unidades do fim da descida (z 34), para estar nítido quando ela termina.
+// Trechos do capítulo 3 (a cozinha da Helena), na ordem em que saem da lente. Sem spoiler:
+// nada dos remédios nem do cansaço do fim do capítulo. O Deiver vai revisar o texto.
+const KITCHEN_EXCERPTS = [
+  "Contou o dinheiro. Depois contou novamente. Não porque desconfiasse da quantia. Mas porque gostava da sensação de vê-la crescer.",
+  "“Vai na novena amanhã?” “Se Deus quiser.” Apagou. Escreveu outra. “Talvez.”",
+  "A moldura estava virada para a parede. — Ainda não.",
+];
+
 const BOOK_EXCERPTS = [
   { z: 5, text: "Enfim a última casa desta rua." },
   { z: 11, text: "Teria 10 minutos para eu falar sobre fé, esperança e o que Deus tem feito conosco?" },
@@ -1297,12 +1305,103 @@ export function PortaoMaterial() {
     let kitchenGroup: THREE.Object3D | null = null;
     let updateKitchen: ((state: { red: number; time: number; pixels: number }) => void) | null = null;
 
+    // ---------------------------------------------------------------------------------
+    // HISTÓRIA DA COZINHA (ideia 1 do Deiver): depois do recuo, a câmera quase para e os
+    // bilhetes e objetos saem da lente, um de cada vez, e vão para longe ganhando foco.
+    // STORY_END: o scroll passa de 1 (fim do recuo) até 1,25; esse trecho extra é a história.
+    // O site ficou 25% mais comprido só para isso, então a rua continua no mesmo ritmo.
+    // Cada item tem: onde termina (em metros, dentro da cozinha) e quando anda (from → to,
+    // de 0 a 1 dentro da história). Os bilhetes somem quando o próximo chega; o último fica.
+    const STORY_END = 1.25;
+    type StoryItem = {
+      object: THREE.Object3D;
+      end: THREE.Vector3;
+      from: number;
+      to: number;
+      paper?: THREE.ShaderMaterial;
+      spin?: number;
+      tilt?: number;
+      // Lugar final próprio para a tela em pé, quando a regra geral cairia em cima da Helena.
+      portraitEnd?: THREE.Vector3;
+    };
+    const storyItems: StoryItem[] = [];
+    const storyTextures: THREE.Texture[] = [];
+    let setStoryPropsOpacity: ((opacity: number) => void) | null = null;
+
     const buildKitchen = () => {
-      const { group, update } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
+      const { group, space, update, props, setPropsOpacity } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
       group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
       kitchenGroup = group;
       updateKitchen = update;
+      setStoryPropsOpacity = setPropsOpacity;
+      const papersAt = [new THREE.Vector3(0, 1.95, 2.6), new THREE.Vector3(.75, 1.95, 2.6), new THREE.Vector3(.2, 1.95, 2.6)];
+      const paperTimes = [[.06, .4], [.38, .7], [.66, 1]];
+      KITCHEN_EXCERPTS.forEach((text, index) => {
+        const texture = createTextTexture(text);
+        if (texture) storyTextures.push(texture);
+        const material = new THREE.ShaderMaterial({
+          transparent: true,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+          uniforms: { uMap: { value: texture }, uBlur: { value: 0 }, uOpacity: { value: 0 } },
+          vertexShader: paperVertexShader,
+          fragmentShader: paperFragmentShader,
+        });
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(PAPER_WIDTH, PAPER_HEIGHT), material);
+        mesh.visible = false;
+        mesh.renderOrder = 5;
+        space.add(mesh);
+        storyItems.push({ object: mesh, end: papersAt[index], from: paperTimes[index][0], to: paperTimes[index][1], paper: material });
+      });
+      // Objetos longe dos bilhetes (que ficam no alto, no meio) e da cabeça da Helena.
+      storyItems.push({ object: props.tin, end: new THREE.Vector3(.95, 1.2, 3.6), from: 0, to: 1, spin: .8, tilt: .7 });
+      storyItems.push({ object: props.envelope, end: new THREE.Vector3(-.5, 1.8, 3.0), from: .3, to: 1, spin: -.6 });
+      storyItems.push({ object: props.phone, end: new THREE.Vector3(.2, 1.35, 3.7), from: .6, to: 1, spin: .4, portraitEnd: new THREE.Vector3(.2, 1.0, 3.9) });
       return group;
+    };
+
+    const storyCamera = new THREE.Vector3();
+    const storyStart = new THREE.Vector3();
+    const storyEnd = new THREE.Vector3();
+    const storyFacing = new THREE.Vector3();
+    // story = 0 a 1 dentro da história. O item nasce a 15% do caminho entre a lente e o lugar
+    // final dele (quase colado na tela, na mesma direção) e vai até lá em ~22% da história.
+    // Como na rua, ele só aparece a partir de ~60 cm da lente e fica inteiro depois de ~1,3 m.
+    const renderStory = (story: number) => {
+      if (!kitchenGroup) return;
+      const portrait = camera.aspect < 1;
+      storyCamera.copy(camera.position).sub(kitchenGroup.position).divideScalar(METER);
+      const paperWidth = portrait ? .62 : 1.1;
+      let propsOpacity = 0;
+      storyItems.forEach(({ object, end, from, to, paper, spin, tilt, portraitEnd }) => {
+        object.visible = story > from;
+        if (!object.visible) return;
+        const travel = THREE.MathUtils.smoothstep(story, from, from + .22);
+        // No celular o quadro é estreito e olha mais para a esquerda: tudo chega mais ao centro dele.
+        storyEnd.copy(end);
+        if (portrait && portraitEnd) storyEnd.copy(portraitEnd);
+        else if (portrait) storyEnd.x = end.x * .4 - .45;
+        storyStart.copy(storyCamera).lerp(storyEnd, .15);
+        object.position.lerpVectors(storyStart, storyEnd, travel);
+        const distance = object.position.distanceTo(storyCamera);
+        const appear = THREE.MathUtils.smoothstep(distance, .6, 1.3);
+        const leave = to < 1 ? 1 - THREE.MathUtils.smoothstep(story, to - .06, to) : 1;
+        if (paper) {
+          object.scale.setScalar(paperWidth / PAPER_WIDTH);
+          // lookAt pede a posição no mundo: o papel gira só em volta do eixo vertical.
+          object.getWorldPosition(storyFacing);
+          storyFacing.set(camera.position.x, storyFacing.y, camera.position.z);
+          object.lookAt(storyFacing);
+          paper.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(distance, .5, 1.8)) * 6;
+          paper.uniforms.uOpacity.value = appear * leave;
+        } else {
+          // De frente para a câmera, balançando de leve (a lata inclinada para mostrar o que tem dentro).
+          const sway = Math.sin(story * 6 + (spin ?? 0) * 4) * .35 * (spin ?? 0);
+          object.rotation.set(tilt ?? .25, sway, .08);
+          propsOpacity = Math.max(propsOpacity, appear);
+        }
+      });
+      setStoryPropsOpacity?.(propsOpacity);
     };
 
     // ---------------------------------------------------------------------------------
@@ -1453,7 +1552,8 @@ export function PortaoMaterial() {
     const renderScene = () => {
       ensureKitchen(progress);
       // Se a cozinha ainda não ficou pronta, a câmera espera na janela.
-      const sceneProgress = kitchenState === "ready" ? progress : Math.min(progress, STREET_END);
+      const sceneProgress = kitchenState === "ready" ? Math.min(progress, 1) : Math.min(progress, STREET_END);
+      const story = kitchenState === "ready" ? THREE.MathUtils.clamp((progress - 1) / (STORY_END - 1), 0, 1) : 0;
       const walk = THREE.MathUtils.clamp((sceneProgress - INTRO) / (STREET_END - INTRO), 0, 1);
       cameraPosition.lerpVectors(startPosition, endPosition, walk);
       cameraPosition.x += Math.sin(walk * Math.PI) * CAMERA_SWAY;
@@ -1481,6 +1581,8 @@ export function PortaoMaterial() {
         camera.fov = THREE.MathUtils.lerp(47, portrait ? 66 : 47, turn);
         camera.updateProjectionMatrix();
       }
+      // Durante a história a câmera quase para: recua só mais 30 cm.
+      if (story > 0) cameraPosition.z += m(.3) * THREE.MathUtils.smoothstep(story, 0, 1);
       // A luz vermelha acende logo depois que a câmera passa pela janela.
       const red = THREE.MathUtils.smoothstep(inside, .26, .45);
       // O sol da rua só serve para a sombra; dentro da cozinha ele não pode iluminar os móveis.
@@ -1499,6 +1601,7 @@ export function PortaoMaterial() {
       windowViewMaterial.uniforms.uTint.value = red;
       scrollArea.style.setProperty("--street-glow", (1 - red).toFixed(3));
       updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
+      renderStory(story);
       // O papel gira só em torno do eixo vertical, então a borda de baixo fica sempre a 1,90 m.
       papers.forEach(({ group, mesh, material }) => {
         paperFacing.set(camera.position.x, group.position.y, camera.position.z);
@@ -1524,8 +1627,12 @@ export function PortaoMaterial() {
     const updateScrollProgress = () => {
       const bounds = scrollArea.getBoundingClientRect();
       const distance = Math.max(scrollArea.offsetHeight - window.innerHeight, 1);
-      targetProgress = Math.min(1, Math.max(0, -bounds.top / distance));
-      scrollArea.style.setProperty("--scroll-progress", targetProgress.toFixed(4));
+      const scrolled = Math.min(1, Math.max(0, -bounds.top / distance));
+      targetProgress = scrolled * STORY_END;
+      // --scroll-progress continua indo de 0 a 1 só na rua + recuo (o texto de abertura usa ele);
+      // a barrinha de progresso usa o scroll inteiro.
+      scrollArea.style.setProperty("--scroll-progress", Math.min(targetProgress, 1).toFixed(4));
+      scrollArea.style.setProperty("--scroll-total", scrolled.toFixed(4));
     };
 
     const handleMotionPreference = () => {
@@ -1563,6 +1670,7 @@ export function PortaoMaterial() {
       sky.geometry.dispose();
       sky.material.dispose();
       papers.forEach(({ texture }) => texture?.dispose());
+      storyTextures.forEach((texture) => texture.dispose());
       windowViewTarget?.dispose();
       windowView.geometry.dispose();
       windowViewMaterial.dispose();
