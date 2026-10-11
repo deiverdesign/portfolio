@@ -1264,6 +1264,127 @@ export function PortaoMaterial() {
     });
 
 
+    // ---------------------------------------------------------------------------------
+    // COZINHA (versão em cinza, só formas, para testar o movimento).
+    // No fim da rua a câmera continua de costas e atravessa uma janela: a rua fica
+    // emoldurada, vista de dentro, e o recuo revela a cozinha da Helena.
+    // Ex.: o scroll vai de 0 a 1. Até STREET_END (70%) é a rua; de 70% a 100% é a
+    // passagem pela janela e o recuo dentro da cozinha.
+    const STREET_END = .7;
+    // A casa da cozinha fica num patamar alto, como os imóveis da ladeira: o piso está
+    // 3,2 m acima da rua. Assim, pela janela, ainda se vê a rua subindo e o Jota lá em cima.
+    // A câmera sobe esses 3,2 m antes de atravessar a janela.
+    const KITCHEN_FLOOR = roadY(CAMERA_END_Z) + m(3.2);
+    const WINDOW_X = CAMERA_END_X;
+    const WINDOW_Z = CAMERA_END_Z + m(1.2);
+    const KITCHEN_WIDTH = m(3.6);
+    const KITCHEN_DEPTH = m(4.2);
+    const KITCHEN_HEIGHT = m(2.7);
+    const KITCHEN_CAMERA_Z = WINDOW_Z + m(3.2);
+    const WINDOW_WIDTH = m(1.5);
+    const WINDOW_SILL = m(.85);
+    const WINDOW_TOP = m(2.35);
+    // A cozinha é montada só quando a pessoa passa de PRELOAD_AT (35%) da rua, e
+    // preparada para a placa de vídeo (compileAsync) antes de aparecer. Se ainda
+    // não estiver pronta quando a câmera chegar à janela, a câmera espera ali.
+    const PRELOAD_AT = .35;
+    const kitchenTarget = new THREE.Vector3();
+    const kitchenPortraitLookAt = new THREE.Vector3(WINDOW_X - m(.5), roadY(CAMERA_END_Z) + m(3.2) + m(1.05), CAMERA_END_Z + m(1.2));
+    const kitchenLookAt = new THREE.Vector3(WINDOW_X, KITCHEN_FLOOR + m(1.05), WINDOW_Z - m(8));
+    let kitchenState: "idle" | "loading" | "ready" = "idle";
+    let windowGlass: THREE.MeshBasicMaterial | null = null;
+
+    const buildKitchen = () => {
+      const kitchen = new THREE.Group();
+      kitchen.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
+      const gray = (hex: string) => new THREE.MeshLambertMaterial({ color: hex });
+      const wallGray = gray("#9a9a96");
+      const floorGray = gray("#6f6f6b");
+      const furnitureGray = gray("#bdbdb8");
+      const darkGray = gray("#4a4a47");
+      const box = (w: number, h: number, d: number, x: number, y: number, z: number, material: THREE.Material) => {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+        mesh.position.set(x, y, z);
+        kitchen.add(mesh);
+        return mesh;
+      };
+      const half = KITCHEN_WIDTH / 2;
+      const wall = m(.15);
+      // Piso, teto, paredes laterais e do fundo. Em z local, 0 é a parede da janela
+      // e a cozinha cresce para trás da câmera (z positivo).
+      box(KITCHEN_WIDTH, m(.05), KITCHEN_DEPTH, 0, -m(.025), KITCHEN_DEPTH / 2, floorGray);
+      box(KITCHEN_WIDTH, m(.05), KITCHEN_DEPTH, 0, KITCHEN_HEIGHT, KITCHEN_DEPTH / 2, wallGray);
+      box(wall, KITCHEN_HEIGHT, KITCHEN_DEPTH, -half, KITCHEN_HEIGHT / 2, KITCHEN_DEPTH / 2, wallGray);
+      box(wall, KITCHEN_HEIGHT, KITCHEN_DEPTH, half, KITCHEN_HEIGHT / 2, KITCHEN_DEPTH / 2, wallGray);
+      box(KITCHEN_WIDTH, KITCHEN_HEIGHT, wall, 0, KITCHEN_HEIGHT / 2, KITCHEN_DEPTH, wallGray);
+      // Parede da janela: quatro pedaços em volta do vão.
+      const sideWidth = (KITCHEN_WIDTH - WINDOW_WIDTH) / 2;
+      box(sideWidth, KITCHEN_HEIGHT, wall, -half + sideWidth / 2, KITCHEN_HEIGHT / 2, 0, wallGray);
+      box(sideWidth, KITCHEN_HEIGHT, wall, half - sideWidth / 2, KITCHEN_HEIGHT / 2, 0, wallGray);
+      box(WINDOW_WIDTH, WINDOW_SILL, wall, 0, WINDOW_SILL / 2, 0, wallGray);
+      box(WINDOW_WIDTH, KITCHEN_HEIGHT - WINDOW_TOP, wall, 0, (KITCHEN_HEIGHT + WINDOW_TOP) / 2, 0, wallGray);
+      // Moldura escura e uma travessa acima da altura do olho (a lente passa por baixo dela).
+      const frame = m(.06);
+      box(WINDOW_WIDTH + frame * 2, frame, m(.2), 0, WINDOW_SILL, 0, darkGray);
+      box(WINDOW_WIDTH + frame * 2, frame, m(.2), 0, WINDOW_TOP, 0, darkGray);
+      box(frame, WINDOW_TOP - WINDOW_SILL, m(.2), -WINDOW_WIDTH / 2 - frame / 2, (WINDOW_SILL + WINDOW_TOP) / 2, 0, darkGray);
+      box(frame, WINDOW_TOP - WINDOW_SILL, m(.2), WINDOW_WIDTH / 2 + frame / 2, (WINDOW_SILL + WINDOW_TOP) / 2, 0, darkGray);
+      box(WINDOW_WIDTH, m(.04), m(.08), 0, m(2), 0, darkGray);
+      // Vidro: começa invisível e escurece até virar noite enquanto a câmera recua.
+      windowGlass = new THREE.MeshBasicMaterial({ color: "#060b2c", transparent: true, opacity: 0, depthWrite: false });
+      const glass = new THREE.Mesh(new THREE.PlaneGeometry(WINDOW_WIDTH, WINDOW_TOP - WINDOW_SILL), windowGlass);
+      glass.position.set(0, (WINDOW_SILL + WINDOW_TOP) / 2, m(.02));
+      kitchen.add(glass);
+      // Mesa encostada embaixo da janela, um pouco à esquerda, com a lata azul em cima.
+      const tableX = -m(.3);
+      const tableZ = m(.6);
+      box(m(.8), m(.04), m(1.1), tableX, m(.75), tableZ, furnitureGray);
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => box(m(.05), m(.73), m(.05), tableX + sx * m(.35), m(.365), tableZ + sz * m(.5), darkGray));
+      const tin = new THREE.Mesh(new THREE.CylinderGeometry(m(.1), m(.1), m(.14), 24), gray("#3d5bd9"));
+      tin.position.set(tableX + m(.12), m(.84), tableZ + m(.15));
+      kitchen.add(tin);
+      // Cadeira e Helena sentada de costas para a câmera, olhando para a janela.
+      const chairZ = tableZ + m(.75);
+      box(m(.42), m(.04), m(.42), tableX, m(.45), chairZ, darkGray);
+      box(m(.42), m(.45), m(.04), tableX, m(.68), chairZ + m(.2), darkGray);
+      const helenaMaterial = gray("#d8d8d2");
+      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(m(.17), m(.42), 6, 16), helenaMaterial);
+      torso.position.set(tableX, m(.47) + m(.38), chairZ);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(m(.11), 20, 14), helenaMaterial);
+      head.position.set(tableX, m(1.28), chairZ - m(.03));
+      const bun = new THREE.Mesh(new THREE.SphereGeometry(m(.06), 12, 8), helenaMaterial);
+      bun.position.set(tableX, m(1.33), chairZ + m(.09));
+      kitchen.add(torso, head, bun);
+      // Lado direito: geladeira com o ventilador em cima, bancada e armário alto.
+      box(m(.7), m(1.75), m(.7), half - m(.4), m(.875), m(.5), furnitureGray);
+      const fan = new THREE.Mesh(new THREE.CylinderGeometry(m(.16), m(.16), m(.06), 20), darkGray);
+      fan.rotation.x = Math.PI / 2;
+      fan.position.set(half - m(.4), m(1.95), m(.5));
+      kitchen.add(fan);
+      box(m(.6), m(.9), m(1.6), half - m(.35), m(.45), m(1.85), furnitureGray);
+      box(m(.4), m(.7), m(1.6), half - m(.25), m(1.85), m(1.85), furnitureGray);
+      // Porta para o corredor (onde fica a foto virada), só sugerida na parede esquerda.
+      box(m(.02), m(2.1), m(.9), -half + wall / 2 + m(.01), m(1.05), m(3.3), darkGray);
+      // Luz só da cozinha: os materiais da rua não usam luzes do three.js, então ela
+      // não muda nada lá fora.
+      kitchen.add(new THREE.HemisphereLight("#ffffff", "#5a5a5a", 1.6));
+      const lamp = new THREE.PointLight("#ffffff", 2.5, 0, 1.2);
+      lamp.position.set(0, KITCHEN_HEIGHT - m(.15), m(1.6));
+      kitchen.add(lamp);
+      kitchen.traverse((child) => { child.castShadow = false; child.receiveShadow = false; });
+      return kitchen;
+    };
+
+    const ensureKitchen = (scrollProgress: number) => {
+      if (kitchenState !== "idle" || scrollProgress < PRELOAD_AT) return;
+      kitchenState = "loading";
+      const kitchen = buildKitchen();
+      world.add(kitchen);
+      renderer.compileAsync(scene, camera).then(() => {
+        if (!disposed) kitchenState = "ready";
+      });
+    };
+
     const startPosition = new THREE.Vector3(CAMERA_START_X, roadY(CAMERA_START_Z) + EYE_HEIGHT, CAMERA_START_Z);
     const endPosition = new THREE.Vector3(CAMERA_END_X, roadY(CAMERA_END_Z) + EYE_HEIGHT, CAMERA_END_Z);
     // A câmera mira o rosto do Jota (~1,70 m) e, no fim, um pouco abaixo, para a rua caber.
@@ -1310,7 +1431,10 @@ export function PortaoMaterial() {
     };
 
     const renderScene = () => {
-      const walk = THREE.MathUtils.clamp((progress - INTRO) / (1 - INTRO), 0, 1);
+      ensureKitchen(progress);
+      // Se a cozinha ainda não ficou pronta, a câmera espera na janela.
+      const sceneProgress = kitchenState === "ready" ? progress : Math.min(progress, STREET_END);
+      const walk = THREE.MathUtils.clamp((sceneProgress - INTRO) / (STREET_END - INTRO), 0, 1);
       cameraPosition.lerpVectors(startPosition, endPosition, walk);
       cameraPosition.x += Math.sin(walk * Math.PI) * CAMERA_SWAY;
       cameraPosition.y += Math.sin(walk * Math.PI) * .22;
@@ -1318,6 +1442,26 @@ export function PortaoMaterial() {
       const descent = THREE.MathUtils.smoothstep(progress, 0, INTRO);
       cameraPosition.lerpVectors(highPosition, cameraPosition, descent);
       lookAt.lerpVectors(houseLookAt, lookAt, descent);
+      // Depois da rua: recua reto, na altura do olho, atravessando a janela.
+      const inside = THREE.MathUtils.smoothstep(sceneProgress, STREET_END, 1);
+      if (inside > 0) {
+        const rise = THREE.MathUtils.smoothstep(inside, 0, .2);
+        // Depois de passar pela janela, a câmera recua em diagonal para a direita, para a
+        // Helena e a mesa ficarem à esquerda do quadro, sem a lente passar por cima delas.
+        const drift = THREE.MathUtils.smoothstep(inside, .3, 1) * m(.6);
+        cameraPosition.set(WINDOW_X + drift, THREE.MathUtils.lerp(roadY(CAMERA_END_Z), KITCHEN_FLOOR, rise) + EYE_HEIGHT, THREE.MathUtils.lerp(CAMERA_END_Z, KITCHEN_CAMERA_Z, inside));
+        // O olhar desce da casa lá em cima para a janela, quase na horizontal.
+        // No celular (tela em pé) o quadro é estreito: a lente abre um pouco e o olhar vira
+        // para a esquerda no fim, para a Helena e a mesa caberem junto com a janela.
+        const portrait = camera.aspect < 1;
+        const turn = THREE.MathUtils.smoothstep(inside, .5, 1);
+        kitchenTarget.copy(kitchenLookAt);
+        if (portrait) kitchenTarget.lerp(kitchenPortraitLookAt, turn);
+        lookAt.lerp(kitchenTarget, THREE.MathUtils.smoothstep(inside, 0, .7));
+        camera.fov = THREE.MathUtils.lerp(47, portrait ? 66 : 47, turn);
+        camera.updateProjectionMatrix();
+        if (windowGlass) windowGlass.opacity = THREE.MathUtils.smoothstep(inside, .3, .95) * .6;
+      }
       camera.position.copy(cameraPosition);
       camera.lookAt(lookAt);
       sky.position.copy(camera.position);
