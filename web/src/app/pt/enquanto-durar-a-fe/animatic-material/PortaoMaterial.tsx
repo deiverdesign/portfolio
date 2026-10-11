@@ -98,27 +98,41 @@ const paperFragmentShader = /* glsl */ `
 
 const AMAZON_URL = "https://www.amazon.com.br/Enquanto-durar-f%C3%A9-Deiver-Brito-ebook/dp/B0H6Y8K6ND";
 
-// Trechos do capítulo 1 (a cena do portão), na ordem em que a câmera passa por eles.
-// Nada aqui entrega o que vem depois na história. z = onde o papel fica na ladeira; o
-// último fica a 10 unidades do fim da descida (z 34), para estar nítido quando ela termina.
-// Trechos do capítulo 3 (a cozinha da Helena), na ordem em que saem da lente. Sem spoiler:
-// nada dos remédios nem do cansaço do fim do capítulo. O Deiver vai revisar o texto.
-const KITCHEN_EXCERPTS = [
-  "Contou o dinheiro. Depois contou novamente. Não porque desconfiasse da quantia. Mas porque gostava da sensação de vê-la crescer.",
-  "“Vai na novena amanhã?” “Se Deus quiser.” Apagou. Escreveu outra. “Talvez.”",
-  "A moldura estava virada para a parede. — Ainda não.",
+// Bilhetes: fragmentos do romance, não propaganda. Regra do Deiver:
+// - fala vai entre aspas e o rodapé diz quem fala (ex.: "— JOTA");
+// - narrador vai sem aspas e, quando tem rodapé, é só o capítulo;
+// - "\n" quebra a linha onde o Deiver quebrou; footer vazio = sem rodapé.
+type Excerpt = { text: string; footer?: string };
+
+// Cozinha (capítulo 3), na ordem em que saem da lente. Sem spoiler: o visitante vê
+// dinheiro guardado e geladeira quase vazia, e monta as próprias hipóteses.
+const KITCHEN_EXCERPTS: Excerpt[] = [
+  {
+    text: "No corredor, uma fotografia antiga descansava sobre um aparador.\nA moldura estava virada para a parede.\nComo acontecia havia meses.",
+    footer: "CAPÍTULO 3 — A LATA AZUL",
+  },
+  { text: "Lá dentro não havia biscoitos.\nNotas dobradas. Comprovantes. Alguns envelopes.\nContou o dinheiro. Depois contou novamente." },
+  { text: "Abriu a geladeira.\nHavia pouca coisa dentro.\nUm pedaço de queijo. Leite. Alguns ovos." },
 ];
 
-const BOOK_EXCERPTS = [
-  { z: 5, text: "Enfim a última casa desta rua." },
-  { z: 11, text: "Teria 10 minutos para eu falar sobre fé, esperança e o que Deus tem feito conosco?" },
-  { z: 17.5, text: "Quem dá um copo d'água a alguém em nome de Cristo não perde sua recompensa." },
-  { z: 24, text: "Jota não é o seu nome, né?" },
+// Rua (capítulos 1 e 2), na ordem em que a câmera passa por eles. A sequência primeiro
+// aproxima o Jota da rua, depois mostra o jeito dele e por fim deixa a pergunta.
+// z = onde o papel fica na ladeira (as mesmas posições de antes; o último segue em 24,
+// nítido quando a descida termina). Entre eles passam o livro (z 8) e o dinheiro (z 14,2).
+const BOOK_EXCERPTS: (Excerpt & { z: number })[] = [
+  { z: 5, text: "Ele percebe que teria adorado ser criança naquele lugar.", footer: "CAPÍTULO 1 — A SUBIDA" },
+  {
+    z: 17.5,
+    text: "“Maria, posso pedir só um favor?\nPode me dar um copo d’água?\nFique à vontade para recusar.\nÉ mais comum do que você imagina.”",
+    footer: "— JOTA",
+  },
+  { z: 24, text: "“Jota não é o seu nome, né?”", footer: "— MARIA" },
 ];
 
-// Quebra o trecho em linhas que cabem no papel. Trechos longos usam letra menor.
-// Ex.: "Enfim a última casa desta rua." sai em 71 px; a fala do Jota (82 letras), em 52 px.
-function createTextTexture(text: string) {
+// Quebra o trecho em linhas que cabem no papel (respeitando as quebras do Deiver) e
+// diminui a letra até o bloco caber na altura. Ex.: "Jota não é o seu nome, né?" sai em
+// 71 px; a fala de quatro linhas do Jota, em ~50 px.
+function createTextTexture({ text, footer }: Excerpt) {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 400;
@@ -127,23 +141,35 @@ function createTextTexture(text: string) {
 
   context.fillStyle = "#ebe8c8";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  const fontSize = text.length > 60 ? 52 : 71;
-  context.font = `600 ${fontSize}px Georgia`;
-  const lines: string[] = [];
-  text.split(" ").forEach((word) => {
-    const last = lines[lines.length - 1];
-    if (last && context.measureText(`${last} ${word}`).width <= 852) lines[lines.length - 1] = `${last} ${word}`;
-    else lines.push(word);
-  });
-  // Bloco centrado na altura: as linhas, um respiro e a assinatura embaixo.
+  const footerSpace = footer ? 70 : 0;
+  let fontSize = text.length > 60 ? 56 : 71;
+  let lines: string[] = [];
+  for (; fontSize >= 30; fontSize -= 2) {
+    context.font = `600 ${fontSize}px Georgia`;
+    lines = [];
+    text.split("\n").forEach((paragraph) => {
+      let line = "";
+      paragraph.split(" ").forEach((word) => {
+        if (line && context.measureText(`${line} ${word}`).width > 852) {
+          lines.push(line);
+          line = word;
+        } else line = line ? `${line} ${word}` : word;
+      });
+      lines.push(line);
+    });
+    if (lines.length * fontSize * 1.16 + footerSpace <= 340) break;
+  }
+  // Bloco centrado na altura: as linhas, um respiro e o rodapé pequeno embaixo.
   const lineHeight = fontSize * 1.16;
-  const blockHeight = lines.length * lineHeight + 70;
+  const blockHeight = lines.length * lineHeight + footerSpace;
   const firstLine = (canvas.height - blockHeight) / 2;
   context.fillStyle = PALETTE.ink;
   lines.forEach((line, index) => context.fillText(line, 86, firstLine + (index + 1) * lineHeight - fontSize * .16));
-  context.fillStyle = PALETTE.cobalt;
-  context.font = "500 25px monospace";
-  context.fillText("ENQUANTO DURAR A FÉ", 89, firstLine + blockHeight);
+  if (footer) {
+    context.fillStyle = PALETTE.cobalt;
+    context.font = "500 25px monospace";
+    context.fillText(footer, 89, firstLine + blockHeight);
+  }
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
@@ -1243,8 +1269,8 @@ export function PortaoMaterial() {
     // passa por baixo deles; assim a passagem é consequência da trajetória real.
     // A origem de cada grupo é a borda de baixo do papel, presa a 1,90 m do chão.
     // Eles alternam de lado (direita, esquerda...) para um não tampar o outro.
-    const papers = BOOK_EXCERPTS.map(({ z, text }, index) => {
-      const texture = createTextTexture(text);
+    const papers = BOOK_EXCERPTS.map(({ z, text, footer }, index) => {
+      const texture = createTextTexture({ text, footer });
       const group = new THREE.Group();
       const side = index % 2 ? -1 : 1;
       group.position.set(cameraPathX(z) + side * m(1.6), roadY(z) + PAPER_BOTTOM, z);
@@ -1336,8 +1362,8 @@ export function PortaoMaterial() {
       setStoryPropsOpacity = setPropsOpacity;
       const papersAt = [new THREE.Vector3(0, 1.95, 2.6), new THREE.Vector3(.75, 1.95, 2.6), new THREE.Vector3(.2, 1.95, 2.6)];
       const paperTimes = [[.06, .4], [.38, .7], [.66, 1]];
-      KITCHEN_EXCERPTS.forEach((text, index) => {
-        const texture = createTextTexture(text);
+      KITCHEN_EXCERPTS.forEach((excerpt, index) => {
+        const texture = createTextTexture(excerpt);
         if (texture) storyTextures.push(texture);
         const material = new THREE.ShaderMaterial({
           transparent: true,

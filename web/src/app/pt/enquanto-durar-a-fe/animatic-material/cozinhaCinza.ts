@@ -767,11 +767,12 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
     parent.add(mesh);
     return mesh;
   };
-  // Lata de biscoitos aberta: tampa azul inclinada ao lado e notas dobradas lá dentro.
+  // Lata de biscoitos aberta: tampa azul inclinada ao lado e, lá dentro, o que o bilhete
+  // conta: notas dobradas (cores das cédulas, apagadas pela luz da cozinha), comprovantes
+  // brancos e dois envelopes em pé. Visível, mas discreto: tudo meio escondido pela borda.
   const flyingTin = new THREE.Group();
   const tinBody = fading(violetMaterial(GRAY.metal, null, THREE.FrontSide, ["#8d7fd0", "#5a49a6", "#24184f"]));
   const tinLid = fading(violetMaterial(GRAY.dark, null, THREE.FrontSide, ["#3f62e0", "#2a3aa6", "#141a58"]));
-  const tinNotes = fading(violetMaterial(GRAY.white, null, THREE.FrontSide, ["#e8e2c4", "#b4ad8f", "#5a5570"]));
   const tinMesh = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, .13, 32, 1, true), tinBody);
   tinMesh.material.side = THREE.DoubleSide;
   flyingTin.add(tinMesh);
@@ -779,8 +780,37 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   tinBottom.rotation.x = -Math.PI / 2;
   tinBottom.position.y = -.064;
   flyingTin.add(tinBottom);
-  [[-.03, .02, .3], [.025, -.01, -.4], [0, .035, .9]].forEach(([x, z, turn], i) => {
-    propBox(.13, .02, .065, x, .045 + i * .012, z, tinNotes, flyingTin).rotation.y = turn;
+  // Cédulas dobradas ao meio (um "V" deitado), de pé, saindo um pouco acima da borda.
+  // Ex.: a laranja (R$ 50) na frente, a azul (R$ 100) atrás, a rosada (R$ 10) de lado.
+  const banknotes: [string, string, string][] = [["#e7a65a", "#b0703a", "#4d2f3a"], ["#7fb0e6", "#4a77b8", "#1f2c5c"], ["#e08a9c", "#a8576e", "#4a2340"]];
+  [[-.035, .035, .25], [.03, -.02, -.35], [-.005, -.045, .9]].forEach(([x, z, turn], i) => {
+    const note = new THREE.Group();
+    note.position.set(x, .03, z);
+    note.rotation.y = turn;
+    const material = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, banknotes[i]));
+    [-1, 1].forEach((sideSign) => {
+      const half = new THREE.Mesh(new THREE.PlaneGeometry(.07, .12), material);
+      half.position.set(sideSign * .016, 0, 0);
+      half.rotation.y = sideSign * .45;
+      note.add(half);
+    });
+    flyingTin.add(note);
+  });
+  // Comprovantes: tiras finas de papel branco.
+  const receipt = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#f1ecfa", "#c6bce0", "#6a5c92"]));
+  [[.05, .04, .2], [-.055, -.01, -.5]].forEach(([x, z, turn]) => {
+    const strip = new THREE.Mesh(new THREE.PlaneGeometry(.045, .14), receipt);
+    strip.position.set(x, .02, z);
+    strip.rotation.set(-.15, turn, .12);
+    flyingTin.add(strip);
+  });
+  // Envelopes em pé no fundo da lata.
+  const tinEnvelope = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#d9cdf2", "#a993d6", "#5b4592"]));
+  [[0, -.065, .05], [.035, -.07, -.2]].forEach(([x, z, turn]) => {
+    const envelope = new THREE.Mesh(new THREE.PlaneGeometry(.15, .1), tinEnvelope);
+    envelope.position.set(x, .03, z);
+    envelope.rotation.set(-.1, turn, 0);
+    flyingTin.add(envelope);
   });
   const lid = new THREE.Mesh(new THREE.CylinderGeometry(.106, .106, .03, 32), tinLid);
   lid.position.set(.15, .02, .05);
