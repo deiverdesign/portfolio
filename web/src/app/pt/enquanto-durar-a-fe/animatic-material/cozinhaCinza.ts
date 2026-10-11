@@ -77,6 +77,7 @@ const kitchenFragmentHead = /* glsl */ `
   #ifdef FOUR_TONES
     uniform vec3 uDeep;
     uniform vec3 uOwnBands;
+    uniform vec4 uOwnSplit;
   #endif
   varying vec3 vKitchenWorld;
   varying vec3 vKitchenNormal;
@@ -95,6 +96,12 @@ const kitchenFragmentBody = /* glsl */ `
       vec3 helenaNormal = normalize(vKitchenNormal) * (gl_FrontFacing ? 1.0 : -1.0);
       float facing = dot(helenaNormal, normalize(vec3(-.35, 1.0, .7))) * .5 + .5;
       tone = facing > uOwnBands.z ? uLit : (facing > uOwnBands.y ? uMid : (facing > uOwnBands.x ? uShade : uDeep));
+      // Lado esquerdo dela (o da esquerda da tela) mais escuro, cortado por uma linha
+      // inclinada como na pintura do Deiver: passa pela cabeça um pouco à esquerda do meio e
+      // desce indo para a direita. uOwnSplit = (x da linha, na altura y, inclinação, escurecimento).
+      vec3 helenaPoint = (vKitchenWorld - uOrigin) / uMeter;
+      float splitX = uOwnSplit.x + (uOwnSplit.y - helenaPoint.y) * uOwnSplit.z;
+      tone *= mix(uOwnSplit.w, 1.0, smoothstep(splitX - .004, splitX + .004, helenaPoint.x));
     #endif
     // O rejunte do azulejo e do piso é a parte escura da textura.
     tone *= mix(.3, 1.0, smoothstep(.25, .9, texel));
@@ -215,7 +222,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   // map = textura de grade (branca com rejunte escuro); o tom continua vindo do cinza.
   // custom = três cores próprias (luz, meio, sombra), para o que não é violeta (a tampa azul).
   // custom com quatro cores = luz, meio, sombra e fundo, com faixas próprias em fourBands.
-  const violetMaterial = (hex: string, map: THREE.Texture | null = null, side: THREE.Side = THREE.FrontSide, custom?: [string, string, string] | [string, string, string, string], fourBands?: [number, number, number]) => {
+  const violetMaterial = (hex: string, map: THREE.Texture | null = null, side: THREE.Side = THREE.FrontSide, custom?: [string, string, string] | [string, string, string, string], fourBands?: [number, number, number], split?: [number, number, number, number]) => {
     const value = grayValue(hex);
     const material = new THREE.MeshLambertMaterial({ color: "#ffffff", map, side });
     const tones = {
@@ -224,6 +231,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
       uShade: { value: custom ? new THREE.Color(custom[2]) : violet(value * .34) },
       uDeep: { value: new THREE.Color(custom?.[3] ?? "#000000") },
       uOwnBands: { value: new THREE.Vector3(...(fourBands ?? [0, 0, 0])) },
+      uOwnSplit: { value: new THREE.Vector4(...(split ?? [-99, 0, 0, 1])) },
     };
     if (custom?.length === 4) material.defines = { FOUR_TONES: "" };
     material.onBeforeCompile = (shader) => {
@@ -506,16 +514,18 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   // do modelo). Medidas tiradas do arquivo: pés em y -0,95, embaixo das coxas em y -0,35,
   // costas do quadril em z -0,5. Escala 0,77 = assento a 46 cm (0,6 do modelo × 0,77);
   // a cabeça fica a ~1,46 m e as mãos a ~81 cm, logo acima da mesa.
-  // Girada meia volta para olhar a janela, com o quadril 19 cm atrás do meio do assento.
+  // Girada meia volta para olhar a janela. As costas (z -0,51 do modelo) ficam 13 cm atrás do
+  // meio do assento, 4 cm antes do encosto (que fica a 17 cm), para não atravessar a cadeira.
   const setHelena = (geometry: THREE.BufferGeometry, outline: THREE.Material) => {
     const scale = .77;
-    // Cores da referência do Deiver (figura em azul claro, roxo-azulado, rosa e preto):
+    // Cores da referência do Deiver (figura em azul claro, roxo-azulado, rosa e preto), 18%
+    // mais escuras e com a mesma saturação, a pedido dele:
     // luz azul claro, meio roxo-azulado, sombra rosa-magenta, fundo das dobras quase preto.
     // Faixas pela direção da superfície (não pela luz da cena, que deixava as costas só escuras).
-    const body = new THREE.Mesh(geometry, violetMaterial(GRAY.dress, null, THREE.FrontSide, ["#2c9ee8", "#4a44d4", "#a3147c", "#1a0830"], [.36, .52, .86]));
+    const body = new THREE.Mesh(geometry, violetMaterial(GRAY.dress, null, THREE.FrontSide, ["#2481be", "#3d38ae", "#861066", "#150627"], [.36, .52, .86], [hx - .05, 1.35, .3, .55]));
     body.scale.setScalar(scale);
     body.rotation.y = Math.PI;
-    body.position.set(hx, .95 * scale, helenaChairZ + .19 - .5 * scale);
+    body.position.set(hx, .95 * scale, helenaChairZ + .13 - .51 * scale);
     body.castShadow = true;
     body.receiveShadow = true;
     // Contorno escuro por fora (o mesmo truque do Jota): a malha é muito detalhada para a
@@ -798,10 +808,15 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   // --- Objetos que flutuam (a lata aberta, um envelope e o celular) ---------------------
   // Começam escondidos; quem os move é a câmera da cena (PortaoMaterial), que os traz da
   // lente para longe, como o dinheiro e o livro preto na rua. Cada um é um grupo em metros.
-  const fadeMaterials: THREE.Material[] = [];
-  const fading = <T extends THREE.Material>(material: T) => {
+  // Cada objeto tem a própria lista de materiais, para cada um sumir e aparecer sozinho
+  // (antes era uma transparência só para os três, e o envelope recém-nascido, colado na lente,
+  // aparecia inteiro porque a lata já estava inteira).
+  const fadeMaterials = new Map<THREE.Object3D, THREE.Material[]>();
+  const fading = <T extends THREE.Material>(material: T, owner: THREE.Object3D) => {
     material.transparent = true;
-    fadeMaterials.push(material);
+    const list = fadeMaterials.get(owner) ?? [];
+    list.push(material);
+    fadeMaterials.set(owner, list);
     return material;
   };
   const propBox = (w: number, h: number, d: number, x: number, y: number, z: number, material: THREE.Material, parent: THREE.Object3D) => {
@@ -814,8 +829,8 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   // conta: notas dobradas (cores das cédulas, apagadas pela luz da cozinha), comprovantes
   // brancos e dois envelopes em pé. Visível, mas discreto: tudo meio escondido pela borda.
   const flyingTin = new THREE.Group();
-  const tinBody = fading(violetMaterial(GRAY.metal, null, THREE.FrontSide, ["#8d7fd0", "#5a49a6", "#24184f"]));
-  const tinLid = fading(violetMaterial(GRAY.dark, null, THREE.FrontSide, ["#3f62e0", "#2a3aa6", "#141a58"]));
+  const tinBody = fading(violetMaterial(GRAY.metal, null, THREE.FrontSide, ["#8d7fd0", "#5a49a6", "#24184f"]), flyingTin);
+  const tinLid = fading(violetMaterial(GRAY.dark, null, THREE.FrontSide, ["#3f62e0", "#2a3aa6", "#141a58"]), flyingTin);
   const tinMesh = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, .13, 32, 1, true), tinBody);
   tinMesh.material.side = THREE.DoubleSide;
   flyingTin.add(tinMesh);
@@ -830,7 +845,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
     const note = new THREE.Group();
     note.position.set(x, .03, z);
     note.rotation.y = turn;
-    const material = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, banknotes[i]));
+    const material = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, banknotes[i]), flyingTin);
     [-1, 1].forEach((sideSign) => {
       const half = new THREE.Mesh(new THREE.PlaneGeometry(.07, .12), material);
       half.position.set(sideSign * .016, 0, 0);
@@ -840,7 +855,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
     flyingTin.add(note);
   });
   // Comprovantes: tiras finas de papel branco.
-  const receipt = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#f1ecfa", "#c6bce0", "#6a5c92"]));
+  const receipt = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#f1ecfa", "#c6bce0", "#6a5c92"]), flyingTin);
   [[.05, .04, .2], [-.055, -.01, -.5]].forEach(([x, z, turn]) => {
     const strip = new THREE.Mesh(new THREE.PlaneGeometry(.045, .14), receipt);
     strip.position.set(x, .02, z);
@@ -848,7 +863,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
     flyingTin.add(strip);
   });
   // Envelopes em pé no fundo da lata.
-  const tinEnvelope = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#d9cdf2", "#a993d6", "#5b4592"]));
+  const tinEnvelope = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#d9cdf2", "#a993d6", "#5b4592"]), flyingTin);
   [[0, -.065, .05], [.035, -.07, -.2]].forEach(([x, z, turn]) => {
     const envelope = new THREE.Mesh(new THREE.PlaneGeometry(.15, .1), tinEnvelope);
     envelope.position.set(x, .03, z);
@@ -861,16 +876,16 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   flyingTin.add(lid);
   // Envelope pardo, fechado, com o "V" da aba desenhado em tinta.
   const flyingEnvelope = new THREE.Group();
-  const paper = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#d9cdf2", "#a993d6", "#5b4592"]));
+  const paper = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#d9cdf2", "#a993d6", "#5b4592"]), flyingEnvelope);
   propBox(.23, .115, .004, 0, 0, 0, paper, flyingEnvelope);
   const flap = new LineSegments2(new LineSegmentsGeometry().setPositions([-.115, .0575, .003, 0, -.01, .003, 0, -.01, .003, .115, .0575, .003]), lineMaterial);
   flyingEnvelope.add(flap);
   // Celular com a mensagem que ela não enviou, aceso na tela.
   const flyingPhone = new THREE.Group();
-  const phoneBody = fading(violetMaterial(GRAY.dark));
+  const phoneBody = fading(violetMaterial(GRAY.dark), flyingPhone);
   const phoneShell = new THREE.Mesh(new RoundedBoxGeometry(.075, .155, .009, 3, .008), phoneBody);
   flyingPhone.add(phoneShell);
-  const screenMaterial = fading(new THREE.MeshBasicMaterial({ map: phoneScreenTexture("Foi um dia bom?") }));
+  const screenMaterial = fading(new THREE.MeshBasicMaterial({ map: phoneScreenTexture("Foi um dia bom?") }), flyingPhone);
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(.066, .143), screenMaterial);
   screen.position.z = .0047;
   flyingPhone.add(screen);
@@ -878,8 +893,12 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
     prop.visible = false;
     kitchen.add(prop);
   });
-  const setPropsOpacity = (opacity: number) => {
-    fadeMaterials.forEach((material) => { material.opacity = opacity; });
+  const setPropsOpacity = (prop: THREE.Object3D, opacity: number) => {
+    fadeMaterials.get(prop)?.forEach((material) => {
+      material.opacity = opacity;
+      // Meio transparente não escreve profundidade, para não recortar o que está atrás.
+      material.depthWrite = opacity > .99;
+    });
   };
 
   // Linhas vermelhas nas quinas viradas para a janela (calculadas com a cozinha já montada).

@@ -1357,7 +1357,7 @@ export function PortaoMaterial() {
     };
     const storyItems: StoryItem[] = [];
     const storyTextures: THREE.Texture[] = [];
-    let setStoryPropsOpacity: ((opacity: number) => void) | null = null;
+    let setStoryPropsOpacity: ((prop: THREE.Object3D, opacity: number) => void) | null = null;
 
     const buildKitchen = () => {
       const { group, space, update, props, setPropsOpacity, setHelena } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
@@ -1410,7 +1410,6 @@ export function PortaoMaterial() {
       const portrait = camera.aspect < 1;
       storyCamera.copy(camera.position).sub(kitchenGroup.position).divideScalar(METER);
       const paperWidth = portrait ? .62 : 1.1;
-      let propsOpacity = 0;
       storyItems.forEach(({ object, end, from, to, paper, spin, tilt, portraitEnd }) => {
         object.visible = story > from;
         if (!object.visible) return;
@@ -1419,7 +1418,9 @@ export function PortaoMaterial() {
         storyEnd.copy(end);
         if (portrait && portraitEnd) storyEnd.copy(portraitEnd);
         else if (portrait) storyEnd.x = end.x * .4 - .45;
-        storyStart.copy(storyCamera).lerp(storyEnd, .15);
+        // Bilhetes nascem a 15% do caminho; os objetos a 35%, para nunca passarem gigantes
+        // e meio transparentes na frente da lente (era o "fantasma" da lata sobre a janela).
+        storyStart.copy(storyCamera).lerp(storyEnd, paper ? .15 : .35);
         object.position.lerpVectors(storyStart, storyEnd, travel);
         const distance = object.position.distanceTo(storyCamera);
         const appear = THREE.MathUtils.smoothstep(distance, .6, 1.3);
@@ -1436,10 +1437,10 @@ export function PortaoMaterial() {
           // De frente para a câmera, balançando de leve (a lata inclinada para mostrar o que tem dentro).
           const sway = Math.sin(story * 6 + (spin ?? 0) * 4) * .35 * (spin ?? 0);
           object.rotation.set(tilt ?? .25, sway, .08);
-          propsOpacity = Math.max(propsOpacity, appear);
+          // Aparece no primeiro trecho do caminho, já a mais de 1 m da lente.
+          setStoryPropsOpacity?.(object, THREE.MathUtils.smoothstep(travel, 0, .3));
         }
       });
-      setStoryPropsOpacity?.(propsOpacity);
     };
 
     // ---------------------------------------------------------------------------------
