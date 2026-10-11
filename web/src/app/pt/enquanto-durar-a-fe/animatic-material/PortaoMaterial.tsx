@@ -1480,10 +1480,10 @@ export function PortaoMaterial() {
         {[styles.glowBottomLeft, styles.glowRight, styles.glowRightHigh, styles.glowBottom, styles.glowPurple].map((glow) => <i key={glow} className={`${styles.glow} ${glow}`} aria-hidden="true" />)}
         <div className={styles.introMask} aria-hidden="true" />
         <div className={styles.copy}>
-          <h1 id="book-title">Se você espera um livro religioso, veio ao lugar errado.</h1>
+          <h1 id="book-title">Há quem tenha fé.<br />Há quem se aproveite dela.<br />E há Jota.</h1>
         </div>
         <div className={styles.scrollHint}>
-          <p>Jota bate de porta em porta vendendo Bíblias. A fé alheia, ele conhece de cor.</p>
+          <p>Jota vende Bíblias de porta em porta.<br />O resto é mais difícil de explicar.</p>
           <span>Role para entrar <i aria-hidden="true">↓</i></span>
         </div>
         <p className={styles.reducedNote}>Quadro estático por preferência de movimento reduzido.</p>
