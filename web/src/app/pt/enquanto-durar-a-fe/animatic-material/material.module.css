@@ -65,7 +65,7 @@
 .ending { display: grid; min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }
 
 @media (max-width: 680px) {
-  .animatic { min-height: 860vh; }.header { top: 10px; right: 12px; left: 12px; height: 48px; padding: 0 8px 0 14px; }.logo { width: 120px; }.headerBuy { min-height: 30px; padding: 3px 10px; font-size: 13px; }.copy { top: 92px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: 36px; }.scrollHint { bottom: 19px; left: 18px; width: 245px; }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }.progress { right: 18px; bottom: 23px; width: 62px; }
+  .animatic { min-height: 860vh; }.header { top: 10px; right: 12px; left: 12px; height: 48px; padding: 0 8px 0 14px; }.logo { width: 120px; }.glowRight, .glowRightHigh { opacity: .2; }.headerBuy { min-height: 30px; padding: 3px 10px; font-size: 13px; }.copy { top: 92px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: 36px; }.scrollHint { bottom: 19px; left: 18px; width: 245px; }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }.progress { right: 18px; bottom: 23px; width: 62px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
