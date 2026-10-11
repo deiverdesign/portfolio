@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import styles from "./material.module.css";
 import { KITCHEN, buildKitchenGray } from "./cozinhaCinza";
 import { METER, PALETTE, createCelMaterial, createOutlineMaterial, createPaintedMaterial, disposeObject, m, skyVertexShader } from "./celShading";
@@ -53,6 +54,8 @@ const cameraPathX = (z: number) => {
 const groundY = (z: number) => roadY(Math.max(z, TOP_Z));
 // Palmeira feita pelo Deiver no Meshy, com a textura pintada do jeito que veio.
 const PALM_URL = "/enquanto-durar-a-fe/palmeira-web.glb";
+// Helena do Meshy, simplificada para 10% dos triângulos e comprimida (meshopt): 330 KB.
+const HELENA_URL = "/enquanto-durar-a-fe/helena-web.glb?v=1";
 const MONEY_URL = "/enquanto-durar-a-fe/notas-real-web.glb?v=1";
 // Trepadeira do Sketchfab ("Purple Creeper Plant"), só a forma: sem texturas, 1 m de altura,
 // origem no alto (é de onde ela fica pendurada). A cor vem toda do site.
@@ -959,6 +962,8 @@ export function PortaoMaterial() {
     // Na beira do patamar, onde a ladeira começa: bem perto da câmera no início (~1 m).
     const JOTA_Z = TOP_Z - m(.15);
     const outlineMaterial = createOutlineMaterial({ color: JOTA_INK, worldWidth: .006 * METER });
+    // Contorno da Helena no preto-violeta das linhas da cozinha.
+    const helenaOutlineMaterial = createOutlineMaterial({ color: "#07031a", worldWidth: .005 * METER });
     const jota = loadJotaFigure({ outline: outlineMaterial, anisotropy: renderer.capabilities.getMaxAnisotropy() });
     jota.group.scale.setScalar(METER);
     jota.group.position.set(0, groundY(JOTA_Z), JOTA_Z);
@@ -1355,7 +1360,14 @@ export function PortaoMaterial() {
     let setStoryPropsOpacity: ((opacity: number) => void) | null = null;
 
     const buildKitchen = () => {
-      const { group, space, update, props, setPropsOpacity } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
+      const { group, space, update, props, setPropsOpacity, setHelena } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
+      const helenaLoader = new GLTFLoader();
+      helenaLoader.setMeshoptDecoder(MeshoptDecoder);
+      helenaLoader.load(HELENA_URL, (gltf) => {
+        if (disposed) return;
+        const mesh = gltf.scene.getObjectByProperty("type", "Mesh") as THREE.Mesh | undefined;
+        if (mesh) setHelena(mesh.geometry, helenaOutlineMaterial);
+      });
       group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
       kitchenGroup = group;
       updateKitchen = update;
@@ -1572,6 +1584,9 @@ export function PortaoMaterial() {
       const ratio = renderer.getPixelRatio();
       outlineMaterial.uniforms.uMinPixels.value = 1.5 * ratio;
       outlineMaterial.uniforms.uMaxPixels.value = 4 * ratio;
+      renderer.getDrawingBufferSize(helenaOutlineMaterial.uniforms.uResolution.value);
+      helenaOutlineMaterial.uniforms.uMinPixels.value = 1.5 * ratio;
+      helenaOutlineMaterial.uniforms.uMaxPixels.value = 4 * ratio;
       renderScene();
     };
 
@@ -1692,6 +1707,7 @@ export function PortaoMaterial() {
       disposed = true;
       jota.dispose();
       outlineMaterial.dispose();
+      helenaOutlineMaterial.dispose();
       disposeObject(world);
       sky.geometry.dispose();
       sky.material.dispose();

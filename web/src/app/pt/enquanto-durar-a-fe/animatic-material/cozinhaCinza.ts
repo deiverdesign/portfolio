@@ -445,7 +445,8 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   chair(tableX, tableZ - tableD / 2 - .3, Math.PI);
 
   // --- Helena sentada, de costas para a câmera, antebraços na mesa ----------------------
-  // Boneco simples de referência (o modelo de verdade vem do desenho 2D + Meshy).
+  // Boneco simples de referência, só até o modelo de verdade (Meshy) terminar de carregar.
+  const placeholderFrom = kitchen.children.length;
   const skinMaterial = gray(GRAY.skin);
   const dress = gray(GRAY.dress);
   const hair = gray(GRAY.hair);
@@ -481,6 +482,29 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   const hairCap = sphere(.11, hx, 1.35, hz - .05, hair);
   hairCap.scale.set(.93, 1.12, 1);
   sphere(.06, hx, 1.33, hz + .06, hair);
+  const helenaPlaceholder = new THREE.Group();
+  kitchen.children.slice(placeholderFrom).forEach((child) => helenaPlaceholder.add(child));
+  kitchen.add(helenaPlaceholder);
+
+  // Helena de verdade (modelo do Meshy, sentada sem cadeira, de frente para +z, em unidades
+  // do modelo). Medidas tiradas do arquivo: pés em y -0,95, embaixo das coxas em y -0,35,
+  // costas do quadril em z -0,5. Escala 0,77 = assento a 46 cm (0,6 do modelo × 0,77);
+  // a cabeça fica a ~1,46 m e as mãos a ~81 cm, logo acima da mesa.
+  // Girada meia volta para olhar a janela, com o quadril 19 cm atrás do meio do assento.
+  const setHelena = (geometry: THREE.BufferGeometry, outline: THREE.Material) => {
+    const scale = .77;
+    const body = new THREE.Mesh(geometry, gray(GRAY.dress));
+    body.scale.setScalar(scale);
+    body.rotation.y = Math.PI;
+    body.position.set(hx, .95 * scale, helenaChairZ + .19 - .5 * scale);
+    body.castShadow = true;
+    body.receiveShadow = true;
+    // Contorno escuro por fora (o mesmo truque do Jota): a malha é muito detalhada para a
+    // linha das quinas, que viraria rabisco.
+    body.add(new THREE.Mesh(geometry, outline));
+    kitchen.add(body);
+    kitchen.remove(helenaPlaceholder);
+  };
 
   // --- Lado direito: geladeira com ventilador, bancada com pia, fogão, armários --------
   const white = gray(GRAY.white);
@@ -870,7 +894,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   };
 
   // space = o grupo em metros da cozinha, onde os bilhetes também são presos.
-  return { group: root, space: kitchen, update, props: { tin: flyingTin, envelope: flyingEnvelope, phone: flyingPhone }, setPropsOpacity };
+  return { group: root, space: kitchen, update, props: { tin: flyingTin, envelope: flyingEnvelope, phone: flyingPhone }, setPropsOpacity, setHelena };
 }
 
 // Tela do celular: fundo escuro, a conversa com a última mensagem dela ainda sem enviar.
