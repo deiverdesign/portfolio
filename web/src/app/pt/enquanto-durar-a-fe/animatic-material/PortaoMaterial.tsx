@@ -930,11 +930,11 @@ export function PortaoMaterial() {
     // Objetos no ar: entre 1,50 e 1,90 m, a ~25 cm para o lado da lente. Ficam fora do
     // caminho do cameraman, mas tão perto que passam "quase acertando a tela".
     // side: -1 = esquerda, 1 = direita (olhando para o Jota).
-    const flyingObjects: { object: THREE.Object3D; spin: number }[] = [];
+    const flyingObjects: { object: THREE.Object3D; spin: number; pathX: number; side: -1 | 1; offsetMeters: number }[] = [];
     const placeFlying = (object: THREE.Object3D, z: number, side: -1 | 1, heightMeters: number, spin: number, offsetMeters = .25) => {
       object.position.set(cameraPathX(z) + side * m(offsetMeters), roadY(z) + m(heightMeters), z);
       world.add(object);
-      flyingObjects.push({ object, spin });
+      flyingObjects.push({ object, spin, pathX: cameraPathX(z), side, offsetMeters });
     };
 
     // Um livro grosso de capa preta, sem nada escrito: 16 × 24 cm, 7 cm de espessura.
@@ -1234,7 +1234,8 @@ export function PortaoMaterial() {
     const papers = BOOK_EXCERPTS.map(({ z, text }, index) => {
       const texture = createTextTexture(text);
       const group = new THREE.Group();
-      group.position.set(cameraPathX(z) + (index % 2 ? -1 : 1) * m(1.6), roadY(z) + PAPER_BOTTOM, z);
+      const side = index % 2 ? -1 : 1;
+      group.position.set(cameraPathX(z) + side * m(1.6), roadY(z) + PAPER_BOTTOM, z);
       const material = new THREE.ShaderMaterial({
         transparent: true,
         depthWrite: false,
@@ -1252,7 +1253,7 @@ export function PortaoMaterial() {
       mesh.userData.noShadow = true;
       group.add(mesh);
       world.add(group);
-      return { group, mesh, material, texture };
+      return { group, mesh, material, texture, pathX: cameraPathX(z), side };
     });
 
     world.traverse((child) => {
@@ -1288,7 +1289,16 @@ export function PortaoMaterial() {
       renderer.setSize(width, height, false);
       camera.aspect = width / Math.max(height, 1);
       camera.updateProjectionMatrix();
-      papers.forEach(({ group }) => group.scale.setScalar(width < 600 ? .62 : 1));
+      papers.forEach(({ group }) => group.scale.setScalar(width < 600 ? .45 : 1));
+      // Na tela em pé (celular) o quadro é estreito: o que fica a 1,6 m do lado sai da tela.
+      // Então a distância lateral encolhe junto com a largura. Ex.: computador (1,6 de
+      // proporção) = 100%; celular (~0,46) = 28%, e o bilhete fica a ~45 cm do caminho.
+      const lateral = THREE.MathUtils.clamp(camera.aspect / 1.6, .28, 1);
+      papers.forEach(({ group, pathX, side }) => { group.position.x = pathX + side * m(1.6) * lateral; });
+      // O dinheiro nunca chega mais perto que 35 cm, para não raspar na lente.
+      flyingObjects.forEach(({ object, pathX, side, offsetMeters }) => {
+        object.position.x = pathX + side * m(Math.max(Math.min(offsetMeters, .35), offsetMeters * lateral));
+      });
       // O contorno do Jota tem espessura mínima e máxima em pixels reais.
       renderer.getDrawingBufferSize(outlineMaterial.uniforms.uResolution.value);
       sceneryLineMaterial.resolution.set(width, height);
