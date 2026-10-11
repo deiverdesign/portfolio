@@ -22,8 +22,8 @@
   border-radius: 3px;
   background: linear-gradient(-47.87deg, rgb(191,193,228) 20.42%, rgb(231,232,246) 98.99%);
 }
-/* A linha roxa embaixo do header avança com o scroll. Ex.: na metade da rua, metade da linha. */
-.headerProgress { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2px; background: #5e68ef; transform: scaleX(var(--scroll-progress, 0)); transform-origin: left; }
+/* Linha roxa fixa embaixo do header, de ponta a ponta (menos 11 px de cada lado), como no Figma. */
+.headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2px; background: #5e68ef; }
 .logo { display: block; width: 186.883px; height: auto; }
 .headerBuy { display: inline-flex; min-width: 16px; min-height: 30px; height: 34px; box-sizing: border-box; align-items: center; justify-content: center; gap: 8px; padding: 4px 12px; border-radius: 26px; background: #0752df; color: #fff; font-family: var(--font-dm-sans), Arial, sans-serif; font-size: 14px; font-weight: 500; line-height: 20.8px; text-decoration: none; white-space: nowrap; transition: background .2s; }
 .headerBuy img { display: block; flex-shrink: 0; }

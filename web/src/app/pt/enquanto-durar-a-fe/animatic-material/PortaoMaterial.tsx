@@ -1401,7 +1401,7 @@ export function PortaoMaterial() {
           <img src="/enquanto-durar-a-fe/icone-livro.svg" width={14} height={14} alt="" />
           Ler na Amazon
         </a>
-        <i className={styles.headerProgress} aria-hidden="true" />
+        <i className={styles.headerLine} aria-hidden="true" />
       </header>
 
       <section className={styles.stage} aria-labelledby="book-title">
