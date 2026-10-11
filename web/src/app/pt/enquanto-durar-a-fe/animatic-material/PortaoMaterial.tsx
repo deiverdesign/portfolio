@@ -1,0 +1,1415 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import styles from "./material.module.css";
+import { METER, PALETTE, createCelMaterial, createOutlineMaterial, createPaintedMaterial, disposeObject, m, skyVertexShader } from "./celShading";
+import { JOTA_INK, JOTA_RIM } from "../personagem-jota/jotaBands";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
+import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
+import { loadJotaFigure } from "../personagem-jota/jotaFigura";
+
+// POC 3 — material. Mesma geometria e mesma trajetória do animatic cinza
+// (../animatic/PortaoAnimatic.tsx); aqui muda a "tinta" de cada objeto e a câmera
+// sobe para a altura de olho de uma pessoa em pé.
+
+// Ladeira de 40%: sobe 40 cm a cada metro. Medida pela vista lateral do Deiver: 3 imóveis
+// de ~8 m de frente, cada um ~3,5 m (um andar) acima do de baixo. TOP_Z é o alto da
+// ladeira, onde a rua vira um patamar plano em frente ao muro da última casa.
+const ROAD_SLOPE = 0.4;
+const TOP_Z = -1.4;
+const TOP_Y = 5.5;
+const roadY = (z: number) => TOP_Y - ROAD_SLOPE * (z - TOP_Z);
+const LOT_LENGTH = 8 * METER;
+const LOT_COUNT = 3;
+// O patamar tem 3 m de fundo; o muro com o portão fica no fim dele, logo atrás do Jota.
+const LANDING_DEPTH = 3 * METER;
+const GATE_Z = TOP_Z - LANDING_DEPTH;
+// Na planta, o muro e a casa da frente ficam um pouco girados (a ponta da direita mais longe).
+const GATE_WALL_TURN = .15;
+
+// O cameraman tem 1,75 m; a lente fica na altura dos olhos dele (~1,64 m).
+const EYE_HEIGHT = 1.64 * METER;
+// Os trechos do livro flutuam com a borda de baixo a 1,90 m: passam logo acima da
+// cabeça do cameraman e nunca bloqueiam o caminho dele.
+const PAPER_BOTTOM = 1.9 * METER;
+
+// Trajetória da câmera: desce a ladeira de costas de z .4 até z 34, com um leve
+// desvio lateral no meio. cameraPathX diz onde a lente está em cada z, para os objetos
+// no ar ficarem sempre ao lado dela, nunca na frente.
+const CAMERA_START_Z = .4;
+const CAMERA_END_Z = 34;
+const CAMERA_START_X = .35;
+const CAMERA_END_X = -.5;
+const CAMERA_SWAY = .78;
+const cameraPathX = (z: number) => {
+  const t = THREE.MathUtils.clamp((z - CAMERA_START_Z) / (CAMERA_END_Z - CAMERA_START_Z), 0, 1);
+  return THREE.MathUtils.lerp(CAMERA_START_X, CAMERA_END_X, t) + Math.sin(t * Math.PI) * CAMERA_SWAY;
+};
+// Dali para trás do alto, o chão fica plano.
+const groundY = (z: number) => roadY(Math.max(z, TOP_Z));
+// Palmeira feita pelo Deiver no Meshy, com a textura pintada do jeito que veio.
+const PALM_URL = "/enquanto-durar-a-fe/palmeira-web.glb";
+const MONEY_URL = "/enquanto-durar-a-fe/notas-real-web.glb?v=1";
+// Trepadeira do Sketchfab ("Purple Creeper Plant"), só a forma: sem texturas, 1 m de altura,
+// origem no alto (é de onde ela fica pendurada). A cor vem toda do site.
+const VINE_URL = "/enquanto-durar-a-fe/trepadeira-web.glb?v=2";
+// Planta de vaso do Sketchfab ("plant.glb" do Deiver), só a planta (sem o vaso), simplificada:
+// 1 m de altura, origem no pé do caule. Pintada com as mesmas cores da trepadeira.
+const POTTED_PLANT_URL = "/enquanto-durar-a-fe/planta-vaso-web.glb?v=1";
+const PALM_HEIGHT = 6.3;
+// Paralelepípedo desenhado pelo Deiver no Figma: a largura da imagem é a largura da rua
+// e ela se repete só no comprimento. 1100 × 2120 px em 5 m dá ~9,6 m por repetição.
+// O ?v= muda a cada textura nova, senão o navegador mostra a antiga.
+const COBBLE_URL = "/enquanto-durar-a-fe/texturas/paralelepipedo.jpg?v=2";
+// Fundo da direita (PNGs do Deiver, convertidos para webp de 2048 px).
+const BACKDROP_CITY_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-cidade.webp?v=1";
+const BACKDROP_TREES_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-frente.webp?v=1";
+const COBBLE_ASPECT = 2120 / 1100;
+const PAPER_WIDTH = 5.2;
+// Bilhete cortado rente ao texto (o Deiver marcou o corte): 1024 × 400 px de textura.
+const PAPER_HEIGHT = PAPER_WIDTH * 400 / 1024;
+
+// O papel perto da lente entra grande, quase transparente e desfocado; conforme a
+// câmera se afasta ele ganha foco e opacidade. O desfoque usa mipmaps: quanto maior
+// uBlur, mais baixa a resolução lida da textura.
+const paperVertexShader = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const paperFragmentShader = /* glsl */ `
+  uniform sampler2D uMap;
+  uniform float uBlur;
+  uniform float uOpacity;
+  varying vec2 vUv;
+  void main() {
+    vec4 color = texture2D(uMap, vUv, uBlur);
+    gl_FragColor = vec4(color.rgb, uOpacity);
+    #include <colorspace_fragment>
+  }
+`;
+
+const AMAZON_URL = "https://www.amazon.com.br/Enquanto-durar-f%C3%A9-Deiver-Brito-ebook/dp/B0H6Y8K6ND";
+
+// Trechos do capítulo 1 (a cena do portão), na ordem em que a câmera passa por eles.
+// Nada aqui entrega o que vem depois na história. z = onde o papel fica na ladeira; o
+// último fica a 10 unidades do fim da descida (z 34), para estar nítido quando ela termina.
+const BOOK_EXCERPTS = [
+  { z: 5, text: "Enfim a última casa desta rua." },
+  { z: 11, text: "Teria 10 minutos para eu falar sobre fé, esperança e o que Deus tem feito conosco?" },
+  { z: 17.5, text: "Quem dá um copo d'água a alguém em nome de Cristo não perde sua recompensa." },
+  { z: 24, text: "Jota não é o seu nome, né?" },
+];
+
+// Quebra o trecho em linhas que cabem no papel. Trechos longos usam letra menor.
+// Ex.: "Enfim a última casa desta rua." sai em 71 px; a fala do Jota (82 letras), em 52 px.
+function createTextTexture(text: string) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 400;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+
+  context.fillStyle = "#ebe8c8";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  const fontSize = text.length > 60 ? 52 : 71;
+  context.font = `600 ${fontSize}px Georgia`;
+  const lines: string[] = [];
+  text.split(" ").forEach((word) => {
+    const last = lines[lines.length - 1];
+    if (last && context.measureText(`${last} ${word}`).width <= 852) lines[lines.length - 1] = `${last} ${word}`;
+    else lines.push(word);
+  });
+  // Bloco centrado na altura: as linhas, um respiro e a assinatura embaixo.
+  const lineHeight = fontSize * 1.16;
+  const blockHeight = lines.length * lineHeight + 70;
+  const firstLine = (canvas.height - blockHeight) / 2;
+  context.fillStyle = PALETTE.ink;
+  lines.forEach((line, index) => context.fillText(line, 86, firstLine + (index + 1) * lineHeight - fontSize * .16));
+  context.fillStyle = PALETTE.cobalt;
+  context.font = "500 25px monospace";
+  context.fillText("ENQUANTO DURAR A FÉ", 89, firstLine + blockHeight);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+// Céu: o degradê do Deiver no Figma, com as mesmas cores e posições (0% = topo, 100% = base).
+// O Deiver pediu menos azul-noite: ele vai só até 22%, e o verde e o amarelo ganham o resto.
+// O degradê fica preso à tela, como o fundo chapado de uma ilustração: não importa para
+// onde a câmera olha, o amarelo fica sempre embaixo. SKY_SPAN é a fração da altura da tela
+// (de cima para baixo) que o degradê ocupa; abaixo disso é tudo amarelo.
+// Direção da luz só do cenário (o Jota segue com a luz dele).
+// Rua: sol de trás da câmera (do pé da ladeira), como no teste do Gemini que o Deiver prefere.
+const SCENE_LIGHT = new THREE.Vector3(0.42, 0.42, 0.78).normalize();
+// Casa do alto: sol do rascunho do Deiver, baixo e bem longe à direita, depois das imagens da cidade.
+const HOUSE_SUN = new THREE.Vector3(0.76, 0.3, 0.56).normalize();
+// Linha de luz (só na casa do alto): a borda de baixo da faixa de sol do rascunho. O morro e a cidade, lá na
+// direita, escondem o sol de tudo que fica abaixo dela; a linha sobe para a esquerda
+// (SUN_LINE_RISE metros a cada metro). Só acima dela a face virada para o sol acende.
+// Ex.: na casa do alto a linha passa ~4,5 m acima do patamar: telhado e parte de cima da parede
+// pegam sol, a parte de baixo, a rua e os muros ficam na sombra.
+const SUN_LINE_RISE = 0.3;
+const SUN_LINE_HEIGHT = m(6.5);
+const SUN_LINE = new THREE.Vector4(SUN_LINE_RISE, 1, 0, SUN_LINE_HEIGHT);
+// Sem linha: tudo fica "acima" dela (o resto do cenário).
+const NO_SUN_LINE = new THREE.Vector4(0, 1, 0, -1e6);
+// Tinta "meio suja", como nas texturas do Deiver: manchas largas, arabescos claros bem
+// fracos e pintinhas soltas. Tudo preso ao mundo (não escorrega quando a câmera anda) e
+// projetado pela face do objeto (parede usa xy/zy, chão usa xz). Ex.: num muro de 2 m
+// aparecem ~3 manchas, alguns riscos curvos e umas 60 pintinhas rosadas.
+const DIRT_GLSL = /* glsl */ `
+    vec3 dirtNormal = abs(normal);
+    vec2 dirtUv = dirtNormal.y > 0.6 ? vWorldPosition.xz : (dirtNormal.x > dirtNormal.z ? vWorldPosition.zy : vWorldPosition.xy);
+    float dirtStain = valueNoise(dirtUv * 0.7) * 0.65 + valueNoise(dirtUv * 2.1 + 7.3) * 0.35;
+    color *= 0.86 + dirtStain * 0.28;
+    float dirtSwirl = (valueNoise(dirtUv * 2.2 + 3.1) + valueNoise(dirtUv * 5.0 - 1.7) * 0.35) * 6.0;
+    float dirtLine = 1.0 - smoothstep(0.0, 0.07, abs(fract(dirtSwirl) - 0.5) - 0.42);
+    color = mix(color, color * 1.35 + vec3(0.03, 0.0, 0.03), dirtLine * 0.22);
+    vec2 dirtCell = floor(dirtUv * 14.0);
+    float dirtPick = hash(dirtCell);
+    vec2 dirtSpot = fract(dirtUv * 14.0) - 0.5 - (vec2(hash(dirtCell + 1.7), hash(dirtCell + 4.3)) - 0.5) * 0.5;
+    float dirtSpeck = step(0.93, dirtPick) * (1.0 - smoothstep(0.09, 0.15, length(dirtSpot)));
+    vec3 dirtSpeckColor = dirtPick > 0.985 ? vec3(0.02, 0.02, 0.08) : vec3(0.75, 0.45, 0.62);
+    color = mix(color, dirtSpeckColor, dirtSpeck * 0.6);
+`;
+
+const SKY_SPAN = 0.55;
+const skyGradientShader = /* glsl */ `
+  uniform float uSpan;
+  uniform vec2 uResolution;
+  uniform vec3 uStops[5];
+  varying vec3 vDirection;
+
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+
+  void main() {
+    float h = clamp(vDirection.y, 0.0, 1.0);
+    float p = clamp((1.0 - gl_FragCoord.y / uResolution.y) / uSpan, 0.0, 1.0);
+    vec3 color = uStops[0];
+    // Azul-escuro só no topo (até 22%); verde e amarelo ficam com mais da metade.
+    color = mix(color, uStops[1], smoothstep(0.22, 0.38, p));
+    color = mix(color, uStops[2], smoothstep(0.38, 0.54, p));
+    color = mix(color, uStops[3], smoothstep(0.54, 0.74, p));
+    color = mix(color, uStops[4], smoothstep(0.74, 0.95, p));
+
+    // Estrelas presas à direção do céu, não à tela; só na parte azul.
+    // Cada célula pode ter uma estrela: um ponto redondo e pequeno num lugar sorteado
+    // dentro dela (antes a célula inteira acendia e virava um quadrado).
+    vec2 starUv = vec2(atan(vDirection.z, vDirection.x) * 70.0, h * 115.0);
+    vec2 cell = floor(starUv);
+    vec2 spot = fract(starUv) - 0.5 - (vec2(hash(cell + 2.1), hash(cell + 5.7)) - 0.5) * 0.6;
+    float starSize = 0.06 + hash(cell + 9.3) * 0.05;
+    float star = step(0.975, hash(cell)) * (1.0 - smoothstep(starSize * 0.5, starSize, length(spot))) * (1.0 - smoothstep(0.2, 0.36, p));
+    color = mix(color, vec3(0.95, 0.93, 0.7), star * 0.8);
+
+    float grain = hash(floor(gl_FragCoord.xy)) - 0.5;
+    color *= 1.0 + grain * 0.12;
+    gl_FragColor = vec4(color, 1.0);
+    #include <colorspace_fragment>
+  }
+`;
+
+
+const TINTA = { sunOrange: "#f0a647", yellow: "#fefb4e", navyDeep: "#060b2c", ink: "#030a1a" };
+
+export function PortaoMaterial() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const scrollArea = scrollRef.current;
+    if (!container || !scrollArea) return;
+
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+    } catch {
+      container.dataset.webglUnavailable = "true";
+      return;
+    }
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+    container.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(TINTA.navyDeep);
+
+    const camera = new THREE.PerspectiveCamera(47, 1, 0.1, 400);
+
+    // A luz só existe para gerar a sombra projetada; a cor vem das faixas do material.
+    const sun = new THREE.DirectionalLight("#ffffff", 1);
+    sun.target.position.set(0, 0, 8);
+    sun.position.copy(sun.target.position).addScaledVector(SCENE_LIGHT, 70);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.camera.left = -34;
+    sun.shadow.camera.right = 34;
+    sun.shadow.camera.top = 40;
+    sun.shadow.camera.bottom = -40;
+    sun.shadow.camera.near = 1;
+    sun.shadow.camera.far = 160;
+    sun.shadow.bias = -0.0006;
+    sun.shadow.normalBias = 0.04;
+    scene.add(sun, sun.target);
+
+    const world = new THREE.Group();
+    scene.add(world);
+
+    const sky = new THREE.Mesh(
+      new THREE.SphereGeometry(300, 32, 16),
+      new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        depthWrite: false,
+        uniforms: {
+          uSpan: { value: SKY_SPAN },
+          uResolution: { value: new THREE.Vector2(1, 1) },
+          uStops: { value: ["#00045d", "#00558e", "#41b571", "#a0d939", "#fffd01"].map((hex) => new THREE.Color(hex)) },
+        },
+        vertexShader: skyVertexShader,
+        fragmentShader: skyGradientShader,
+      }),
+    );
+    scene.add(sky);
+
+    // Cores tiradas da pintura do Deiver (pintura-alvo), objeto por objeto. Quase tudo tem
+    // só duas leituras: amarelo onde bate luz e azul-marinho na sombra.
+    // Lado esquerdo, pelo teste do Gemini: a parede em si é azul (ou roxa); a luz do sol
+    // aparece como laranja só onde bate direto. O resto da parede fica na cor dela.
+    // O sol vem de trás da câmera (do pé da ladeira), baixo e rente às fachadas da rua.
+    // Assim a fachada comprida fica azul e só as pontas viradas para baixo pegam laranja,
+    // cortadas em diagonal pela sombra da casa de baixo (como no teste do Gemini).
+    const sceneCel = (options: Parameters<typeof createCelMaterial>[0]) => {
+      const material = createCelMaterial(options);
+      material.uniforms.uLightDirection.value.copy(SCENE_LIGHT);
+      material.uniforms.uSunLine = { value: NO_SUN_LINE };
+      // Sol mais forte que o padrão: a faixa iluminada começa um pouco mais cedo (0,48 em vez de 0,55).
+      material.fragmentShader = material.fragmentShader
+        .replace("    float light = facing * shadow;", "    shadow *= step(uSunLine.w, dot(vWorldPosition, uSunLine.xyz) + (valueNoise(vWorldPosition.xz * 1.3 + vWorldPosition.y) - 0.5) * 0.25);\n    float light = facing * shadow;")
+        .replace("uniform vec3 uLightDirection;", "uniform vec3 uLightDirection;\n  uniform vec4 uSunLine;")
+        .replace("light > 0.55 + edge", "light > 0.48 + edge")
+        .replace("    // Objetos no ar quase somem", DIRT_GLSL + "\n    // Objetos no ar quase somem");
+      return material;
+    };
+    // Contorno à mão: um fio de luz amarelo-esverdeado no lado do objeto virado para
+    // "direction", sem olhar para o sol. Ex.: amount .3 = fio fino; .6 = meia face.
+    const addManualRim = (material: THREE.ShaderMaterial, direction: THREE.Vector3, amount: number) => {
+      material.uniforms.uManualRimDirection = { value: direction.clone().normalize() };
+      material.uniforms.uManualRimAmount = { value: amount };
+      material.uniforms.uManualRimColor = { value: new THREE.Color(JOTA_RIM) };
+      material.fragmentShader = material.fragmentShader
+        .replace("void main() {", "uniform vec3 uManualRimDirection;\n  uniform float uManualRimAmount;\n  uniform vec3 uManualRimColor;\n\n  void main() {")
+        .replace("facing > 0.0) color = uRim;", "facing > 0.0) color = uRim;\n    if (dot(normal, uManualRimDirection) > 1.0 - uManualRimAmount) color = uManualRimColor;");
+      return material;
+    };
+    const WALL_BLUE = { lit: TINTA.sunOrange, mid: "#102783", shade: "#0f2470", deep: "#102783" };
+    const WALL_PURPLE = { lit: TINTA.sunOrange, mid: "#422056", shade: "#3e1f55", deep: "#30173f" };
+    const wallYellow = sceneCel(WALL_BLUE);
+    const leftPurpleMaterial = sceneCel(WALL_PURPLE);
+    // Diagonal de sol desenhada, pelo rascunho do Deiver: na fachada virada para a rua, o sol
+    // pega só um triângulo em cima. A borda vai de (zStart, yStart), no alto do lado de baixo
+    // da ladeira, até (zEnd, yEnd), na ponta de cima da fachada. Acima da linha, laranja;
+    // abaixo, a cor da parede. Cada casa tem a sua (dente de serra), não é sombra de verdade.
+    // As paredes dessas casas viradas para a câmera ficam sempre na sombra.
+    const facadeSunMaterial = (options: Parameters<typeof createCelMaterial>[0], zStart: number, yStart: number, zEnd: number, yEnd: number) => {
+      const material = sceneCel(options);
+      material.uniforms.uFacadeLine = { value: new THREE.Vector4(zStart, yStart, zEnd, yEnd) };
+      material.fragmentShader = material.fragmentShader
+        .replace("uniform vec3 uLightDirection;", "uniform vec3 uLightDirection;\n  uniform vec4 uFacadeLine;")
+        .replace("    vec3 dirtNormal", `    if (normal.x > 0.5) {
+      float facadeT = clamp((vWorldPosition.z - uFacadeLine.x) / (uFacadeLine.z - uFacadeLine.x), 0.0, 1.0);
+      bool facadeInside = (vWorldPosition.z - uFacadeLine.x) * (vWorldPosition.z - uFacadeLine.z) <= 0.0;
+      color = facadeInside && vWorldPosition.y > mix(uFacadeLine.y, uFacadeLine.w, facadeT) ? uLit : uMid;
+    }
+    // Paredes viradas para o pé da ladeira (para a câmera), acima dos telhados: sombra, na
+    // cor da fachada (o Deiver marcou de verde onde não devia ser laranja).
+    else if (normal.z > 0.5) color = uMid;
+    vec3 dirtNormal`);
+      return material;
+    };
+    const roadMaterial = sceneCel({ lit: "#1d3692", mid: "#1b2d80", shade: "#1a246d", deep: TINTA.navyDeep });
+    const roofMaterial = sceneCel({ lit: "#0d1852", mid: TINTA.navyDeep, shade: TINTA.navyDeep, deep: TINTA.ink, rim: TINTA.yellow, rimAmount: 0.25 });
+    // Só formas por enquanto: cada parte com um tom, para ler o volume. Cor e textura
+    // entram depois, com os desenhos do Deiver.
+    const pavementMaterial = sceneCel({ lit: TINTA.sunOrange, mid: "#1c2f8a", shade: "#0e1647", deep: TINTA.navyDeep });
+    // Calçada da esquerda sem sol (pedido do Deiver): o tom "aceso" é o mesmo azul do meio.
+    const leftPavementMaterial = sceneCel({ lit: "#1c2f8a", mid: "#1c2f8a", shade: "#0e1647", deep: TINTA.navyDeep });
+    const retainingMaterial = sceneCel({ lit: "#4f2663", mid: "#3f215d", shade: "#29246b", deep: TINTA.navyDeep });
+    const railMaterial = sceneCel({ lit: TINTA.sunOrange, mid: TINTA.navyDeep, shade: TINTA.navyDeep, deep: TINTA.ink, rim: TINTA.yellow, rimAmount: 0.3 });
+    // Na pintura a frente da casa do fundo é clara (meio-tom também claro); só o lado é azul.
+    // Casa do fim da rua, com as cores da referência do Deiver (2026-10-10): parede creme
+    // azulado na luz e azul médio na sombra; frontão e base amarelos na luz.
+    // A casa tem o sol dela, o do rascunho do Deiver: baixo, da direita, e só acima da linha
+    // de luz. Ex.: telhado e parte de cima da parede acesos, parte de baixo azul.
+    const houseCel = (options: Parameters<typeof createCelMaterial>[0]) => {
+      const material = sceneCel(options);
+      material.uniforms.uLightDirection.value.copy(HOUSE_SUN);
+      material.uniforms.uSunLine.value = SUN_LINE;
+      return material;
+    };
+    // Sombra da casa num azul médio, não marinho (o Deiver achou escura demais).
+    const HOUSE_WALL = { lit: "#d0d5b8", mid: "#3a4592", shade: "#343f8a", deep: "#2f3982" };
+    const HOUSE_GABLE = { lit: "#d0d5b8", mid: "#3a4592", shade: "#343f8a", deep: "#2f3982" };
+    const houseWallMaterial = houseCel(HOUSE_WALL);
+    const annexWallMaterial = houseCel(HOUSE_WALL);
+    // Tábuas de madeira (lambri horizontal), como nos desenhos de referência do Deiver: a cada
+    // 20 cm uma linha escura fina, e logo abaixo dela uma faixa de sombra da tábua de cima.
+    // Só nas faces de pé (paredes e frontões), nunca no chão ou no telhado.
+    const addSiding = (material: THREE.ShaderMaterial) => {
+      material.uniforms.uBoardHeight = { value: m(.2) };
+      material.fragmentShader = material.fragmentShader
+        .replace("void main() {", "uniform float uBoardHeight;\n\n  void main() {")
+        .replace("    vec3 dirtNormal", `    if (abs(normal.y) < 0.5) {
+      float boardY = vWorldPosition.y / uBoardHeight;
+      float board = fract(boardY);
+      float lineDistance = min(board, 1.0 - board) / max(fwidth(boardY), 1e-4);
+      float boardLine = 1.0 - clamp(lineDistance - 0.6, 0.0, 1.0);
+      color *= 0.9 + 0.1 * smoothstep(0.0, 0.35, 1.0 - board);
+      color = mix(color, color * 0.45, boardLine * 0.85);
+    }
+    vec3 dirtNormal`);
+      return material;
+    };
+    addSiding(houseWallMaterial);
+    addSiding(annexWallMaterial);
+    // Frontão (o triângulo de cima), pela pintura do Deiver: creme como a parede, e só uma
+    // faixa amarela na beira esquerda. A borda da faixa sai da base a 1/4 da meia-largura
+    // e sobe até quase o topo, logo à direita do meio. Usa as coordenadas do próprio
+    // triângulo (x de -1 a 1 da meia-largura, y de 0 a 1 da altura). Ex.: o ponto
+    // (-0.9, 0.1) fica amarelo; (0.2, 0.3) fica creme. Medidas: casa 7,5 × 3,4 m; anexo 6 × 2,4 m.
+    const addGableBand = (material: THREE.ShaderMaterial, halfWidth: number, rise: number) => {
+      material.uniforms.uGableSize = { value: new THREE.Vector2(halfWidth, rise) };
+      material.uniforms.uGableYellow = { value: new THREE.Color("#e4e356") };
+      material.vertexShader = material.vertexShader
+        .replace("void main() {", "varying vec2 vGable;\n\n  void main() {\n    vGable = position.xy;");
+      material.fragmentShader = material.fragmentShader
+        .replace("void main() {", "uniform vec2 uGableSize;\n  uniform vec3 uGableYellow;\n  varying vec2 vGable;\n\n  void main() {")
+        .replace("    // Ruído de impressão leve", `    vec2 gable = vec2(vGable.x / uGableSize.x, vGable.y / uGableSize.y);
+    float bandEdge = mix(-0.75, 0.07, gable.y / 0.88);
+    if (distance(color, uLit) < 0.01 && gable.x < bandEdge) color = uGableYellow;
+    // Ruído de impressão leve`);
+      return material;
+    };
+    const houseGableMaterial = addSiding(addGableBand(houseCel(HOUSE_GABLE), m(7.5 / 2), m(3.4)));
+    const annexGableMaterial = addSiding(addGableBand(houseCel(HOUSE_GABLE), m(6 / 2), m(2.4)));
+    const houseBaseMaterial = houseCel({ lit: "#fdfd75", mid: "#c4ccaa", shade: "#1a2a8c", deep: "#16237a" });
+    // Vidro das janelas: claro e azulado, como as janelas acesas da pintura de referência.
+    const glassMaterial = sceneCel({ lit: "#768358", mid: "#758158", shade: "#606b50", deep: "#606b50" });
+    const darkMaterial = sceneCel({ lit: "#161f63", mid: "#0d1852", shade: TINTA.navyDeep, deep: TINTA.ink });
+    // Materiais dos objetos no ar: os mesmos tons, mas transparentes perto da lente.
+    // O livro grosso de capa preta (um preto azulado, para não furar a paleta) e folhas creme.
+    const bookCoverMaterial = createCelMaterial({ lit: "#2a2a44", mid: "#16162c", shade: "#0a0a1c", deep: "#050512", rim: PALETTE.orange, rimAmount: 0.3, nearFade: true });
+    const bookPagesMaterial = createCelMaterial({ lit: "#efedc4", mid: "#cfd2c4", shade: "#8a93c4", deep: PALETTE.navy, nearFade: true });
+    // Cidade lá embaixo: na pintura, as faces viradas para a luz são amarelas.
+    const cityMaterials = [
+      sceneCel({ lit: TINTA.yellow, mid: "#20246a", shade: "#08103c", deep: "#08103c" }),
+      sceneCel({ lit: "#123388", mid: "#20246a", shade: "#08103c", deep: "#08103c" }),
+    ];
+    const hillMaterial = sceneCel({ lit: "#08103c", mid: "#08103c", shade: TINTA.ink, deep: TINTA.ink });
+
+    const addBox = (
+      width: number,
+      height: number,
+      depth: number,
+      x: number,
+      y: number,
+      z: number,
+      material: THREE.Material = darkMaterial,
+    ) => {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+      mesh.position.set(x, y, z);
+      world.add(mesh);
+      return mesh;
+    };
+
+    // LADEIRA (só formas, em metros reais), seguindo a planta e a vista lateral do Deiver.
+    // Corte da rua, da esquerda para a direita: 3 imóveis atrás do muro | canteiros |
+    // calçada 1,2 m | rua 5 m | calçada 1,2 m | mureta com corrimão | barranco e cidade.
+    // No alto, a ladeira vira um patamar plano em frente ao muro da última casa, onde
+    // fica o portão. Ex.: x = -m(2.5) é a borda esquerda da rua.
+    const slopeAngle = Math.atan(ROAD_SLOPE);
+    const ROAD_HALF = m(2.5);
+    const LEFT_WALK = m(1.2);
+    const RIGHT_WALK = m(1.2);
+    const CURB = m(.15);
+    const STREET_END_Z = TOP_Z + LOT_COUNT * LOT_LENGTH + m(2);
+    const leftEdge = -ROAD_HALF - LEFT_WALK;
+    const rightEdge = ROAD_HALF + RIGHT_WALK;
+    const walkY = (z: number) => roadY(z) + CURB;
+    // Laje inclinada que acompanha a rua: de x0 a x1, de z0 (alto) a z1 (baixo), com o topo
+    // "top" acima do chão da rua.
+    const addSlab = (x0: number, x1: number, z0: number, z1: number, top: number, thickness: number, material: THREE.Material) => {
+      const length = (z1 - z0) / Math.cos(slopeAngle);
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, thickness, length), material);
+      const zc = (z0 + z1) / 2;
+      // Inclinada, a caixa sobe um pouco; o centro desce na mesma medida para o topo cair
+      // exatamente em roadY + top. Sem isso, duas lajes de espessuras diferentes (ex.: a
+      // calçada e a entrada da garagem) ficam quase no mesmo plano e "piscam".
+      mesh.position.set((x0 + x1) / 2, roadY(zc) + top - thickness / 2 / Math.cos(slopeAngle), zc);
+      mesh.rotation.x = slopeAngle;
+      world.add(mesh);
+      return mesh;
+    };
+    // Caixa de topo plano, apoiada no chão de baixo (ponta de baixo da ladeira).
+    const addBlock = (x0: number, x1: number, z0: number, z1: number, topY: number, material: THREE.Material) => {
+      const bottom = groundY(z1) - m(1);
+      return addBox(x1 - x0, topY - bottom, z1 - z0, (x0 + x1) / 2, (topY + bottom) / 2, (z0 + z1) / 2, material);
+    };
+
+    // Rua e as duas calçadas, do patamar até o pé da ladeira.
+    const roadSlab = addSlab(-ROAD_HALF, ROAD_HALF, TOP_Z, STREET_END_Z, 0, m(.4), roadMaterial);
+    // Pele da rua: um plano com o paralelepípedo, colado no topo da laje.
+    const cobbleTexture = new THREE.TextureLoader().load(COBBLE_URL);
+    cobbleTexture.colorSpace = THREE.SRGBColorSpace;
+    cobbleTexture.wrapT = THREE.RepeatWrapping;
+    cobbleTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    const roadLength = (STREET_END_Z - TOP_Z) / Math.cos(slopeAngle);
+    cobbleTexture.repeat.set(1, roadLength / (2 * ROAD_HALF * COBBLE_ASPECT));
+    const cobbles = new THREE.Mesh(new THREE.PlaneGeometry(2 * ROAD_HALF, roadLength), createPaintedMaterial(cobbleTexture, "#3a4498"));
+    // Deitado na laje: o alto da imagem aponta para o alto da ladeira.
+    cobbles.rotation.x = -Math.PI / 2;
+    cobbles.position.y = m(.2) + .005;
+    cobbles.receiveShadow = true;
+    roadSlab.add(cobbles);
+    addSlab(leftEdge, -ROAD_HALF, TOP_Z, STREET_END_Z, CURB, m(.5), leftPavementMaterial);
+    addSlab(ROAD_HALF, rightEdge, TOP_Z, STREET_END_Z, CURB, m(.5), pavementMaterial);
+
+    // ALTO: patamar plano (a "rua reta") com 3 m de fundo, do muro da esquerda até o
+    // barranco. Atrás dele, o muro da última casa, um pouco girado em relação à ladeira
+    // (na planta, a ponta da direita fica mais longe), com o portão no meio da rua.
+    const topY = roadY(TOP_Z);
+    const yardRight = rightEdge + m(5);
+    addBox(yardRight - leftEdge, m(3), LANDING_DEPTH + m(1), (leftEdge + yardRight) / 2, topY - m(1.5), TOP_Z - (LANDING_DEPTH + m(1)) / 2, roadMaterial);
+    // Quintal: o mesmo nível do patamar, atrás do muro.
+    addBox(yardRight - leftEdge, m(3), m(20), (leftEdge + yardRight) / 2, topY - m(1.5), GATE_Z - m(10), pavementMaterial);
+    const gateWall = new THREE.Group();
+    gateWall.position.set(0, topY, GATE_Z);
+    gateWall.rotation.y = GATE_WALL_TURN;
+    // Muro baixo, como na pintura: o Jota (1,83 m) aparece inteiro por cima dele.
+    const WALL_HEIGHT = m(1.2);
+    const GATE_WIDTH = m(1.4);
+    const gateWallLeft = leftEdge - m(.3);
+    const gateWallRight = yardRight;
+    [[gateWallLeft, -GATE_WIDTH / 2], [GATE_WIDTH / 2, gateWallRight]].forEach(([x0, x1]) => {
+      const piece = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, WALL_HEIGHT + m(.5), m(.25)), retainingMaterial);
+      piece.position.set((x0 + x1) / 2, WALL_HEIGHT / 2 - m(.25), 0);
+      gateWall.add(piece);
+    });
+    // Portão: folha de grade escura, um pouco mais baixa que o muro, com dois pilares.
+    const gate = new THREE.Mesh(new THREE.BoxGeometry(GATE_WIDTH, m(1.1), m(.06)), darkMaterial);
+    gate.position.y = m(.55);
+    gateWall.add(gate);
+    [-1, 1].forEach((side) => {
+      const pillar = new THREE.Mesh(new THREE.BoxGeometry(m(.35), WALL_HEIGHT + m(.3), m(.35)), retainingMaterial);
+      pillar.position.set(side * (GATE_WIDTH / 2 + m(.17)), (WALL_HEIGHT + m(.3)) / 2, 0);
+      gateWall.add(pillar);
+    });
+    world.add(gateWall);
+    // Muro do lado esquerdo do quintal, subindo da esquina até o fundo.
+    addBox(m(.25), WALL_HEIGHT, m(16), leftEdge - m(.15), topY + WALL_HEIGHT / 2, GATE_Z - m(8), retainingMaterial);
+    // CASA DO FIM DA RUA, pelo desenho do Deiver (2026-10-10). Duas partes sobre uma base de
+    // 1,2 m: o corpo alto de dois andares, com o frontão virado para a rua e a janela em
+    // arco; e o anexo térreo à direita, com o frontão virado para o lado (duas janelas com
+    // venezianas e uma janelinha quadrada lá em cima) e a varanda vermelha na frente, onde
+    // fica a porta. Ex.: o corpo tem 7,5 m de frente e 7,2 m de parede, o maior volume da
+    // rua; o anexo tem 3,8 m de parede, mais baixo, como no desenho.
+    const HOUSE_BASE = m(1.2);
+    const MAIN_WIDTH = m(7.5);
+    const MAIN_DEPTH = m(11);
+    const MAIN_X = -m(2.75);
+    const house = new THREE.Group();
+    house.position.set(m(.5), topY, GATE_Z - m(3) - MAIN_DEPTH / 2);
+    house.rotation.y = GATE_WALL_TURN;
+    world.add(house);
+    const houseTrimMaterial = houseCel({ lit: "#e3fc86", mid: "#5d6fae", shade: "#2c3a7e", deep: "#2a3478" });
+    // Telhado azul-noite com a borda do beiral acesa em amarelo, como na referência.
+    const houseRoofMaterial = addManualRim(houseCel({ lit: "#0d1852", mid: "#080b28", shade: "#080b28", deep: TINTA.ink }), new THREE.Vector3(.4, .1, .9), .3);
+    houseRoofMaterial.uniforms.uManualRimColor.value.set("#f8f76e");
+    // Varanda: na referência ela é escura, com pilares e guarda-corpo claros onde bate luz.
+    const porchMaterial = houseCel({ lit: "#d8dca8", mid: "#9aa6b8", shade: "#1b2460", deep: "#07091f" });
+    // Vidro sem amarelo (o Deiver notou que na referência ele é claro e frio): branco
+    // azulado na luz e azul na sombra, seguindo a luz de cada volume da casa.
+    const HOUSE_GLASS = { lit: "#d9ece6", mid: "#3d4f8f", shade: "#2b3a7a", deep: "#22306b" };
+    const mainGlassMaterial = houseCel(HOUSE_GLASS);
+    const annexGlassMaterial = houseCel(HOUSE_GLASS);
+    const annexTrimMaterial = houseCel({ lit: "#e3fc86", mid: "#5d6fae", shade: "#2c3a7e", deep: "#2a3478" });
+    const addPart = (parent: THREE.Object3D, geometry: THREE.BufferGeometry, material: THREE.Material, x: number, y: number, z: number) => {
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(x, y, z);
+      parent.add(mesh);
+      return mesh;
+    };
+    // Bloco com telhado de duas águas: paredes de "width" × "depth", cumeeira ao longo de z,
+    // frontões nas faces ±z. O telhado passa "overhang" para fora das paredes.
+    const addGabled = (parent: THREE.Object3D, width: number, depth: number, eave: number, rise: number, overhang: number, wallMaterial: THREE.Material, gableMaterial: THREE.Material) => {
+      const block = new THREE.Group();
+      parent.add(block);
+      addPart(block, new THREE.BoxGeometry(width, eave, depth), wallMaterial, 0, eave / 2, 0);
+      const gableShape = new THREE.Shape();
+      gableShape.moveTo(-width / 2, 0);
+      gableShape.lineTo(width / 2, 0);
+      gableShape.lineTo(0, rise);
+      gableShape.closePath();
+      addPart(block, new THREE.ExtrudeGeometry(gableShape, { depth, bevelEnabled: false }), gableMaterial, 0, eave, -depth / 2);
+      const slope = Math.atan2(rise, width / 2);
+      const run = width / 2 + overhang;
+      const thickness = m(.18);
+      [-1, 1].forEach((side) => {
+        const slab = addPart(block, new THREE.BoxGeometry(run / Math.cos(slope), thickness, depth + overhang * 2), houseRoofMaterial, side * run / 2, eave + rise - (run / 2) * Math.tan(slope) + thickness / 2 / Math.cos(slope), 0);
+        slab.rotation.z = -side * slope;
+      });
+      return block;
+    };
+    // Janela virada para +z do grupo: moldura clara, vidro amarelo (luz acesa dentro),
+    // cruz de caixilho e, se pedir, as duas venezianas abertas.
+    const addWindow = (parent: THREE.Object3D, x: number, y: number, z: number, turn: number, width: number, height: number, shutters: boolean, glass: THREE.Material = mainGlassMaterial, trim: THREE.Material = houseTrimMaterial) => {
+      const window = new THREE.Group();
+      window.position.set(x, y, z);
+      window.rotation.y = turn;
+      parent.add(window);
+      addPart(window, new THREE.BoxGeometry(width + m(.2), height + m(.2), m(.08)), trim, 0, height / 2, m(.04));
+      addPart(window, new THREE.BoxGeometry(width, height, m(.04)), glass, 0, height / 2, m(.08));
+      addPart(window, new THREE.BoxGeometry(m(.06), height, m(.05)), trim, 0, height / 2, m(.11));
+      addPart(window, new THREE.BoxGeometry(width, m(.06), m(.05)), trim, 0, height * .62, m(.11));
+      if (shutters) {
+        [-1, 1].forEach((side) => {
+          const shutter = addPart(window, new THREE.BoxGeometry(width / 2, height, m(.05)), trim, side * (width * .75 + m(.14)), height / 2, m(.2));
+          shutter.rotation.y = side * .45;
+        });
+      }
+      return window;
+    };
+
+    // Base de 1,2 m sob o corpo e sob o anexo com a varanda.
+    addPart(house, new THREE.BoxGeometry(MAIN_WIDTH + m(.4), HOUSE_BASE, MAIN_DEPTH + m(.4)), houseBaseMaterial, MAIN_X, HOUSE_BASE / 2, 0);
+    const ANNEX_X0 = MAIN_X + MAIN_WIDTH / 2;
+    const ANNEX_LENGTH = m(6);
+    const ANNEX_WIDTH = m(6);
+    const ANNEX_FRONT = MAIN_DEPTH / 2 - m(1.5);
+    addPart(house, new THREE.BoxGeometry(ANNEX_LENGTH + m(.2), HOUSE_BASE, ANNEX_WIDTH + m(1.7)), houseBaseMaterial, ANNEX_X0 + ANNEX_LENGTH / 2, HOUSE_BASE / 2, ANNEX_FRONT - ANNEX_WIDTH / 2 + m(.85));
+
+    // Corpo alto: 7,2 m de parede (dois andares) e frontão de 3,4 m virado para a rua.
+    const mainBlock = addGabled(house, MAIN_WIDTH, MAIN_DEPTH, m(7.2), m(3.4), m(.45), houseWallMaterial, houseGableMaterial);
+    mainBlock.position.set(MAIN_X, HOUSE_BASE, 0);
+    // Janela em arco na frente, no segundo andar, centralizada na parede.
+    const archWidth = m(1.2);
+    const archShape = (scale: number) => {
+      const w = archWidth * scale;
+      const shape = new THREE.Shape();
+      shape.moveTo(-w / 2, 0);
+      shape.lineTo(w / 2, 0);
+      shape.lineTo(w / 2, m(1.2) * scale);
+      shape.absarc(0, m(1.2) * scale, w / 2, 0, Math.PI, false);
+      shape.closePath();
+      return shape;
+    };
+    const arch = new THREE.Group();
+    arch.position.set(0, m(4.6), MAIN_DEPTH / 2);
+    mainBlock.add(arch);
+    // Pintura do Deiver: uma diagonal corta a janela inteira (moldura, vidro e caixilho).
+    // À esquerda dela, a luz: moldura azul, vidro amarelo-claro, caixilho laranja. À direita,
+    // a sombra: moldura e caixilho marinho, vidro branco. A diagonal sai da base a 35 cm à
+    // esquerda do meio e sobe até 43 cm à direita, a 1,68 m de altura (quase no topo do arco).
+    // Ex.: o canto de baixo à esquerda é amarelo; o canto de baixo à direita, branco.
+    arch.updateWorldMatrix(true, false);
+    const archOrigin = new THREE.Vector3().setFromMatrixPosition(arch.matrixWorld);
+    const archRight = new THREE.Vector3(1, 0, 0).transformDirection(arch.matrixWorld);
+    const archMaterial = (lit: string, shade: string) => {
+      const material = houseCel({ lit, mid: lit, shade: lit, deep: lit });
+      material.uniforms.uArchOrigin = { value: archOrigin };
+      material.uniforms.uArchRight = { value: archRight };
+      material.uniforms.uArchLit = { value: new THREE.Color(lit) };
+      material.uniforms.uArchShade = { value: new THREE.Color(shade) };
+      material.uniforms.uArchLine = { value: new THREE.Vector3(m(-.35), m(.43), m(1.68)) };
+      material.fragmentShader = material.fragmentShader
+        .replace("void main() {", "uniform vec3 uArchOrigin;\n  uniform vec3 uArchRight;\n  uniform vec3 uArchLit;\n  uniform vec3 uArchShade;\n  uniform vec3 uArchLine;\n\n  void main() {")
+        .replace("    // Ruído de impressão leve", `    vec3 archOffset = vWorldPosition - uArchOrigin;
+    float archX = dot(archOffset, uArchRight);
+    float archY = archOffset.y;
+    color = archX < uArchLine.x + archY * (uArchLine.y - uArchLine.x) / uArchLine.z ? uArchLit : uArchShade;
+    // Ruído de impressão leve`);
+      return material;
+    };
+    const archFrameMaterial = archMaterial("#3a6bd6", "#2c2e7c");
+    const archMuntinMaterial = archMaterial("#e0a25c", "#2c2e7c");
+    addPart(arch, new THREE.ExtrudeGeometry(archShape(1.15), { depth: m(.08), bevelEnabled: false }), archFrameMaterial, 0, -m(.1), 0);
+    addPart(arch, new THREE.ExtrudeGeometry(archShape(1), { depth: m(.1), bevelEnabled: false }), archMaterial("#fbe9a3", "#e7ebe6"), 0, 0, 0);
+    addPart(arch, new THREE.BoxGeometry(m(.06), m(1.8), m(.05)), archMuntinMaterial, 0, m(.9), m(.12));
+    addPart(arch, new THREE.BoxGeometry(archWidth, m(.06), m(.05)), archMuntinMaterial, 0, m(.95), m(.12));
+    // Lateral direita, segundo andar: duas janelas com venezianas, acima do telhado do anexo.
+    [m(1.8), -m(3.6)].forEach((z) => addWindow(mainBlock, MAIN_WIDTH / 2, m(4.7), z, Math.PI / 2, m(1), m(1.5), true));
+
+    // Anexo: cumeeira entrando no corpo, frontão virado para a direita (+x).
+    const annex = addGabled(house, ANNEX_WIDTH, ANNEX_LENGTH + m(.5), m(3.8), m(2.4), m(.4), annexWallMaterial, annexGableMaterial);
+    annex.position.set(ANNEX_X0 + (ANNEX_LENGTH - m(.5)) / 2, HOUSE_BASE, ANNEX_FRONT - ANNEX_WIDTH / 2);
+    annex.rotation.y = Math.PI / 2;
+    const annexGableZ = (ANNEX_LENGTH + m(.5)) / 2;
+    [-m(1.5), m(1.5)].forEach((x) => addWindow(annex, x, m(.8), annexGableZ, 0, m(1), m(1.8), true, annexGlassMaterial, annexTrimMaterial));
+    addWindow(annex, m(.6), m(4.15), annexGableZ, 0, m(.6), m(.6), false, annexGlassMaterial, annexTrimMaterial);
+    // Porta na frente do anexo (lado da rua), com bandeira de vidro em cima.
+    addWindow(annex, -ANNEX_WIDTH / 2, 0, m(.9), -Math.PI / 2, m(1.1), m(2.5), false, annexGlassMaterial, annexTrimMaterial);
+
+    // Varanda vermelha na frente do anexo: dois pilares, vigas, guarda-corpo de 1 m com
+    // balaústres a cada 30 cm e uma laje fina de cobertura.
+    const porchX0 = ANNEX_X0 + m(.3);
+    const porchX1 = ANNEX_X0 + m(4);
+    const porchZ0 = ANNEX_FRONT;
+    const porchZ1 = MAIN_DEPTH / 2 - m(.1);
+    const porchTop = HOUSE_BASE + m(2.9);
+    [porchX0, porchX1].forEach((x) => addPart(house, new THREE.BoxGeometry(m(.16), porchTop - HOUSE_BASE, m(.16)), porchMaterial, x, (porchTop + HOUSE_BASE) / 2, porchZ1));
+    addPart(house, new THREE.BoxGeometry(porchX1 - porchX0 + m(.16), m(.25), m(.16)), porchMaterial, (porchX0 + porchX1) / 2, porchTop, porchZ1);
+    addPart(house, new THREE.BoxGeometry(m(.16), m(.25), porchZ1 - porchZ0), porchMaterial, porchX1, porchTop, (porchZ0 + porchZ1) / 2);
+    addPart(house, new THREE.BoxGeometry(porchX1 - porchX0 + m(.6), m(.2), porchZ1 - porchZ0 + m(.4)), annexWallMaterial, (porchX0 + porchX1) / 2, porchTop + m(.25), (porchZ0 + porchZ1) / 2 + m(.2));
+    const railTop = HOUSE_BASE + m(1);
+    addPart(house, new THREE.BoxGeometry(porchX1 - porchX0, m(.07), m(.07)), porchMaterial, (porchX0 + porchX1) / 2, railTop, porchZ1);
+    addPart(house, new THREE.BoxGeometry(m(.07), m(.07), porchZ1 - porchZ0), porchMaterial, porchX1, railTop, (porchZ0 + porchZ1) / 2);
+    const balusterGeometry = new THREE.BoxGeometry(m(.04), m(1), m(.04));
+    for (let x = porchX0 + m(.3); x < porchX1 - m(.1); x += m(.3)) addPart(house, balusterGeometry, porchMaterial, x, HOUSE_BASE + m(.5), porchZ1);
+    for (let z = porchZ0 + m(.3); z < porchZ1 - m(.1); z += m(.3)) addPart(house, balusterGeometry, porchMaterial, porchX1, HOUSE_BASE + m(.5), z);
+
+    // ESQUERDA: muro contínuo na borda da calçada e, atrás dele, 3 imóveis de 8 m de frente,
+    // cada um um degrau acima do de baixo. De cima para baixo:
+    // 1. a casa com telhado de 4 águas e portão de garagem, colada na calçada;
+    // 2. o anexo, baixo, com uma torre (a parte mais alta) encostada na casa;
+    // 3. uma casa baixa com chaminé e, no pé da ladeira, só muro.
+    const LEFT_WALL_HEIGHT = m(1);
+    // Dente do muro: perto do pé da ladeira ele recua 1,2 m para dentro por 3 m e abre
+    // espaço para um canteiro grande.
+    const notchZ1 = STREET_END_Z - m(3.5);
+    const notchZ0 = notchZ1 - m(3);
+    // O muro só existe onde não há fachada: no mesmo plano que ela, os dois brigam pelo
+    // pixel e a parede "pisca" em quadradinhos. Ex.: os dois imóveis de cima ocupam a frente toda.
+    const leftWallStart = TOP_Z + 2 * LOT_LENGTH + m(5.5);
+    addSlab(leftEdge - m(.25), leftEdge, leftWallStart, notchZ0, CURB + LEFT_WALL_HEIGHT, LEFT_WALL_HEIGHT + m(2), leftPurpleMaterial);
+    addSlab(leftEdge - m(.25), leftEdge, notchZ1, STREET_END_Z, CURB + LEFT_WALL_HEIGHT, LEFT_WALL_HEIGHT + m(2), leftPurpleMaterial);
+    addSlab(leftEdge - m(1.45), leftEdge - m(1.2), notchZ0, notchZ1, CURB + LEFT_WALL_HEIGHT, LEFT_WALL_HEIGHT + m(2), leftPurpleMaterial);
+    addBlock(leftEdge - m(1.45), leftEdge, notchZ0 - m(.25), notchZ0, walkY(notchZ0) + LEFT_WALL_HEIGHT, leftPurpleMaterial);
+    addBlock(leftEdge - m(1.45), leftEdge, notchZ1, notchZ1 + m(.25), walkY(notchZ1) + LEFT_WALL_HEIGHT, leftPurpleMaterial);
+    // Canteiro grande do dente: ocupa o recuo e avança 60 cm na calçada.
+    addSlab(leftEdge - m(1.2), leftEdge + m(.6), notchZ0, notchZ1, CURB + m(.6), m(1.2), leftPurpleMaterial);
+    // Plantas nos canteiros da esquerda: [x, y, z, altura em m]. Entram quando o modelo carrega.
+    const plantSpots: [number, number, number, number][] = [];
+    // Moita do quintal atrás do muro do portão, à direita (embaixo da varanda, marcada pelo
+    // Deiver): plantas em pé no chão do quintal, 1,5–1,7 m, a copa passa por cima do muro de 1,2 m.
+    // (Pontas de trepadeira caindo por cima do muro ficaram soltas e esquisitas; saíram.)
+    gateWall.updateMatrix();
+    for (let across = 0; across <= 3; across += .55) {
+      const spot = new THREE.Vector3(GATE_WIDTH / 2 + m(.5 + across), 0, -m(1 + (across * 7 % 3) * .1)).applyMatrix4(gateWall.matrix);
+      plantSpots.push([spot.x, spot.y, spot.z, 1.6 + (across * 5 % 3) * .1]);
+    }
+    [notchZ0 + m(.6), (notchZ0 + notchZ1) / 2, notchZ1 - m(.6)].forEach((z, index) => plantSpots.push([leftEdge - m(index === 1 ? .5 : -.1), walkY(z) + m(.6), z, index === 1 ? 1.6 : 1.3]));
+    // Canteiros estreitos (50 cm × 60 cm) encostados no muro, com o topo inclinado como a rua.
+    const addPlanter = (z0: number, z1: number) => {
+      addSlab(leftEdge, leftEdge + m(.5), z0, z1, CURB + m(.6), m(1.2), leftPurpleMaterial);
+      for (let z = z0 + m(.6); z < z1 - m(.3); z += m(1.3)) plantSpots.push([leftEdge + m(.25), walkY(z) + m(.6), z, 1.4]);
+    };
+
+    // Onde as trepadeiras caem por cima do muro das casas: [z, alto da fachada, quanto a cortina desce em m].
+    // Ex.: no anexo, uma cortina larga (3,8 m) pela beirada de cima, do canto de baixo da ladeira
+    // até perto da janela grande, como o Deiver marcou.
+    // [z, topo, queda em m, largura em m, planta do quintal?]. Com o último true, a copa fica atrás
+    // do muro (dentro do quintal) e só a ponta cai para a rua.
+    const vineSpots: [number, number, number, number?, boolean?][] = [];
+    const lotFloor = (index: number) => walkY(TOP_Z + index * LOT_LENGTH);
+    const lotZ = (index: number) => TOP_Z + index * LOT_LENGTH;
+    const houseBack = leftEdge - m(8);
+    // Fachada com vãos de verdade, como no desenho do Deiver: a parede da frente é uma placa
+    // de 25 cm com buracos; dentro de cada buraco, 18 cm para dentro, fica a porta (escura)
+    // ou o vidro (claro). As laterais do buraco aparecem quando a câmera passa de lado.
+    // Atrás da placa fica o resto da casa, uma caixa simples.
+    type Opening = { zc: number; width: number; bottom: number; height: number; kind: "door" | "window" };
+    const FACADE_DEPTH = m(.25);
+    const OPENING_DEPTH = m(.18);
+    const addFacade = (z0: number, z1: number, top: number, material: THREE.Material, openings: Opening[]) => {
+      const bottom = groundY(z1) - m(1);
+      const outline = new THREE.Shape();
+      outline.moveTo(z0, bottom);
+      outline.lineTo(z1, bottom);
+      outline.lineTo(z1, top);
+      outline.lineTo(z0, top);
+      outline.closePath();
+      openings.forEach(({ zc, width, bottom: holeBottom, height, kind }) => {
+        const hole = new THREE.Path();
+        hole.moveTo(zc - width / 2, holeBottom);
+        hole.lineTo(zc - width / 2, holeBottom + height);
+        hole.lineTo(zc + width / 2, holeBottom + height);
+        hole.lineTo(zc + width / 2, holeBottom);
+        hole.closePath();
+        outline.holes.push(hole);
+        const fill = new THREE.Mesh(new THREE.PlaneGeometry(width, height), kind === "door" ? darkMaterial : glassMaterial);
+        fill.rotation.y = Math.PI / 2;
+        fill.position.set(leftEdge - OPENING_DEPTH, holeBottom + height / 2, zc);
+        world.add(fill);
+      });
+      // A placa é desenhada no plano (z, y) e extrudada para dentro da casa (-x).
+      const facade = new THREE.Mesh(new THREE.ExtrudeGeometry(outline, { depth: FACADE_DEPTH, bevelEnabled: false }), material);
+      facade.rotation.y = -Math.PI / 2;
+      facade.position.x = leftEdge;
+      world.add(facade);
+      // A caixa de trás fica 2 cm mais baixa e mais curta, para nenhuma face cair no mesmo
+      // plano da placa (senão "pisca").
+      addBlock(houseBack, leftEdge - FACADE_DEPTH, z0 + m(.02), z1 - m(.02), top - m(.02), material);
+    };
+    // Telhado de 4 águas: pirâmide cortada no topo, do tamanho da caixa embaixo.
+    const addHipRoof = (x0: number, x1: number, z0: number, z1: number, baseY: number, height: number) => {
+      const roof = new THREE.Mesh(new THREE.CylinderGeometry(.3, Math.SQRT1_2, 1, 4, 1), roofMaterial);
+      roof.rotation.y = Math.PI / 4;
+      const holder = new THREE.Group();
+      holder.add(roof);
+      holder.scale.set(x1 - x0 + m(.6), height, z1 - z0 + m(.6));
+      holder.position.set((x0 + x1) / 2, baseY + height / 2, (z0 + z1) / 2);
+      world.add(holder);
+    };
+
+    // Alturas pela pintura do Deiver: casas de um andar, baixas em relação à rua.
+    // 1. Casa do alto: um andar, frente na calçada, garagem na ponta de cima.
+    {
+      const z0 = lotZ(0);
+      const z1 = lotZ(1);
+      // O telhado acompanha a rua: altura medida no meio da garagem, não na ponta de cima.
+      const top = walkY(z0 + m(3)) + m(3);
+      const garageZ = z0 + m(2);
+      const sun = facadeSunMaterial(WALL_BLUE, z1 - .43 * (z1 - z0), top, z0, top - .7 * (top - walkY(z0)));
+      addFacade(z0, z1, top, sun, [
+        { zc: garageZ, width: m(2.6), bottom: walkY(garageZ + m(1.3)), height: m(2.3), kind: "door" },
+        { zc: z0 + m(5.3), width: m(1.1), bottom: walkY(z0 + m(5.3)) + m(1), height: m(1.1), kind: "window" },
+      ]);
+      addHipRoof(houseBack, leftEdge, z0, z1, top, m(1));
+    }
+    // 2. Anexo: um andar, com a torre encostada na casa de cima.
+    {
+      const z0 = lotZ(1);
+      const z1 = lotZ(2);
+      const floor = lotFloor(1);
+      const towerTop = floor + m(3);
+      addFacade(z0, z0 + m(2.6), towerTop, facadeSunMaterial(WALL_PURPLE, z0 + m(2.6), towerTop, z0, towerTop - m(1.2)), [
+        { zc: z0 + m(1.3), width: m(.8), bottom: floor + m(1.8), height: m(.8), kind: "window" },
+      ]);
+      const annexTop = walkY(z0 + m(4)) + m(2.6);
+      vineSpots.push([z1 - m(2.1), annexTop, .45, 2.2, true]);
+      addFacade(z0 + m(2.6), z1, annexTop, facadeSunMaterial(WALL_PURPLE, z1, annexTop, z0 + m(2.6), annexTop - .4 * (annexTop - walkY(z0 + m(2.6)))), [
+        { zc: z0 + m(5.2), width: m(1.2), bottom: walkY(z0 + m(5.2)) + m(1.8), height: m(1), kind: "window" },
+      ]);
+      addPlanter(z0 + m(3), z1 - m(.6));
+    }
+    // 3. Casa baixa com chaminé; o resto do lote, até o pé da ladeira, é só muro.
+    {
+      const z0 = lotZ(2);
+      const top = walkY(z0 + m(2.5)) + m(2.6);
+      const z1 = z0 + m(5.5);
+      addFacade(z0, z1, top, facadeSunMaterial(WALL_BLUE, z1 - .43 * (z1 - z0), top, z0, top - .55 * (top - walkY(z0))), [
+        { zc: z0 + m(3.2), width: m(1.1), bottom: walkY(z0 + m(3.2)) + m(1.7), height: m(.9), kind: "window" },
+      ]);
+      addBox(m(.6), m(1), m(.6), leftEdge - m(1.5), top + m(.5), z0 + m(1.6), wallYellow);
+      // (As trepadeiras desta casa, a do começo da rua, saíram a pedido do Deiver.)
+      addPlanter(z0 + m(.6), notchZ0 - m(.4));
+    }
+
+    // DIREITA: mureta na borda da calçada com o corrimão em cima. Perto do alto, ela vira um
+    // muro de 1,2 m por 3 m. Depois, o barranco que cai para a cidade.
+    const wallX0 = rightEdge;
+    const wallX1 = wallX0 + m(.25);
+    // Corrimão na altura da mão: mureta de 40 cm + barra 55 cm acima dela = 95 cm da calçada
+    // (o Jota tem 1,83 m, então a barra fica na altura do quadril dele). O muro alto do
+    // começo baixou para 1,2 m, para não jogar uma sombra enorme na rua.
+    const LOW_WALL = m(.4);
+    const tallWallEnd = TOP_Z + m(3);
+    addSlab(wallX0, wallX1 + m(.1), TOP_Z, tallWallEnd, CURB + m(1.2), m(1.2) + m(6), retainingMaterial);
+    addSlab(wallX0, wallX1, tallWallEnd, STREET_END_Z, CURB + LOW_WALL, LOW_WALL + m(6), retainingMaterial);
+    const RAIL_HEIGHT = m(.55);
+    const railX = (wallX0 + wallX1) / 2;
+    const postGeometry = new THREE.CylinderGeometry(m(.025), m(.025), RAIL_HEIGHT, 6);
+    for (let z = tallWallEnd; z <= STREET_END_Z; z += m(2)) {
+      const post = new THREE.Mesh(postGeometry, railMaterial);
+      post.position.set(railX, walkY(z) + LOW_WALL + RAIL_HEIGHT / 2, z);
+      world.add(post);
+    }
+    const railLength = (STREET_END_Z - tallWallEnd) / Math.cos(slopeAngle);
+    const rail = new THREE.Mesh(new THREE.CylinderGeometry(m(.03), m(.03), railLength, 6), railMaterial);
+    rail.rotation.x = Math.PI / 2 + slopeAngle;
+    const railMid = (tallWallEnd + STREET_END_Z) / 2;
+    rail.position.set(railX, walkY(railMid) + LOW_WALL + RAIL_HEIGHT, railMid);
+    world.add(rail);
+
+    let disposed = false;
+    // Textura pintada (sem luz do site) + o mesmo fio de contorno à mão do poste: o lado
+    // virado para a rua e o céu claro ganha amarelo-esverdeado. Ex.: no coqueiro, a borda
+    // direita do tronco e a ponta de cima das folhas.
+    const PAINTED_RIM_DIRECTION = new THREE.Vector3(1, .35, -.35).normalize();
+    const createPaintedRimMaterial = (map: THREE.Texture | null) => new THREE.ShaderMaterial({
+      side: THREE.DoubleSide,
+      uniforms: {
+        uMap: { value: map },
+        uRimDirection: { value: PAINTED_RIM_DIRECTION },
+        uRimAmount: { value: .3 },
+        uRimColor: { value: new THREE.Color(JOTA_RIM) },
+      },
+      vertexShader: /* glsl */ `
+        varying vec2 vUv;
+        varying vec3 vNormalWorld;
+        void main() {
+          vUv = uv;
+          vNormalWorld = normalize(mat3(modelMatrix) * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform sampler2D uMap;
+        uniform vec3 uRimDirection;
+        uniform float uRimAmount;
+        uniform vec3 uRimColor;
+        varying vec2 vUv;
+        varying vec3 vNormalWorld;
+        void main() {
+          vec3 normal = normalize(vNormalWorld);
+          if (!gl_FrontFacing) normal = -normal;
+          vec3 color = texture2D(uMap, vUv).rgb;
+          if (dot(normal, uRimDirection) > 1.0 - uRimAmount) color = uRimColor;
+          gl_FragColor = vec4(color, 1.0);
+          #include <colorspace_fragment>
+        }
+      `,
+    });
+    const loadPainted = (url: string, place: (model: THREE.Object3D) => void) => {
+      new GLTFLoader().load(url, (gltf) => {
+        if (disposed) return;
+        const model = gltf.scene;
+        model.traverse((child) => {
+          if (!(child instanceof THREE.Mesh)) return;
+          const original = child.material as THREE.MeshStandardMaterial;
+          child.material = createPaintedRimMaterial(original.map);
+          original.dispose();
+          child.castShadow = true;
+        });
+        place(model);
+        world.add(model);
+      });
+    };
+    const fitBox = new THREE.Box3();
+    const fitSize = new THREE.Vector3();
+
+    // Traço de desenho no cenário: uma linha azul-marinho nas quinas de cada peça (onde as
+    // faces dobram mais de 30°), com espessura fixa em pixels, como caneta. Ex.: a quina
+    // de uma casa vira um risco; uma parede lisa continua sem linha nenhuma.
+    // Só nas peças feitas aqui (Jota tem o contorno dele; palmeira e objetos no ar ficam sem).
+    const sceneryLineMaterial = new LineMaterial({ color: TINTA.navyDeep, linewidth: 2 });
+    const sceneryMeshes: THREE.Mesh[] = [];
+    world.traverse((child) => {
+      if (!(child instanceof THREE.Mesh) || child instanceof LineSegments2) return;
+      const material = child.material as THREE.Material;
+      if (material.transparent || child.geometry instanceof THREE.PlaneGeometry) return;
+      sceneryMeshes.push(child);
+    });
+    sceneryMeshes.forEach((mesh) => {
+      const edges = new THREE.EdgesGeometry(mesh.geometry, 30);
+      const line = new LineSegments2(new LineSegmentsGeometry().fromEdgesGeometry(edges), sceneryLineMaterial);
+      edges.dispose();
+      mesh.add(line);
+    });
+
+    // O Jota 3D (o mesmo da página jota-3d), em pé em frente ao portão, de frente para a câmera.
+    // Na beira do patamar, onde a ladeira começa: bem perto da câmera no início (~1 m).
+    const JOTA_Z = TOP_Z - m(.15);
+    const outlineMaterial = createOutlineMaterial({ color: JOTA_INK, worldWidth: .006 * METER });
+    const jota = loadJotaFigure({ outline: outlineMaterial, anisotropy: renderer.capabilities.getMaxAnisotropy() });
+    jota.group.scale.setScalar(METER);
+    jota.group.position.set(0, groundY(JOTA_Z), JOTA_Z);
+    world.add(jota.group);
+
+
+    // Objetos no ar: entre 1,50 e 1,90 m, a ~25 cm para o lado da lente. Ficam fora do
+    // caminho do cameraman, mas tão perto que passam "quase acertando a tela".
+    // side: -1 = esquerda, 1 = direita (olhando para o Jota).
+    const flyingObjects: { object: THREE.Object3D; spin: number }[] = [];
+    const placeFlying = (object: THREE.Object3D, z: number, side: -1 | 1, heightMeters: number, spin: number, offsetMeters = .25) => {
+      object.position.set(cameraPathX(z) + side * m(offsetMeters), roadY(z) + m(heightMeters), z);
+      world.add(object);
+      flyingObjects.push({ object, spin });
+    };
+
+    // Um livro grosso de capa preta, sem nada escrito: 16 × 24 cm, 7 cm de espessura.
+    // Deitado: x = largura, y = espessura, z = altura. Duas capas finas, lombada redonda à
+    // esquerda e o bloco de folhas um pouco recuado, aparecendo nos outros três lados.
+    const book = new THREE.Group();
+    const addBookPart = (geometry: THREE.BufferGeometry, material: THREE.Material, x: number, y: number) => {
+      const part = new THREE.Mesh(geometry, material);
+      part.position.set(m(x), m(y), 0);
+      book.add(part);
+      return part;
+    };
+    [-.033, .033].forEach((y) => addBookPart(new THREE.BoxGeometry(m(.16), m(.004), m(.24)), bookCoverMaterial, 0, y));
+    const spine = addBookPart(new THREE.CylinderGeometry(m(.035), m(.035), m(.24), 16, 1, false, Math.PI, Math.PI), bookCoverMaterial, -.08, 0);
+    spine.rotation.x = Math.PI / 2;
+    addBookPart(new THREE.BoxGeometry(m(.152), m(.062), m(.228)), bookPagesMaterial, .001, 0);
+    // Inclinado com a capa virada para a câmera, que vem descendo de costas; o giro do scroll
+    // roda o livro como um ponteiro, sem esconder a capa.
+    book.rotation.set(1.1, 0, -.2);
+    placeFlying(book, 8, -1, 1.55, .9);
+
+    // Maços de notas de Real: o modelo do Deiver (Meshy), com a textura pintada como veio.
+    // O maço mede ~30 cm no lado maior (o dobro do real: no tamanho certo ele some na tela).
+    // Como os outros objetos no ar, ele quase some colado na lente e ganha corpo ao se
+    // afastar. Ex.: a 20 cm da lente fica invisível; a partir de 1,6 m, inteiro.
+    const MONEY_SIZE = m(.3);
+    // Um maço só, bem ao lado do caminho (90 cm da lente), para não passar raspando na câmera.
+    const moneySlots = [
+      { z: 14.2, side: 1, height: 1.75, spin: -1.3, turn: [.3, .6, .25] },
+] as const;
+    const moneyHolders = moneySlots.map(({ z, side, height, spin, turn }) => {
+      const holder = new THREE.Group();
+      holder.rotation.set(turn[0], turn[1], turn[2]);
+      placeFlying(holder, z, side, height, spin, .9);
+      return holder;
+    });
+    new GLTFLoader().load(MONEY_URL, (gltf) => {
+      if (disposed) return;
+      const model = gltf.scene;
+      fitBox.setFromObject(model);
+      fitBox.getSize(fitSize);
+      const center = fitBox.getCenter(new THREE.Vector3());
+      const scale = MONEY_SIZE / Math.max(fitSize.x, fitSize.y, fitSize.z);
+      moneyHolders.forEach((holder) => {
+        const copy = model.clone(true);
+        copy.traverse((child) => {
+          if (!(child instanceof THREE.Mesh)) return;
+          const original = child.material as THREE.MeshStandardMaterial;
+          const material = new THREE.MeshBasicMaterial({ map: original.map, side: THREE.DoubleSide, transparent: true });
+          child.material = material;
+          child.onBeforeRender = (_renderer, _scene, camera) => {
+            const distance = camera.position.distanceTo(holder.position);
+            // Também só aparece a partir de ~1,2 m da lente e some entre 9 e 14 unidades, como os bilhetes.
+            material.opacity = THREE.MathUtils.smoothstep(distance, 2.5, 6) * (1 - THREE.MathUtils.smoothstep(distance, 9, 14));
+            material.depthWrite = material.opacity > .99;
+          };
+        });
+        copy.scale.setScalar(scale);
+        copy.position.copy(center).multiplyScalar(-scale);
+        holder.add(copy);
+      });
+    });
+
+    // Trepadeiras caindo por cima das fachadas da esquerda, como na referência do Deiver.
+    // Cor pela forma (sem textura), pelas referências do Deiver: azul royal no lado da luz,
+    // marinho quase preto na sombra, manchas roxo-violeta e o fio de contorno amarelo-esverdeado.
+    // Cada cacho tem 35–50 cm (40 cm do Deiver, +25% para o cel ler melhor); a cortina é feita de cachos
+    // empilhados. Ex.: uma cortina de 1,5 m de largura e 1,6 m de queda tem ~50 cachos, mais
+    // compridos no meio e mais curtos nas pontas, colados na parede.
+    // Cel limpo de 2 tons (azul royal na luz, marinho quase preto na sombra), como a moita
+    // original que o Deiver mandou. Para não virar "chuvisco metálico" de folhinhas, cada cacho
+    // é sombreado como uma bola: a normal de cada folha é puxada para fora do centro do cacho.
+    // Ex.: centerY -.5 = centro no meio de um cacho pendurado (origem no topo); .5 = planta
+    // em pé (origem na base).
+    const leafMaterial = (centerY: number) => {
+      const material = addManualRim(sceneCel({ lit: "#3a4ee6", mid: "#2533b0", shade: "#141b72", deep: "#070b36", clean: true, cleanTones: 3 }), new THREE.Vector3(1, .35, .35), .12);
+      // Luz própria, de cima e do alto da ladeira: vista da rua, cada cacho fica com a metade
+      // de cima azul royal e a de baixo marinho (como o rosto do Jota, meio a meio).
+      material.uniforms.uLightDirection.value.set(.2, .75, -.6).normalize();
+      material.fragmentShader = material.fragmentShader.replace("    vec3 dirtNormal", `    // Poucas manchas roxas, só na parte iluminada.
+    float violet = valueNoise(vWorldPosition.zy * 0.9 + vWorldPosition.x * 0.5);
+    if (violet > 0.74 && facing > 0.08 && shadow > 0.5) color = vec3(0.07, 0.03, 0.39);
+    // Contorno de tinta: as folhas na borda de cada cacho (de lado para a câmera) ficam
+    // marinho quase preto, como a linha escura em volta do Jota.
+    if (1.0 - abs(dot(normal, normalize(cameraPosition - vWorldPosition))) > 0.8) color = uDeep;
+    vec3 dirtNormal`);
+      // Muitas cópias iguais: um InstancedMesh. O shader do cel usa modelMatrix; aqui ele passa
+      // a usar também a matriz de cada cópia.
+      material.vertexShader = material.vertexShader
+        .replace("vNormalWorld = normalize(mat3(modelMatrix) * objectNormal);", `vec3 clusterNormal = normalize(mix(objectNormal, normalize(transformed - vec3(0.0, ${centerY.toFixed(2)}, 0.0)), 0.8));
+    #ifdef USE_INSTANCING
+      vNormalWorld = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * clusterNormal);
+      vWorldPosition = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz;
+    #else
+      vNormalWorld = normalize(mat3(modelMatrix) * clusterNormal);
+      vWorldPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;
+    #endif`)
+        .replace("    vWorldPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;\n  }", "  }");
+      return material;
+    };
+    const vineMaterial = leafMaterial(-.5);
+    const pottedPlantMaterial = leafMaterial(.5);
+    const VINE_SIZE = .5;
+    const VINE_WIDTH = 1.5;
+    new GLTFLoader().load(VINE_URL, (gltf) => {
+      if (disposed) return;
+      const geometry = (gltf.scene.getObjectByProperty("type", "Mesh") as THREE.Mesh).geometry;
+      // Sorteio fixo (sempre o mesmo desenho a cada carga da página).
+      let seed = 7;
+      const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      const placements: THREE.Matrix4[] = [];
+      const turn = new THREE.Quaternion();
+      vineSpots.forEach(([z, top, drop, width = VINE_WIDTH, fromYard = false]) => {
+        for (let across = -width / 2; across <= width / 2; across += .3) {
+          // Mais comprida no meio, mais curta nas pontas, com um pouco de acaso.
+          const edge = Math.abs(across) / (width / 2);
+          const length = drop * (1 - edge * edge * .7) * (.75 + random() * .35);
+          for (let down = fromYard ? -.6 : 0; down < length; down += .3) {
+            // Acima do topo do muro: copa recuada para dentro do quintal.
+            const inward = down < 0 ? .15 + random() * .5 : 0;
+            const size = m(VINE_SIZE * (.7 + random() * .3));
+            turn.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, random() * Math.PI * 2);
+            placements.push(new THREE.Matrix4().compose(
+              new THREE.Vector3(leftEdge + m(.06 + random() * .12 - inward), top + m(.2 - down), z + m(across + (random() - .5) * .12)),
+              turn,
+              new THREE.Vector3(size, size, size),
+            ));
+          }
+        }
+      });
+      const vines = new THREE.InstancedMesh(geometry, vineMaterial, placements.length);
+      placements.forEach((matrix, index) => vines.setMatrixAt(index, matrix));
+      vines.frustumCulled = false;
+      world.add(vines);
+    });
+
+    // Plantas de vaso nos canteiros (no lugar das moitas de marcação), do tamanho que o Deiver
+    // marcou: ~1,3–1,6 m acima da terra do canteiro. Cada uma girada de um jeito.
+    new GLTFLoader().load(POTTED_PLANT_URL, (gltf) => {
+      if (disposed) return;
+      const geometry = (gltf.scene.getObjectByProperty("type", "Mesh") as THREE.Mesh).geometry;
+      // Duas plantas por ponto (uma maior, uma menor ao lado) e mais largas que o modelo, para
+      // encher o espaço que o Deiver marcou (~70 cm de largura).
+      const plants = new THREE.InstancedMesh(geometry, pottedPlantMaterial, plantSpots.length * 2);
+      const turn = new THREE.Quaternion();
+      plantSpots.forEach(([x, y, z, height], index) => {
+        [[0, 1, 0], [.22, .8, 1.7]].forEach(([dz, size, spin], copy) => {
+          const h = m(height * size);
+          turn.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, index * 2.4 + spin);
+          plants.setMatrixAt(index * 2 + copy, new THREE.Matrix4().compose(new THREE.Vector3(x, y - m(.05), z + m(dz)), turn, new THREE.Vector3(h * 1.5, h, h * 1.5)));
+        });
+      });
+      plants.frustumCulled = false;
+      world.add(plants);
+    });
+
+    // Palmeira de ~6,3 m (30% menor que antes), à esquerda, para não cobrir a casa.
+    loadPainted(PALM_URL, (palm) => {
+      fitBox.setFromObject(palm);
+      fitBox.getSize(fitSize);
+      palm.scale.setScalar(m(PALM_HEIGHT) / fitSize.y);
+      fitBox.setFromObject(palm);
+      palm.position.set(-m(5) - (fitBox.min.x + fitBox.max.x) / 2, groundY(GATE_Z) - fitBox.min.y, GATE_Z - m(1.6) - (fitBox.min.z + fitBox.max.z) / 2);
+    });
+
+    // Postes de 4,5 m na calçada da esquerda, com um braço curvo e a luminária sobre a rua
+    // (sem cruzeta, para não lembrar uma cruz). Baixos o bastante para a luminária entrar
+    // no quadro. A luz de contorno é "pintada à mão": não depende do sol, vem sempre do
+    // lado da rua e do céu claro. Ex.: o lado do poste virado para a rua ganha um fio
+    // amarelo-esverdeado; o lado da parede fica só azul-marinho.
+    const POLE_HEIGHT = m(4.5);
+    const poleMaterial = addManualRim(sceneCel({ lit: "#071843", mid: TINTA.navyDeep, shade: TINTA.ink, deep: TINTA.ink }), new THREE.Vector3(1, .35, -.35), .3);
+    const lampGlowMaterial = new THREE.MeshBasicMaterial({ color: TINTA.yellow });
+    // Luz do poste como o Deiver desenhou no Figma ("light-air" e "light floor").
+    // Feixe: trapézio amarelo #E7E209, estreito na luminária e largo no chão, com transparência
+    // em degradê de cima para baixo (10% → 50% a 35% da altura → 20% a 80% → 10%) e borda que
+    // borra mais embaixo (no Figma, blur progressivo de 5 a 28). Some quando a câmera chega perto
+    // (a 18 unidades, ~9 m, inteiro; a 8, ~4 m, sumiu).
+    const lightConeMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      uniforms: { uColor: { value: new THREE.Color("#e7e209") } },
+      vertexShader: `varying vec3 vWorld; varying vec3 vNormalW; varying float vDown;
+        void main() { vec4 world = modelMatrix * vec4(position, 1.0); vWorld = world.xyz; vNormalW = normalize(mat3(modelMatrix) * normal); vDown = 1.0 - uv.y; gl_Position = projectionMatrix * viewMatrix * world; }`,
+      fragmentShader: `uniform vec3 uColor; varying vec3 vWorld; varying vec3 vNormalW; varying float vDown;
+        void main() {
+          float alpha = vDown < 0.35 ? mix(0.10, 0.50, vDown / 0.35) : vDown < 0.8 ? mix(0.50, 0.20, (vDown - 0.35) / 0.45) : mix(0.20, 0.10, (vDown - 0.8) / 0.2);
+          float facing = abs(dot(normalize(vNormalW), normalize(cameraPosition - vWorld)));
+          alpha *= smoothstep(0.0, mix(0.2, 0.75, vDown), facing);
+          alpha *= smoothstep(8.0, 18.0, distance(vWorld, cameraPosition));
+          gl_FragColor = vec4(uColor, alpha * 0.6);
+          #include <colorspace_fragment>
+        }`,
+    });
+    // Mancha no chão: 3 elipses borradas uma dentro da outra, que somam luz (no Figma: "color
+    // dodge"). Ex.: a de fora, larga, amarela #F1EF34 a 30%; a do meio também a 30%; a do centro,
+    // fina e quase branca (#FFFEBE) a 80%.
+    const poolMaterial = (color: string, strength: number) => new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: { uColor: { value: new THREE.Color(color) }, uStrength: { value: strength } },
+      vertexShader: "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      fragmentShader: `uniform vec3 uColor; uniform float uStrength; varying vec2 vUv;
+        void main() {
+          float d = length(vUv - 0.5) * 2.0;
+          gl_FragColor = vec4(uColor * uStrength * pow(1.0 - smoothstep(0.0, 1.0, d), 1.6), 1.0);
+          #include <colorspace_fragment>
+        }`,
+    });
+    // [material, largura em m (de lado, x), fundo em m (ao longo da rua, z)]
+    const POOL_LAYERS: [THREE.ShaderMaterial, number, number][] = [
+      [poolMaterial("#f1ef34", .3), 3.1, 2.8],
+      [poolMaterial("#f1ef34", .3), 1.8, 1.6],
+      [poolMaterial("#fffebe", .6), 1.1, .55],
+    ];
+    [18, 32].forEach((z) => {
+      const pole = new THREE.Group();
+      pole.position.set(-ROAD_HALF - m(.25), roadY(z) + CURB, z);
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(m(.06), m(.09), POLE_HEIGHT, 16), poleMaterial);
+      shaft.position.y = POLE_HEIGHT / 2;
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(m(.04), m(.04), m(1.6), 16), poleMaterial);
+      arm.rotation.z = -Math.PI / 2 + .25;
+      arm.position.set(m(.78), POLE_HEIGHT + m(.1), 0);
+      const lamp = new THREE.Mesh(new THREE.BoxGeometry(m(.5), m(.12), m(.25)), poleMaterial);
+      lamp.position.set(m(1.55), POLE_HEIGHT + m(.25), 0);
+      // A lâmpada acesa: a face de baixo da luminária, amarela chapada.
+      const glow = new THREE.Mesh(new THREE.BoxGeometry(m(.42), m(.03), m(.2)), lampGlowMaterial);
+      glow.position.set(m(1.55), POLE_HEIGHT + m(.18), 0);
+      pole.add(shaft, arm, lamp, glow);
+      world.add(pole);
+      // Luz do poste desenhada, não física: o feixe da luminária até a rua e a mancha onde ele toca.
+      const lampX = pole.position.x + m(1.55);
+      const lampY = pole.position.y + POLE_HEIGHT + m(.18);
+      const floorY = roadY(z);
+      const cone = new THREE.Mesh(new THREE.CylinderGeometry(m(.22), m(1.1), lampY - floorY, 32, 1, true), lightConeMaterial);
+      cone.position.set(lampX, (lampY + floorY) / 2, z);
+      cone.userData.noShadow = true;
+      world.add(cone);
+      // Deitadas na rua (que desce 40 cm por metro): a normal aponta para cima e um pouco para a câmera.
+      POOL_LAYERS.forEach(([material, width, depth], index) => {
+        const pool = new THREE.Mesh(new THREE.CircleGeometry(.5, 48), material);
+        pool.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 1, ROAD_SLOPE).normalize());
+        pool.scale.set(m(width), m(depth), 1);
+        pool.position.set(lampX, floorY + m(.03 + index * .005), z);
+        pool.renderOrder = 2 + index;
+        pool.userData.noShadow = true;
+        world.add(pool);
+      });
+    });
+
+    // Cidade baixa: prédios de 6 a 15 m, longe o bastante para quase não se moverem no recuo.
+    const skyline = new THREE.Group();
+    for (let index = 0; index < 22; index += 1) {
+      // Do lado direito, a cidade agora é o desenho do Deiver (fundo em paralaxe, abaixo).
+      if (-70 + index * 6.6 > -5) continue;
+      const height = m(6 + ((index * 13) % 7) * 1.5);
+      const building = new THREE.Mesh(new THREE.BoxGeometry(m(6), height, m(8)), cityMaterials[index % 2]);
+      building.position.set(-70 + index * 6.6, -2 + height / 2, -58 - (index % 3) * 4);
+      skyline.add(building);
+    }
+    world.add(skyline);
+
+    // Fundo da direita, além do corrimão: dois desenhos do Deiver em paralaxe, sem 3D.
+    // O morro com a cidade fica longe e quase não anda; a faixa de árvores fica mais perto
+    // e anda mais rápido quando a câmera desce. Ex.: descendo 10 m, as árvores deslizam
+    // bem mais que as casas lá no fundo, e isso dá a profundidade.
+    const backdropLoader = new THREE.TextureLoader();
+    const addBackdrop = (url: string, width: number, aspect: number, x: number, top: number, z: number) => {
+      const texture = backdropLoader.load(url);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      const height = width / aspect;
+      const plane = new THREE.Mesh(
+        new THREE.PlaneGeometry(width, height),
+        new THREE.MeshBasicMaterial({ map: texture, transparent: true, alphaTest: .02, depthWrite: false }),
+      );
+      plane.position.set(x, top - height / 2, z);
+      plane.rotation.y = -.45;
+      world.add(plane);
+      return plane;
+    };
+    addBackdrop(BACKDROP_CITY_URL, 120, 2398 / 1760, 45, 30, -50);
+    addBackdrop(BACKDROP_TREES_URL, 44, 2408 / 522, 22, 8, -2).renderOrder = 1;
+
+    // No animatic cinza este plano era o "céu". Aqui ele vira só a massa escura de morro
+    // abaixo da linha da cidade, para o degradê amarelo aparecer acima dela.
+    const horizon = new THREE.Mesh(new THREE.PlaneGeometry(130, 7), hillMaterial);
+    horizon.position.set(0, -2.5, -66);
+    world.add(horizon);
+
+    // Os papéis ficam atrás e acima da câmera e só entram no cone visual depois que ela
+    // passa por baixo deles; assim a passagem é consequência da trajetória real.
+    // A origem de cada grupo é a borda de baixo do papel, presa a 1,90 m do chão.
+    // Eles alternam de lado (direita, esquerda...) para um não tampar o outro.
+    const papers = BOOK_EXCERPTS.map(({ z, text }, index) => {
+      const texture = createTextTexture(text);
+      const group = new THREE.Group();
+      group.position.set(cameraPathX(z) + (index % 2 ? -1 : 1) * m(1.6), roadY(z) + PAPER_BOTTOM, z);
+      const material = new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        uniforms: {
+          uMap: { value: texture },
+          uBlur: { value: 0 },
+          uOpacity: { value: 1 },
+        },
+        vertexShader: paperVertexShader,
+        fragmentShader: paperFragmentShader,
+      });
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(PAPER_WIDTH, PAPER_HEIGHT), material);
+      mesh.position.y = PAPER_HEIGHT / 2;
+      mesh.userData.noShadow = true;
+      group.add(mesh);
+      world.add(group);
+      return { group, mesh, material, texture };
+    });
+
+    world.traverse((child) => {
+      // A luz desenhada do poste (cone e mancha) não faz nem recebe sombra.
+      if (!(child instanceof THREE.Mesh) || child.userData.noShadow) return;
+      child.castShadow = true;
+      child.receiveShadow = true;
+    });
+
+
+    const startPosition = new THREE.Vector3(CAMERA_START_X, roadY(CAMERA_START_Z) + EYE_HEIGHT, CAMERA_START_Z);
+    const endPosition = new THREE.Vector3(CAMERA_END_X, roadY(CAMERA_END_Z) + EYE_HEIGHT, CAMERA_END_Z);
+    // A câmera mira o rosto do Jota (~1,70 m) e, no fim, um pouco abaixo, para a rua caber.
+    const startLookAt = new THREE.Vector3(0, groundY(JOTA_Z) + 1.7 * METER, JOTA_Z);
+    const endLookAt = new THREE.Vector3(0, groundY(TOP_Z) + 1.3 * METER, TOP_Z);
+    // Abertura: a câmera começa no alto, vendo só a casa (o Jota fica abaixo do quadro).
+    // No primeiro trecho do scroll (INTRO) ela desce até a altura do olho, já colada no Jota.
+    const INTRO = .15;
+    const highPosition = new THREE.Vector3(CAMERA_START_X, TOP_Y + m(8), CAMERA_START_Z + m(4));
+    const houseLookAt = new THREE.Vector3(0, TOP_Y + m(4.5), GATE_Z - m(6));
+    const cameraPosition = new THREE.Vector3();
+    const lookAt = new THREE.Vector3();
+    const paperFacing = new THREE.Vector3();
+    const paperCenter = new THREE.Vector3();
+    let progress = 0;
+    let targetProgress = 0;
+    let frame = 0;
+    let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const resize = () => {
+      const { width, height } = container.getBoundingClientRect();
+      renderer.setSize(width, height, false);
+      camera.aspect = width / Math.max(height, 1);
+      camera.updateProjectionMatrix();
+      papers.forEach(({ group }) => group.scale.setScalar(width < 600 ? .62 : 1));
+      // O contorno do Jota tem espessura mínima e máxima em pixels reais.
+      renderer.getDrawingBufferSize(outlineMaterial.uniforms.uResolution.value);
+      sceneryLineMaterial.resolution.set(width, height);
+      renderer.getDrawingBufferSize(sky.material.uniforms.uResolution.value);
+      const ratio = renderer.getPixelRatio();
+      outlineMaterial.uniforms.uMinPixels.value = 1.5 * ratio;
+      outlineMaterial.uniforms.uMaxPixels.value = 4 * ratio;
+      renderScene();
+    };
+
+    const renderScene = () => {
+      const walk = THREE.MathUtils.clamp((progress - INTRO) / (1 - INTRO), 0, 1);
+      cameraPosition.lerpVectors(startPosition, endPosition, walk);
+      cameraPosition.x += Math.sin(walk * Math.PI) * CAMERA_SWAY;
+      cameraPosition.y += Math.sin(walk * Math.PI) * .22;
+      lookAt.lerpVectors(startLookAt, endLookAt, walk);
+      const descent = THREE.MathUtils.smoothstep(progress, 0, INTRO);
+      cameraPosition.lerpVectors(highPosition, cameraPosition, descent);
+      lookAt.lerpVectors(houseLookAt, lookAt, descent);
+      camera.position.copy(cameraPosition);
+      camera.lookAt(lookAt);
+      sky.position.copy(camera.position);
+      // O papel gira só em torno do eixo vertical, então a borda de baixo fica sempre a 1,90 m.
+      papers.forEach(({ group, mesh, material }) => {
+        paperFacing.set(camera.position.x, group.position.y, camera.position.z);
+        group.lookAt(paperFacing);
+        mesh.getWorldPosition(paperCenter);
+        const paperDistance = camera.position.distanceTo(paperCenter);
+        // Ex.: a 2 unidades da lente (~1 m) o papel quase some e borra; a partir de 8 (~4 m) fica nítido.
+        material.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(paperDistance, 2, 8)) * 6;
+        // Só aparece a partir de ~1,5 m da lente e some de novo entre 9 e 13 unidades, para o caminho
+        // ficar livre: na tela fica no máximo um ou dois bilhetes por vez.
+        material.uniforms.uOpacity.value = THREE.MathUtils.smoothstep(paperDistance, 3, 8) * (1 - THREE.MathUtils.smoothstep(paperDistance, 9, 13));
+      });
+      flyingObjects.forEach(({ object, spin }) => { object.rotation.y = spin * progress * Math.PI; });
+      renderer.render(scene, camera);
+    };
+
+    const animate = () => {
+      progress += (targetProgress - progress) * .075;
+      renderScene();
+      frame = window.requestAnimationFrame(animate);
+    };
+
+    const updateScrollProgress = () => {
+      const bounds = scrollArea.getBoundingClientRect();
+      const distance = Math.max(scrollArea.offsetHeight - window.innerHeight, 1);
+      targetProgress = Math.min(1, Math.max(0, -bounds.top / distance));
+      scrollArea.style.setProperty("--scroll-progress", targetProgress.toFixed(4));
+    };
+
+    const handleMotionPreference = () => {
+      reducedMotion = motionQuery.matches;
+      if (reducedMotion) {
+        scrollArea.dataset.reducedMotion = "true";
+        targetProgress = .66;
+        progress = .66;
+        scrollArea.style.setProperty("--scroll-progress", ".66");
+        if (frame) window.cancelAnimationFrame(frame);
+        frame = 0;
+        renderScene();
+      } else {
+        delete scrollArea.dataset.reducedMotion;
+        updateScrollProgress();
+        if (!frame) animate();
+      }
+    };
+
+    resize();
+    handleMotionPreference();
+    window.addEventListener("resize", resize);
+    window.addEventListener("scroll", updateScrollProgress, { passive: true });
+    motionQuery.addEventListener("change", handleMotionPreference);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", updateScrollProgress);
+      motionQuery.removeEventListener("change", handleMotionPreference);
+      if (frame) window.cancelAnimationFrame(frame);
+      disposed = true;
+      jota.dispose();
+      outlineMaterial.dispose();
+      disposeObject(world);
+      sky.geometry.dispose();
+      sky.material.dispose();
+      papers.forEach(({ texture }) => texture?.dispose());
+      renderer.dispose();
+      renderer.domElement.remove();
+    };
+  }, []);
+
+  return (
+    <main className={styles.animatic} ref={scrollRef}>
+      <header className={styles.header}>
+        {/* Logo do Deiver (SVG do Figma, 230 × 20). */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className={styles.logo} src="/enquanto-durar-a-fe/logo-enquanto-fe.svg" width={184} height={16} alt="Enquanto durar a fé" />
+        <a className={styles.headerBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">Ler na Amazon</a>
+      </header>
+
+      <section className={styles.stage} aria-labelledby="book-title">
+        <div className={styles.canvasShell} ref={containerRef} role="img" aria-label="Jota, de camisa clara e bolsa transversal, em frente ao portão da última casa de uma ladeira de paralelepípedos, no fim da tarde, enquanto a câmera desce a rua de costas" />
+        <div className={styles.vignette} aria-hidden="true" />
+        {[styles.glowBottomLeft, styles.glowRight, styles.glowRightHigh, styles.glowBottom, styles.glowPurple].map((glow) => <i key={glow} className={`${styles.glow} ${glow}`} aria-hidden="true" />)}
+        <div className={styles.introMask} aria-hidden="true" />
+        <div className={styles.copy}>
+          <h1 id="book-title">Se você espera um livro religioso, veio ao lugar errado.</h1>
+        </div>
+        <div className={styles.scrollHint}>
+          <p>Jota bate de porta em porta vendendo Bíblias. A fé alheia, ele conhece de cor.</p>
+          <span>Role para entrar <i aria-hidden="true">↓</i></span>
+        </div>
+        <p className={styles.reducedNote}>Quadro estático por preferência de movimento reduzido.</p>
+        <div className={styles.progress} aria-hidden="true"><i /></div>
+      </section>
+
+      <section className={styles.ending}>
+        <p>“E sobre o que você queria falar mesmo?”</p>
+        <span>Até onde podemos ir por quem amamos?</span>
+        <a className={styles.buy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">Ler na Amazon · R$ 17,99 ou no Kindle Unlimited ↗</a>
+      </section>
+    </main>
+  );
+}
