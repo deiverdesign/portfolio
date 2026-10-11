@@ -5,6 +5,25 @@ import * as THREE from "three";
 
 // Escala: o Jota tem 3.71 unidades do chão ao topo da cabeça e mede 1,83 m.
 // Ex.: 1,90 m × METER ≈ 3.85 unidades.
+// Sombra só do sol (luz direcional). O getShadowMask() do three.js multiplica TODAS as sombras,
+// inclusive a da lâmpada da cozinha: as paredes da cozinha tapavam a lâmpada e escureciam o
+// começo da rua inteiro (a "sombra enorme" que o Deiver viu depois da cena 2).
+const SUN_SHADOW_GLSL = /* glsl */ `
+  float getSunShadowMask() {
+    float shadow = 1.0;
+    #if defined(USE_SHADOWMAP) && NUM_DIR_LIGHT_SHADOWS > 0
+      DirectionalLightShadow directionalLight;
+      #pragma unroll_loop_start
+      for (int i = 0; i < NUM_DIR_LIGHT_SHADOWS; i++) {
+        directionalLight = directionalLightShadows[i];
+        shadow *= receiveShadow ? getShadow(directionalShadowMap[i], directionalLight.shadowMapSize, directionalLight.shadowIntensity, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[i]) : 1.0;
+      }
+      #pragma unroll_loop_end
+    #endif
+    return shadow;
+  }
+`;
+
 export const JOTA_HEIGHT_UNITS = 3.71;
 export const METER = JOTA_HEIGHT_UNITS / 1.83;
 export const m = (meters: number) => meters * METER;
@@ -78,6 +97,7 @@ const celFragmentShader = /* glsl */ `
   #include <lights_pars_begin>
   #include <shadowmap_pars_fragment>
   #include <shadowmask_pars_fragment>
+  ${SUN_SHADOW_GLSL}
 
   uniform vec3 uLit;
   uniform vec3 uMid;
@@ -132,7 +152,7 @@ const celFragmentShader = /* glsl */ `
     vec3 normal = normalize(vNormalWorld);
     if (!gl_FrontFacing) normal = -normal;
     float facing = dot(normal, uLightDirection);
-    float shadow = getShadowMask();
+    float shadow = getSunShadowMask();
     float light = facing * shadow;
 
     // Ruído preso ao mundo: as fronteiras entre faixas tremem como tinta de impressão
@@ -376,12 +396,13 @@ const paintedFragmentShader = /* glsl */ `
   #include <lights_pars_begin>
   #include <shadowmap_pars_fragment>
   #include <shadowmask_pars_fragment>
+  ${SUN_SHADOW_GLSL}
   uniform sampler2D uMap;
   uniform vec3 uShadow;
   varying vec2 vUv;
   void main() {
     vec3 color = texture2D(uMap, vUv).rgb;
-    color = mix(color * uShadow, color, step(0.5, getShadowMask()));
+    color = mix(color * uShadow, color, step(0.5, getSunShadowMask()));
     gl_FragColor = vec4(color, 1.0);
     #include <colorspace_fragment>
   }

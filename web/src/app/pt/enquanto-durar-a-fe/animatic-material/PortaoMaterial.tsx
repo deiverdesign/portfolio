@@ -1334,6 +1334,8 @@ export function PortaoMaterial() {
     const kitchenLookAt = new THREE.Vector3(WINDOW_X, KITCHEN_FLOOR + m(1.05), WINDOW_Z - m(8));
     let kitchenState: "idle" | "loading" | "ready" = "idle";
     let kitchenGroup: THREE.Object3D | null = null;
+    // null = ainda não aplicado (vale também quando a Helena termina de carregar).
+    let kitchenCastsShadow: boolean | null = null;
     let updateKitchen: ((state: { red: number; time: number; pixels: number }) => void) | null = null;
 
     // ---------------------------------------------------------------------------------
@@ -1362,6 +1364,7 @@ export function PortaoMaterial() {
         if (disposed) return;
         const mesh = gltf.scene.getObjectByProperty("type", "Mesh") as THREE.Mesh | undefined;
         if (mesh) setHelena(mesh.geometry, helenaOutlineMaterial);
+        kitchenCastsShadow = null;
       });
       group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
       kitchenGroup = group;
@@ -1608,6 +1611,18 @@ export function PortaoMaterial() {
       const red = THREE.MathUtils.smoothstep(inside, .26, .45);
       // O sol da rua só serve para a sombra; dentro da cozinha ele não pode iluminar os móveis.
       sun.intensity = inside > 0 ? 0 : 1;
+      // A cozinha (paredes de 2,7 m logo atrás do começo da rua) jogava a sombra do sol em cima
+      // da parte baixa da rua. Ela só faz sombra lá dentro, onde quem ilumina é a lâmpada.
+      const kitchenCasts = inside > 0;
+      if (kitchenGroup && kitchenCasts !== kitchenCastsShadow) {
+        kitchenCastsShadow = kitchenCasts;
+        kitchenGroup.traverse((child) => {
+          if (!(child instanceof THREE.Mesh)) return;
+          // Guarda se a peça fazia sombra originalmente (o chão e os brilhos não fazem).
+          child.userData.kitchenCaster ??= child.castShadow;
+          child.castShadow = kitchenCasts && child.userData.kitchenCaster;
+        });
+      }
       camera.position.copy(cameraPosition);
       camera.lookAt(lookAt);
       camera.updateMatrixWorld();
@@ -1624,7 +1639,7 @@ export function PortaoMaterial() {
       updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
       renderStory(story);
       // O papel gira só em torno do eixo vertical, então a borda de baixo fica sempre a 1,90 m.
-      papers.forEach(({ group, mesh, material }) => {
+      papers.forEach(({ group, mesh, material }, index) => {
         paperFacing.set(camera.position.x, group.position.y, camera.position.z);
         group.lookAt(paperFacing);
         mesh.getWorldPosition(paperCenter);
@@ -1633,7 +1648,11 @@ export function PortaoMaterial() {
         material.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(paperDistance, 2, 8)) * 6;
         // Só aparece a partir de ~1,5 m da lente e some de novo entre 9 e 13 unidades, para o caminho
         // ficar livre: na tela fica no máximo um ou dois bilhetes por vez.
-        material.uniforms.uOpacity.value = THREE.MathUtils.smoothstep(paperDistance, 3, 8) * (1 - THREE.MathUtils.smoothstep(paperDistance, 9, 13));
+        // Um bilhete por vez (Deiver): este some enquanto a câmera chega no lugar do próximo,
+        // antes de o próximo começar a aparecer (ele só aparece depois que a câmera passa por ele).
+        const next = papers[index + 1];
+        const handOff = next ? 1 - THREE.MathUtils.smoothstep(camera.position.z - next.group.position.z, -m(1.2), 0) : 1;
+        material.uniforms.uOpacity.value = THREE.MathUtils.smoothstep(paperDistance, 3, 8) * (1 - THREE.MathUtils.smoothstep(paperDistance, 9, 13)) * handOff;
       });
       flyingObjects.forEach(({ object, spin }) => { object.rotation.y = spin * progress * Math.PI; });
       renderer.render(scene, camera);
