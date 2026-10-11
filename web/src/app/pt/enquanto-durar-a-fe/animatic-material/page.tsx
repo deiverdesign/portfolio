@@ -12,7 +12,7 @@ const newsreader = Newsreader({
 
 export const metadata: Metadata = {
   title: "Enquanto durar a fé — Um romance de Deiver Brito",
-  description: "Jota bate de porta em porta vendendo Bíblias. A fé alheia, ele conhece de cor.",
+  description: "Jota vende Bíblias de porta em porta. Enquanto sua mãe guarda um segredo, uma história volta no tempo para revelar o que o presente esconde.",
   robots: { index: false, follow: false },
 };
 
