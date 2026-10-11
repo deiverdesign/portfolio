@@ -74,6 +74,10 @@ const kitchenFragmentHead = /* glsl */ `
   uniform float uMeter;
   uniform float uRedOn;
   uniform vec2 uBands;
+  #ifdef FOUR_TONES
+    uniform vec3 uDeep;
+    uniform vec3 uOwnBands;
+  #endif
   varying vec3 vKitchenWorld;
   varying vec3 vKitchenNormal;
 `;
@@ -84,6 +88,14 @@ const kitchenFragmentBody = /* glsl */ `
     float texel = dot(diffuseColor.rgb, vec3(.299, .587, .114));
     float amount = dot(outgoingLight, vec3(.299, .587, .114)) / max(texel, 1e-3);
     vec3 tone = amount > uBands.y ? uLit : (amount > uBands.x ? uMid : uShade);
+    #ifdef FOUR_TONES
+      // Helena: luz própria, vinda de cima e um pouco de trás (do lado da câmera), para as
+      // costas mostrarem as quatro cores: topo azul claro, corpo roxo-azulado, laterais rosa,
+      // fundo das dobras quase preto. Ex.: ombro virado para cima = azul claro.
+      vec3 helenaNormal = normalize(vKitchenNormal) * (gl_FrontFacing ? 1.0 : -1.0);
+      float facing = dot(helenaNormal, normalize(vec3(-.35, 1.0, .7))) * .5 + .5;
+      tone = facing > uOwnBands.z ? uLit : (facing > uOwnBands.y ? uMid : (facing > uOwnBands.x ? uShade : uDeep));
+    #endif
     // O rejunte do azulejo e do piso é a parte escura da textura.
     tone *= mix(.3, 1.0, smoothstep(.25, .9, texel));
 
@@ -202,14 +214,18 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   // Material violeta a partir do cinza antigo. Ex.: violetMaterial("#b4b4af") = parede.
   // map = textura de grade (branca com rejunte escuro); o tom continua vindo do cinza.
   // custom = três cores próprias (luz, meio, sombra), para o que não é violeta (a tampa azul).
-  const violetMaterial = (hex: string, map: THREE.Texture | null = null, side: THREE.Side = THREE.FrontSide, custom?: [string, string, string]) => {
+  // custom com quatro cores = luz, meio, sombra e fundo, com faixas próprias em fourBands.
+  const violetMaterial = (hex: string, map: THREE.Texture | null = null, side: THREE.Side = THREE.FrontSide, custom?: [string, string, string] | [string, string, string, string], fourBands?: [number, number, number]) => {
     const value = grayValue(hex);
     const material = new THREE.MeshLambertMaterial({ color: "#ffffff", map, side });
     const tones = {
       uLit: { value: custom ? new THREE.Color(custom[0]) : violet(value * .95) },
       uMid: { value: custom ? new THREE.Color(custom[1]) : violet(value * .7) },
       uShade: { value: custom ? new THREE.Color(custom[2]) : violet(value * .34) },
+      uDeep: { value: new THREE.Color(custom?.[3] ?? "#000000") },
+      uOwnBands: { value: new THREE.Vector3(...(fourBands ?? [0, 0, 0])) },
     };
+    if (custom?.length === 4) material.defines = { FOUR_TONES: "" };
     material.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, shared, tones);
       shader.vertexShader = shader.vertexShader
@@ -493,7 +509,10 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   // Girada meia volta para olhar a janela, com o quadril 19 cm atrás do meio do assento.
   const setHelena = (geometry: THREE.BufferGeometry, outline: THREE.Material) => {
     const scale = .77;
-    const body = new THREE.Mesh(geometry, gray(GRAY.dress));
+    // Cores da referência do Deiver (figura em azul claro, roxo-azulado, rosa e preto):
+    // luz azul claro, meio roxo-azulado, sombra rosa-magenta, fundo das dobras quase preto.
+    // Faixas pela direção da superfície (não pela luz da cena, que deixava as costas só escuras).
+    const body = new THREE.Mesh(geometry, violetMaterial(GRAY.dress, null, THREE.FrontSide, ["#2c9ee8", "#4a44d4", "#a3147c", "#1a0830"], [.36, .52, .86]));
     body.scale.setScalar(scale);
     body.rotation.y = Math.PI;
     body.position.set(hx, .95 * scale, helenaChairZ + .19 - .5 * scale);
