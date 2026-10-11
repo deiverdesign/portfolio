@@ -1393,10 +1393,15 @@ export function PortaoMaterial() {
   return (
     <main className={styles.animatic} ref={scrollRef}>
       <header className={styles.header}>
-        {/* Logo do Deiver (SVG do Figma, 230 × 20). */}
+        {/* Logo do Deiver em azul (Figma, nó 85:9668). */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={styles.logo} src="/enquanto-durar-a-fe/logo-enquanto-fe.svg" width={184} height={16} alt="Enquanto durar a fé" />
-        <a className={styles.headerBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">Ler na Amazon</a>
+        <img className={styles.logo} src="/enquanto-durar-a-fe/logo-enquanto-fe-azul.svg" width={187} height={16} alt="Enquanto durar a fé" />
+        <a className={styles.headerBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/enquanto-durar-a-fe/icone-livro.svg" width={14} height={14} alt="" />
+          Ler na Amazon
+        </a>
+        <i className={styles.headerProgress} aria-hidden="true" />
       </header>
 
       <section className={styles.stage} aria-labelledby="book-title">
