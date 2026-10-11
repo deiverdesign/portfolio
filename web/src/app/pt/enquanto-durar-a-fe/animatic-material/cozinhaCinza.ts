@@ -431,13 +431,24 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   box(clothW, .16, .006, tableX, tableH - .08, tableZ + clothD / 2, cloth);
   box(.006, .16, clothD, tableX - clothW / 2, tableH - .08, tableZ, cloth);
   box(.006, .16, clothD, tableX + clothW / 2, tableH - .08, tableZ, cloth);
-  // Lata de biscoitos antiga (tampa com aba) e o celular virado para cima.
+  // Lata de biscoitos antiga (tampa com aba), algumas notas soltas e um envelope (Deiver:
+  // sem celular; o dinheiro e a carta na mesa contam o que os objetos voando contavam).
   const tinX = tableX + .12;
   const tinZ = tableZ + .2;
   cylinder(.1, .1, .13, tinX, tableH + .07, tinZ, gray(GRAY.metal), kitchen, 32);
   const blueLid = violetMaterial(GRAY.dark, null, THREE.FrontSide, ["#3f62e0", "#2a3aa6", "#141a58"]);
   cylinder(.106, .106, .03, tinX, tableH + .145, tinZ, blueLid, kitchen, 32);
-  rounded(.075, .009, .155, .004, tableX - .18, tableH + .01, tableZ + .32, gray(GRAY.dark));
+  // Notas soltas no lado da mesa que a câmera vê, ao lado da lata. Cédula ~14 × 6,5 cm.
+  // Ex.: a laranja (R$ 50) meio por baixo da azul (R$ 100), a rosada (R$ 10) mais solta.
+  const banknoteTones: [string, string, string][] = [["#e7a65a", "#b0703a", "#4d2f3a"], ["#7fb0e6", "#4a77b8", "#1f2c5c"], ["#e08a9c", "#a8576e", "#4a2340"]];
+  [[.3, .02, .4], [.36, .1, -.35], [.22, .34, 1.1]].forEach(([dx, dz, turn], i) => {
+    const note = box(.14, .002, .065, tableX + dx, tableH + .008 + i * .0025, tableZ + dz, violetMaterial(GRAY.white, null, THREE.FrontSide, banknoteTones[i]));
+    note.rotation.y = turn;
+  });
+  // Envelope fechado, do outro lado da lata (para a janela), com o "V" da aba em tinta.
+  const envelope = box(.23, .004, .115, tableX + .2, tableH + .009, tableZ - .2, violetMaterial(GRAY.white, null, THREE.FrontSide, ["#d9cdf2", "#a993d6", "#5b4592"]));
+  envelope.rotation.y = -.5;
+  envelope.add(new LineSegments2(new LineSegmentsGeometry().setPositions([-.115, .0025, -.0575, 0, .0025, .01, 0, .0025, .01, .115, .0025, -.0575]), lineMaterial));
   // Pano de prato dobrado na ponta da mesa.
   box(.22, .015, .14, tableX - .22, tableH + .012, tableZ - .45, gray(GRAY.white));
 
@@ -805,102 +816,6 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   dust.renderOrder = 4;
   kitchen.add(dust);
 
-  // --- Objetos que flutuam (a lata aberta, um envelope e o celular) ---------------------
-  // Começam escondidos; quem os move é a câmera da cena (PortaoMaterial), que os traz da
-  // lente para longe, como o dinheiro e o livro preto na rua. Cada um é um grupo em metros.
-  // Cada objeto tem a própria lista de materiais, para cada um sumir e aparecer sozinho
-  // (antes era uma transparência só para os três, e o envelope recém-nascido, colado na lente,
-  // aparecia inteiro porque a lata já estava inteira).
-  const fadeMaterials = new Map<THREE.Object3D, THREE.Material[]>();
-  const fading = <T extends THREE.Material>(material: T, owner: THREE.Object3D) => {
-    material.transparent = true;
-    const list = fadeMaterials.get(owner) ?? [];
-    list.push(material);
-    fadeMaterials.set(owner, list);
-    return material;
-  };
-  const propBox = (w: number, h: number, d: number, x: number, y: number, z: number, material: THREE.Material, parent: THREE.Object3D) => {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
-    mesh.position.set(x, y, z);
-    parent.add(mesh);
-    return mesh;
-  };
-  // Lata de biscoitos aberta: tampa azul inclinada ao lado e, lá dentro, o que o bilhete
-  // conta: notas dobradas (cores das cédulas, apagadas pela luz da cozinha), comprovantes
-  // brancos e dois envelopes em pé. Visível, mas discreto: tudo meio escondido pela borda.
-  const flyingTin = new THREE.Group();
-  const tinBody = fading(violetMaterial(GRAY.metal, null, THREE.FrontSide, ["#8d7fd0", "#5a49a6", "#24184f"]), flyingTin);
-  const tinLid = fading(violetMaterial(GRAY.dark, null, THREE.FrontSide, ["#3f62e0", "#2a3aa6", "#141a58"]), flyingTin);
-  const tinMesh = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, .13, 32, 1, true), tinBody);
-  tinMesh.material.side = THREE.DoubleSide;
-  flyingTin.add(tinMesh);
-  const tinBottom = new THREE.Mesh(new THREE.CircleGeometry(.1, 32), tinBody);
-  tinBottom.rotation.x = -Math.PI / 2;
-  tinBottom.position.y = -.064;
-  flyingTin.add(tinBottom);
-  // Cédulas dobradas ao meio (um "V" deitado), de pé, saindo um pouco acima da borda.
-  // Ex.: a laranja (R$ 50) na frente, a azul (R$ 100) atrás, a rosada (R$ 10) de lado.
-  const banknotes: [string, string, string][] = [["#e7a65a", "#b0703a", "#4d2f3a"], ["#7fb0e6", "#4a77b8", "#1f2c5c"], ["#e08a9c", "#a8576e", "#4a2340"]];
-  [[-.035, .035, .25], [.03, -.02, -.35], [-.005, -.045, .9]].forEach(([x, z, turn], i) => {
-    const note = new THREE.Group();
-    note.position.set(x, .03, z);
-    note.rotation.y = turn;
-    const material = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, banknotes[i]), flyingTin);
-    [-1, 1].forEach((sideSign) => {
-      const half = new THREE.Mesh(new THREE.PlaneGeometry(.07, .12), material);
-      half.position.set(sideSign * .016, 0, 0);
-      half.rotation.y = sideSign * .45;
-      note.add(half);
-    });
-    flyingTin.add(note);
-  });
-  // Comprovantes: tiras finas de papel branco.
-  const receipt = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#f1ecfa", "#c6bce0", "#6a5c92"]), flyingTin);
-  [[.05, .04, .2], [-.055, -.01, -.5]].forEach(([x, z, turn]) => {
-    const strip = new THREE.Mesh(new THREE.PlaneGeometry(.045, .14), receipt);
-    strip.position.set(x, .02, z);
-    strip.rotation.set(-.15, turn, .12);
-    flyingTin.add(strip);
-  });
-  // Envelopes em pé no fundo da lata.
-  const tinEnvelope = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#d9cdf2", "#a993d6", "#5b4592"]), flyingTin);
-  [[0, -.065, .05], [.035, -.07, -.2]].forEach(([x, z, turn]) => {
-    const envelope = new THREE.Mesh(new THREE.PlaneGeometry(.15, .1), tinEnvelope);
-    envelope.position.set(x, .03, z);
-    envelope.rotation.set(-.1, turn, 0);
-    flyingTin.add(envelope);
-  });
-  const lid = new THREE.Mesh(new THREE.CylinderGeometry(.106, .106, .03, 32), tinLid);
-  lid.position.set(.15, .02, .05);
-  lid.rotation.set(.2, 0, 1.15);
-  flyingTin.add(lid);
-  // Envelope pardo, fechado, com o "V" da aba desenhado em tinta.
-  const flyingEnvelope = new THREE.Group();
-  const paper = fading(violetMaterial(GRAY.white, null, THREE.DoubleSide, ["#d9cdf2", "#a993d6", "#5b4592"]), flyingEnvelope);
-  propBox(.23, .115, .004, 0, 0, 0, paper, flyingEnvelope);
-  const flap = new LineSegments2(new LineSegmentsGeometry().setPositions([-.115, .0575, .003, 0, -.01, .003, 0, -.01, .003, .115, .0575, .003]), lineMaterial);
-  flyingEnvelope.add(flap);
-  // Celular com a mensagem que ela não enviou, aceso na tela.
-  const flyingPhone = new THREE.Group();
-  const phoneBody = fading(violetMaterial(GRAY.dark), flyingPhone);
-  const phoneShell = new THREE.Mesh(new RoundedBoxGeometry(.075, .155, .009, 3, .008), phoneBody);
-  flyingPhone.add(phoneShell);
-  const screenMaterial = fading(new THREE.MeshBasicMaterial({ map: phoneScreenTexture("Foi um dia bom?") }), flyingPhone);
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry(.066, .143), screenMaterial);
-  screen.position.z = .0047;
-  flyingPhone.add(screen);
-  [flyingTin, flyingEnvelope, flyingPhone].forEach((prop) => {
-    prop.visible = false;
-    kitchen.add(prop);
-  });
-  const setPropsOpacity = (prop: THREE.Object3D, opacity: number) => {
-    fadeMaterials.get(prop)?.forEach((material) => {
-      material.opacity = opacity;
-      // Meio transparente não escreve profundidade, para não recortar o que está atrás.
-      material.depthWrite = opacity > .99;
-    });
-  };
-
   // Linhas vermelhas nas quinas viradas para a janela (calculadas com a cozinha já montada).
   root.updateMatrixWorld(true);
   const toKitchen = new THREE.Matrix4();
@@ -932,38 +847,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   };
 
   // space = o grupo em metros da cozinha, onde os bilhetes também são presos.
-  return { group: root, space: kitchen, update, props: { tin: flyingTin, envelope: flyingEnvelope, phone: flyingPhone }, setPropsOpacity, setHelena };
-}
-
-// Tela do celular: fundo escuro, a conversa com a última mensagem dela ainda sem enviar.
-function phoneScreenTexture(text: string) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 256;
-  canvas.height = 556;
-  const context = canvas.getContext("2d");
-  if (context) {
-    context.fillStyle = "#1a1240";
-    context.fillRect(0, 0, 256, 556);
-    // Mensagem antiga (enviada há três semanas), em cima, e o rascunho na caixa de texto embaixo.
-    context.fillStyle = "#6c4fc0";
-    context.beginPath();
-    context.roundRect(70, 150, 168, 74, 18);
-    context.fill();
-    context.fillStyle = "#efe8ff";
-    context.font = "500 19px sans-serif";
-    context.fillText("Você está se", 86, 182);
-    context.fillText("alimentando direito?", 86, 206);
-    context.fillStyle = "#2c2160";
-    context.beginPath();
-    context.roundRect(16, 470, 224, 56, 28);
-    context.fill();
-    context.fillStyle = "#ffffff";
-    context.font = "600 22px sans-serif";
-    context.fillText(text, 34, 506);
-  }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  return texture;
+  return { group: root, space: kitchen, update, setHelena };
 }
 
 // Bolinha com borda suave (para o brilho da lâmpada).

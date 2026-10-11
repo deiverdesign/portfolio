@@ -1349,18 +1349,13 @@ export function PortaoMaterial() {
       end: THREE.Vector3;
       from: number;
       to: number;
-      paper?: THREE.ShaderMaterial;
-      spin?: number;
-      tilt?: number;
-      // Lugar final próprio para a tela em pé, quando a regra geral cairia em cima da Helena.
-      portraitEnd?: THREE.Vector3;
+      paper: THREE.ShaderMaterial;
     };
     const storyItems: StoryItem[] = [];
     const storyTextures: THREE.Texture[] = [];
-    let setStoryPropsOpacity: ((prop: THREE.Object3D, opacity: number) => void) | null = null;
 
     const buildKitchen = () => {
-      const { group, space, update, props, setPropsOpacity, setHelena } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
+      const { group, space, update, setHelena } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
       const helenaLoader = new GLTFLoader();
       helenaLoader.setMeshoptDecoder(MeshoptDecoder);
       helenaLoader.load(HELENA_URL, (gltf) => {
@@ -1371,7 +1366,6 @@ export function PortaoMaterial() {
       group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
       kitchenGroup = group;
       updateKitchen = update;
-      setStoryPropsOpacity = setPropsOpacity;
       const papersAt = [new THREE.Vector3(0, 1.95, 2.6), new THREE.Vector3(.75, 1.95, 2.6), new THREE.Vector3(.2, 1.95, 2.6)];
       const paperTimes = [[.06, .4], [.38, .7], [.66, 1]];
       KITCHEN_EXCERPTS.forEach((excerpt, index) => {
@@ -1391,10 +1385,6 @@ export function PortaoMaterial() {
         space.add(mesh);
         storyItems.push({ object: mesh, end: papersAt[index], from: paperTimes[index][0], to: paperTimes[index][1], paper: material });
       });
-      // Objetos longe dos bilhetes (que ficam no alto, no meio) e da cabeça da Helena.
-      storyItems.push({ object: props.tin, end: new THREE.Vector3(.95, 1.2, 3.6), from: 0, to: 1, spin: .8, tilt: .7 });
-      storyItems.push({ object: props.envelope, end: new THREE.Vector3(-.5, 1.8, 3.0), from: .3, to: 1, spin: -.6 });
-      storyItems.push({ object: props.phone, end: new THREE.Vector3(.2, 1.35, 3.7), from: .6, to: 1, spin: .4, portraitEnd: new THREE.Vector3(.2, 1.0, 3.9) });
       return group;
     };
 
@@ -1410,36 +1400,25 @@ export function PortaoMaterial() {
       const portrait = camera.aspect < 1;
       storyCamera.copy(camera.position).sub(kitchenGroup.position).divideScalar(METER);
       const paperWidth = portrait ? .62 : 1.1;
-      storyItems.forEach(({ object, end, from, to, paper, spin, tilt, portraitEnd }) => {
+      storyItems.forEach(({ object, end, from, to, paper }) => {
         object.visible = story > from;
         if (!object.visible) return;
         const travel = THREE.MathUtils.smoothstep(story, from, from + .22);
         // No celular o quadro é estreito e olha mais para a esquerda: tudo chega mais ao centro dele.
         storyEnd.copy(end);
-        if (portrait && portraitEnd) storyEnd.copy(portraitEnd);
-        else if (portrait) storyEnd.x = end.x * .4 - .45;
-        // Bilhetes nascem a 15% do caminho; os objetos a 35%, para nunca passarem gigantes
-        // e meio transparentes na frente da lente (era o "fantasma" da lata sobre a janela).
-        storyStart.copy(storyCamera).lerp(storyEnd, paper ? .15 : .35);
+        if (portrait) storyEnd.x = end.x * .4 - .45;
+        storyStart.copy(storyCamera).lerp(storyEnd, .15);
         object.position.lerpVectors(storyStart, storyEnd, travel);
         const distance = object.position.distanceTo(storyCamera);
         const appear = THREE.MathUtils.smoothstep(distance, .6, 1.3);
         const leave = to < 1 ? 1 - THREE.MathUtils.smoothstep(story, to - .06, to) : 1;
-        if (paper) {
-          object.scale.setScalar(paperWidth / PAPER_WIDTH);
-          // lookAt pede a posição no mundo: o papel gira só em volta do eixo vertical.
-          object.getWorldPosition(storyFacing);
-          storyFacing.set(camera.position.x, storyFacing.y, camera.position.z);
-          object.lookAt(storyFacing);
-          paper.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(distance, .5, 1.8)) * 6;
-          paper.uniforms.uOpacity.value = appear * leave;
-        } else {
-          // De frente para a câmera, balançando de leve (a lata inclinada para mostrar o que tem dentro).
-          const sway = Math.sin(story * 6 + (spin ?? 0) * 4) * .35 * (spin ?? 0);
-          object.rotation.set(tilt ?? .25, sway, .08);
-          // Aparece no primeiro trecho do caminho, já a mais de 1 m da lente.
-          setStoryPropsOpacity?.(object, THREE.MathUtils.smoothstep(travel, 0, .3));
-        }
+        object.scale.setScalar(paperWidth / PAPER_WIDTH);
+        // lookAt pede a posição no mundo: o papel gira só em volta do eixo vertical.
+        object.getWorldPosition(storyFacing);
+        storyFacing.set(camera.position.x, storyFacing.y, camera.position.z);
+        object.lookAt(storyFacing);
+        paper.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(distance, .5, 1.8)) * 6;
+        paper.uniforms.uOpacity.value = appear * leave;
       });
     };
 
