@@ -5,8 +5,9 @@ import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { METER } from "./celShading";
 
-// Cozinha da Helena em tons de cinza (capítulo 3, "A lata azul"). Serve de referência
-// de forma e luz para o Deiver pintar a versão 2D no Gemini; as cores vêm depois.
+// Cozinha da Helena (capítulo 3, "A lata azul"). Nasceu em cinza, como referência para o
+// Deiver pintar a versão 2D no Gemini; agora usa as cores dessa pintura: tudo em violeta,
+// a lâmpada como único ponto quente e a luz vermelha que entra pela janela.
 // Tudo aqui é em METROS: o grupo de dentro é escalado por METER no fim.
 // Eixos: x = largura (direita positiva, olhando para a janela de dentro da cozinha),
 // y = altura, z = profundidade (0 na parede da janela, crescendo para dentro).
@@ -26,7 +27,7 @@ export const KITCHEN = {
 const GRAY = {
   wall: "#b4b4af",
   tile: "#d2d2cd",
-  floor: "#8a8a86",
+  floor: "#5c5c59",
   ceiling: "#c4c4bf",
   wood: "#9a9a95",
   woodDark: "#6e6e6a",
@@ -38,6 +39,76 @@ const GRAY = {
   dress: "#8e8e8a",
   hair: "#7a7a76",
 };
+
+// Escala de violeta da pintura do Deiver, do quase preto ao lilás claro.
+// Cada peça guarda o "cinza" que tinha (0 = preto, 1 = branco) e vira três tons dessa escala:
+// luz, meio e sombra. Ex.: parede (cinza 0,7) = luz #4a1c7c, meio #2f1358, sombra #120630.
+const VIOLET = ["#06021a", "#1c0b41", "#361662", "#4e1e83", "#7754b4", "#c0a9ee"].map((hex) => new THREE.Color(hex));
+function violet(t: number) {
+  const scaled = THREE.MathUtils.clamp(t, 0, 1) * (VIOLET.length - 1);
+  const index = Math.min(Math.floor(scaled), VIOLET.length - 2);
+  return VIOLET[index].clone().lerp(VIOLET[index + 1], scaled - index);
+}
+const grayValue = (hex: string) => {
+  const color = new THREE.Color(hex);
+  return color.r * .299 + color.g * .587 + color.b * .114;
+};
+
+// Pedaço de shader que transforma a luz do three.js em três faixas chapadas de violeta
+// (como a pintura vetorial) e soma a luz vermelha da janela. Coordenadas em metros da cozinha:
+// a janela é o retângulo x de -0,75 a 0,75, y de 0,85 a 2,35, na parede z = 0.
+const kitchenVertexHead = /* glsl */ `
+  varying vec3 vKitchenWorld;
+  varying vec3 vKitchenNormal;
+`;
+const kitchenVertexBody = /* glsl */ `
+  vKitchenWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;
+  vKitchenNormal = normalize(mat3(modelMatrix) * objectNormal);
+`;
+const kitchenFragmentHead = /* glsl */ `
+  uniform vec3 uLit;
+  uniform vec3 uMid;
+  uniform vec3 uShade;
+  uniform vec3 uRed;
+  uniform vec3 uOrigin;
+  uniform float uMeter;
+  uniform float uRedOn;
+  uniform vec2 uBands;
+  varying vec3 vKitchenWorld;
+  varying vec3 vKitchenNormal;
+`;
+const kitchenFragmentBody = /* glsl */ `
+  {
+    // Quanto de luz chegou aqui (1 = a cor da peça inteira). Abaixo de uBands.x é sombra,
+    // acima de uBands.y é luz; no meio, o tom médio. Sem degradê: três faixas duras.
+    float texel = dot(diffuseColor.rgb, vec3(.299, .587, .114));
+    float amount = dot(outgoingLight, vec3(.299, .587, .114)) / max(texel, 1e-3);
+    vec3 tone = amount > uBands.y ? uLit : (amount > uBands.x ? uMid : uShade);
+    // O rejunte do azulejo e do piso é a parte escura da textura.
+    tone *= mix(.3, 1.0, smoothstep(.25, .9, texel));
+
+    vec3 p = (vKitchenWorld - uOrigin) / uMeter;
+    vec3 n = normalize(vKitchenNormal) * (gl_FrontFacing ? 1.0 : -1.0);
+    // Luz vermelha da janela 1: o que está a menos de ~1 m do vão e virado para ele fica vermelho
+    // (peitoril, folhas abertas, cortina, chão logo abaixo).
+    vec3 nearest = vec3(clamp(p.x, -.75, .75), clamp(p.y, .85, 2.35), 0.0);
+    vec3 toWindow = nearest - p;
+    float windowDistance = length(toWindow);
+    // (O teto fica de fora: na pintura ele continua escuro.)
+    float spill = step(.3, dot(n, toWindow / max(windowDistance, 1e-3))) * (1.0 - smoothstep(.7, 1.25, windowDistance)) * step(0.0, p.z) * step(-.5, n.y);
+    // Luz vermelha da janela 2: contorno. Só a beirada das peças (onde a superfície vira de lado
+    // para a câmera) e só do lado que olha para a janela. Some depois de ~5 m.
+    vec3 toCenter = vec3(0.0, 1.6, 0.0) - p;
+    float centerDistance = length(toCenter);
+    vec3 viewDirection = normalize(cameraPosition - vKitchenWorld);
+    // Só em peças curvas (braços, lata, cantos arredondados): numa face reta a normal não
+    // muda de um pixel para o outro (fwidth = 0), e as quinas retas já têm a linha vermelha.
+    float curved = smoothstep(.002, .02, length(fwidth(n)));
+    float rim = curved * step(.3, dot(n, toCenter / centerDistance)) * smoothstep(.74, .8, 1.0 - abs(dot(n, viewDirection))) * (1.0 - smoothstep(3.5, 5.5, centerDistance));
+    outgoingLight = mix(tone, uRed, max(spill * .8, rim) * uRedOn);
+  }
+  #include <opaque_fragment>
+`;
 
 // Grade de azulejo ou de piso desenhada num canvas. Ex.: cells 1 = quadrados lisos com
 // rejunte; checker true = piso quadriculado em dois cinzas.
@@ -69,17 +140,91 @@ function gridTexture(base: string, line: string, alt: string | null) {
   return texture;
 }
 
-export function buildKitchenGray(lineMaterial: LineMaterial) {
+// Contorno vermelho de verdade (linha dura) nas quinas que olham para a janela.
+// Ex.: a quina da geladeira entre a lateral e a frente, as bordas da mesa perto da janela.
+// Para cada aresta "dobrada" (> 30°) da peça, olha as duas faces que ela separa: se uma delas
+// está virada para a janela, a aresta ganha a linha vermelha.
+const WINDOW_CENTER = new THREE.Vector3(0, 1.6, 0);
+function windowEdges(geometry: THREE.BufferGeometry, toKitchen: THREE.Matrix4) {
+  const position = geometry.attributes.position;
+  const index = geometry.index;
+  const count = index ? index.count : position.count;
+  const normalMatrix = new THREE.Matrix3().getNormalMatrix(toKitchen);
+  const edges = new Map<string, { a: THREE.Vector3; b: THREE.Vector3; normals: THREE.Vector3[] }>();
+  const corners = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+  const key = (v: THREE.Vector3) => `${v.x.toFixed(4)},${v.y.toFixed(4)},${v.z.toFixed(4)}`;
+  for (let i = 0; i < count; i += 3) {
+    for (let k = 0; k < 3; k++) corners[k].fromBufferAttribute(position, index ? index.getX(i + k) : i + k);
+    const normal = new THREE.Vector3().subVectors(corners[1], corners[0]).cross(new THREE.Vector3().subVectors(corners[2], corners[0])).normalize();
+    for (let k = 0; k < 3; k++) {
+      const a = corners[k];
+      const b = corners[(k + 1) % 3];
+      const keyA = key(a);
+      const keyB = key(b);
+      const edgeKey = keyA < keyB ? `${keyA}|${keyB}` : `${keyB}|${keyA}`;
+      let edge = edges.get(edgeKey);
+      if (!edge) {
+        edge = { a: a.clone(), b: b.clone(), normals: [] };
+        edges.set(edgeKey, edge);
+      }
+      edge.normals.push(normal);
+    }
+  }
+  const points: number[] = [];
+  const middle = new THREE.Vector3();
+  edges.forEach(({ a, b, normals }) => {
+    if (normals.length !== 2 || normals[0].dot(normals[1]) > Math.cos(THREE.MathUtils.degToRad(30))) return;
+    middle.addVectors(a, b).multiplyScalar(.5).applyMatrix4(toKitchen);
+    const toWindow = WINDOW_CENTER.clone().sub(middle);
+    if (middle.z < 0 || toWindow.length() > 4.5) return;
+    toWindow.normalize();
+    const facing = Math.max(...normals.map((normal) => normal.clone().applyMatrix3(normalMatrix).normalize().dot(toWindow)));
+    if (facing > .45) points.push(a.x, a.y, a.z, b.x, b.y, b.z);
+  });
+  return points;
+}
+
+export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: LineMaterial) {
   const root = new THREE.Group();
   const kitchen = new THREE.Group();
   kitchen.scale.setScalar(METER);
   root.add(kitchen);
 
-  const materials = new Map<string, THREE.MeshStandardMaterial>();
+  // Valores divididos por todos os materiais: onde a cozinha está no mundo e quanto de
+  // vermelho já entrou (0 = nada, enquanto a câmera ainda está na rua; 1 = cheio).
+  const shared = {
+    uOrigin: { value: new THREE.Vector3() },
+    uMeter: { value: METER },
+    uRedOn: { value: 0 },
+    uRed: { value: new THREE.Color("#ff2650") },
+    uBands: { value: new THREE.Vector2(.16, .7) },
+  };
+  // Material violeta a partir do cinza antigo. Ex.: violetMaterial("#b4b4af") = parede.
+  // map = textura de grade (branca com rejunte escuro); o tom continua vindo do cinza.
+  const violetMaterial = (hex: string, map: THREE.Texture | null = null, side: THREE.Side = THREE.FrontSide) => {
+    const value = grayValue(hex);
+    const material = new THREE.MeshLambertMaterial({ color: "#ffffff", map, side });
+    const tones = {
+      uLit: { value: violet(value * .95) },
+      uMid: { value: violet(value * .7) },
+      uShade: { value: violet(value * .34) },
+    };
+    material.onBeforeCompile = (shader) => {
+      Object.assign(shader.uniforms, shared, tones);
+      shader.vertexShader = shader.vertexShader
+        .replace("#include <common>", `#include <common>\n${kitchenVertexHead}`)
+        .replace("#include <fog_vertex>", `#include <fog_vertex>\n${kitchenVertexBody}`);
+      shader.fragmentShader = shader.fragmentShader
+        .replace("#include <common>", `#include <common>\n${kitchenFragmentHead}`)
+        .replace("#include <opaque_fragment>", kitchenFragmentBody);
+    };
+    return material;
+  };
+  const materials = new Map<string, THREE.MeshLambertMaterial>();
   const gray = (hex: string) => {
     let material = materials.get(hex);
     if (!material) {
-      material = new THREE.MeshStandardMaterial({ color: hex, roughness: .92, metalness: 0 });
+      material = violetMaterial(hex);
       materials.set(hex, material);
     }
     return material;
@@ -88,6 +233,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial) {
   const place = (mesh: THREE.Mesh, parent: THREE.Object3D = kitchen, edges = true) => {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
+    mesh.userData.windowEdges = edges;
     if (edges) {
       const edgeGeometry = new THREE.EdgesGeometry(mesh.geometry, 30);
       mesh.add(new LineSegments2(new LineSegmentsGeometry().fromEdgesGeometry(edgeGeometry), lineMaterial));
@@ -132,9 +278,9 @@ export function buildKitchenGray(lineMaterial: LineMaterial) {
   const wallMaterial = gray(GRAY.wall);
 
   // --- Piso quadriculado, teto e paredes -------------------------------------------
-  const floorTexture = gridTexture(GRAY.floor, "#6c6c68", "#9a9a96");
+  const floorTexture = gridTexture("#ffffff", "#2a2a2a", "#d8d8d8");
   floorTexture.repeat.set(width / .8, depth / .8);
-  const floor = box(width, .05, depth, 0, -.025, depth / 2, new THREE.MeshStandardMaterial({ map: floorTexture, roughness: .85 }), kitchen, false);
+  const floor = box(width, .05, depth, 0, -.025, depth / 2, violetMaterial(GRAY.floor, floorTexture), kitchen, false);
   floor.castShadow = false;
   box(width, .05, depth, 0, height + .025, depth / 2, gray(GRAY.ceiling), kitchen, false);
   // Parede da direita (geladeira, pia, fogão) e do fundo.
@@ -160,12 +306,12 @@ export function buildKitchenGray(lineMaterial: LineMaterial) {
   box(windowWidth, height - windowTop, wall, 0, (height + windowTop) / 2, -wall / 2, wallMaterial);
 
   // Azulejo até 1,5 m, com um filete no topo (cozinha de casa antiga).
-  const tileTexture = gridTexture(GRAY.tile, "#a9a9a4", null);
+  const tileTexture = gridTexture("#ffffff", "#3a3a3a", null);
   const tiles = (w: number, h: number, repeatW: number) => {
     const texture = tileTexture.clone();
     texture.needsUpdate = true;
     texture.repeat.set(repeatW / .3, h / .3);
-    return new THREE.MeshStandardMaterial({ map: texture, roughness: .6 });
+    return violetMaterial(GRAY.tile, texture);
   };
   const skin = .012;
   box(skin, tileTop, depth, half - skin / 2, tileTop / 2, depth / 2, tiles(depth, tileTop, depth), kitchen, false);
@@ -195,6 +341,8 @@ export function buildKitchenGray(lineMaterial: LineMaterial) {
   // A câmera passa pelo meio, longe das duas folhas.
   const sashWidth = windowWidth / 2;
   const sashHeight = windowTop - windowSill;
+  // Vidro das folhas: quase invisível na rua, avermelhado quando a luz da janela acende.
+  const glassMaterial = new THREE.MeshBasicMaterial({ color: "#ff2650", transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false });
   [-1, 1].forEach((sideSign) => {
     const hinge = new THREE.Group();
     hinge.position.set(sideSign * windowWidth / 2, windowSill, .02);
@@ -211,16 +359,13 @@ export function buildKitchenGray(lineMaterial: LineMaterial) {
     box(.025, sashHeight, .03, 0, sashHeight / 2, 0, frameMaterial, sash);
     box(sashWidth, .025, .03, 0, sashHeight / 3, 0, frameMaterial, sash);
     box(sashWidth, .025, .03, 0, sashHeight * 2 / 3, 0, frameMaterial, sash);
-    const glass = new THREE.Mesh(
-      new THREE.PlaneGeometry(sashWidth - bar * 2, sashHeight - bar * 2),
-      new THREE.MeshStandardMaterial({ color: "#d8dcdc", transparent: true, opacity: .35, roughness: .1, side: THREE.DoubleSide, depthWrite: false }),
-    );
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(sashWidth - bar * 2, sashHeight - bar * 2), glassMaterial);
     glass.position.set(0, sashHeight / 2, 0);
     sash.add(glass);
   });
   // Cortina: dois panos ondulados presos num varão, franzidos nas laterais da janela.
   cylinder(.012, .012, windowWidth + .9, 0, windowTop + .16, .1, gray(GRAY.dark)).rotation.z = Math.PI / 2;
-  const curtainMaterial = new THREE.MeshStandardMaterial({ color: GRAY.cloth, roughness: 1, side: THREE.DoubleSide });
+  const curtainMaterial = violetMaterial(GRAY.cloth, null, THREE.DoubleSide);
   [-1, 1].forEach((sideSign) => {
     const curtainWidth = .38;
     const curtainHeight = windowTop + .14 - .7;
@@ -463,13 +608,19 @@ export function buildKitchenGray(lineMaterial: LineMaterial) {
 
   // --- Luz: lâmpada pendurada sobre a mesa ----------------------------------------------
   // Só a cozinha usa luz do three.js (a rua pinta as próprias faixas), então nada lá fora muda.
+  // A luz não aparece como luz: ela só decide em qual das três faixas de violeta cada ponto cai.
   cylinder(.006, .006, .5, tableX, height - .25, tableZ, dark);
-  const shade = new THREE.Mesh(new THREE.ConeGeometry(.2, .16, 32, 1, true), new THREE.MeshStandardMaterial({ color: GRAY.white, roughness: .7, side: THREE.DoubleSide }));
+  const shade = new THREE.Mesh(new THREE.ConeGeometry(.2, .16, 32, 1, true), violetMaterial(GRAY.white, null, THREE.DoubleSide));
   shade.position.set(tableX, height - .55, tableZ);
   place(shade, kitchen, false);
-  const bulb = new THREE.Mesh(new THREE.SphereGeometry(.045, 16, 12), new THREE.MeshBasicMaterial({ color: "#ffffff" }));
+  // Lâmpada: o único ponto quente da cena (laranja da pintura), com um brilho em volta.
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(.045, 16, 12), new THREE.MeshBasicMaterial({ color: "#ffb24a" }));
   bulb.position.set(tableX, height - .63, tableZ);
   kitchen.add(bulb);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: radialTexture(), color: "#ffa23f", blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+  halo.scale.setScalar(.42);
+  halo.position.copy(bulb.position);
+  kitchen.add(halo);
   const lamp = new THREE.PointLight("#ffffff", 3.2, 0, 1.4);
   lamp.position.set(tableX, height - .7, tableZ);
   lamp.castShadow = true;
@@ -478,14 +629,173 @@ export function buildKitchenGray(lineMaterial: LineMaterial) {
   lamp.shadow.camera.near = .05 * METER;
   lamp.shadow.camera.far = 12 * METER;
   kitchen.add(lamp);
-  // Luz geral fraca, para as sombras não virarem preto.
-  kitchen.add(new THREE.HemisphereLight("#ffffff", "#6a6a6a", .9));
+  // Luz geral bem fraca: só o bastante para separar o "meio" da sombra.
+  kitchen.add(new THREE.HemisphereLight("#ffffff", "#6a6a6a", .5));
+  // Cone de luz da lâmpada no ar (lilás, bem transparente), como na pintura.
+  const beamHeight = height - .58;
+  const beamGeometry = new THREE.ConeGeometry(1.25, beamHeight, 48, 1, true);
+  beamGeometry.translate(0, -beamHeight / 2, 0);
+  const beam = new THREE.Mesh(beamGeometry, new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide,
+    uniforms: { uHeight: { value: beamHeight } },
+    vertexShader: /* glsl */ `
+      uniform float uHeight;
+      varying float vDown;
+      varying float vFacing;
+      void main() {
+        vDown = -position.y / uHeight;
+        vec4 view = modelViewMatrix * vec4(position, 1.0);
+        vFacing = abs(dot(normalize(normalMatrix * normal), normalize(-view.xyz)));
+        gl_Position = projectionMatrix * view;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      varying float vDown;
+      varying float vFacing;
+      void main() {
+        float alpha = .07 * pow(vFacing, 1.5) * (1.0 - smoothstep(.55, 1.0, vDown));
+        gl_FragColor = vec4(vec3(.66, .54, .9) * alpha, 1.0);
+      }
+    `,
+  }));
+  beam.position.set(tableX, height - .58, tableZ);
+  beam.renderOrder = 3;
+  kitchen.add(beam);
 
-  // Véu escuro no vão da janela: começa invisível e escurece até virar noite.
-  const nightMaterial = new THREE.MeshBasicMaterial({ color: "#060b2c", transparent: true, opacity: 0, depthWrite: false });
-  const night = new THREE.Mesh(new THREE.PlaneGeometry(windowWidth, windowTop - windowSill), nightMaterial);
-  night.position.set(0, (windowSill + windowTop) / 2, -.12);
-  kitchen.add(night);
+  // --- Brilho vermelho em volta da janela ------------------------------------------------
+  // Uma névoa que "vaza" do vão para a parede, forte na beirada e sumindo em ~30 cm.
+  const glowMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    uniforms: { uOn: { value: 0 }, uHalf: { value: new THREE.Vector2(windowWidth / 2, (windowTop - windowSill) / 2) } },
+    vertexShader: /* glsl */ `
+      varying vec2 vPoint;
+      void main() {
+        vPoint = position.xy;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform float uOn;
+      uniform vec2 uHalf;
+      varying vec2 vPoint;
+      void main() {
+        vec2 outside = abs(vPoint) - uHalf;
+        float distanceToOpening = length(max(outside, 0.0)) + min(max(outside.x, outside.y), 0.0);
+        float glow = distanceToOpening > 0.0 ? exp(-distanceToOpening / .14) * .6 : .1;
+        gl_FragColor = vec4(vec3(1.0, .08, .22) * glow * uOn, 1.0);
+      }
+    `,
+  });
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(windowWidth + 1.4, windowTop - windowSill + 1.4), glowMaterial);
+  glow.position.set(0, (windowSill + windowTop) / 2, .025);
+  glow.renderOrder = 2;
+  kitchen.add(glow);
 
-  return { group: root, nightMaterial };
+  // --- Poeira verde flutuando (os pontinhos neon da pintura) -----------------------------
+  // Mais perto do chão e das superfícies do que do teto. Cada grão anda devagar no próprio ritmo.
+  const dustCount = 240;
+  const dustPositions = new Float32Array(dustCount * 3);
+  const dustSeeds = new Float32Array(dustCount);
+  for (let i = 0; i < dustCount; i++) {
+    dustPositions[i * 3] = (Math.random() - .5) * (width - .2);
+    dustPositions[i * 3 + 1] = Math.pow(Math.random(), 1.8) * (height - .3) + .05;
+    dustPositions[i * 3 + 2] = .2 + Math.random() * (depth - .4);
+    dustSeeds[i] = Math.random();
+  }
+  const dustGeometry = new THREE.BufferGeometry();
+  dustGeometry.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
+  dustGeometry.setAttribute("aSeed", new THREE.BufferAttribute(dustSeeds, 1));
+  const dustMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    uniforms: { uTime: { value: 0 }, uPixels: { value: 800 }, uSize: { value: .022 } },
+    vertexShader: /* glsl */ `
+      attribute float aSeed;
+      uniform float uTime;
+      uniform float uPixels;
+      uniform float uSize;
+      varying float vTwinkle;
+      void main() {
+        vec3 p = position;
+        p.x += sin(uTime * .23 + aSeed * 6.28) * .05;
+        p.y += sin(uTime * .17 + aSeed * 12.1) * .07;
+        p.z += cos(uTime * .19 + aSeed * 9.3) * .05;
+        vec4 view = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * view;
+        // uSize está em metros; o grupo da cozinha já multiplica tudo por METER.
+        float worldSize = uSize * (.5 + aSeed) * length(modelMatrix[0].xyz);
+        gl_PointSize = worldSize * uPixels * projectionMatrix[1][1] / -view.z;
+        vTwinkle = .55 + .45 * sin(uTime * 1.1 + aSeed * 40.0);
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      varying float vTwinkle;
+      void main() {
+        float r = length(gl_PointCoord - .5);
+        float core = 1.0 - smoothstep(.16, .24, r);
+        float halo = (1.0 - smoothstep(.1, .5, r)) * .3;
+        float alpha = (core + halo) * vTwinkle;
+        if (alpha < .01) discard;
+        gl_FragColor = vec4(vec3(.76, .96, .74), alpha);
+      }
+    `,
+  });
+  const dust = new THREE.Points(dustGeometry, dustMaterial);
+  dust.frustumCulled = false;
+  dust.renderOrder = 4;
+  kitchen.add(dust);
+
+  // Linhas vermelhas nas quinas viradas para a janela (calculadas com a cozinha já montada).
+  root.updateMatrixWorld(true);
+  const toKitchen = new THREE.Matrix4();
+  const kitchenInverse = kitchen.matrixWorld.clone().invert();
+  const edgeOwners: THREE.Mesh[] = [];
+  kitchen.traverse((child) => {
+    if (child instanceof THREE.Mesh && child.userData.windowEdges) edgeOwners.push(child);
+  });
+  edgeOwners.forEach((mesh) => {
+    toKitchen.multiplyMatrices(kitchenInverse, mesh.matrixWorld);
+    const points = windowEdges(mesh.geometry, toKitchen);
+    if (!points.length) return;
+    const lines = new LineSegments2(new LineSegmentsGeometry().setPositions(points), redLineMaterial);
+    lines.renderOrder = 1;
+    mesh.add(lines);
+  });
+
+  // Chamado a cada quadro. red = quanto da luz vermelha já acendeu (0 a 1);
+  // time em segundos (poeira); pixels = altura da tela em pixels reais (tamanho da poeira).
+  const update = ({ red, time, pixels }: { red: number; time: number; pixels: number }) => {
+    root.getWorldPosition(shared.uOrigin.value);
+    shared.uRedOn.value = red;
+    glowMaterial.uniforms.uOn.value = red;
+    glassMaterial.opacity = red * .22;
+    redLineMaterial.opacity = red;
+    redLineMaterial.visible = red > .01;
+    dustMaterial.uniforms.uTime.value = time;
+    dustMaterial.uniforms.uPixels.value = pixels * .5;
+  };
+
+  return { group: root, update };
+}
+
+// Bolinha com borda suave (para o brilho da lâmpada).
+function radialTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 64;
+  const context = canvas.getContext("2d");
+  if (context) {
+    const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradient.addColorStop(0, "rgba(255,255,255,1)");
+    gradient.addColorStop(.25, "rgba(255,255,255,.55)");
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, 64, 64);
+  }
+  return new THREE.CanvasTexture(canvas);
 }

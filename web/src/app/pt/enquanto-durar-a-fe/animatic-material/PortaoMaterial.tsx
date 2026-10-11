@@ -185,6 +185,8 @@ const SKY_SPAN = 0.55;
 const skyGradientShader = /* glsl */ `
   uniform float uSpan;
   uniform vec2 uResolution;
+  // Só muda na hora da "foto" da rua para a janela (a foto é maior que a tela).
+  uniform float uOffsetY;
   uniform vec3 uStops[5];
   varying vec3 vDirection;
 
@@ -192,7 +194,7 @@ const skyGradientShader = /* glsl */ `
 
   void main() {
     float h = clamp(vDirection.y, 0.0, 1.0);
-    float p = clamp((1.0 - gl_FragCoord.y / uResolution.y) / uSpan, 0.0, 1.0);
+    float p = clamp((1.0 - (gl_FragCoord.y - uOffsetY) / uResolution.y) / uSpan, 0.0, 1.0);
     vec3 color = uStops[0];
     // Azul-escuro só no topo (até 22%); verde e amarelo ficam com mais da metade.
     color = mix(color, uStops[1], smoothstep(0.22, 0.38, p));
@@ -275,6 +277,7 @@ export function PortaoMaterial() {
         uniforms: {
           uSpan: { value: SKY_SPAN },
           uResolution: { value: new THREE.Vector2(1, 1) },
+          uOffsetY: { value: 0 },
           uStops: { value: ["#00045d", "#00558e", "#41b571", "#a0d939", "#fffd01"].map((hex) => new THREE.Color(hex)) },
         },
         vertexShader: skyVertexShader,
@@ -1279,8 +1282,10 @@ export function PortaoMaterial() {
     const WINDOW_X = CAMERA_END_X;
     const WINDOW_Z = CAMERA_END_Z + m(1.2);
     const KITCHEN_CAMERA_Z = WINDOW_Z + m(KITCHEN.cameraBack);
-    // Traço escuro nas quinas dos móveis, como o azul-marinho da rua, só que cinza.
-    const kitchenLineMaterial = new LineMaterial({ color: "#2b2b29", linewidth: 1.5 });
+    // Traço quase preto nas quinas dos móveis (contorno da pintura) e, por cima, o traço
+    // vermelho nas quinas viradas para a janela, que acende junto com a luz vermelha.
+    const kitchenLineMaterial = new LineMaterial({ color: "#07031a", linewidth: 1.6 });
+    const kitchenRedLineMaterial = new LineMaterial({ color: "#ff2650", linewidth: 2.2, transparent: true, opacity: 0 });
     // A cozinha é montada só quando a pessoa passa de PRELOAD_AT (35%) da rua, e
     // preparada para a placa de vídeo (compileAsync) antes de aparecer. Se ainda
     // não estiver pronta quando a câmera chegar à janela, a câmera espera ali.
@@ -1289,13 +1294,101 @@ export function PortaoMaterial() {
     const kitchenPortraitLookAt = new THREE.Vector3(WINDOW_X - m(.8), roadY(CAMERA_END_Z) + m(3.2) + m(1.05), CAMERA_END_Z + m(1.2));
     const kitchenLookAt = new THREE.Vector3(WINDOW_X, KITCHEN_FLOOR + m(1.05), WINDOW_Z - m(8));
     let kitchenState: "idle" | "loading" | "ready" = "idle";
-    let windowGlass: THREE.MeshBasicMaterial | null = null;
+    let kitchenGroup: THREE.Object3D | null = null;
+    let updateKitchen: ((state: { red: number; time: number; pixels: number }) => void) | null = null;
 
     const buildKitchen = () => {
-      const { group, nightMaterial } = buildKitchenGray(kitchenLineMaterial);
+      const { group, update } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
       group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
-      windowGlass = nightMaterial;
+      kitchenGroup = group;
+      updateKitchen = update;
       return group;
+    };
+
+    // ---------------------------------------------------------------------------------
+    // RUA VERMELHA NA JANELA (ideia do Deiver: no Figma ele usou uma imagem com máscara).
+    // Assim que a câmera entra na cozinha, a rua 3D inteira é trocada por uma "foto" dela,
+    // tirada naquele mesmo quadro e da mesma posição, presa numa placa lá fora, atrás da janela.
+    // Como a foto é idêntica ao que estava na tela, a troca não aparece. Depois a foto vai
+    // ficando vermelha, e a rua (pesada) para de ser desenhada: a cozinha fica mais leve.
+    // A foto é um pouco maior que a tela (WINDOW_VIEW_SCALE), para cobrir a janela mesmo
+    // quando a câmera recua e vira.
+    const WINDOW_INSIDE_Z = WINDOW_Z + m(.3);
+    const WINDOW_VIEW_SCALE = 1.7;
+    const windowViewMaterial = new THREE.ShaderMaterial({
+      uniforms: { uMap: { value: null }, uTint: { value: 0 } },
+      vertexShader: /* glsl */ `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      // Vermelho pela claridade: escuro vira vinho, médio vira o vermelho da pintura, claro vira rosa.
+      fragmentShader: /* glsl */ `
+        uniform sampler2D uMap;
+        uniform float uTint;
+        varying vec2 vUv;
+        void main() {
+          vec3 color = texture2D(uMap, vUv).rgb;
+          float light = dot(color, vec3(.2126, .7152, .0722));
+          vec3 red = mix(vec3(.2, 0.0, .012), vec3(.82, 0.0, .017), smoothstep(0.0, .12, light));
+          red = mix(red, vec3(1.0, .16, .21), smoothstep(.3, .85, light));
+          gl_FragColor = vec4(mix(color, red, uTint), 1.0);
+          #include <colorspace_fragment>
+        }
+      `,
+    });
+    const windowView = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), windowViewMaterial);
+    windowView.visible = false;
+    windowView.frustumCulled = false;
+    scene.add(windowView);
+    let windowViewTarget: THREE.WebGLRenderTarget | null = null;
+    let streetVisible = true;
+    const showStreet = (visible: boolean) => {
+      if (visible === streetVisible) return;
+      streetVisible = visible;
+      world.children.forEach((child) => { if (child !== kitchenGroup) child.visible = visible; });
+      sky.visible = visible;
+      windowView.visible = !visible;
+    };
+    const dropWindowView = () => {
+      windowViewTarget?.dispose();
+      windowViewTarget = null;
+      showStreet(true);
+    };
+    const bufferSize = new THREE.Vector2();
+    const viewForward = new THREE.Vector3();
+    const takeWindowView = () => {
+      renderer.getDrawingBufferSize(bufferSize);
+      const fit = Math.min(1, renderer.capabilities.maxTextureSize / 2 / (bufferSize.x * WINDOW_VIEW_SCALE), 4096 / (bufferSize.y * WINDOW_VIEW_SCALE));
+      const targetWidth = Math.round(bufferSize.x * WINDOW_VIEW_SCALE * fit);
+      const targetHeight = Math.round(bufferSize.y * WINDOW_VIEW_SCALE * fit);
+      windowViewTarget = new THREE.WebGLRenderTarget(targetWidth, targetHeight, { type: THREE.HalfFloatType, samples: 4 });
+      // Mesma posição e direção da câmera, só com a lente mais aberta.
+      const wide = camera.clone();
+      wide.fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * WINDOW_VIEW_SCALE));
+      wide.updateProjectionMatrix();
+      // O céu se pinta pela altura na tela: aqui ele precisa saber onde a tela fica dentro da foto.
+      const skyUniforms = sky.material.uniforms;
+      const savedResolution = skyUniforms.uResolution.value.clone();
+      skyUniforms.uResolution.value.set(bufferSize.x * fit, bufferSize.y * fit);
+      skyUniforms.uOffsetY.value = (targetHeight - bufferSize.y * fit) / 2;
+      if (kitchenGroup) kitchenGroup.visible = false;
+      renderer.setRenderTarget(windowViewTarget);
+      renderer.render(scene, wide);
+      renderer.setRenderTarget(null);
+      if (kitchenGroup) kitchenGroup.visible = true;
+      skyUniforms.uResolution.value.copy(savedResolution);
+      skyUniforms.uOffsetY.value = 0;
+      // A placa fica 7 m à frente da câmera (bem depois da janela), do tamanho exato da foto.
+      const distance = m(7);
+      const placeHeight = 2 * distance * Math.tan(THREE.MathUtils.degToRad(wide.fov) / 2);
+      camera.getWorldDirection(viewForward);
+      windowView.position.copy(camera.position).addScaledVector(viewForward, distance);
+      windowView.quaternion.copy(camera.quaternion);
+      windowView.scale.set(placeHeight * camera.aspect, placeHeight, 1);
+      windowViewMaterial.uniforms.uMap.value = windowViewTarget.texture;
     };
 
     const ensureKitchen = (scrollProgress: number) => {
@@ -1347,6 +1440,9 @@ export function PortaoMaterial() {
       renderer.getDrawingBufferSize(outlineMaterial.uniforms.uResolution.value);
       sceneryLineMaterial.resolution.set(width, height);
       kitchenLineMaterial.resolution.set(width, height);
+      kitchenRedLineMaterial.resolution.set(width, height);
+      // A foto da janela vale só para o tamanho de tela em que foi tirada.
+      dropWindowView();
       renderer.getDrawingBufferSize(sky.material.uniforms.uResolution.value);
       const ratio = renderer.getPixelRatio();
       outlineMaterial.uniforms.uMinPixels.value = 1.5 * ratio;
@@ -1384,13 +1480,25 @@ export function PortaoMaterial() {
         lookAt.lerp(kitchenTarget, THREE.MathUtils.smoothstep(inside, 0, .7));
         camera.fov = THREE.MathUtils.lerp(47, portrait ? 66 : 47, turn);
         camera.updateProjectionMatrix();
-        if (windowGlass) windowGlass.opacity = THREE.MathUtils.smoothstep(inside, .3, .95) * .5;
       }
+      // A luz vermelha acende logo depois que a câmera passa pela janela.
+      const red = THREE.MathUtils.smoothstep(inside, .26, .45);
       // O sol da rua só serve para a sombra; dentro da cozinha ele não pode iluminar os móveis.
       sun.intensity = inside > 0 ? 0 : 1;
       camera.position.copy(cameraPosition);
       camera.lookAt(lookAt);
+      camera.updateMatrixWorld();
       sky.position.copy(camera.position);
+      // Dentro da cozinha: troca a rua pela foto (tirada neste mesmo quadro, se ainda não existe).
+      if (kitchenGroup && camera.position.z > WINDOW_INSIDE_Z) {
+        if (!windowViewTarget) takeWindowView();
+        showStreet(false);
+      } else if (windowViewTarget) {
+        dropWindowView();
+      }
+      windowViewMaterial.uniforms.uTint.value = red;
+      scrollArea.style.setProperty("--street-glow", (1 - red).toFixed(3));
+      updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
       // O papel gira só em torno do eixo vertical, então a borda de baixo fica sempre a 1,90 m.
       papers.forEach(({ group, mesh, material }) => {
         paperFacing.set(camera.position.x, group.position.y, camera.position.z);
@@ -1455,6 +1563,9 @@ export function PortaoMaterial() {
       sky.geometry.dispose();
       sky.material.dispose();
       papers.forEach(({ texture }) => texture?.dispose());
+      windowViewTarget?.dispose();
+      windowView.geometry.dispose();
+      windowViewMaterial.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
