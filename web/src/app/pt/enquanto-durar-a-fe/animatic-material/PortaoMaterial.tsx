@@ -966,7 +966,7 @@ export function PortaoMaterial() {
     const outlineMaterial = createOutlineMaterial({ color: JOTA_INK, worldWidth: .006 * METER });
     // Contorno da Helena no preto-violeta das linhas da cozinha.
     const helenaOutlineMaterial = createOutlineMaterial({ color: "#07031a", worldWidth: .005 * METER });
-    const jota = loadJotaFigure({ outline: outlineMaterial, anisotropy: renderer.capabilities.getMaxAnisotropy(), paintedFace: true });
+    const jota = loadJotaFigure({ outline: outlineMaterial, anisotropy: renderer.capabilities.getMaxAnisotropy() });
     jota.group.scale.setScalar(METER);
     jota.group.position.set(0, groundY(JOTA_Z), JOTA_Z);
     world.add(jota.group);

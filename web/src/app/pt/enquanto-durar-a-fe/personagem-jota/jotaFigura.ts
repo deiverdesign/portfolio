@@ -23,20 +23,7 @@ const FACE_PARTS = [
   { file: "sobrancelha-direita.png", x: -.015, y: 1.657, width: .038 },
 ];
 
-// Rosto pintado (Deiver, 12/10/2026): luz e sombra do rosto inteiro vêm de uma pintura,
-// não da luz 3D. Luz de cima, olhos escondidos na sombra das órbitas, ponte do nariz e
-// maçã do rosto acesas. A pintura é colada de frente sobre a pele, numa caixa que cobre a
-// cabeça (x/y: centro em metros; width/height: tamanho). Por cima dela só entram as
-// sobrancelhas e a boca 2D. Para mudar uma sombra, edite o PNG (cada pixel é um dos 5 tons do rosto).
-const PAINTED_FACE = { file: "rosto-pintado.png?v=1", x: -.047, y: 1.6, width: .3, height: .36 };
-const PAINTED_FACE_KEEPS = ["boca.png", "sobrancelha-esquerda.png", "sobrancelha-direita.png"];
-
-// paintedFace: usa o rosto pintado no lugar dos olhos e da boca desenhados.
-export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }: { outline: THREE.Material; anisotropy?: number; paintedFace?: boolean }) {
-  const faceParts = [
-    ...(paintedFace ? [{ ...PAINTED_FACE, painted: true }] : []),
-    ...FACE_PARTS.filter((part) => !paintedFace || PAINTED_FACE_KEEPS.includes(part.file)).map((part) => ({ ...part, painted: false })),
-  ];
+export function loadJotaFigure({ outline, anisotropy = 1 }: { outline: THREE.Material; anisotropy?: number }) {
   const group = new THREE.Group();
   const textures: THREE.Texture[] = [];
   let disposed = false;
@@ -44,7 +31,7 @@ export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }:
   const ready = Promise.all([
     new GLTFLoader().loadAsync(JOTA_MODEL_URL),
     loadJotaRegions(),
-    Promise.all(faceParts.map((part) => new THREE.TextureLoader().loadAsync(FACE_URL + part.file))),
+    Promise.all(FACE_PARTS.map((part) => new THREE.TextureLoader().loadAsync(FACE_URL + part.file))),
   ]).then(([gltf, regions, faces]) => {
     textures.push(regions, ...faces);
     if (disposed) { textures.forEach((texture) => texture.dispose()); return; }
@@ -89,15 +76,14 @@ export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }:
     group.add(model, watchFace);
 
     if (!skin) return;
-    faceParts.forEach((facePart, index) => {
+    FACE_PARTS.forEach((facePart, index) => {
       const paint = faces[index];
       paint.colorSpace = THREE.SRGBColorSpace;
       paint.anisotropy = anisotropy;
       const aspect = paint.image.height / paint.image.width;
-      // A caixa de projeção vai do nariz até o fundo dos olhos. A do rosto pintado é mais
-      // funda, para pegar também as bochechas e as orelhas (só a metade da frente da cabeça).
-      const decalSize = new THREE.Vector3(facePart.width, facePart.width * aspect, facePart.painted ? .2 : .1);
-      const position = new THREE.Vector3(facePart.x, facePart.y, facePart.painted ? .02 : .07);
+      // A caixa de projeção vai do nariz até o fundo dos olhos.
+      const decalSize = new THREE.Vector3(facePart.width, facePart.width * aspect, .1);
+      const position = new THREE.Vector3(facePart.x, facePart.y, .07);
       const material = createCelMaterial({ ...JOTA_BANDS.skin, paint, clean: true, cleanTones: 3 });
       // Puxa o adesivo para a frente da pele; as sobrancelhas (por último) ficam por cima.
       material.polygonOffset = true;
