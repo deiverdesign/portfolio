@@ -1652,11 +1652,11 @@ export function PortaoMaterial() {
         material.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(paperDistance, 2, 8)) * 6;
         // Só aparece depois que a câmera passa por baixo dele, a partir de ~1,3 m da lente, e fica
         // inteiro e nítido até a câmera passar pelo próximo. Um bilhete por vez (Deiver): este some
-        // enquanto o próximo ainda está colado na lente, invisível. O último some na janela.
+        // enquanto o próximo ainda está colado na lente, invisível. O último some antes da câmera chegar na janela (antes da "foto" da rua).
         const next = papers[index + 1];
         const handOff = next ? 1 - THREE.MathUtils.smoothstep(camera.position.z - next.group.position.z, .3, 2.6) : 1;
         const passed = THREE.MathUtils.smoothstep(camera.position.z - group.position.z, -.5, .5);
-        material.uniforms.uOpacity.value = passed * THREE.MathUtils.smoothstep(paperDistance, 2.6, 6) * (1 - THREE.MathUtils.smoothstep(inside, .05, .3)) * handOff;
+        material.uniforms.uOpacity.value = passed * THREE.MathUtils.smoothstep(paperDistance, 2.6, 6) * (1 - THREE.MathUtils.smoothstep(inside, .02, .15)) * handOff;
       });
       flyingObjects.forEach(({ object, spin }) => { object.rotation.y = spin * progress * Math.PI; });
       renderer.render(scene, camera);
@@ -1727,9 +1727,15 @@ export function PortaoMaterial() {
   return (
     <main className={styles.animatic} ref={scrollRef}>
       <header className={styles.header}>
-        {/* Logo do Deiver em azul (Figma, nó 85:9668). */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={styles.logo} src="/enquanto-durar-a-fe/logo-enquanto-fe-azul.svg" width={187} height={16} alt="Enquanto durar a fé" />
+        {/* Logo do Deiver (Figma, nó 95:10148): azul na rua, escuro na cozinha, branco no celular deitado. */}
+        <span className={styles.logoStack}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={`${styles.logo} ${styles.logoStreet}`} src="/enquanto-durar-a-fe/logo-enquanto-fe-azul.svg" width={187} height={16} alt="Enquanto durar a fé" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={`${styles.logo} ${styles.logoKitchen}`} src="/enquanto-durar-a-fe/logo-enquanto-fe-escuro.svg" width={187} height={16} alt="" aria-hidden="true" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={`${styles.logo} ${styles.logoCinema}`} src="/enquanto-durar-a-fe/logo-enquanto-fe.svg" width={187} height={16} alt="" aria-hidden="true" />
+        </span>
         <a className={styles.headerBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/enquanto-durar-a-fe/icone-livro.svg" width={14} height={14} alt="" />

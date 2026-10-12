@@ -447,10 +447,11 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   cylinder(.1, .1, .13, tinX, tableH + .07, tinZ, gray(GRAY.metal), kitchen, 32);
   const blueLid = violetMaterial(GRAY.dark, null, THREE.FrontSide, ["#3f62e0", "#2a3aa6", "#141a58"]);
   cylinder(.106, .106, .03, tinX, tableH + .145, tinZ, blueLid, kitchen, 32);
-  // Notas soltas no lado da mesa que a câmera vê, ao lado da lata. Cédula ~14 × 6,5 cm.
-  // Ex.: a laranja (R$ 50) meio por baixo da azul (R$ 100), a rosada (R$ 10) mais solta.
+  // Notas soltas na beira da mesa do lado da câmera, à direita do braço da Helena (onde o
+  // Deiver marcou). Cédula ~14 × 6,5 cm. Ex.: a laranja (R$ 50) meio por baixo da azul
+  // (R$ 100), a rosada (R$ 10) mais solta.
   const banknoteTones: [string, string, string][] = [["#e7a65a", "#b0703a", "#4d2f3a"], ["#7fb0e6", "#4a77b8", "#1f2c5c"], ["#e08a9c", "#a8576e", "#4a2340"]];
-  [[.3, .02, .4], [.36, .1, -.35], [.22, .34, 1.1]].forEach(([dx, dz, turn], i) => {
+  [[.24, .44, .4], [.3, .52, -.35], [.17, .58, 1.1]].forEach(([dx, dz, turn], i) => {
     const note = box(.14, .002, .065, tableX + dx, tableH + .008 + i * .0025, tableZ + dz, violetMaterial(GRAY.white, null, THREE.FrontSide, banknoteTones[i]));
     note.rotation.y = turn;
   });
