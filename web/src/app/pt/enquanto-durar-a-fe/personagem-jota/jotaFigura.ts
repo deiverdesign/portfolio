@@ -28,11 +28,13 @@ const FACE_PARTS = [
 // numa caixa que cobre a cabeça (x/y: centro em metros; width/height: tamanho), e já traz
 // sobrancelhas, boca e as órbitas na sombra, então os desenhos 2D do rosto ficam escondidos.
 // Cabelo, corpo e roupa continuam com a luz 3D.
-const PAINTED_FACE = { file: "rosto-pintado.webp?v=3", x: -.047, y: 1.6, width: .3, height: .36 };
+const PAINTED_FACE = { file: "rosto-pintado.webp?v=4", x: -.047, y: 1.6, width: .3, height: .36 };
 const PAINTED_FACE_KEEPS: string[] = [];
 // Com o rosto pintado, a pele 3D que a pintura não alcança (sob a franja, atrás da orelha,
-// no "V" da gola, mãos) usa tons escuros tirados da própria pintura, em vez do ciano.
+// no "V" da gola) usa tons escuros tirados da própria pintura, em vez do ciano. Só vale da
+// altura PAINTED_SKIN_FROM_Y (metros) para cima: mãos e antebraços ficam com a pele de sempre.
 const PAINTED_SKIN_FALLBACK = { lit: "#505f72", mid: "#424e61", shade: "#2c3548", rimAmount: 0 };
+const PAINTED_SKIN_FROM_Y = 1.3;
 
 // paintedFace: usa o rosto pintado no lugar dos olhos e da boca desenhados.
 export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }: { outline: THREE.Material; anisotropy?: number; paintedFace?: boolean }) {
@@ -59,7 +61,7 @@ export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }:
     meshes.forEach((child) => {
       const original = child.material as THREE.MeshStandardMaterial;
       const part = original.name as JotaPart;
-      const band = paintedFace && part === "skin" ? { ...JOTA_BANDS.skin, ...PAINTED_SKIN_FALLBACK } : JOTA_BANDS[part] ?? JOTA_BANDS.shirt;
+      const band = JOTA_BANDS[part] ?? JOTA_BANDS.shirt;
       if (part === "skin") skin = child;
       const id = JOTA_PARTS.indexOf(part);
       const region = id >= 0 ? { map: regions, id } : undefined;
@@ -84,6 +86,7 @@ export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }:
     model.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
     // Ainda fora do grupo: os adesivos saem nas coordenadas do próprio Jota.
     model.updateMatrixWorld(true);
+    if (paintedFace && skin) splitPaintedSkin(skin, { ink: (skin.material as THREE.ShaderMaterial).uniforms.uInk?.value as THREE.Texture | undefined, regions });
 
     const watchFace = createJotaWatchFace(createCelMaterial({ ...JOTA_BANDS.watch, clean: true, cleanTones: 2 }));
     watchFace.add(new THREE.Mesh(watchFace.geometry, outline));
@@ -101,7 +104,9 @@ export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }:
       // funda, para pegar também as bochechas e as orelhas (só a metade da frente da cabeça).
       const decalSize = new THREE.Vector3(facePart.width, facePart.width * aspect, facePart.painted ? .2 : .1);
       const position = new THREE.Vector3(facePart.x, facePart.y, facePart.painted ? .02 : .07);
-      const material = createCelMaterial({ ...JOTA_BANDS.skin, paint, clean: true, cleanTones: 3 });
+      // Na borda da pintura (alpha intermediário) aparece a pele 3D: no rosto pintado, a escura.
+      const skinBands = facePart.painted ? { ...JOTA_BANDS.skin, ...PAINTED_SKIN_FALLBACK } : JOTA_BANDS.skin;
+      const material = createCelMaterial({ ...skinBands, paint, clean: true, cleanTones: 3 });
       // Puxa o adesivo para a frente da pele; as sobrancelhas (por último) ficam por cima.
       material.polygonOffset = true;
       material.polygonOffsetFactor = -2;
@@ -118,10 +123,40 @@ export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }:
     group.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
       child.geometry.dispose();
-      if (child.material !== outline) (child.material as THREE.Material).dispose();
+      [child.material].flat().forEach((material) => { if (material !== outline) material.dispose(); });
     });
     textures.forEach((texture) => texture.dispose());
   };
 
   return { group, ready, dispose };
+}
+
+// Divide a pele em dois grupos de triângulos: cabeça e pescoço (acima de PAINTED_SKIN_FROM_Y)
+// recebem o tom escuro; o resto (mãos, antebraços) continua com o material original.
+function splitPaintedSkin(skin: THREE.Mesh, { ink, regions }: { ink?: THREE.Texture; regions: THREE.Texture }) {
+  const geometry = skin.geometry;
+  const position = geometry.getAttribute("position");
+  const source = geometry.index ? Array.from(geometry.index.array) : Array.from({ length: position.count }, (_, i) => i);
+  const upper: number[] = [];
+  const lower: number[] = [];
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  for (let i = 0; i < source.length; i += 3) {
+    a.fromBufferAttribute(position, source[i]).applyMatrix4(skin.matrixWorld);
+    b.fromBufferAttribute(position, source[i + 1]).applyMatrix4(skin.matrixWorld);
+    c.fromBufferAttribute(position, source[i + 2]).applyMatrix4(skin.matrixWorld);
+    ((a.y + b.y + c.y) / 3 > PAINTED_SKIN_FROM_Y ? upper : lower).push(source[i], source[i + 1], source[i + 2]);
+  }
+  geometry.setIndex([...upper, ...lower]);
+  geometry.clearGroups();
+  geometry.addGroup(0, upper.length, 0);
+  geometry.addGroup(upper.length, lower.length, 1);
+  const original = skin.material as THREE.ShaderMaterial;
+  const median = original.uniforms.uInkMedian?.value as number | undefined;
+  const fallback = createCelMaterial({
+    ...JOTA_BANDS.skin, ...PAINTED_SKIN_FALLBACK,
+    ink: ink ? { map: ink, median: median ?? .5, cut: .3 } : undefined,
+    region: { map: regions, id: JOTA_PARTS.indexOf("skin") },
+    clean: true, cleanTones: 3,
+  });
+  skin.material = [fallback, original];
 }
