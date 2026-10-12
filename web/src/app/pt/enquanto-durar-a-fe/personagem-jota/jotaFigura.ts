@@ -30,6 +30,9 @@ const FACE_PARTS = [
 // Cabelo, corpo e roupa continuam com a luz 3D.
 const PAINTED_FACE = { file: "rosto-pintado.webp?v=3", x: -.047, y: 1.6, width: .3, height: .36 };
 const PAINTED_FACE_KEEPS: string[] = [];
+// Com o rosto pintado, a pele 3D que a pintura não alcança (sob a franja, atrás da orelha,
+// no "V" da gola, mãos) usa tons escuros tirados da própria pintura, em vez do ciano.
+const PAINTED_SKIN_FALLBACK = { lit: "#505f72", mid: "#424e61", shade: "#2c3548", rimAmount: 0 };
 
 // paintedFace: usa o rosto pintado no lugar dos olhos e da boca desenhados.
 export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }: { outline: THREE.Material; anisotropy?: number; paintedFace?: boolean }) {
@@ -56,7 +59,7 @@ export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }:
     meshes.forEach((child) => {
       const original = child.material as THREE.MeshStandardMaterial;
       const part = original.name as JotaPart;
-      const band = JOTA_BANDS[part] ?? JOTA_BANDS.shirt;
+      const band = paintedFace && part === "skin" ? { ...JOTA_BANDS.skin, ...PAINTED_SKIN_FALLBACK } : JOTA_BANDS[part] ?? JOTA_BANDS.shirt;
       if (part === "skin") skin = child;
       const id = JOTA_PARTS.indexOf(part);
       const region = id >= 0 ? { map: regions, id } : undefined;
