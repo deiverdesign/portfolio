@@ -28,7 +28,7 @@ const FACE_PARTS = [
 // numa caixa que cobre a cabeça (x/y: centro em metros; width/height: tamanho), e já traz
 // sobrancelhas, boca e as órbitas na sombra, então os desenhos 2D do rosto ficam escondidos.
 // Cabelo, corpo e roupa continuam com a luz 3D.
-const PAINTED_FACE = { file: "rosto-pintado.webp?v=2", x: -.047, y: 1.6, width: .3, height: .36 };
+const PAINTED_FACE = { file: "rosto-pintado.webp?v=3", x: -.047, y: 1.6, width: .3, height: .36 };
 const PAINTED_FACE_KEEPS: string[] = [];
 
 // paintedFace: usa o rosto pintado no lugar dos olhos e da boca desenhados.
