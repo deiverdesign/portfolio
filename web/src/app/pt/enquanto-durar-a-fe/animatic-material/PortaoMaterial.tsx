@@ -6,6 +6,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import styles from "./material.module.css";
 import { KITCHEN, buildKitchenGray } from "./cozinhaCinza";
+import { OPALA, buildOpalaGray } from "./opalaCinza";
 import { METER, PALETTE, createCelMaterial, createOutlineMaterial, createPaintedMaterial, disposeObject, m, skyVertexShader } from "./celShading";
 import { JOTA_INK, JOTA_RIM } from "../personagem-jota/jotaBands";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
@@ -116,6 +117,13 @@ const KITCHEN_EXCERPTS: Excerpt[] = [
   },
   { text: "Lá dentro não havia biscoitos.\nNotas dobradas. Comprovantes. Alguns envelopes.\nContou o dinheiro. Depois contou novamente." },
   { text: "Abriu a geladeira.\nHavia pouca coisa dentro.\nUm pedaço de queijo. Leite. Alguns ovos." },
+];
+
+// Opala (cena 3): por enquanto lorem ipsum (Deiver), um com cara de fala e dois de narrador.
+const OPALA_EXCERPTS: Excerpt[] = [
+  { text: "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit.", footer: "CAPÍTULO 5 — LOREM IPSUM" },
+  { text: "“Sed do eiusmod tempor\nincididunt ut labore?”", footer: "— LOREM" },
+  { text: "Ut enim ad minim veniam,\nquis nostrud exercitation\nullamco laboris." },
 ];
 
 // Rua (capítulos 1 e 2), na ordem em que a câmera passa por eles. A sequência primeiro
@@ -1350,6 +1358,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // não estiver pronta quando a câmera chegar à janela, a câmera espera ali.
     const PRELOAD_AT = .35;
     const kitchenTarget = new THREE.Vector3();
+    const opalaLookAt = new THREE.Vector3();
     const kitchenPortraitLookAt = new THREE.Vector3(WINDOW_X - m(.8), roadY(CAMERA_END_Z) + m(3.2) + m(1.05), CAMERA_END_Z + m(1.2));
     const kitchenLookAt = new THREE.Vector3(WINDOW_X, KITCHEN_FLOOR + m(1.05), WINDOW_Z - m(8));
     let kitchenState: "idle" | "loading" | "ready" = "idle";
@@ -1366,15 +1375,54 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Cada item tem: onde termina (em metros, dentro da cozinha) e quando anda (from → to,
     // de 0 a 1 dentro da história). Os bilhetes somem quando o próximo chega; o último fica.
     const STORY_END = 1.25;
+    // travel = quanto da história o item leva para chegar ao lugar dele;
+    // portraitX = para onde ele vai no celular (o quadro é estreito).
     type StoryItem = {
       object: THREE.Object3D;
       end: THREE.Vector3;
       from: number;
       to: number;
+      travel: number;
+      portraitX: number;
       paper: THREE.ShaderMaterial;
     };
     const storyItems: StoryItem[] = [];
     const storyTextures: THREE.Texture[] = [];
+    // Cria um bilhete preso em "space" (grupo em metros). Ex.: o primeiro da cozinha.
+    const addStoryPaper = (items: StoryItem[], space: THREE.Object3D, excerpt: Excerpt, item: Omit<StoryItem, "object" | "paper">) => {
+      const texture = createTextTexture(excerpt, creditFont);
+      if (texture) storyTextures.push(texture);
+      const material = new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        uniforms: { uMap: { value: texture }, uBlur: { value: 0 }, uOpacity: { value: 0 } },
+        vertexShader: paperVertexShader,
+        fragmentShader: paperFragmentShader,
+      });
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(PAPER_WIDTH, PAPER_HEIGHT), material);
+      mesh.visible = false;
+      mesh.renderOrder = 7;
+      space.add(mesh);
+      items.push({ ...item, object: mesh, paper: material });
+    };
+
+    // ---------------------------------------------------------------------------------
+    // SAÍDA PELA PORTA E O OPALA (cena 3, rascunho do Deiver de 12/10).
+    // Depois da história da cozinha (STORY_END), a câmera continua de costas, sai pela porta
+    // nova da parede do fundo, vê a porta encolher numa parede cinza enorme, a parede some e
+    // ela passa por cima do Opala até revelar o Jota e os dois amigos (sombras pretas).
+    // OPALA_END: o scroll vai até 1,85; de 1,25 a 1,85 é essa caminhada (saída + Opala).
+    const OPALA_END = 1.85;
+    // Onde a câmera está (z em metros da cozinha) em cada ponto da caminhada (0 a 1).
+    // Começa onde a história da cozinha termina (5,3 m) e vai até OPALA.end.
+    const STORY_CAMERA_Z = KITCHEN.cameraBack + .3;
+    const walkOutZ = (t: number) => THREE.MathUtils.lerp(STORY_CAMERA_Z, OPALA.end, THREE.MathUtils.smoothstep(t, 0, 1));
+    let opalaGroup: THREE.Object3D | null = null;
+    let opalaUpdate: ReturnType<typeof buildOpalaGray>["update"] | null = null;
+    let opalaSetDoorView: ReturnType<typeof buildOpalaGray>["setDoorView"] | null = null;
+    let opalaJota: ReturnType<typeof loadJotaFigure> | null = null;
+    const opalaItems: StoryItem[] = [];
 
     const buildKitchen = () => {
       const { group, space, update, setHelena } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
@@ -1392,21 +1440,31 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const papersAt = [new THREE.Vector3(0, 1.95, 2.6), new THREE.Vector3(.75, 1.95, 2.6), new THREE.Vector3(.2, 1.95, 2.6)];
       const paperTimes = [[.06, .4], [.38, .7], [.66, 1]];
       KITCHEN_EXCERPTS.forEach((excerpt, index) => {
-        const texture = createTextTexture(excerpt, creditFont);
-        if (texture) storyTextures.push(texture);
-        const material = new THREE.ShaderMaterial({
-          transparent: true,
-          depthWrite: false,
-          side: THREE.DoubleSide,
-          uniforms: { uMap: { value: texture }, uBlur: { value: 0 }, uOpacity: { value: 0 } },
-          vertexShader: paperVertexShader,
-          fragmentShader: paperFragmentShader,
-        });
-        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(PAPER_WIDTH, PAPER_HEIGHT), material);
-        mesh.visible = false;
-        mesh.renderOrder = 5;
-        space.add(mesh);
-        storyItems.push({ object: mesh, end: papersAt[index], from: paperTimes[index][0], to: paperTimes[index][1], paper: material });
+        const end = papersAt[index];
+        addStoryPaper(storyItems, space, excerpt, { end, from: paperTimes[index][0], to: paperTimes[index][1], travel: .22, portraitX: end.x * .4 - .45 });
+      });
+      return group;
+    };
+
+    const buildOpala = () => {
+      const { group, space, update, setDoorView, jotaSpot } = buildOpalaGray();
+      group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
+      opalaGroup = group;
+      opalaUpdate = update;
+      opalaSetDoorView = setDoorView;
+      // O mesmo Jota da rua (mesmo arquivo, já no cache), parado à esquerda do Opala.
+      opalaJota = loadJotaFigure({ outline: outlineMaterial, anisotropy: renderer.capabilities.getMaxAnisotropy(), paintedFace: true });
+      opalaJota.group.position.copy(jotaSpot);
+      space.add(opalaJota.group);
+      // Bilhetes: saem da lente depois que a câmera passa pelo carro e ficam a ~2,8 m dela,
+      // ao lado do caminho, enquanto ela continua recuando. Um por vez.
+      const times = [[.56, .72], [.7, .86], [.84, 1]];
+      const sides = [1.2, -1.3, 1.1];
+      OPALA_EXCERPTS.forEach((excerpt, index) => {
+        const [from, to] = times[index];
+        const travel = .12;
+        const end = new THREE.Vector3(OPALA.doorX + sides[index], 1.95, walkOutZ(from + travel) - 2.8);
+        addStoryPaper(opalaItems, space, excerpt, { end, from, to, travel, portraitX: OPALA.doorX - .9 + sides[index] * .2 });
       });
       return group;
     };
@@ -1418,18 +1476,20 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // story = 0 a 1 dentro da história. O item nasce a 15% do caminho entre a lente e o lugar
     // final dele (quase colado na tela, na mesma direção) e vai até lá em ~22% da história.
     // Como na rua, ele só aparece a partir de ~60 cm da lente e fica inteiro depois de ~1,3 m.
-    const renderStory = (story: number) => {
+    // A cozinha e a cena do Opala ficam no mesmo lugar do mundo (mesma origem), então a
+    // conta da posição da câmera em metros vale para as duas. fade = multiplica a opacidade.
+    const renderStory = (items: StoryItem[], story: number, fade = 1) => {
       if (!kitchenGroup) return;
       const portrait = camera.aspect < 1;
       storyCamera.copy(camera.position).sub(kitchenGroup.position).divideScalar(METER);
       const paperWidth = portrait ? .62 : 1.1;
-      storyItems.forEach(({ object, end, from, to, paper }) => {
-        object.visible = story > from;
+      items.forEach(({ object, end, from, to, travel: travelTime, portraitX, paper }) => {
+        object.visible = story > from && fade > 0;
         if (!object.visible) return;
-        const travel = THREE.MathUtils.smoothstep(story, from, from + .22);
+        const travel = THREE.MathUtils.smoothstep(story, from, from + travelTime);
         // No celular o quadro é estreito e olha mais para a esquerda: tudo chega mais ao centro dele.
         storyEnd.copy(end);
-        if (portrait) storyEnd.x = end.x * .4 - .45;
+        if (portrait) storyEnd.x = portraitX;
         storyStart.copy(storyCamera).lerp(storyEnd, .15);
         object.position.lerpVectors(storyStart, storyEnd, travel);
         const distance = object.position.distanceTo(storyCamera);
@@ -1441,7 +1501,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         storyFacing.set(camera.position.x, storyFacing.y, camera.position.z);
         object.lookAt(storyFacing);
         paper.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(distance, .5, 1.8)) * 6;
-        paper.uniforms.uOpacity.value = appear * leave;
+        paper.uniforms.uOpacity.value = appear * leave * fade;
       });
     };
 
@@ -1488,7 +1548,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     const showStreet = (visible: boolean) => {
       if (visible === streetVisible) return;
       streetVisible = visible;
-      world.children.forEach((child) => { if (child !== kitchenGroup) child.visible = visible; });
+      world.children.forEach((child) => { if (child !== kitchenGroup && child !== opalaGroup) child.visible = visible; });
       sky.visible = visible;
       windowView.visible = !visible;
     };
@@ -1531,11 +1591,38 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       windowViewMaterial.uniforms.uMap.value = windowViewTarget.texture;
     };
 
+    // FOTO DA COZINHA NA PORTA: igual à da janela, mas ao contrário. Assim que a câmera sai
+    // pela porta, a cozinha inteira (pesada) para de ser desenhada e o vão mostra uma foto dela,
+    // tirada da lente naquele quadro (só a cozinha, sem a parede de fora nem o Opala).
+    let doorViewTarget: THREE.WebGLRenderTarget | null = null;
+    const doorViewMatrix = new THREE.Matrix4();
+    const takeDoorView = () => {
+      renderer.getDrawingBufferSize(bufferSize);
+      doorViewTarget = new THREE.WebGLRenderTarget(bufferSize.x, bufferSize.y, { type: THREE.HalfFloatType, samples: 4 });
+      // Só a cozinha (e a rua vermelha na janela) entram na foto.
+      if (opalaGroup) opalaGroup.visible = false;
+      if (kitchenGroup) kitchenGroup.visible = true;
+      windowView.visible = !streetVisible;
+      renderer.setRenderTarget(doorViewTarget);
+      renderer.render(scene, camera);
+      renderer.setRenderTarget(null);
+      if (opalaGroup) opalaGroup.visible = true;
+      doorViewMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+      opalaSetDoorView?.(doorViewTarget.texture, doorViewMatrix);
+    };
+    const dropDoorView = () => {
+      doorViewTarget?.dispose();
+      doorViewTarget = null;
+      opalaSetDoorView?.(null);
+    };
+
     const ensureKitchen = (scrollProgress: number) => {
       if (kitchenState !== "idle" || scrollProgress < PRELOAD_AT) return;
       kitchenState = "loading";
       const kitchen = buildKitchen();
       world.add(kitchen);
+      // O Opala é montado junto (o arquivo é leve: ~500 KB) e preparado na mesma hora.
+      world.add(buildOpala());
       renderer.compileAsync(scene, camera).then(() => {
         if (!disposed) kitchenState = "ready";
       });
@@ -1585,6 +1672,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       kitchenRedLineMaterial.resolution.set(width, height);
       // A foto da janela vale só para o tamanho de tela em que foi tirada.
       dropWindowView();
+      dropDoorView();
       renderer.getDrawingBufferSize(sky.material.uniforms.uResolution.value);
       const ratio = renderer.getPixelRatio();
       outlineMaterial.uniforms.uMinPixels.value = 1.5 * ratio;
@@ -1600,6 +1688,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // Se a cozinha ainda não ficou pronta, a câmera espera na janela.
       const sceneProgress = kitchenState === "ready" ? Math.min(progress, 1) : Math.min(progress, STREET_END);
       const story = kitchenState === "ready" ? THREE.MathUtils.clamp((progress - 1) / (STORY_END - 1), 0, 1) : 0;
+      // out = 0 a 1 na caminhada para fora da casa (saída pela porta + Opala).
+      const out = kitchenState === "ready" ? THREE.MathUtils.clamp((progress - STORY_END) / (OPALA_END - STORY_END), 0, 1) : 0;
       const walk = THREE.MathUtils.clamp((sceneProgress - INTRO) / (STREET_END - INTRO), 0, 1);
       cameraPosition.lerpVectors(startPosition, endPosition, walk);
       cameraPosition.x += Math.sin(walk * Math.PI) * CAMERA_SWAY;
@@ -1629,6 +1719,25 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       }
       // Durante a história a câmera quase para: recua só mais 30 cm.
       if (story > 0) cameraPosition.z += m(.3) * THREE.MathUtils.smoothstep(story, 0, 1);
+      // Saída pela porta: a câmera vai para o meio do vão antes de chegar nele e continua
+      // recuando reto, na altura do olho. Depois da parede, o olhar desce um pouco para o Opala.
+      // outZ = onde a câmera está, em metros da cozinha (a porta fica em 6 a 6,15 m).
+      const outZ = walkOutZ(out);
+      if (out > 0) {
+        const toDoor = THREE.MathUtils.smoothstep(out, 0, .1);
+        cameraPosition.x = THREE.MathUtils.lerp(cameraPosition.x, WINDOW_X + m(OPALA.doorX), toDoor);
+        cameraPosition.z = WINDOW_Z + m(outZ);
+        // No celular (quadro estreito) o olhar fica entre o Jota e o carro, e a lente abre mais
+        // no fim, para os dois caberem. Ex.: 66° → 80° de abertura vertical.
+        const portrait = camera.aspect < 1;
+        const reveal = THREE.MathUtils.smoothstep(out, .45, .9);
+        opalaLookAt.set(WINDOW_X + m(OPALA.doorX - (portrait ? 2.2 : .9)), KITCHEN_FLOOR + m(1.1), WINDOW_Z + m(OPALA.carZ - 6));
+        lookAt.lerp(opalaLookAt, reveal);
+        if (portrait) {
+          camera.fov = THREE.MathUtils.lerp(66, 80, reveal);
+          camera.updateProjectionMatrix();
+        }
+      }
       // A luz vermelha acende logo depois que a câmera passa pela janela.
       const red = THREE.MathUtils.smoothstep(inside, .26, .45);
       // O sol da rua só serve para a sombra; dentro da cozinha ele não pode iluminar os móveis.
@@ -1656,10 +1765,24 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       } else if (windowViewTarget) {
         dropWindowView();
       }
+      // Fora da casa: a cozinha vira foto no vão da porta, e a rua vermelha da janela some junto.
+      const outsideHouse = Boolean(opalaGroup) && out > 0 && outZ > KITCHEN.depth + .6;
+      if (outsideHouse && !doorViewTarget) takeDoorView();
+      else if (!outsideHouse && doorViewTarget) dropDoorView();
+      if (kitchenGroup) kitchenGroup.visible = !outsideHouse;
+      if (outsideHouse) windowView.visible = false;
+      else if (!streetVisible) windowView.visible = true;
+      // A parede de fora some logo antes da câmera chegar no carro; a porta vira um vulto
+      // vermelho atrás dele (quadro 9) e some depois que o Jota aparece.
+      const wallGone = THREE.MathUtils.smoothstep(outZ, OPALA.carZ - 1.4, OPALA.carZ - .4);
+      if (opalaGroup) opalaGroup.visible = out > 0;
+      opalaUpdate?.({ wallOpacity: 1 - wallGone, doorOpacity: THREE.MathUtils.lerp(1, .75, wallGone) * (1 - THREE.MathUtils.smoothstep(outZ, 15, 17.5)), ghost: wallGone });
       windowViewMaterial.uniforms.uTint.value = red;
       scrollArea.style.setProperty("--street-glow", (1 - red).toFixed(3));
       updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
-      renderStory(story);
+      // Os bilhetes da cozinha somem no começo da saída.
+      renderStory(storyItems, story, 1 - THREE.MathUtils.smoothstep(out, 0, .06));
+      renderStory(opalaItems, out);
       // O papel gira só em torno do eixo vertical, então a borda de baixo fica sempre a 1,90 m.
       papers.forEach(({ group, mesh, material }, index) => {
         paperFacing.set(camera.position.x, group.position.y, camera.position.z);
@@ -1690,7 +1813,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const bounds = scrollArea.getBoundingClientRect();
       const distance = Math.max(scrollArea.offsetHeight - window.innerHeight, 1);
       const scrolled = Math.min(1, Math.max(0, -bounds.top / distance));
-      targetProgress = scrolled * STORY_END;
+      targetProgress = scrolled * OPALA_END;
       // --scroll-progress continua indo de 0 a 1 só na rua + recuo (o texto de abertura usa ele);
       // a barrinha de progresso usa o scroll inteiro.
       scrollArea.style.setProperty("--scroll-progress", Math.min(targetProgress, 1).toFixed(4));
@@ -1727,6 +1850,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       if (frame) window.cancelAnimationFrame(frame);
       disposed = true;
       jota.dispose();
+      opalaJota?.dispose();
       outlineMaterial.dispose();
       helenaOutlineMaterial.dispose();
       disposeObject(world);
@@ -1735,6 +1859,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       papers.forEach(({ texture }) => texture?.dispose());
       storyTextures.forEach((texture) => texture.dispose());
       windowViewTarget?.dispose();
+      doorViewTarget?.dispose();
       windowView.geometry.dispose();
       windowViewMaterial.dispose();
       renderer.dispose();
