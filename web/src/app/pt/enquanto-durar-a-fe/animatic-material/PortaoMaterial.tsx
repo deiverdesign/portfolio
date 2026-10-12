@@ -137,13 +137,32 @@ const BOOK_EXCERPTS: (Excerpt & { z: number; phoneShift: number })[] = [
 // Quebra o trecho em linhas que cabem no papel (respeitando as quebras do Deiver) e
 // diminui a letra até o bloco caber na altura. Ex.: "Jota não é o seu nome, né?" sai em
 // 71 px; a fala de quatro linhas do Jota, em ~50 px.
-function createTextTexture({ text, footer }: Excerpt) {
+// Linha de crédito (— JOTA, CAPÍTULO 1 — A SUBIDA): IBM Plex Mono medium em caixa alta,
+// menor que a citação e com pouco espaço entre letras, como crédito de documento. A citação
+// segue em serif. creditFont é a família da Plex que a página carregou.
+const CREDIT_FONT_FALLBACK = "'IBM Plex Mono', monospace";
+function createTextTexture({ text, footer }: Excerpt, creditFont = CREDIT_FONT_FALLBACK) {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 400;
   const context = canvas.getContext("2d");
   if (!context) return null;
+  const creditStyle = `500 23px ${creditFont}`;
+  drawExcerpt(context, { text, footer }, creditStyle);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  // Se a Plex ainda não chegou, redesenha o papel quando ela carregar.
+  if (footer && !document.fonts.check(creditStyle)) {
+    document.fonts.load(creditStyle).then(() => {
+      drawExcerpt(context, { text, footer }, creditStyle);
+      texture.needsUpdate = true;
+    }).catch(() => {});
+  }
+  return texture;
+}
 
+function drawExcerpt(context: CanvasRenderingContext2D, { text, footer }: Excerpt, creditStyle: string) {
+  const { canvas } = context;
   context.fillStyle = "#ebe8c8";
   context.fillRect(0, 0, canvas.width, canvas.height);
   const footerSpace = footer ? 70 : 0;
@@ -172,12 +191,11 @@ function createTextTexture({ text, footer }: Excerpt) {
   lines.forEach((line, index) => context.fillText(line, 86, firstLine + (index + 1) * lineHeight - fontSize * .16));
   if (footer) {
     context.fillStyle = PALETTE.cobalt;
-    context.font = "500 25px monospace";
-    context.fillText(footer, 89, firstLine + blockHeight);
+    context.font = creditStyle;
+    context.letterSpacing = "0.06em";
+    context.fillText(footer.toUpperCase(), 89, firstLine + blockHeight);
+    context.letterSpacing = "0px";
   }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  return texture;
 }
 
 // Céu: o degradê do Deiver no Figma, com as mesmas cores e posições (0% = topo, 100% = base).
@@ -261,7 +279,7 @@ const skyGradientShader = /* glsl */ `
 
 const TINTA = { sunOrange: "#f0a647", yellow: "#fefb4e", navyDeep: "#060b2c", ink: "#030a1a" };
 
-export function PortaoMaterial() {
+export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFont?: string } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLElement>(null);
 
@@ -1277,7 +1295,7 @@ export function PortaoMaterial() {
     // A origem de cada grupo é a borda de baixo do papel, presa a 1,90 m do chão.
     // Eles alternam de lado (direita, esquerda...) para um não tampar o outro.
     const papers = BOOK_EXCERPTS.map(({ z, phoneShift, text, footer }, index) => {
-      const texture = createTextTexture({ text, footer });
+      const texture = createTextTexture({ text, footer }, creditFont);
       const group = new THREE.Group();
       const side = index % 2 ? -1 : 1;
       group.position.set(cameraPathX(z) + side * m(1.6), roadY(z) + PAPER_BOTTOM, z);
@@ -1374,7 +1392,7 @@ export function PortaoMaterial() {
       const papersAt = [new THREE.Vector3(0, 1.95, 2.6), new THREE.Vector3(.75, 1.95, 2.6), new THREE.Vector3(.2, 1.95, 2.6)];
       const paperTimes = [[.06, .4], [.38, .7], [.66, 1]];
       KITCHEN_EXCERPTS.forEach((excerpt, index) => {
-        const texture = createTextTexture(excerpt);
+        const texture = createTextTexture(excerpt, creditFont);
         if (texture) storyTextures.push(texture);
         const material = new THREE.ShaderMaterial({
           transparent: true,
@@ -1722,7 +1740,7 @@ export function PortaoMaterial() {
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, []);
+  }, [creditFont]);
 
   return (
     <main className={styles.animatic} ref={scrollRef}>
