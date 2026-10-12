@@ -22,10 +22,6 @@ export const KITCHEN = {
   cameraBack: 5,
   // Deslocamento final da câmera para a direita, para a mesa e a Helena ficarem à esquerda.
   cameraDrift: .7,
-  // Porta da rua na parede do fundo (rascunho da cena 3): x = centro do vão. A câmera sai por ela.
-  backDoorX: .6,
-  backDoorWidth: .9,
-  backDoorHeight: 2.1,
 };
 
 const GRAY = {
@@ -323,25 +319,7 @@ export function buildKitchenGray(lineMaterial: LineMaterial, redLineMaterial: Li
   box(width, .05, depth, 0, height + .025, depth / 2, gray(GRAY.ceiling), kitchen, false);
   // Parede da direita (geladeira, pia, fogão) e do fundo.
   box(wall, height, depth, half + wall / 2, height / 2, depth / 2, wallMaterial);
-  // Parede do fundo com a porta da rua (três pedaços em volta do vão), batente e a folha
-  // da porta aberta para dentro, encostada do lado esquerdo (como no rascunho do Deiver).
-  const { backDoorX, backDoorWidth, backDoorHeight } = KITCHEN;
-  const backLeft = backDoorX - backDoorWidth / 2;
-  const backRight = backDoorX + backDoorWidth / 2;
-  box(backLeft + half + wall, height, wall, (-half - wall + backLeft) / 2, height / 2, depth + wall / 2, wallMaterial);
-  box(half + wall - backRight, height, wall, (half + wall + backRight) / 2, height / 2, depth + wall / 2, wallMaterial);
-  box(backDoorWidth, height - backDoorHeight, wall, backDoorX, (height + backDoorHeight) / 2, depth + wall / 2, wallMaterial);
-  const backTrim = gray(GRAY.white);
-  box(.06, backDoorHeight + .06, .2, backLeft - .03, (backDoorHeight + .06) / 2, depth + wall / 2, backTrim);
-  box(.06, backDoorHeight + .06, .2, backRight + .03, (backDoorHeight + .06) / 2, depth + wall / 2, backTrim);
-  box(backDoorWidth + .12, .06, .2, backDoorX, backDoorHeight + .03, depth + wall / 2, backTrim);
-  const doorHinge = new THREE.Group();
-  doorHinge.position.set(backLeft + .02, 0, depth - .02);
-  // 80° aberta: a ponta fica a ~16 cm do batente, longe do caminho da câmera.
-  doorHinge.rotation.y = 1.4;
-  kitchen.add(doorHinge);
-  box(backDoorWidth - .04, backDoorHeight - .02, .04, (backDoorWidth - .04) / 2, (backDoorHeight - .02) / 2, 0, backTrim, doorHinge);
-  box(.03, .03, .1, backDoorWidth - .14, 1.0, -.04, gray(GRAY.metal), doorHinge);
+  box(width + wall * 2, height, wall, 0, height / 2, depth + wall / 2, wallMaterial);
   // Parede da esquerda com a porta do corredor (de z 3,2 a 4,1).
   const doorFrom = 3.2;
   const doorTo = 4.1;
