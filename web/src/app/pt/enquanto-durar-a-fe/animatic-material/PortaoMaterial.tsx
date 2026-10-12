@@ -120,16 +120,18 @@ const KITCHEN_EXCERPTS: Excerpt[] = [
 
 // Rua (capítulos 1 e 2), na ordem em que a câmera passa por eles. A sequência primeiro
 // aproxima o Jota da rua, depois mostra o jeito dele e por fim deixa a pergunta.
-// z = onde o papel fica na ladeira (as mesmas posições de antes; o último segue em 24,
-// nítido quando a descida termina). Entre eles passam o livro (z 8) e o dinheiro (z 14,2).
-const BOOK_EXCERPTS: (Excerpt & { z: number })[] = [
-  { z: 5, text: "Ele percebe que teria adorado ser criança naquele lugar.", footer: "CAPÍTULO 1 — A SUBIDA" },
+// z = onde o papel fica na ladeira. O espaço entre eles é o que a câmera precisa andar para
+// o papel caber inteiro no quadro e ficar um tempo parado ali antes do próximo (o último,
+// em 24, fica inteiro quando a descida termina). Entre eles passam o livro (z 8) e o dinheiro (z 14,2).
+const BOOK_EXCERPTS: (Excerpt & { z: number; phoneShift: number })[] = [
+  { z: 5, phoneShift: -.3, text: "Ele percebe que teria adorado ser criança naquele lugar.", footer: "CAPÍTULO 1 — A SUBIDA" },
   {
-    z: 17.5,
+    z: 14,
+    phoneShift: .1,
     text: "“Maria, posso pedir só um favor?\nPode me dar um copo d’água?\nFique à vontade para recusar.\nÉ mais comum do que você imagina.”",
     footer: "— JOTA",
   },
-  { z: 24, text: "“Jota não é o seu nome, né?”", footer: "— MARIA" },
+  { z: 24, phoneShift: -.6, text: "“Jota não é o seu nome, né?”", footer: "— MARIA" },
 ];
 
 // Quebra o trecho em linhas que cabem no papel (respeitando as quebras do Deiver) e
@@ -1030,8 +1032,8 @@ export function PortaoMaterial() {
           child.material = material;
           child.onBeforeRender = (_renderer, _scene, camera) => {
             const distance = camera.position.distanceTo(holder.position);
-            // Também só aparece a partir de ~1,2 m da lente e some entre 9 e 14 unidades, como os bilhetes.
-            material.opacity = THREE.MathUtils.smoothstep(distance, 2.5, 6) * (1 - THREE.MathUtils.smoothstep(distance, 9, 14));
+            // Também só aparece a partir de ~1,2 m da lente; depois fica, como o livro (Deiver).
+            material.opacity = THREE.MathUtils.smoothstep(distance, 2.5, 6);
             material.depthWrite = material.opacity > .99;
           };
         });
@@ -1274,7 +1276,7 @@ export function PortaoMaterial() {
     // passa por baixo deles; assim a passagem é consequência da trajetória real.
     // A origem de cada grupo é a borda de baixo do papel, presa a 1,90 m do chão.
     // Eles alternam de lado (direita, esquerda...) para um não tampar o outro.
-    const papers = BOOK_EXCERPTS.map(({ z, text, footer }, index) => {
+    const papers = BOOK_EXCERPTS.map(({ z, phoneShift, text, footer }, index) => {
       const texture = createTextTexture({ text, footer });
       const group = new THREE.Group();
       const side = index % 2 ? -1 : 1;
@@ -1296,7 +1298,7 @@ export function PortaoMaterial() {
       mesh.userData.noShadow = true;
       group.add(mesh);
       world.add(group);
-      return { group, mesh, material, texture, pathX: cameraPathX(z), side };
+      return { group, mesh, material, texture, pathX: cameraPathX(z), side, phoneShift };
     });
 
     world.traverse((child) => {
@@ -1546,12 +1548,14 @@ export function PortaoMaterial() {
       renderer.setSize(width, height, false);
       camera.aspect = width / Math.max(height, 1);
       camera.updateProjectionMatrix();
-      papers.forEach(({ group }) => group.scale.setScalar(width < 600 ? .45 : 1));
-      // Na tela em pé (celular) o quadro é estreito: o que fica a 1,6 m do lado sai da tela.
-      // Então a distância lateral encolhe junto com a largura. Ex.: computador (1,6 de
-      // proporção) = 100%; celular (~0,46) = 28%, e o bilhete fica a ~45 cm do caminho.
-      const lateral = THREE.MathUtils.clamp(camera.aspect / 1.6, .28, 1);
-      papers.forEach(({ group, pathX, side }) => { group.position.x = pathX + side * m(1.6) * lateral; });
+      papers.forEach(({ group }) => group.scale.setScalar(width < 600 ? .38 : .8));
+      // Os bilhetes ficam a 1,1 m do caminho, em 80% do tamanho, para caberem inteiros no quadro.
+      // Na tela em pé (celular) o quadro é estreito, então a distância lateral encolhe junto com
+      // a largura. Ex.: computador (1,6 de proporção) = 100%; celular (~0,46) = 29%.
+      const lateral = THREE.MathUtils.clamp(camera.aspect / 1.6, 0, 1);
+      // No celular, cada bilhete ainda anda um pouco (phoneShift, em metros) para ficar no meio
+      // do quadro no momento de leitura, já que ali o olhar da câmera não aponta para o caminho.
+      papers.forEach(({ group, pathX, side, phoneShift }) => { group.position.x = pathX + side * m(1.1) * lateral + (width < 600 ? m(phoneShift) : 0); });
       // O dinheiro nunca chega mais perto que 35 cm, para não raspar na lente.
       flyingObjects.forEach(({ object, pathX, side, offsetMeters }) => {
         object.position.x = pathX + side * m(Math.max(Math.min(offsetMeters, .35), offsetMeters * lateral));
@@ -1646,13 +1650,13 @@ export function PortaoMaterial() {
         const paperDistance = camera.position.distanceTo(paperCenter);
         // Ex.: a 2 unidades da lente (~1 m) o papel quase some e borra; a partir de 8 (~4 m) fica nítido.
         material.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(paperDistance, 2, 8)) * 6;
-        // Só aparece a partir de ~1,5 m da lente e some de novo entre 9 e 13 unidades, para o caminho
-        // ficar livre: na tela fica no máximo um ou dois bilhetes por vez.
-        // Um bilhete por vez (Deiver): este some enquanto a câmera chega no lugar do próximo,
-        // antes de o próximo começar a aparecer (ele só aparece depois que a câmera passa por ele).
+        // Só aparece depois que a câmera passa por baixo dele, a partir de ~1,3 m da lente, e fica
+        // inteiro e nítido até a câmera passar pelo próximo. Um bilhete por vez (Deiver): este some
+        // enquanto o próximo ainda está colado na lente, invisível. O último some na janela.
         const next = papers[index + 1];
-        const handOff = next ? 1 - THREE.MathUtils.smoothstep(camera.position.z - next.group.position.z, -m(1.2), 0) : 1;
-        material.uniforms.uOpacity.value = THREE.MathUtils.smoothstep(paperDistance, 3, 8) * (1 - THREE.MathUtils.smoothstep(paperDistance, 9, 13)) * handOff;
+        const handOff = next ? 1 - THREE.MathUtils.smoothstep(camera.position.z - next.group.position.z, .3, 2.6) : 1;
+        const passed = THREE.MathUtils.smoothstep(camera.position.z - group.position.z, -.5, .5);
+        material.uniforms.uOpacity.value = passed * THREE.MathUtils.smoothstep(paperDistance, 2.6, 6) * (1 - THREE.MathUtils.smoothstep(inside, .05, .3)) * handOff;
       });
       flyingObjects.forEach(({ object, spin }) => { object.rotation.y = spin * progress * Math.PI; });
       renderer.render(scene, camera);
