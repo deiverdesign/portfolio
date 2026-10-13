@@ -119,11 +119,13 @@ const KITCHEN_EXCERPTS: Excerpt[] = [
   { text: "Abriu a geladeira.\nHavia pouca coisa dentro.\nUm pedaço de queijo. Leite. Alguns ovos." },
 ];
 
-// Opala (cena 3): por enquanto lorem ipsum (Deiver). São falas da vizinha Neide.
+// Opala (cena 3): um bilhete só (Deiver, 13/10). Diálogo do capítulo 5, entre a Neide e a
+// Helena; com duas vozes, a etiqueta é a do capítulo.
 const OPALA_EXCERPTS: Excerpt[] = [
-  { text: "“Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit.”", footer: "— NEIDE" },
-  { text: "“Sed do eiusmod tempor\nincididunt ut labore.”", footer: "— NEIDE" },
-  { text: "“Ut enim ad minim veniam,\nquis nostrud exercitation?”", footer: "— NEIDE" },
+  {
+    text: "— Mas as pessoas gostam muito de falar.\n— É verdade.\n— Principalmente quando não conhecem a história inteira.",
+    footer: "CAPÍTULO 5 — A COSTUREIRA",
+  },
 ];
 
 // Rua (capítulos 1 e 2), na ordem em que a câmera passa por eles. A sequência primeiro
@@ -1471,7 +1473,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       opalaGroup = opala.group;
       // Bilhetes da Neide: só depois que o carro e as três sombras estão legíveis. Saem da lente
       // e param a ~2,8 m dela, ao lado do caminho, um por vez. Tempo de 0 a 1 = NOTES_FROM a OPALA_END.
-      const times = [[0, .4], [.33, .7], [.63, 1]];
+      const times = [[0, 1]];
       // A câmera olha na diagonal para o carro: "frente" e "lado" seguem o olhar dela, não os
       // eixos do mundo. Lado: + = direita da tela (sobre o carro), − = esquerda (sobre as sombras).
       const sides = [1.1, -1.2, 1.0];
