@@ -1417,12 +1417,18 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // e cobre a tela; do outro lado, na rua do Opala, um prédio em sombra e um poste escuro da
     // mesma cor continuam cobrindo, e a borda do poste revela a rua. A câmera freia e para no
     // quadro final baixo do Opala. Sem flash, sem fade, sem corte: a troca acontece no preto.
-    // O deslize não segue o scroll: ao passar de WIPE_AT ele roda sozinho, em ~2 s (se
-    // seguisse o scroll, quem parasse no meio veria a tela congelada borrada ou preta); rolando
-    // para cima, ele volta igual. Os bilhetes da Neide só entram com a câmera parada, de
-    // NOTES_FROM até OPALA_END.
+    // Três trechos (Deiver, 13/10, desenho em vista de cima):
+    // 1. Cozinha: a câmera anda devagar para a direita SEGUINDO O SCROLL (STORY_END → WIPE_AT),
+    //    até a borda da parede encostar na beira direita da tela. Sem borrão.
+    // 2. O preto (parede + prédio + poste): AUTOMÁTICO e rápido, com borrão, em menos de 1 s.
+    //    Começa devagar e termina devagar (sem tranco). Rolando para cima, ele volta sozinho.
+    // 3. Rua: de novo SEGUINDO O SCROLL (STREET_FROM → STREET_TO), passando pelo poste até o
+    //    quadro final baixo. Sem borrão. O bilhete da Neide só entra com a câmera parada,
+    //    de NOTES_FROM até OPALA_END.
     const WIPE_AT = STORY_END + .03;
-    const NOTES_FROM = WIPE_AT + .02;
+    const STREET_FROM = WIPE_AT + .005;
+    const STREET_TO = WIPE_AT + .045;
+    const NOTES_FROM = STREET_TO + .005;
     const OPALA_END = 1.65;
     // Trilho, em metros: na cozinha a câmera vai do lugar final dela até KITCHEN_WIPE_TO (x na
     // cozinha), onde a parede já cobre tudo; na rua ela sai de OPALA_WIPE_FROM (atrás do prédio
@@ -1662,34 +1668,27 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       blurTarget = null;
     };
 
-    // Trilho do wipe, em três trechos: acelera na cozinha (até a parede), passa pelo preto e
-    // pela borda do poste na velocidade máxima (WIPE_SPEED, constante: parece um movimento só) e
-    // freia até parar no quadro final. wipe = 0 a 1; a duração total sai das distâncias.
-    // Ex.: desktop = 0,9 m acelerando (0,26 s) + 0,65 m no preto (0,09 s) + 5,5 m freando (1,6 s).
-    const WIPE_SPEED = 7;
-    const BLACK_LENGTH = WIPE.poleX + .3 - OPALA_WIPE_FROM;
-    const wipeRail = { distance: 0, speed: 0, kitchenLength: 0, seconds: 1 };
-    const railAt = (wipe: number, startX: number) => {
-      const kitchenLength = KITCHEN_WIPE_TO - startX;
-      const brakeLength = OPALA.wideFrom.x - OPALA_WIPE_FROM - BLACK_LENGTH;
-      const accelSeconds = 2 * kitchenLength / WIPE_SPEED;
-      const blackSeconds = BLACK_LENGTH / WIPE_SPEED;
-      const brakeSeconds = 2 * brakeLength / WIPE_SPEED;
-      const seconds = accelSeconds + blackSeconds + brakeSeconds;
-      const time = wipe * seconds;
+    // Trecho automático (o preto). Na cozinha ele começa quando a borda da parede (a ~25 cm da
+    // lente) chega na beira direita da tela e vai até KITCHEN_WIPE_TO; na rua ele sai de
+    // OPALA_WIPE_FROM e para quando o poste (a ~22 cm) ainda cobre ~1/4 da tela, à esquerda.
+    // Daí em diante é o scroll que leva a câmera. A velocidade sobe e desce como uma onda
+    // (sem tranco nas pontas) e chega a WIPE_SPEED no meio do preto.
+    // Ex.: desktop = ~0,5 m na cozinha + ~0,6 m na rua, em ~0,4 s.
+    const WIPE_SPEED = 4;
+    const wipeRail = { distance: 0, speed: 0, kitchenLength: 0, seconds: 1, kitchenFrom: 0, streetTo: 0 };
+    // horizontalTan = metade da largura da tela a 1 m da lente (muda com a lente e com o celular).
+    const railAt = (wipe: number, kitchenTan: number, streetTan: number) => {
+      const kitchenFrom = KITCHEN_WALL.x0 - .25 * kitchenTan - .03;
+      const streetTo = WIPE.poleX + WIPE.poleRadius + .22 * streetTan * .5;
+      const kitchenLength = KITCHEN_WIPE_TO - kitchenFrom;
+      const total = kitchenLength + streetTo - OPALA_WIPE_FROM;
+      const seconds = total * Math.PI / 2 / WIPE_SPEED;
+      wipeRail.kitchenFrom = kitchenFrom;
+      wipeRail.streetTo = streetTo;
       wipeRail.kitchenLength = kitchenLength;
       wipeRail.seconds = seconds;
-      if (time < accelSeconds) {
-        wipeRail.speed = WIPE_SPEED * time / accelSeconds;
-        wipeRail.distance = wipeRail.speed * time / 2;
-      } else if (time < accelSeconds + blackSeconds) {
-        wipeRail.speed = WIPE_SPEED;
-        wipeRail.distance = kitchenLength + WIPE_SPEED * (time - accelSeconds);
-      } else {
-        const left = 1 - (time - accelSeconds - blackSeconds) / brakeSeconds;
-        wipeRail.speed = WIPE_SPEED * left;
-        wipeRail.distance = kitchenLength + BLACK_LENGTH + brakeLength * (1 - left * left);
-      }
+      wipeRail.distance = total * (1 - Math.cos(Math.PI * wipe)) / 2;
+      wipeRail.speed = total * Math.PI / 2 * Math.sin(Math.PI * wipe) / seconds;
       return wipeRail;
     };
 
@@ -1798,13 +1797,24 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // Wipe: a câmera desliza para a direita olhando sempre para a frente (o olhar anda junto).
       const ready = kitchenState === "ready";
       const portraitView = camera.aspect < 1;
-      const rail = railAt(wipe, KITCHEN.cameraDrift * (portraitView ? .15 : 1));
+      const kitchenStartX = KITCHEN.cameraDrift * (portraitView ? .15 : 1);
+      const rail = railAt(
+        wipe,
+        Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.aspect,
+        Math.tan(THREE.MathUtils.degToRad(portraitView ? 80 : 47) / 2) * camera.aspect,
+      );
       const inOpala = ready && Boolean(opalaGroup) && wipe > 0 && rail.distance > rail.kitchenLength;
-      // Onde a câmera está no trilho da rua (x em metros, no espaço do Opala).
-      const streetX = OPALA_WIPE_FROM + rail.distance - rail.kitchenLength;
-      if (wipe > 0 && !inOpala) {
-        cameraPosition.x += m(rail.distance);
-        lookAt.x += m(rail.distance);
+      // Trechos no scroll: na cozinha até a parede; na rua, do fim do preto até o quadro final.
+      const kitchenSlide = ready ? THREE.MathUtils.smoothstep(progress, STORY_END, WIPE_AT) : 0;
+      const kitchenOffset = (rail.kitchenFrom - kitchenStartX) * kitchenSlide + rail.distance;
+      const streetSlide = THREE.MathUtils.clamp((progress - STREET_FROM) / (STREET_TO - STREET_FROM), 0, 1);
+      // Se a pessoa já rolou enquanto o preto passava, o trecho automático leva até lá (sem pulo).
+      const streetEase = 1 - (1 - streetSlide) * (1 - streetSlide);
+      const streetX = OPALA_WIPE_FROM + rail.distance - rail.kitchenLength
+        + (OPALA.wideFrom.x - rail.streetTo) * streetEase * (1 - Math.cos(Math.PI * wipe)) / 2;
+      if (!inOpala && kitchenOffset > 0) {
+        cameraPosition.x += m(kitchenOffset);
+        lookAt.x += m(kitchenOffset);
       }
       if (inOpala && opalaGroup) {
         // Do outro lado do preto ela já está agachada (olho a ~40 cm) e com o olhar final.
@@ -1919,13 +1929,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       [1090, 1],
       // Cozinha: 3 bilhetes (chega, fica parado, sai).
       [1130, 1.0375], [1230, 1.06], [1290, 1.12], [1390, 1.1425], [1450, 1.2025], [1550, STORY_END],
-      // Fim da cozinha → wipe (automático) → bilhete do Opala chegando e parado.
-      [1570, WIPE_AT], [1590, NOTES_FROM], [1640, NOTES_FROM + .07], [1740, OPALA_END],
+      // Cozinha: câmera desliza até a parede (scroll) → preto (automático) → rua até o quadro
+      // final (scroll) → bilhete do Opala chegando e parado.
+      [1610, WIPE_AT], [1625, STREET_FROM], [1715, STREET_TO], [1735, NOTES_FROM], [1785, NOTES_FROM + .07], [1885, OPALA_END],
     ];
     const PACE_TOTAL = PACE[PACE.length - 1][0];
     // Ímãs: o meio de cada trecho parado. Quando a pessoa para de rolar perto de um deles, a
     // página desliza sozinha até ele (o scroll continua livre: rolando, nada segura).
-    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1690];
+    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1835];
     const MAGNET_RANGE = 60;
     const paceScale = () => (window.innerWidth <= 680 ? .84 : 1);
     const scrolledVh = () => -scrollArea.getBoundingClientRect().top / (window.innerHeight / 100) / paceScale();
