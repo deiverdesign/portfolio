@@ -1375,7 +1375,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // de 0 a 1 dentro da história). Os bilhetes somem quando o próximo chega; o último fica.
     const STORY_END = 1.25;
     // travel = quanto da história o item leva para chegar ao lugar dele;
-    // portraitX = para onde ele vai no celular (o quadro é estreito).
+    // portraitX = para onde ele vai no celular (o quadro é estreito); portraitEnd, quando
+    // existe, troca o ponto inteiro (usado no Opala, onde a câmera olha na diagonal).
     type StoryItem = {
       object: THREE.Object3D;
       end: THREE.Vector3;
@@ -1383,6 +1384,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       to: number;
       travel: number;
       portraitX: number;
+      portraitEnd?: THREE.Vector3;
       paper: THREE.ShaderMaterial;
     };
     const storyItems: StoryItem[] = [];
@@ -1458,11 +1460,19 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // Bilhetes da Neide: só depois que o carro e as três sombras estão legíveis. Saem da lente
       // e param a ~2,8 m dela, ao lado do caminho, um por vez. Tempo de 0 a 1 = PULL_TO a OPALA_END.
       const times = [[0, .4], [.33, .7], [.63, 1]];
-      const sides = [1.3, -1.5, 1.2];
+      // A câmera olha na diagonal para o carro: "frente" e "lado" seguem o olhar dela, não os
+      // eixos do mundo. Lado: + = direita da tela (sobre o carro), − = esquerda (sobre as sombras).
+      const sides = [1.1, -1.2, 1.0];
+      const ahead = new THREE.Vector3().subVectors(OPALA.wideLookAt, OPALA.wideFrom).setY(0).normalize();
+      const right = new THREE.Vector3(-ahead.z, 0, ahead.x);
+      // Acima do horizonte, no céu, por cima das cabeças (que estão bem mais longe).
+      // No celular o bilhete fica mais perto (o papel é menor e o quadro, estreito).
+      const notePoint = (side: number, distance = 4.2, height = 1.05) => OPALA.wideFrom.clone()
+        .addScaledVector(ahead, distance).addScaledVector(right, side).setY(OPALA.wideFrom.y + height);
       OPALA_EXCERPTS.forEach((excerpt, index) => {
         const [from, to] = times[index];
-        const end = new THREE.Vector3(OPALA.wideFrom.x + sides[index], 1.95, OPALA.wideFrom.z - 2.8);
-        addStoryPaper(opalaItems, opala!.space, excerpt, { end, from, to, travel: .2, portraitX: OPALA.wideFrom.x - .6 + sides[index] * .2 });
+        const end = notePoint(sides[index]);
+        addStoryPaper(opalaItems, opala!.space, excerpt, { end, from, to, travel: .2, portraitX: end.x, portraitEnd: notePoint(-.15, 1.6, .62) });
       });
       return opala.group;
     };
@@ -1480,13 +1490,16 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const portrait = camera.aspect < 1;
       storyCamera.copy(camera.position).sub(origin.position).divideScalar(METER);
       const paperWidth = portrait ? .62 : 1.1;
-      items.forEach(({ object, end, from, to, travel: travelTime, portraitX, paper }) => {
+      items.forEach(({ object, end, from, to, travel: travelTime, portraitX, portraitEnd, paper }) => {
         object.visible = story > from;
         if (!object.visible) return;
         const travel = THREE.MathUtils.smoothstep(story, from, from + travelTime);
         // No celular o quadro é estreito e olha mais para a esquerda: tudo chega mais ao centro dele.
         storyEnd.copy(end);
-        if (portrait) storyEnd.x = portraitX;
+        if (portrait) {
+          if (portraitEnd) storyEnd.copy(portraitEnd);
+          else storyEnd.x = portraitX;
+        }
         storyStart.copy(storyCamera).lerp(storyEnd, .15);
         object.position.lerpVectors(storyStart, storyEnd, travel);
         const distance = object.position.distanceTo(storyCamera);
@@ -1662,6 +1675,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       if (!opalaGroup) return;
       position.lerpVectors(OPALA.closeFrom, OPALA.wideFrom, pull);
       target.lerpVectors(OPALA.closeLookAt, OPALA.wideLookAt, pull);
+      // O agachamento vem depois do recuo começar: primeiro a lente sai do farol, depois desce.
+      position.y = THREE.MathUtils.lerp(OPALA.closeFrom.y, OPALA.wideFrom.y, THREE.MathUtils.smoothstep(pull, .25, 1));
       if (portrait) target.x -= .5 * pull;
       position.multiplyScalar(METER).add(opalaGroup.position);
       target.multiplyScalar(METER).add(opalaGroup.position);

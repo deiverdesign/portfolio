@@ -17,15 +17,17 @@ export const OPALA = {
   headlightY: .72,
   headlightZ: 2.0,
   // Câmera: começa colada no farol da direita (detalhe do farol e da grade) e recua até ver
-  // o carro inteiro com as três sombras. eye = altura do olho do cameraman.
+  // o carro inteiro com as três sombras. eye = altura do olho do cameraman em pé.
   // No detalhe a lente fecha (closeFov) para o farol e a grade encherem o quadro; no fim ela
   // abre de novo (47°, a lente do resto do site).
   eye: 1.64,
   closeFrom: new THREE.Vector3(.4, 1.64, 4.3),
   closeLookAt: new THREE.Vector3(.3, .78, 1.95),
   closeFov: 22,
-  wideFrom: new THREE.Vector3(-.4, 1.64, 8.6),
-  wideLookAt: new THREE.Vector3(-.75, .95, 0),
+  // No fim o cameraman se agacha (olho a ~60 cm, como na montagem do Deiver) e vê o carro
+  // de três quartos, pelo lado esquerdo, onde estão as três sombras.
+  wideFrom: new THREE.Vector3(-2.6, .62, 7.4),
+  wideLookAt: new THREE.Vector3(-.55, .9, 0),
 };
 
 const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=1";
@@ -160,8 +162,9 @@ export function buildOpalaNight() {
       child.add(ink);
     });
     model.scale.setScalar(OPALA.scale);
-    // O comprimento do modelo está no eixo x: gira 90° para a frente olhar para +z.
-    model.rotation.y = -Math.PI / 2;
+    // O comprimento do modelo está no eixo x, com a frente no lado -x: gira 90° para a frente
+    // olhar para +z. (Antes girava para o outro lado e a câmera via a traseira do carro.)
+    model.rotation.y = Math.PI / 2;
     const box = new THREE.Box3().setFromObject(model);
     model.position.y -= box.min.y;
     model.position.x -= (box.min.x + box.max.x) / 2;
