@@ -21,7 +21,8 @@ const RAIN = {
   // Comprimento dos riscos e o vento (inclinação leve para a direita, sempre igual).
   minLength: .35,
   maxLength: 1.1,
-  wind: .14,
+  // .21 = a inclinação da gota do Deiver no Figma (86,5 de largura para 412 de altura).
+  wind: .21,
   // Raio, em metros, da luz amarela em volta de cada poste (no chão, abaixo da lâmpada).
   lampRadius: 3.2,
 };
@@ -38,12 +39,11 @@ const NEAR = {
   farZ: 0,
   minLength: .9,
   maxLength: 2.1,
-  minWidth: .006,
-  maxWidth: .014,
+  // Largura = ~1% do comprimento, como no Figma (traço de ~4 px numa gota de 412 px).
+  widthRatio: .01,
 };
 
 const COLORS = {
-  near: new THREE.Color("#ff2f8e"),
   base: new THREE.Color("#c3cbff"),
   pink: new THREE.Color("#ff8cbc"),
   lamp: new THREE.Color("#ffe08a"),
@@ -128,44 +128,58 @@ export function buildRain(lamps: Lamp[]) {
     const x = THREE.MathUtils.lerp(NEAR.minX, NEAR.maxX, random());
     const y = THREE.MathUtils.lerp(NEAR.minY, NEAR.maxY, random());
     const length = THREE.MathUtils.lerp(NEAR.minLength, NEAR.maxLength, random());
-    const half = THREE.MathUtils.lerp(NEAR.minWidth, NEAR.maxWidth, random()) / 2;
+    // A fita é 3x mais larga que o traço: a sobra vira o desfoque suave das bordas.
+    const half = length * NEAR.widthRatio * 1.5;
     const bx = x + fall.x * length;
     const by = y + fall.y * length;
     // Dois triângulos: topo (along 0) e base (along 1).
+    // along = 0 no topo e 1 na base; across = -1 e 1 nas bordas (para o desfoque das laterais).
     const corners = [
-      [x - side.x * half, y - side.y * half, 0], [x + side.x * half, y + side.y * half, 0],
-      [bx + side.x * half, by + side.y * half, 1], [bx - side.x * half, by - side.y * half, 1],
+      [x - side.x * half, y - side.y * half, 0, -1], [x + side.x * half, y + side.y * half, 0, 1],
+      [bx + side.x * half, by + side.y * half, 1, 1], [bx - side.x * half, by - side.y * half, 1, -1],
     ];
     [0, 1, 2, 0, 2, 3].forEach((corner) => {
-      const [cx, cy, along] = corners[corner];
+      const [cx, cy, along, across] = corners[corner];
       nearPositions.push(cx, cy, z);
-      nearAlong.push(along);
+      nearAlong.push(along, across);
     });
   }
   const nearGeometry = new THREE.BufferGeometry();
   nearGeometry.setAttribute("position", new THREE.Float32BufferAttribute(nearPositions, 3));
-  nearGeometry.setAttribute("along", new THREE.Float32BufferAttribute(nearAlong, 1));
+  nearGeometry.setAttribute("along", new THREE.Float32BufferAttribute(nearAlong, 2));
   const nearMaterial = new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
     side: THREE.DoubleSide,
-    uniforms: { uColor: { value: COLORS.near }, uOpacity: { value: 1 } },
+    uniforms: { uOpacity: { value: 1 } },
     vertexShader: `
-      attribute float along;
-      varying float vAlong;
+      attribute vec2 along;
+      varying vec2 vAlong;
       void main() {
         vAlong = along;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
     fragmentShader: `
-      uniform vec3 uColor;
       uniform float uOpacity;
-      varying float vAlong;
+      varying vec2 vAlong;
+      // Degradê do Figma do Deiver (Vector 469), de cima (0) para baixo (1):
+      // 0% branco 0 · 38% branco 30% · 57% #F671B1 64% · 96% #FF007B 78% · 100% #FF91C6 80%,
+      // com a camada a 80% e um leve desfoque (aqui, as bordas laterais suaves).
+      vec4 stop(vec4 a, vec4 b, float from, float to, float t) {
+        return mix(a, b, clamp((t - from) / (to - from), 0.0, 1.0));
+      }
       void main() {
-        // Transparente em cima, pink forte só no último terço.
-        float alpha = smoothstep(.0, 1.0, vAlong);
-        gl_FragColor = vec4(uColor, alpha * alpha * .95 * uOpacity);
+        float t = vAlong.x;
+        vec4 color = stop(vec4(1.0, 1.0, 1.0, 0.0), vec4(1.0, 1.0, 1.0, .30), 0.0, .38, t);
+        color = stop(color, vec4(.965, .443, .694, .64), .38, .57, t);
+        color = stop(color, vec4(1.0, 0.0, .482, .78), .57, .96, t);
+        color = stop(color, vec4(1.0, .569, .776, .80), .96, 1.0, t);
+        // Desfoque em cada gota: o miolo (1/3 da fita) é cheio e as bordas somem suaves;
+        // as pontas também se apagam um pouco.
+        float edge = exp(-pow(abs(vAlong.y) * 2.4, 2.0));
+        edge *= smoothstep(1.0, .97, t);
+        gl_FragColor = vec4(color.rgb, color.a * .8 * edge * uOpacity);
       }
     `,
   });
