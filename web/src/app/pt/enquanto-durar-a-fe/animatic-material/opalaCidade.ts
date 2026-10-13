@@ -277,8 +277,11 @@ export function buildCity() {
     `,
   });
   [-1, 1].forEach((side) => {
-    const walk = new THREE.Mesh(new THREE.BoxGeometry(CITY.wallX - CITY.curbX, CITY.curbHeight, length), sidewalkMaterial);
-    walk.position.set(side * (CITY.curbX + CITY.wallX) / 2, CITY.curbHeight / 2, middleZ);
+    // A calçada começa ATRÁS do meio-fio (curbX + .3). Se as duas caixas tivessem a mesma face
+    // virada para a rua, a placa de vídeo não saberia qual desenhar na frente e a face piscaria.
+    const walkFrom = CITY.curbX + .3;
+    const walk = new THREE.Mesh(new THREE.BoxGeometry(CITY.wallX - walkFrom, CITY.curbHeight, length), sidewalkMaterial);
+    walk.position.set(side * (walkFrom + CITY.wallX) / 2, CITY.curbHeight / 2, middleZ);
     city.add(walk);
     const curb = new THREE.Mesh(new THREE.BoxGeometry(.3, CITY.curbHeight + .02, length), curbMaterial);
     curb.position.set(side * (CITY.curbX + .15), (CITY.curbHeight + .02) / 2, middleZ);

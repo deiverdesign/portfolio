@@ -40,6 +40,10 @@ export const OPALA = {
 const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=2";
 
 const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp";
+// Pattern de asfalto molhado do Deiver (13/10), repetido no chão. Um quadro cobre 5 × 10 m
+// (o comprido vai ao longo da rua, então os reflexos rosa ficam esticados para o fundo).
+const ASPHALT_URL = "/enquanto-durar-a-fe/texturas/asfalto-opala.webp";
+const ASPHALT_TILE = new THREE.Vector2(5, 10);
 const SKY_ASPECT = 1672 / 941;
 // Quantos postes o asfalto molhado reflete (os mais perto da câmera vêm primeiro).
 const MAX_LAMPS = 10;
@@ -117,9 +121,15 @@ export function buildOpalaNight() {
   // --- Asfalto molhado: azul-marinho, com a luz dos postes no chão, os reflexos esticados das
   // lâmpadas vindo na direção da câmera, o rosa do céu refletido ao longe e a mancha quente
   // que o farol joga na frente do carro.
+  const asphaltMap = new THREE.TextureLoader().load(ASPHALT_URL);
+  asphaltMap.colorSpace = THREE.SRGBColorSpace;
+  asphaltMap.wrapS = asphaltMap.wrapT = THREE.RepeatWrapping;
+  asphaltMap.anisotropy = 8;
   const groundMaterial = new THREE.ShaderMaterial({
     defines: { MAX_LAMPS: String(MAX_LAMPS) },
     uniforms: {
+      uAsphalt: { value: asphaltMap },
+      uAsphaltTile: { value: ASPHALT_TILE },
       uBase: { value: new THREE.Color(NIGHT.ground) },
       uFar: { value: new THREE.Color(NIGHT.groundFar) },
       uWarm: { value: new THREE.Color(NIGHT.warm) },
@@ -135,15 +145,20 @@ export function buildOpalaNight() {
       uniform float uMeter;
       varying vec2 vPoint;
       varying float vDistance;
+      varying float vMeters;
       void main() {
         vPoint = position.xy;
         vec4 world = modelMatrix * vec4(position, 1.0);
         vDistance = distance(world.xyz, cameraPosition) / uMeter;
+        // Distância medida na escala do próprio chão (o pattern se desfaz só bem lá no fundo).
+        vMeters = distance(world.xyz, cameraPosition) / length(modelMatrix[0].xyz);
         gl_Position = projectionMatrix * viewMatrix * world;
       }
     `,
     // vPoint = (x, -z) do chão, porque o plano foi deitado.
     fragmentShader: /* glsl */ `
+      uniform sampler2D uAsphalt;
+      uniform vec2 uAsphaltTile;
       uniform vec3 uBase;
       uniform vec3 uFar;
       uniform vec3 uWarm;
@@ -155,14 +170,18 @@ export function buildOpalaNight() {
       uniform float uGlow;
       varying vec2 vPoint;
       varying float vDistance;
+      varying float vMeters;
       float hash(float n) { return fract(sin(n * 91.7) * 43758.5453); }
       void main() {
         vec2 p = vec2(vPoint.x, -vPoint.y);
-        vec3 color = mix(uBase, uFar, smoothstep(10.0, 120.0, vDistance));
+        // O pattern do Deiver é a base. Longe, ele se desfaz no azul do fundo (de longe, o
+        // desenho repetido viraria um xadrez miúdo e tremido).
+        vec3 asphalt = texture2D(uAsphalt, p / uAsphaltTile).rgb;
+        vec3 color = mix(asphalt, mix(uBase, uFar, smoothstep(10.0, 120.0, vDistance)), smoothstep(90.0, 320.0, vMeters) * .75);
         // Rosa do céu refletido no asfalto molhado, mais forte quanto mais longe (ângulo raso),
         // quebrado em ondinhas horizontais.
         float ripple = .55 + .45 * sin(p.y * 2.3 + sin(p.x * .7) * 1.5);
-        color = mix(color, uSkyPink, smoothstep(22.0, 110.0, vDistance) * .36 * ripple);
+        color = mix(color, uSkyPink, smoothstep(70.0, 260.0, vMeters) * .3 * ripple);
         float light = 0.0;
         float streak = 0.0;
         for (int i = 0; i < MAX_LAMPS; i++) {
@@ -221,7 +240,9 @@ export function buildOpalaNight() {
     model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
     meshes.forEach((child) => {
       const original = child.material as THREE.MeshStandardMaterial;
-      const material = createCarMaterial(original.map);
+      child.geometry = carRegions(child.geometry, original.map);
+      const material = createCarMaterial();
+      original.map?.dispose();
       original.dispose();
       carMaterials.push(material);
       child.material = material;
@@ -320,7 +341,7 @@ export function buildOpalaNight() {
     figures.forEach((figure) => { figure.visible = figuresOn; });
   };
 
-  return { group: root, space, update, headlight, dispose: city.dispose };
+  return { group: root, space, update, headlight, dispose: () => { city.dispose(); asphaltMap.dispose(); } };
 }
 
 function radialTexture() {
@@ -344,10 +365,168 @@ function radialTexture() {
 // lavanda nas curvas de cima, cromados quase brancos, vidro azul com reflexo amarelo e um fio
 // rosa do céu nas bordas. A textura original (verde, com ferrugem) só diz o que é cada parte:
 // verde = pintura, cinza claro = cromado, quase preto = vidro/pneu, vermelho/laranja = lanternas.
-function createCarMaterial(map: THREE.Texture | null) {
+// Peças do carro: cada triângulo do modelo vira UMA peça (lata, cromado, vidro, pneu, lanterna,
+// pisca). A textura original do Meshy só serve para decidir isso; ela tem sujeira, ferrugem e
+// reflexos pintados, e se a cor fosse lida ponto a ponto, cada mancha virava uma pinta no carro.
+// Decidindo por triângulo, e depois deixando cada um "votar" com os vizinhos, as peças ficam
+// chapadas e limpas, como num desenho.
+const REGION = { paint: 0, chrome: 1, glass: 2, tire: 3, tail: 4, blinker: 5 };
+
+function regionOfPixel(r: number, g: number, b: number) {
+  const high = Math.max(r, g, b);
+  const low = Math.min(r, g, b);
+  const saturation = high > .001 ? (high - low) / high : 0;
+  const luminance = .2126 * r + .7152 * g + .0722 * b;
+  if (g > r * 1.15 && g > b * .95 && saturation > .2) return REGION.paint;
+  if (r > g * 1.5 && r > .12) return g > r * .3 ? REGION.blinker : REGION.tail;
+  if (saturation < .22 && luminance > .3) return REGION.chrome;
+  return luminance < .1 ? REGION.tire : REGION.glass;
+}
+
+function carRegions(source: THREE.BufferGeometry, map: THREE.Texture | null) {
+  const geometry = source.index ? source.toNonIndexed() : source.clone();
+  const count = geometry.attributes.position.count;
+  const triangles = count / 3;
+  const region = new Uint8Array(triangles);
+  const image = map?.image as CanvasImageSource & { width: number; height: number } | undefined;
+  if (image && image.width) {
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext("2d", { willReadFrequently: true })!;
+    context.drawImage(image, 0, 0);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    // A textura vem em sRGB; os limites acima foram acertados com a cor linear.
+    const linear = new Float32Array(256).map((_, i) => { const c = i / 255; return c <= .04045 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4); });
+    // UVs crus (inteiros 0..65535 quando quantizados): converte uma vez, sem chamar getX a cada ponto.
+    const uvAttribute = geometry.attributes.uv as THREE.BufferAttribute;
+    const uvScale = uvAttribute.normalized && uvAttribute.array instanceof Uint16Array ? 1 / 65535 : uvAttribute.normalized && uvAttribute.array instanceof Uint8Array ? 1 / 255 : 1;
+    const uvRaw = uvAttribute.array;
+    const uvStride = uvAttribute.itemSize;
+    const weights = [[1 / 3, 1 / 3, 1 / 3], [.7, .15, .15], [.15, .7, .15], [.15, .15, .7], [.45, .45, .1], [.1, .45, .45], [.45, .1, .45]];
+    const votes = new Uint8Array(6);
+    const { width, height } = canvas;
+    for (let t = 0; t < triangles; t++) {
+      votes.fill(0);
+      const o0 = t * 3 * uvStride, o1 = o0 + uvStride, o2 = o1 + uvStride;
+      for (const [a, b, c] of weights) {
+        const u = (uvRaw[o0] * a + uvRaw[o1] * b + uvRaw[o2] * c) * uvScale;
+        const v = (uvRaw[o0 + 1] * a + uvRaw[o1 + 1] * b + uvRaw[o2 + 1] * c) * uvScale;
+        const x = Math.min(width - 1, Math.max(0, Math.floor((u - Math.floor(u)) * width)));
+        const y = Math.min(height - 1, Math.max(0, Math.floor((v - Math.floor(v)) * height)));
+        const i = (y * width + x) * 4;
+        votes[regionOfPixel(linear[pixels[i]], linear[pixels[i + 1]], linear[pixels[i + 2]])]++;
+      }
+      let best = 0;
+      for (let r = 1; r < 6; r++) if (votes[r] > votes[best]) best = r;
+      region[t] = best;
+    }
+    smoothRegions(geometry, region);
+    keepTiresOnWheels(geometry, region);
+  }
+  const perVertex = new Float32Array(count);
+  for (let i = 0; i < count; i++) perVertex[i] = region[Math.floor(i / 3)];
+  geometry.setAttribute("aRegion", new THREE.BufferAttribute(perVertex, 1));
+  return geometry;
+}
+
+// Cada triângulo olha os vizinhos que dividem uma aresta com ele: se a maioria é outra peça,
+// ele vira essa peça. Assim somem as pintas soltas (um triângulo de "vidro" no meio da lata).
+function smoothRegions(geometry: THREE.BufferGeometry, region: Uint8Array) {
+  // Vértices no mesmo lugar (separados só pela costura da textura) contam como um só.
+  // O modelo guarda posições como números inteiros (quantizadas): a chave é feita deles.
+  const position = geometry.attributes.position;
+  const raw = position.array;
+  const stride = (position as THREE.BufferAttribute).itemSize;
+  const ids = new Map<number, number>();
+  const vertexId = new Uint32Array(position.count);
+  for (let i = 0; i < position.count; i++) {
+    const o = i * stride;
+    const key = Number.isInteger(raw[o])
+      ? ((raw[o] + 32768) * 65536 + (raw[o + 1] + 32768)) * 65536 + (raw[o + 2] + 32768)
+      : Math.round(raw[o] * 1e4) * 1e10 + Math.round(raw[o + 1] * 1e4) * 1e5 + Math.round(raw[o + 2] * 1e4);
+    let id = ids.get(key);
+    if (id === undefined) { id = ids.size; ids.set(key, id); }
+    vertexId[i] = id;
+  }
+  const triangles = region.length;
+  const firstOwner = new Map<number, number>();
+  const neighbors: number[][] = Array.from({ length: triangles }, () => []);
+  for (let t = 0; t < triangles; t++) {
+    for (let e = 0; e < 3; e++) {
+      const a = vertexId[t * 3 + e];
+      const b = vertexId[t * 3 + (e + 1) % 3];
+      const key = Math.min(a, b) * 2097152 + Math.max(a, b);
+      const other = firstOwner.get(key);
+      if (other === undefined) firstOwner.set(key, t);
+      else { neighbors[t].push(other); neighbors[other].push(t); }
+    }
+  }
+  const votes = new Float32Array(6);
+  for (let pass = 0; pass < 4; pass++) {
+    const next = region.slice();
+    for (let t = 0; t < triangles; t++) {
+      votes.fill(0);
+      votes[region[t]] += 1.2;
+      for (const n of neighbors[t]) votes[region[n]] += 1;
+      let best = region[t];
+      for (let r = 0; r < 6; r++) if (votes[r] > votes[best]) best = r;
+      next[t] = best;
+    }
+    region.set(next);
+  }
+}
+
+// A ferrugem escura embaixo das portas também é lida como "pneu" e vira um serrilhado preto.
+// Pneu de verdade só existe em volta das duas rodas: acha o centro de cada eixo e o raio, e o
+// que for "pneu" longe das rodas volta a ser lata.
+function keepTiresOnWheels(geometry: THREE.BufferGeometry, region: Uint8Array) {
+  // Centro de cada triângulo, calculado uma vez (nas unidades cruas do modelo; só importa a proporção).
+  const raw = geometry.attributes.position.array;
+  const stride = geometry.attributes.position.itemSize;
+  const triangles = region.length;
+  const center = new Float32Array(triangles * 3);
+  const min = [Infinity, Infinity, Infinity];
+  const max = [-Infinity, -Infinity, -Infinity];
+  for (let t = 0; t < triangles; t++) {
+    for (let k = 0; k < 3; k++) {
+      const o = t * 3 * stride + k;
+      const c = (raw[o] + raw[o + stride] + raw[o + stride * 2]) / 3;
+      center[t * 3 + k] = c;
+      if (c < min[k]) min[k] = c;
+      if (c > max[k]) max[k] = c;
+    }
+  }
+  const along = max[0] - min[0] >= max[2] - min[2] ? 0 : 2;
+  const length = max[along] - min[along];
+  const low = min[1] + (max[1] - min[1]) * .45;
+  const tires: number[] = [];
+  for (let t = 0; t < triangles; t++) if (region[t] === REGION.tire && center[t * 3 + 1] < low) tires.push(t);
+  if (tires.length < 20) return;
+  // Duas rodas ao longo do comprimento: k-médias com 2 grupos.
+  const middle = (min[along] + max[along]) / 2;
+  let axles = [middle - length * .3, middle + length * .3];
+  for (let step = 0; step < 8; step++) {
+    const sum = [0, 0];
+    const count = [0, 0];
+    tires.forEach((t) => { const c = center[t * 3 + along]; const k = Math.abs(c - axles[0]) < Math.abs(c - axles[1]) ? 0 : 1; sum[k] += c; count[k]++; });
+    axles = axles.map((a, k) => (count[k] ? sum[k] / count[k] : a));
+  }
+  let top = min[1];
+  tires.forEach((t) => { top = Math.max(top, center[t * 3 + 1]); });
+  const radius = (top - min[1]) / 2;
+  const hubY = min[1] + radius;
+  for (let t = 0; t < triangles; t++) {
+    if (region[t] !== REGION.tire) continue;
+    const c = center[t * 3 + along];
+    const nearest = Math.min(Math.abs(c - axles[0]), Math.abs(c - axles[1]));
+    if (Math.hypot(nearest, center[t * 3 + 1] - hubY) > radius * 1.15) region[t] = REGION.paint;
+  }
+}
+
+function createCarMaterial() {
   return new THREE.ShaderMaterial({
     uniforms: {
-      uMap: { value: map },
       uLight: { value: new THREE.Vector3(-.35, .85, .4).normalize() },
       uDeep: { value: new THREE.Color("#001256") },
       uMid: { value: new THREE.Color("#0b2f8b") },
@@ -363,11 +542,12 @@ function createCarMaterial(map: THREE.Texture | null) {
       uRim: { value: new THREE.Color("#ff4f86") },
     },
     vertexShader: /* glsl */ `
-      varying vec2 vUv;
+      attribute float aRegion;
+      varying float vRegion;
       varying vec3 vNormal;
       varying vec3 vView;
       void main() {
-        vUv = uv;
+        vRegion = aRegion;
         vec4 world = modelMatrix * vec4(position, 1.0);
         vNormal = normalize(mat3(modelMatrix) * normal);
         vView = normalize(cameraPosition - world.xyz);
@@ -375,36 +555,28 @@ function createCarMaterial(map: THREE.Texture | null) {
       }
     `,
     fragmentShader: /* glsl */ `
-      uniform sampler2D uMap;
       uniform vec3 uLight, uDeep, uMid, uLit, uShine, uChromeDark, uChromeLit, uGlass, uGlassLit, uGlint, uTire, uTail, uRim;
-      varying vec2 vUv;
+      varying float vRegion;
       varying vec3 vNormal;
       varying vec3 vView;
       void main() {
-        vec3 t = texture2D(uMap, vUv).rgb;
-        float high = max(max(t.r, t.g), t.b);
-        float low = min(min(t.r, t.g), t.b);
-        float saturation = high > .001 ? (high - low) / high : 0.0;
-        float luminance = dot(t, vec3(.2126, .7152, .0722));
         vec3 n = normalize(vNormal);
         if (!gl_FrontFacing) n = -n;
         vec3 v = normalize(vView);
         float diffuse = dot(n, uLight);
         float spec = pow(max(dot(reflect(-uLight, n), v), 0.0), 18.0);
         float edge = 1.0 - max(dot(n, v), 0.0);
-        bool paint = t.g > t.r * 1.15 && t.g > t.b * .95 && saturation > .2;
-        bool tail = t.r > t.g * 1.5 && t.r > .12;
-        // Laranja (pisca da frente) acende amarelo como o farol; só o vermelho é lanterna.
-        bool blinker = tail && t.g > t.r * .3;
-        bool chrome = !paint && !tail && saturation < .22 && luminance > .3;
+        // Peça deste triângulo (veja carRegions): 0 lata, 1 cromado, 2 vidro, 3 pneu, 4 lanterna, 5 pisca.
+        float r = floor(vRegion + .5);
+        bool paint = r < .5;
+        bool chrome = abs(r - 1.0) < .5;
+        bool tail = abs(r - 4.0) < .5;
+        bool blinker = abs(r - 5.0) < .5;
         vec3 color;
         if (paint) {
           // Faixas chapadas: sombra, meio, luz e o brilho lavanda nas curvas viradas para cima.
           color = diffuse < -.05 ? uDeep : diffuse < .35 ? uMid : uLit;
           color = mix(color, uShine, step(.55, spec) * .9);
-          // Pintura gasta: as manchas de ferrugem do original viram manchas mais escuras.
-          float wear = smoothstep(.12, .03, t.g - t.r);
-          color = mix(color, uDeep, wear * .55);
         } else if (blinker) {
           color = uGlint;
         } else if (tail) {
@@ -417,7 +589,7 @@ function createCarMaterial(map: THREE.Texture | null) {
           color = mix(uGlass, uGlassLit, smoothstep(.35, .7, n.y));
           color = mix(color, uGlint, step(.6, spec) * .85);
         } else {
-          color = luminance < .1 ? uTire : uGlass;
+          color = abs(r - 3.0) < .5 ? uTire : uGlass;
         }
         // Fio rosa do céu nas bordas viradas para cima/para a esquerda.
         color = mix(color, uRim, smoothstep(.72, .9, edge) * step(.05, n.y - n.x * .3) * .8);
