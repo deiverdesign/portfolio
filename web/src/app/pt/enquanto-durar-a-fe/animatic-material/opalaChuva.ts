@@ -37,8 +37,8 @@ const NEAR = {
   maxY: 4,
   nearZ: 4.7,
   farZ: 0,
-  minLength: .9,
-  maxLength: 2.1,
+  minLength: .63,
+  maxLength: 1.47,
   // Largura = ~1% do comprimento, como no Figma (traço de ~4 px numa gota de 412 px).
   widthRatio: .01,
 };

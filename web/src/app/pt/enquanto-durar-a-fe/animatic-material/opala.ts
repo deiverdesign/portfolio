@@ -148,6 +148,39 @@ export function buildOpalaNight() {
   // Chuva parada no ar (Aranhaverso), na mesma rua.
   const rain = buildRain(city.lamps);
   space.add(rain.group);
+
+  // NÉVOA ROSA NO FIM DA RUA (Deiver, 13/10, Figma "blur-effect-BG", nó 125:14284): uma elipse
+  // #E54C87 bem desfocada no ponto de fuga. Fica a ~20 m da câmera, na frente dos prédios do fundo
+  // (que ficam rosados, como se a luz do céu atravessasse a neblina) e atrás dos prédios de
+  // perto, do carro e das pessoas, que tampam ela normalmente. Acende junto com os postes.
+  const HAZE = { width: 24, height: 15, y: 3, z: -14, color: "#e54c87", strength: .92 };
+  const hazeMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    uniforms: { uColor: { value: new THREE.Color(HAZE.color) }, uOpacity: { value: 1 } },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uColor;
+      uniform float uOpacity;
+      varying vec2 vUv;
+      void main() {
+        // Elipse com borda bem borrada: cheia no miolo e sumindo até a beira do retângulo.
+        float d = length((vUv - .5) * 2.0);
+        float alpha = 1.0 - smoothstep(.25, 1.0, d);
+        gl_FragColor = vec4(uColor, alpha * alpha * ${HAZE.strength.toFixed(2)} * uOpacity);
+      }
+    `,
+  });
+  const haze = new THREE.Mesh(new THREE.PlaneGeometry(HAZE.width, HAZE.height), hazeMaterial);
+  haze.position.set(0, HAZE.y, HAZE.z);
+  haze.renderOrder = 2;
+  space.add(haze);
   const lampHeads = city.lamps.map((lamp) => new THREE.Vector2(lamp.head.x, lamp.head.z));
   while (lampHeads.length < MAX_LAMPS) lampHeads.push(new THREE.Vector2(0, 9999));
 
@@ -403,10 +436,11 @@ export function buildOpalaNight() {
       body.add(tilt);
     });
   };
-  // Encostado na traseira, lado esquerdo, de costas para o carro.
-  friend(FRIEND_LEANING_URL, car, 1.8, -1.12, 0, -1.3, -Math.PI / 2, FRIEND_LEANING_TILT);
-  // O outro, afastado, em pé na calçada da direita, de braços cruzados olhando para o carro.
-  friend(FRIEND_ARMS_URL, space, 1.85, CITY.curbX + .9, CITY.curbHeight, -3.2, -Math.PI / 2 - .5);
+  // Encostado na porta do motorista, perto da maçaneta, com as costas na lataria (Deiver, 13/10).
+  friend(FRIEND_LEANING_URL, car, 1.8, -1.05, 0, -.4, -Math.PI / 2, FRIEND_LEANING_TILT);
+  // O outro, de braços cruzados olhando para o carro, em pé na rua, perto do meio-fio da direita
+  // (Deiver, 13/10: saiu da calçada e veio mais para perto da câmera).
+  friend(FRIEND_ARMS_URL, space, 1.85, CITY.curbX - 2.2, 0, .2, -Math.PI / 2 - .5);
 
   // Posição do farol da direita no mundo (é dali que a luz nasce na cozinha).
   const headlight = (target: THREE.Vector3) => target.set(OPALA.headlightX, OPALA.headlightY, OPALA.headlightZ).applyMatrix4(car.matrixWorld);
@@ -431,6 +465,7 @@ export function buildOpalaNight() {
     figures.forEach((figure) => { figure.visible = figuresOn; });
     city.setLights(lightsOn);
     rain.setLights(lightsOn);
+    hazeMaterial.uniforms.uOpacity.value = lightsOn;
     groundMaterial.uniforms.uLampOn.value = lightsOn;
   };
 
@@ -442,6 +477,8 @@ export function buildOpalaNight() {
     dispose: () => {
       city.dispose();
       rain.dispose();
+      hazeMaterial.dispose();
+      haze.geometry.dispose();
       asphaltMap.dispose();
       occluderMaterial.dispose();
       shadowBuilding.geometry.dispose();
