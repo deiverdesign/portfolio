@@ -1,16 +1,20 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
-import { METER, createCelMaterial, createOutlineMaterial } from "./celShading";
+import { METER, createOutlineMaterial } from "./celShading";
 import { JOTA_MODEL_URL } from "../personagem-jota/jotaBands";
 import { CITY, buildCity } from "./opalaCidade";
 
 // Cena 3 — o Opala, à noite (direção do Deiver, 12/10): a cozinha é apagada pela luz do farol
 // do Opala. Quando a luz baixa, o próprio farol aparece, depois o carro inteiro, parado, e só
 // então o Jota e os dois amigos, três silhuetas inteiramente pretas.
-// Tudo em METROS. O carro fica na origem, com a frente virada para +z (para a câmera).
-// Eixos: x = largura (direita positiva, olhando de frente para o carro), y = altura.
+// Tudo em METROS. O carro fica na origem. No "espaço do carro" a frente aponta para +z; na rua
+// ele fica atravessado na diagonal (yaw), com o nariz para a direita da câmera, como na
+// montagem do Deiver (13/10). Eixos: x = largura, y = altura, z = comprimento da rua.
+const CAR_YAW = THREE.MathUtils.degToRad(36);
+const inCarSpace = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z).applyAxisAngle(new THREE.Vector3(0, 1, 0), CAR_YAW);
 export const OPALA = {
+  yaw: CAR_YAW,
   // Comprimento e altura do carro na cena (o modelo do Meshy é estilizado: ~4,1 × 1,45 m).
   scale: 2.15,
   // Faróis, no espaço do carro: um de cada lado da grade, na frente.
@@ -22,16 +26,18 @@ export const OPALA = {
   // No detalhe a lente fecha (closeFov) para o farol e a grade encherem o quadro; no fim ela
   // abre de novo (47°, a lente do resto do site).
   eye: 1.64,
-  closeFrom: new THREE.Vector3(.4, 1.64, 4.3),
-  closeLookAt: new THREE.Vector3(.3, .78, 1.95),
+  closeFrom: inCarSpace(.4, 1.64, 4.3),
+  closeLookAt: inCarSpace(.3, .78, 1.95),
   closeFov: 22,
-  // No fim o cameraman se agacha (olho a ~60 cm, como na montagem do Deiver) e vê o carro
-  // de três quartos, pelo lado esquerdo, onde estão as três sombras.
-  wideFrom: new THREE.Vector3(-2.6, .62, 7.4),
-  wideLookAt: new THREE.Vector3(-.55, .9, 0),
+  // No fim o cameraman se agacha quase no chão (olho a ~45 cm, como na montagem) e olha rua
+  // abaixo: o carro atravessado enche o meio do quadro, de três quartos pela frente.
+  wideFrom: new THREE.Vector3(-.7, .4, 5.3),
+  wideLookAt: new THREE.Vector3(.35, 2.5, -8),
 };
 
-const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=1";
+// v2: o modelo agora leva uma textura pequena (1024 px) só para separar pintura, cromado,
+// vidro e pneu; as cores finais vêm do shader.
+const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=2";
 
 const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp";
 const SKY_ASPECT = 1672 / 941;
@@ -45,9 +51,7 @@ const NIGHT = {
   groundFar: "#1b2b72",
   warm: "#fff4b8",
 };
-// Azul do Opala, em faixas chapadas como o resto da ilustração: claro na luz, cobalto no
-// meio, marinho na sombra, quase preto embaixo. Contorno escuro de desenho em volta.
-const CAR_BLUE = { lit: "#4d66d4", mid: "#2b45aa", shade: "#172679", deep: "#070d36" };
+// Contorno escuro de desenho em volta do carro (as cores da pintura estão em createCarMaterial).
 const CAR_INK = "#04071f";
 
 export function buildOpalaNight() {
@@ -122,6 +126,8 @@ export function buildOpalaNight() {
       uLamp: { value: new THREE.Color("#fff09a") },
       uSkyPink: { value: new THREE.Color("#c42e6e") },
       uLamps: { value: lampHeads.slice(0, MAX_LAMPS) },
+      uCarYaw: { value: OPALA.yaw },
+      uUnder: { value: new THREE.Color("#2a0418") },
       uMeter: { value: METER },
       uGlow: glow,
     },
@@ -144,6 +150,8 @@ export function buildOpalaNight() {
       uniform vec3 uLamp;
       uniform vec3 uSkyPink;
       uniform vec2 uLamps[MAX_LAMPS];
+      uniform float uCarYaw;
+      uniform vec3 uUnder;
       uniform float uGlow;
       varying vec2 vPoint;
       varying float vDistance;
@@ -169,14 +177,20 @@ export function buildOpalaNight() {
         }
         color = mix(color, uLamp, min(light, 1.0) * .22);
         color = mix(color, uLamp, min(streak, 1.0) * .55);
+        // Daqui para baixo, no espaço do carro (a frente dele aponta para +z).
+        float c = cos(uCarYaw), s = sin(uCarYaw);
+        vec2 q = vec2(c * p.x - s * p.y, s * p.x + c * p.y);
+        // Embaixo do carro: sombra bordô, como na montagem.
+        vec2 under = q / vec2(1.05, 2.25);
+        color = mix(color, uUnder, (1.0 - smoothstep(.75, 1.1, length(under))) * .85);
         // Duas manchas do farol, alongadas para a frente do carro (como a luz do poste da rua).
         float pool = 0.0;
         for (int i = 0; i < 2; i++) {
           float side = i == 0 ? -.6 : .6;
-          vec2 d = (p - vec2(side * 1.2, 4.0)) / vec2(1.0, 2.1);
+          vec2 d = (q - vec2(side * 1.2, 4.0)) / vec2(1.0, 2.1);
           pool += exp(-dot(d, d) * 1.6);
         }
-        vec2 core = (p - vec2(0.0, 3.0)) / vec2(1.4, 1.2);
+        vec2 core = (q - vec2(0.0, 3.0)) / vec2(1.4, 1.2);
         pool = min(pool * .55 + exp(-dot(core, core) * 2.0) * .35, 1.0);
         color = mix(color, uWarm, pool * .6 * uGlow);
         gl_FragColor = vec4(color, 1.0);
@@ -193,11 +207,12 @@ export function buildOpalaNight() {
   ground.rotation.x = -Math.PI / 2;
   space.add(ground);
 
-  // --- Opala: parado, de frente para a câmera, azul em faixas chapadas ------------------------------
-  const carMaterial = createCelMaterial({ ...CAR_BLUE, rim: "#ff6f9a", rimAmount: .14, clean: true, cleanTones: 3 });
+  // --- Opala: parado, atravessado na rua -----------------------------------------------------
   const carOutline = createOutlineMaterial({ color: CAR_INK, worldWidth: .012 * METER, minPixels: 1.5, maxPixels: 4.5 });
   const car = new THREE.Group();
+  car.rotation.y = OPALA.yaw;
   space.add(car);
+  const carMaterials: THREE.Material[] = [];
   const loader = new GLTFLoader();
   loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load(OPALA_URL, (gltf) => {
@@ -205,8 +220,11 @@ export function buildOpalaNight() {
     const meshes: THREE.Mesh[] = [];
     model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
     meshes.forEach((child) => {
-      (child.material as THREE.Material).dispose();
-      child.material = carMaterial;
+      const original = child.material as THREE.MeshStandardMaterial;
+      const material = createCarMaterial(original.map);
+      original.dispose();
+      carMaterials.push(material);
+      child.material = material;
       // Contorno: a mesma forma, virada do avesso e um pouco maior, toda escura.
       const ink = new THREE.Mesh(child.geometry, carOutline);
       ink.onBeforeRender = (renderer) => { renderer.getDrawingBufferSize(carOutline.uniforms.uResolution.value); };
@@ -238,14 +256,15 @@ export function buildOpalaNight() {
     halos.push(halo);
   });
 
-  // --- Três silhuetas pretas: Jota encostado no carro, um amigo perto do capô, outro afastado,
-  // de costas. Sem rosto, roupa ou objeto: só a pose diferencia.
+  // --- Três silhuetas pretas (pose da montagem do Deiver, 13/10): o Jota junto à porta do
+  // motorista, virado para o carro; um amigo encostado na traseira, do mesmo lado; o outro
+  // afastado, na calçada da direita. Sem rosto, roupa ou objeto: só a pose diferencia.
   const black = new THREE.MeshBasicMaterial({ color: "#020205" });
   const jota = new THREE.Group();
-  // Encostado na lateral esquerda do carro, o corpo inclinado para trás, contra a porta.
-  jota.position.set(-1.12, 0, .1);
-  jota.rotation.set(0, .35, -.07);
-  space.add(jota);
+  // No espaço do carro: lado esquerdo (-x), na altura da porta, de frente para a lataria.
+  jota.position.set(-1.3, 0, .35);
+  jota.rotation.set(.1, Math.PI / 2, 0);
+  car.add(jota);
   const figures: THREE.Object3D[] = [jota];
   // Mesmo arquivo do Jota da rua (já no cache), só a forma, toda preta.
   new GLTFLoader().load(JOTA_MODEL_URL, (gltf) => {
@@ -264,9 +283,9 @@ export function buildOpalaNight() {
     model.position.z -= (box.min.z + box.max.z) / 2;
     jota.add(model);
   });
-  const mannequin = (height: number, x: number, z: number, turn: number, lean = 0) => {
+  const mannequin = (parent: THREE.Object3D, height: number, x: number, y: number, z: number, turn: number, lean = 0) => {
     const body = new THREE.Group();
-    body.position.set(x, 0, z);
+    body.position.set(x, y, z);
     body.rotation.set(0, turn, lean);
     const scale = height / 1.8;
     const part = (geometry: THREE.BufferGeometry, px: number, py: number) => {
@@ -282,16 +301,16 @@ export function buildOpalaNight() {
     part(new THREE.CapsuleGeometry(.055, .58, 4, 10), -.27, 1.12);
     part(new THREE.CapsuleGeometry(.055, .58, 4, 10), .27, 1.12);
     part(new THREE.SphereGeometry(.12, 16, 12), 0, 1.66);
-    space.add(body);
+    parent.add(body);
     figures.push(body);
   };
-  // Amigo perto do capô: ao lado da quina da frente, do lado esquerdo, virado para o Jota.
-  mannequin(1.76, -1.75, 1.5, -.9);
-  // O outro, afastado e de costas, mais para trás e para a esquerda.
-  mannequin(1.72, -3.5, -1.9, Math.PI + .25);
+  // Encostado na traseira, lado esquerdo, de costas para o carro e o corpo inclinado contra ele.
+  mannequin(car, 1.76, -1.2, 0, -1.55, -Math.PI / 2, -.12);
+  // O outro, afastado, em pé na calçada da direita, olhando para o carro.
+  mannequin(space, 1.72, CITY.curbX + .9, CITY.curbHeight, -3.2, -Math.PI / 2 - .5);
 
   // Posição do farol da direita no mundo (é dali que a luz nasce na cozinha).
-  const headlight = (target: THREE.Vector3) => target.set(OPALA.headlightX, OPALA.headlightY, OPALA.headlightZ).applyMatrix4(space.matrixWorld);
+  const headlight = (target: THREE.Vector3) => target.set(OPALA.headlightX, OPALA.headlightY, OPALA.headlightZ).applyMatrix4(car.matrixWorld);
 
   // glowAmount = 0 a 1: quanto o farol "estoura" (1 = brilho enorme, logo depois do branco).
   // figures = as três sombras aparecem só quando a câmera já abriu (antes ficam fora do quadro).
@@ -319,4 +338,92 @@ function radialTexture() {
     context.fillRect(0, 0, 128, 128);
   }
   return new THREE.CanvasTexture(canvas);
+}
+
+// Pintura do Opala (montagem do Deiver, 13/10): cobalto escuro e saturado, gasto, com brilhos
+// lavanda nas curvas de cima, cromados quase brancos, vidro azul com reflexo amarelo e um fio
+// rosa do céu nas bordas. A textura original (verde, com ferrugem) só diz o que é cada parte:
+// verde = pintura, cinza claro = cromado, quase preto = vidro/pneu, vermelho/laranja = lanternas.
+function createCarMaterial(map: THREE.Texture | null) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uMap: { value: map },
+      uLight: { value: new THREE.Vector3(-.35, .85, .4).normalize() },
+      uDeep: { value: new THREE.Color("#001256") },
+      uMid: { value: new THREE.Color("#0b2f8b") },
+      uLit: { value: new THREE.Color("#1d45b2") },
+      uShine: { value: new THREE.Color("#93a6f2") },
+      uChromeDark: { value: new THREE.Color("#1a3592") },
+      uChromeLit: { value: new THREE.Color("#dfe6ff") },
+      uGlass: { value: new THREE.Color("#0a1a5c") },
+      uGlassLit: { value: new THREE.Color("#3c60c2") },
+      uGlint: { value: new THREE.Color("#fff08f") },
+      uTire: { value: new THREE.Color("#02030d") },
+      uTail: { value: new THREE.Color("#d42a4a") },
+      uRim: { value: new THREE.Color("#ff4f86") },
+    },
+    vertexShader: /* glsl */ `
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        vUv = uv;
+        vec4 world = modelMatrix * vec4(position, 1.0);
+        vNormal = normalize(mat3(modelMatrix) * normal);
+        vView = normalize(cameraPosition - world.xyz);
+        gl_Position = projectionMatrix * viewMatrix * world;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform sampler2D uMap;
+      uniform vec3 uLight, uDeep, uMid, uLit, uShine, uChromeDark, uChromeLit, uGlass, uGlassLit, uGlint, uTire, uTail, uRim;
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        vec3 t = texture2D(uMap, vUv).rgb;
+        float high = max(max(t.r, t.g), t.b);
+        float low = min(min(t.r, t.g), t.b);
+        float saturation = high > .001 ? (high - low) / high : 0.0;
+        float luminance = dot(t, vec3(.2126, .7152, .0722));
+        vec3 n = normalize(vNormal);
+        if (!gl_FrontFacing) n = -n;
+        vec3 v = normalize(vView);
+        float diffuse = dot(n, uLight);
+        float spec = pow(max(dot(reflect(-uLight, n), v), 0.0), 18.0);
+        float edge = 1.0 - max(dot(n, v), 0.0);
+        bool paint = t.g > t.r * 1.15 && t.g > t.b * .95 && saturation > .2;
+        bool tail = t.r > t.g * 1.5 && t.r > .12;
+        // Laranja (pisca da frente) acende amarelo como o farol; só o vermelho é lanterna.
+        bool blinker = tail && t.g > t.r * .3;
+        bool chrome = !paint && !tail && saturation < .22 && luminance > .3;
+        vec3 color;
+        if (paint) {
+          // Faixas chapadas: sombra, meio, luz e o brilho lavanda nas curvas viradas para cima.
+          color = diffuse < -.05 ? uDeep : diffuse < .35 ? uMid : uLit;
+          color = mix(color, uShine, step(.55, spec) * .9);
+          // Pintura gasta: as manchas de ferrugem do original viram manchas mais escuras.
+          float wear = smoothstep(.12, .03, t.g - t.r);
+          color = mix(color, uDeep, wear * .55);
+        } else if (blinker) {
+          color = uGlint;
+        } else if (tail) {
+          color = uTail;
+        } else if (chrome) {
+          // Cromado: quase branco onde reflete a luz, azul onde não.
+          color = mix(uChromeDark, uChromeLit, step(.2, diffuse * .6 + spec));
+        } else if (n.y > .35) {
+          // Vidro de cima (para-brisa, vigia): azul claro com um risco de reflexo amarelo.
+          color = mix(uGlass, uGlassLit, smoothstep(.35, .7, n.y));
+          color = mix(color, uGlint, step(.6, spec) * .85);
+        } else {
+          color = luminance < .1 ? uTire : uGlass;
+        }
+        // Fio rosa do céu nas bordas viradas para cima/para a esquerda.
+        color = mix(color, uRim, smoothstep(.72, .9, edge) * step(.05, n.y - n.x * .3) * .8);
+        gl_FragColor = vec4(color, 1.0);
+        #include <colorspace_fragment>
+      }
+    `,
+  });
 }
