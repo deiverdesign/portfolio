@@ -91,6 +91,9 @@ export function buildCity() {
     const style = new Float32Array(count * 4);
     for (let v = 0; v < count; v++) style.set([block.floor, block.column, block.height, block.kind], v * 4);
     geometry.setAttribute("aStyle", new THREE.BufferAttribute(style, 4));
+    const bounds = new Float32Array(count * 4);
+    for (let v = 0; v < count; v++) bounds.set([block.x0, block.x1, block.z0, block.z1], v * 4);
+    geometry.setAttribute("aBounds", new THREE.BufferAttribute(bounds, 4));
     pieces.push(geometry);
   });
   const buildingGeometry = mergeGeometries(pieces)!;
@@ -112,6 +115,8 @@ export function buildCity() {
     },
     vertexShader: /* glsl */ `
       attribute vec4 aStyle;
+      attribute vec4 aBounds;
+      varying vec4 vBounds;
       varying vec3 vPoint;
       varying vec3 vNormal;
       varying vec4 vStyle;
@@ -120,6 +125,7 @@ export function buildCity() {
         vPoint = position;
         vNormal = normal;
         vStyle = aStyle;
+        vBounds = aBounds;
         vec4 world = modelMatrix * vec4(position, 1.0);
         vDistance = distance(world.xyz, cameraPosition);
         gl_Position = projectionMatrix * viewMatrix * world;
@@ -130,6 +136,7 @@ export function buildCity() {
       varying vec3 vPoint;
       varying vec3 vNormal;
       varying vec4 vStyle;
+      varying vec4 vBounds;
       varying float vDistance;
       float hash(vec2 p) { return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
       void main() {
@@ -149,6 +156,8 @@ export function buildCity() {
           // Coordenada ao longo da fachada: z na frente, x na lateral.
           float along = street > .5 ? vPoint.z : vPoint.x;
           float ground = shop > .5 ? 3.4 : 3.6;
+          // Fio rosa no alto do térreo (marquise/laje).
+          color = mix(color, uRim, step(ground - .05, vPoint.y) * step(vPoint.y, ground) * .8);
           if (vPoint.y < ground) {
             // Térreo: portas de enrolar (ripas horizontais) entre pilares.
             float bay = fract(along / 4.2);
@@ -167,10 +176,18 @@ export function buildCity() {
             vec3 glass = hash(id + floor(vPoint.x * .1)) > .94 ? uLit : uWindow;
             color = mix(color, uFrame, frame * (1.0 - inside) * .7);
             color = mix(color, glass, inside);
-            // Faixa de laje entre os andares (sacadas em linha, como na montagem).
+            // Faixa de laje entre os andares (sacadas em linha, como na montagem), com um fio
+            // rosa na aresta de cima, onde o céu bate.
             color = mix(color, uBand, step(row, .08) * (1.0 - shop * .6));
+            color = mix(color, uRim, step(.065, row) * step(row, .08) * .8 * (1.0 - shop * .6));
           }
         }
+        // Quina rosa: a aresta vertical virada para a câmera e para a rua, nas duas faces
+        // que se encontram nela (fachada e lateral), como o contorno de luz da montagem.
+        float streetEdgeX = vPoint.x < 0.0 ? vBounds.y : vBounds.x;
+        float corner = street > .5 ? 1.0 - smoothstep(.12, .22, vBounds.w - vPoint.z)
+          : towardCamera > .5 ? 1.0 - smoothstep(.12, .22, abs(vPoint.x - streetEdgeX)) : 0.0;
+        color = mix(color, uRim, corner * step(n.y, .5) * .9);
         // Fio rosa do céu na borda de cima de cada construção.
         color = mix(color, uRim, step(top - .28, vPoint.y) * step(n.y, .5) * .85);
         if (n.y > .5) color = mix(color, uRim, .18);
@@ -183,11 +200,31 @@ export function buildCity() {
   });
   const buildings = new THREE.Mesh(buildingGeometry, buildingMaterial);
   city.add(buildings);
-  // Contorno de desenho nas quinas.
+  // Contorno rosa nas quinas dos prédios: a luz do céu batendo nas arestas (montagem do
+  // Deiver, 13/10). Some na névoa junto com o resto.
   const edgeGeometry = new THREE.EdgesGeometry(buildingGeometry, 30);
+  const rimLineMaterial = new THREE.ShaderMaterial({
+    uniforms: { uRim: { value: new THREE.Color(COLORS.rim) }, uHaze: { value: new THREE.Color(COLORS.haze) } },
+    vertexShader: /* glsl */ `
+      varying float vDistance;
+      void main() {
+        vec4 world = modelMatrix * vec4(position, 1.0);
+        vDistance = distance(world.xyz, cameraPosition);
+        gl_Position = projectionMatrix * viewMatrix * world;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uRim, uHaze;
+      varying float vDistance;
+      void main() {
+        gl_FragColor = vec4(mix(uRim, uHaze, smoothstep(60.0, 300.0, vDistance) * .7), 1.0);
+        #include <colorspace_fragment>
+      }
+    `,
+  });
+  city.add(new THREE.LineSegments(edgeGeometry, rimLineMaterial));
   const inkMaterial = new THREE.LineBasicMaterial({ color: COLORS.ink });
-  city.add(new THREE.LineSegments(edgeGeometry, inkMaterial));
-  disposables.push(buildingGeometry, buildingMaterial, edgeGeometry, inkMaterial);
+  disposables.push(buildingGeometry, buildingMaterial, edgeGeometry, rimLineMaterial, inkMaterial);
 
   // Marquises das lojas: uma laje fina saindo 1,4 m sobre a calçada, com lâmpadas embaixo.
   const awningMaterial = new THREE.MeshBasicMaterial({ color: COLORS.side });

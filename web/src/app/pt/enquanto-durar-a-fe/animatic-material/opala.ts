@@ -29,10 +29,10 @@ export const OPALA = {
   closeFrom: inCarSpace(.4, 1.64, 4.3),
   closeLookAt: inCarSpace(.3, .78, 1.95),
   closeFov: 22,
-  // No fim o cameraman se agacha quase no chão (olho a ~45 cm, como na montagem) e olha rua
-  // abaixo: o carro atravessado enche o meio do quadro, de três quartos pela frente.
-  wideFrom: new THREE.Vector3(-.7, .4, 5.3),
-  wideLookAt: new THREE.Vector3(.35, 2.5, -8),
+  // No fim o cameraman se agacha quase no chão (olho a ~40 cm, como na montagem) e olha rua
+  // abaixo, alinhado com o carro: o carro atravessado no meio da rua esconde o fim dela.
+  wideFrom: new THREE.Vector3(.25, .4, 5.6),
+  wideLookAt: new THREE.Vector3(.25, 2.3, -8),
 };
 
 // v2: o modelo agora leva uma textura pequena (1024 px) só para separar pintura, cromado,
