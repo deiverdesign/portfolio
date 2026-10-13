@@ -1,5 +1,8 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
+import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 
 // Cena 3 — a cidade em volta do Opala (montagem do Deiver, 13/10): uma rua comprida que some
 // no fundo, prédios altos azuis à esquerda, comércio baixo com portas de enrolar à direita,
@@ -30,6 +33,8 @@ const COLORS = {
   shutter: "#24359c",
   shutterLine: "#101c64",
   rim: "#ff5a8c",
+  // Rosa das bordas secundárias: menos saturado, puxado para o azul dos prédios.
+  rimSoft: "#b85a9e",
   haze: "#4b3a9e",
   ink: "#04071f",
   pole: "#060a28",
@@ -156,8 +161,6 @@ export function buildCity() {
           // Coordenada ao longo da fachada: z na frente, x na lateral.
           float along = street > .5 ? vPoint.z : vPoint.x;
           float ground = shop > .5 ? 3.4 : 3.6;
-          // Fio rosa no alto do térreo (marquise/laje).
-          color = mix(color, uRim, step(ground - .05, vPoint.y) * step(vPoint.y, ground) * .8);
           if (vPoint.y < ground) {
             // Térreo: portas de enrolar (ripas horizontais) entre pilares.
             float bay = fract(along / 4.2);
@@ -176,21 +179,12 @@ export function buildCity() {
             vec3 glass = hash(id + floor(vPoint.x * .1)) > .94 ? uLit : uWindow;
             color = mix(color, uFrame, frame * (1.0 - inside) * .7);
             color = mix(color, glass, inside);
-            // Faixa de laje entre os andares (sacadas em linha, como na montagem), com um fio
-            // rosa na aresta de cima, onde o céu bate.
+            // Faixa de laje entre os andares (sacadas em linha, como na montagem).
             color = mix(color, uBand, step(row, .08) * (1.0 - shop * .6));
-            color = mix(color, uRim, step(.065, row) * step(row, .08) * .8 * (1.0 - shop * .6));
           }
         }
-        // Quina rosa: a aresta vertical virada para a câmera e para a rua, nas duas faces
-        // que se encontram nela (fachada e lateral), como o contorno de luz da montagem.
-        float streetEdgeX = vPoint.x < 0.0 ? vBounds.y : vBounds.x;
-        float corner = street > .5 ? 1.0 - smoothstep(.12, .22, vBounds.w - vPoint.z)
-          : towardCamera > .5 ? 1.0 - smoothstep(.12, .22, abs(vPoint.x - streetEdgeX)) : 0.0;
-        color = mix(color, uRim, corner * step(n.y, .5) * .9);
-        // Fio rosa do céu na borda de cima de cada construção.
-        color = mix(color, uRim, step(top - .28, vPoint.y) * step(n.y, .5) * .85);
-        if (n.y > .5) color = mix(color, uRim, .18);
+        // O rosa do céu não é pintado na fachada: é uma linha só nas bordas de fora que recebem
+        // a luz do céu (veja skyRimEdges).
         // Longe, tudo vai para um violeta de névoa (dá profundidade à rua).
         color = mix(color, uHaze, smoothstep(60.0, 300.0, vDistance) * .75);
         gl_FragColor = vec4(color, 1.0);
@@ -200,31 +194,14 @@ export function buildCity() {
   });
   const buildings = new THREE.Mesh(buildingGeometry, buildingMaterial);
   city.add(buildings);
-  // Contorno rosa nas quinas dos prédios: a luz do céu batendo nas arestas (montagem do
-  // Deiver, 13/10). Some na névoa junto com o resto.
+  // Arestas das caixas em traço escuro (o desenho do prédio). O rosa vem por cima, só nas
+  // bordas que recebem a luz do céu.
   const edgeGeometry = new THREE.EdgesGeometry(buildingGeometry, 30);
-  const rimLineMaterial = new THREE.ShaderMaterial({
-    uniforms: { uRim: { value: new THREE.Color(COLORS.rim) }, uHaze: { value: new THREE.Color(COLORS.haze) } },
-    vertexShader: /* glsl */ `
-      varying float vDistance;
-      void main() {
-        vec4 world = modelMatrix * vec4(position, 1.0);
-        vDistance = distance(world.xyz, cameraPosition);
-        gl_Position = projectionMatrix * viewMatrix * world;
-      }
-    `,
-    fragmentShader: /* glsl */ `
-      uniform vec3 uRim, uHaze;
-      varying float vDistance;
-      void main() {
-        gl_FragColor = vec4(mix(uRim, uHaze, smoothstep(60.0, 300.0, vDistance) * .7), 1.0);
-        #include <colorspace_fragment>
-      }
-    `,
-  });
-  city.add(new THREE.LineSegments(edgeGeometry, rimLineMaterial));
   const inkMaterial = new THREE.LineBasicMaterial({ color: COLORS.ink });
-  disposables.push(buildingGeometry, buildingMaterial, edgeGeometry, rimLineMaterial, inkMaterial);
+  city.add(new THREE.LineSegments(edgeGeometry, inkMaterial));
+  const rim = skyRimEdges(blocks);
+  city.add(rim.group);
+  disposables.push(buildingGeometry, buildingMaterial, edgeGeometry, inkMaterial, rim);
 
   // Marquises das lojas: uma laje fina saindo 1,4 m sobre a calçada, com lâmpadas embaixo.
   const awningMaterial = new THREE.MeshBasicMaterial({ color: COLORS.side });
@@ -296,6 +273,7 @@ export function buildCity() {
   const lampMaterial = new THREE.MeshBasicMaterial({ color: COLORS.lamp });
   const haloTexture = glowTexture();
   const poleHeight = 8.2;
+  const poleRim: number[] = [];
   let k = 0;
   for (let pz = 18; pz > CITY.farZ + 10; pz -= 19) {
     const side = k % 2 === 0 ? -1 : 1;
@@ -307,8 +285,14 @@ export function buildCity() {
     pole.position.set(x, poleHeight / 2, pz);
     city.add(pole);
     // Braço curvo, do alto do poste até a luminária sobre a rua.
-    const arm = new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(top.clone().add(new THREE.Vector3(0, -.6, 0)), top.clone().add(new THREE.Vector3(-side * .5, .5, 0)), head), 16, .05, 6), poleMaterial);
+    const armCurve = new THREE.QuadraticBezierCurve3(top.clone().add(new THREE.Vector3(0, -.6, 0)), top.clone().add(new THREE.Vector3(-side * .5, .5, 0)), head);
+    const arm = new THREE.Mesh(new THREE.TubeGeometry(armCurve, 16, .05, 6), poleMaterial);
     city.add(arm);
+    // Luz do céu no topo do poste: um fio rosa sobre o lado de cima do braço curvo.
+    armCurve.getPoints(16).forEach((point, index, points) => {
+      if (index === 0) return;
+      poleRim.push(points[index - 1].x, points[index - 1].y + .05, points[index - 1].z, point.x, point.y + .05, point.z);
+    });
     const fixture = new THREE.Mesh(new THREE.BoxGeometry(.7, .14, .3), poleMaterial);
     fixture.position.copy(head);
     city.add(fixture);
@@ -323,7 +307,10 @@ export function buildCity() {
     lamps.push({ base, head: bulb.position.clone() });
     k++;
   }
-  disposables.push(poleMaterial, lampMaterial, haloTexture);
+  const poleRimMaterial = new LineMaterial({ color: new THREE.Color(COLORS.rimSoft).getHex(), worldUnits: true, linewidth: .05 });
+  const poleRimGeometry = new LineSegmentsGeometry().setPositions(poleRim);
+  city.add(new LineSegments2(poleRimGeometry, poleRimMaterial));
+  disposables.push(poleMaterial, lampMaterial, haloTexture, poleRimMaterial, poleRimGeometry);
 
   // Fios: dois cabos por lado, caindo em curva de um poste ao próximo do mesmo lado.
   const wirePoints: number[] = [];
@@ -353,6 +340,92 @@ export function buildCity() {
 
   const dispose = () => disposables.forEach((item) => item.dispose());
   return { group: city, lamps, dispose, colors: COLORS };
+}
+
+// Recorte de luz do céu (pedido do Deiver, 13/10): o rosa é a luz que vem da abertura do céu
+// sobre a rua e só toca as bordas de fora dos volumes, nunca janelas, fios, persianas ou o meio
+// de uma fachada. Para cada construção, só estas bordas:
+// - a borda do telhado do lado da rua (platibanda), recortada contra o céu;
+// - a borda de cima da face virada para a câmera (o outro lado da silhueta do topo);
+// - as quinas verticais do lado da rua, só no trecho que fica acima do vizinho (ou inteiras
+//   quando o vizinho está recuado): ali a quina se recorta contra o céu.
+// As linhas ficam 3 cm para fora da caixa, para o prédio da frente escondê-las (oclusão) sem
+// brigar com a própria fachada. Espessura em metros: fina ao longe, mais presente perto.
+// Rosa forte só nos poucos pontos de foco (os prédios altos perto do carro); no resto, um rosa
+// menos saturado, que some na névoa ao fundo.
+function skyRimEdges(blocks: Block[]) {
+  const group = new THREE.Group();
+  // Três grupos: foco (rosa forte), perto (rosa suave, espessura em metros) e longe (rosa
+  // suave com espessura mínima na tela, senão as bordas do fundo da rua sumiriam).
+  const focus: number[] = [];
+  const soft: number[] = [];
+  const far: number[] = [];
+  const focusColors: number[] = [];
+  const softColors: number[] = [];
+  const farColors: number[] = [];
+  const strong = new THREE.Color(COLORS.rim);
+  const weak = new THREE.Color(COLORS.rimSoft);
+  const haze = new THREE.Color(COLORS.haze);
+  const eye = new THREE.Vector3(0, 1.6, 6);
+  const out = .03;
+  const color = new THREE.Color();
+  const add = (isFocus: boolean, a: THREE.Vector3, b: THREE.Vector3) => {
+    const distant = !isFocus && Math.min(a.distanceTo(eye), b.distanceTo(eye)) > 60;
+    const list = isFocus ? focus : distant ? far : soft;
+    const colors = isFocus ? focusColors : distant ? farColors : softColors;
+    list.push(a.x, a.y, a.z, b.x, b.y, b.z);
+    [a, b].forEach((point) => {
+      color.copy(isFocus ? strong : weak).lerp(haze, THREE.MathUtils.smoothstep(point.distanceTo(eye), 70, 220) * .55);
+      colors.push(color.r, color.g, color.b);
+    });
+  };
+  const sides = [-1, 1];
+  sides.forEach((side) => {
+    // Construções deste lado, da mais perto da câmera (z alto) para o fundo.
+    const own = blocks.filter((block) => Math.sign(block.x0 + block.x1) === side).sort((p, q) => q.z1 - p.z1);
+    own.forEach((block, index) => {
+      // Face virada para a rua e a coordenada x dela (um pouco para fora).
+      const streetX = side < 0 ? block.x1 + out : block.x0 - out;
+      const backX = side < 0 ? block.x0 : block.x1;
+      const top = block.height + out;
+      const near = block.z1 + out;
+      const far = block.z0 - out;
+      const isFocus = block.kind === 0 && block.z1 > -45 && block.z0 < 20;
+      // Platibanda do lado da rua.
+      add(isFocus, new THREE.Vector3(streetX, top, far), new THREE.Vector3(streetX, top, near));
+      // Borda de cima da face virada para a câmera (só a parte perto da rua: o resto fica
+      // escondido atrás da própria platibanda).
+      add(false, new THREE.Vector3(streetX, top, near), new THREE.Vector3(streetX + (backX - streetX) * .35, top, near));
+      // Quinas verticais do lado da rua: o trecho acima do vizinho (ou inteiro, se ele recua).
+      const before = own[index - 1];
+      const after = own[index + 1];
+      const exposed = (neighbor: Block | undefined) => {
+        if (!neighbor) return 0;
+        const neighborStreetX = side < 0 ? neighbor.x1 : neighbor.x0;
+        const recessed = Math.abs(neighborStreetX - (side < 0 ? block.x1 : block.x0)) > .5;
+        return recessed ? 0 : neighbor.height;
+      };
+      const farFrom = exposed(after);
+      if (block.height - farFrom > 1) add(isFocus, new THREE.Vector3(streetX, farFrom, far), new THREE.Vector3(streetX, top, far));
+      const nearFrom = exposed(before);
+      if (block.height - nearFrom > 1) add(false, new THREE.Vector3(streetX, nearFrom, near), new THREE.Vector3(streetX, top, near));
+    });
+  });
+  const materials: LineMaterial[] = [];
+  ([[focus, focusColors, .26, true], [soft, softColors, .18, true], [far, farColors, 2.4, false]] as const).forEach(([positions, colors, width, worldUnits]) => {
+    if (!positions.length) return;
+    const material = new LineMaterial({ vertexColors: true, worldUnits, linewidth: width });
+    const geometry = new LineSegmentsGeometry().setPositions(positions).setColors(colors);
+    group.add(new LineSegments2(geometry, material));
+    materials.push(material);
+  });
+  return {
+    group,
+    dispose: () => {
+      group.children.forEach((child) => (child as LineSegments2).geometry.dispose());
+      materials.forEach((material) => material.dispose());
+    },
+  };
 }
 
 function glowTexture() {
