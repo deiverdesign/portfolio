@@ -3,6 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { METER, createCelMaterial, createOutlineMaterial } from "./celShading";
 import { JOTA_MODEL_URL } from "../personagem-jota/jotaBands";
+import { CITY, buildCity } from "./opalaCidade";
 
 // Cena 3 — o Opala, à noite (direção do Deiver, 12/10): a cozinha é apagada pela luz do farol
 // do Opala. Quando a luz baixa, o próprio farol aparece, depois o carro inteiro, parado, e só
@@ -34,6 +35,8 @@ const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=1";
 
 const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp";
 const SKY_ASPECT = 1672 / 941;
+// Quantos postes o asfalto molhado reflete (os mais perto da câmera vêm primeiro).
+const MAX_LAMPS = 10;
 
 // Paleta da cena (referência do Deiver, 13/10): céu rosa pintado, prédios e rua em azuis
 // profundos, detalhes em amarelo (postes, farol).
@@ -95,22 +98,42 @@ export function buildOpalaNight() {
     }),
   );
   sky.onBeforeRender = (renderer) => { renderer.getDrawingBufferSize(skyResolution); };
+  // O céu fica sempre atrás: a rua vai além da esfera, e os prédios do fundo não podem sumir.
+  (sky.material as THREE.ShaderMaterial).depthTest = false;
+  sky.renderOrder = -1;
   sky.position.y = 2;
   space.add(sky);
 
-  // --- Chão: asfalto azul-marinho, com a mancha quente que o farol joga na frente do carro ----
+  // --- A cidade: prédios, comércio, calçadas, postes e fios (opalaCidade.ts) -----------------
+  const city = buildCity();
+  space.add(city.group);
+  const lampHeads = city.lamps.map((lamp) => new THREE.Vector2(lamp.head.x, lamp.head.z));
+  while (lampHeads.length < MAX_LAMPS) lampHeads.push(new THREE.Vector2(0, 9999));
+
+  // --- Asfalto molhado: azul-marinho, com a luz dos postes no chão, os reflexos esticados das
+  // lâmpadas vindo na direção da câmera, o rosa do céu refletido ao longe e a mancha quente
+  // que o farol joga na frente do carro.
   const groundMaterial = new THREE.ShaderMaterial({
+    defines: { MAX_LAMPS: String(MAX_LAMPS) },
     uniforms: {
       uBase: { value: new THREE.Color(NIGHT.ground) },
       uFar: { value: new THREE.Color(NIGHT.groundFar) },
       uWarm: { value: new THREE.Color(NIGHT.warm) },
+      uLamp: { value: new THREE.Color("#fff09a") },
+      uSkyPink: { value: new THREE.Color("#c42e6e") },
+      uLamps: { value: lampHeads.slice(0, MAX_LAMPS) },
+      uMeter: { value: METER },
       uGlow: glow,
     },
     vertexShader: /* glsl */ `
+      uniform float uMeter;
       varying vec2 vPoint;
+      varying float vDistance;
       void main() {
         vPoint = position.xy;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        vec4 world = modelMatrix * vec4(position, 1.0);
+        vDistance = distance(world.xyz, cameraPosition) / uMeter;
+        gl_Position = projectionMatrix * viewMatrix * world;
       }
     `,
     // vPoint = (x, -z) do chão, porque o plano foi deitado.
@@ -118,11 +141,34 @@ export function buildOpalaNight() {
       uniform vec3 uBase;
       uniform vec3 uFar;
       uniform vec3 uWarm;
+      uniform vec3 uLamp;
+      uniform vec3 uSkyPink;
+      uniform vec2 uLamps[MAX_LAMPS];
       uniform float uGlow;
       varying vec2 vPoint;
+      varying float vDistance;
+      float hash(float n) { return fract(sin(n * 91.7) * 43758.5453); }
       void main() {
         vec2 p = vec2(vPoint.x, -vPoint.y);
-        vec3 color = mix(uBase, uFar, smoothstep(6.0, 28.0, length(p)));
+        vec3 color = mix(uBase, uFar, smoothstep(10.0, 120.0, vDistance));
+        // Rosa do céu refletido no asfalto molhado, mais forte quanto mais longe (ângulo raso),
+        // quebrado em ondinhas horizontais.
+        float ripple = .55 + .45 * sin(p.y * 2.3 + sin(p.x * .7) * 1.5);
+        color = mix(color, uSkyPink, smoothstep(22.0, 110.0, vDistance) * .36 * ripple);
+        float light = 0.0;
+        float streak = 0.0;
+        for (int i = 0; i < MAX_LAMPS; i++) {
+          vec2 lamp = uLamps[i];
+          vec2 d = (p - lamp) / vec2(2.2, 3.0);
+          light += exp(-dot(d, d) * 1.4);
+          // Reflexo: faixa fina embaixo da lâmpada, esticada para a câmera (+z), tremida.
+          float along = p.y - lamp.y;
+          float across = (p.x - lamp.x) / (.22 + along * .025);
+          float band = .45 + .55 * step(.35, fract(p.y * 1.7 + hash(float(i)) * 3.0));
+          streak += exp(-across * across) * smoothstep(-.5, 1.0, along) * (1.0 - smoothstep(4.0, 11.0, along)) * band;
+        }
+        color = mix(color, uLamp, min(light, 1.0) * .22);
+        color = mix(color, uLamp, min(streak, 1.0) * .55);
         // Duas manchas do farol, alongadas para a frente do carro (como a luz do poste da rua).
         float pool = 0.0;
         for (int i = 0; i < 2; i++) {
@@ -138,7 +184,12 @@ export function buildOpalaNight() {
       }
     `,
   });
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), groundMaterial);
+  // O chão cobre a rua inteira, da câmera até o fundo (CITY.farZ).
+  // (O plano é deslocado na própria geometria: assim as contas do shader continuam em metros
+  // do espaço do carro.)
+  const groundGeometry = new THREE.PlaneGeometry(60, CITY.nearZ - CITY.farZ + 40);
+  groundGeometry.translate(0, -(CITY.nearZ + CITY.farZ) / 2, 0);
+  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
   ground.rotation.x = -Math.PI / 2;
   space.add(ground);
 
@@ -250,7 +301,7 @@ export function buildOpalaNight() {
     figures.forEach((figure) => { figure.visible = figuresOn; });
   };
 
-  return { group: root, space, update, headlight };
+  return { group: root, space, update, headlight, dispose: city.dispose };
 }
 
 function radialTexture() {
