@@ -1467,7 +1467,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const right = new THREE.Vector3(-ahead.z, 0, ahead.x);
       // Acima do horizonte, no céu, por cima das cabeças (que estão bem mais longe).
       // No celular o bilhete fica mais perto (o papel é menor e o quadro, estreito).
-      const notePoint = (side: number, distance = 4.2, height = 1.05) => OPALA.wideFrom.clone()
+      const notePoint = (side: number, distance = 4.2, height = 1.4) => OPALA.wideFrom.clone()
         .addScaledVector(ahead, distance).addScaledVector(right, side).setY(OPALA.wideFrom.y + height);
       OPALA_EXCERPTS.forEach((excerpt, index) => {
         const [from, to] = times[index];

@@ -38,7 +38,7 @@ export const OPALA = {
 // vidro e pneu; as cores finais vêm do shader.
 // Onde o Jota fica, no espaço do carro: x = do lado esquerdo, z = na porta da frente, virado
 // para a lataria. height = altura dele curvado.
-const JOTA_PANO = { x: -1.45, z: .85, turn: Math.PI / 2, height: 1.7 };
+const JOTA_PANO = { x: 1.45, z: .45, turn: -Math.PI / 2, height: 1.7 };
 const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=2";
 // O Jota passando pano no carro (modelo do Deiver no Meshy, 13/10), já na pose da montagem.
 const JOTA_PANO_URL = "/enquanto-durar-a-fe/jota-pano-web.glb?v=1";
