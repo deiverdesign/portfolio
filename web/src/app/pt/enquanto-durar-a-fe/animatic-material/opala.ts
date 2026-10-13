@@ -454,9 +454,78 @@ export function buildOpalaNight() {
   const shadowBuilding = new THREE.Mesh(new THREE.BoxGeometry(6, 12, .2), occluderMaterial);
   shadowBuilding.position.set(WIPE.poleX - .05 - 3, 6, WIPE.buildingZ - .1);
   space.add(shadowBuilding);
-  const darkPole = new THREE.Mesh(new THREE.CylinderGeometry(WIPE.poleRadius, WIPE.poleRadius, 8.2, 20), occluderMaterial);
+  // O poste colado na lente (PDF do Deiver, 13/10): o corpo é do mesmo preto azulado do prédio
+  // (a emenda continua invisível), e o lado direito, o que fica virado para o céu no fim da
+  // rua, pega uma borda fina de luz rosa. É essa borda que aparece primeiro quando ele passa.
+  const POLE_RIM = { color: "#ff5fa8", from: .9, to: .985 };
+  const poleMaterial = new THREE.ShaderMaterial({
+    side: THREE.DoubleSide,
+    uniforms: { uBody: { value: new THREE.Color(WIPE.color) }, uRim: { value: new THREE.Color(POLE_RIM.color) } },
+    vertexShader: `
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        // Normal e posição no espaço da câmera: x > 0 = o lado direito do poste, visto da lente.
+        vNormal = normalize(normalMatrix * normal);
+        vec4 view = modelViewMatrix * vec4(position, 1.0);
+        vView = view.xyz;
+        gl_Position = projectionMatrix * view;
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uBody;
+      uniform vec3 uRim;
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        // Só a beirada da silhueta (onde a superfície fica de lado para a lente), e só à direita.
+        float side = 1.0 - abs(dot(normalize(vNormal), normalize(-vView)));
+        float rim = smoothstep(${POLE_RIM.from.toFixed(3)}, ${POLE_RIM.to.toFixed(3)}, side) * step(0.0, vNormal.x);
+        gl_FragColor = vec4(mix(uBody, uRim, rim * .85), 1.0);
+        #include <colorspace_fragment>
+      }
+    `,
+  });
+  const darkPole = new THREE.Mesh(new THREE.CylinderGeometry(WIPE.poleRadius, WIPE.poleRadius, 8.2, 32), poleMaterial);
   darkPole.position.set(WIPE.poleX, 4.1, WIPE.poleZ);
   space.add(darkPole);
+
+  // A LUZ DO POSTE PASSANDO PELA LENTE (PDF do Deiver, 13/10): a lâmpada desse poste fica bem
+  // acima do quadro, então só se vê o facho dela descendo, uma coluna de luz amarelada logo à
+  // direita do poste, mais forte em cima e sumindo perto do chão. Fica a ~45 cm da lente, então
+  // passa rápido (paralaxe) e só aparece dentro do trecho automático: no quadro final ela está
+  // bem fora da tela. Suave e quente, pintada por cima (somar luz no azul deixava ela lilás).
+  const BEAM = { x: WIPE.poleX + .12, z: WIPE.poleZ - .25, width: .3, height: 2.5, top: "#ffc46b", bottom: "#ff7a4a", strength: .75 };
+  const beamMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    uniforms: { uTop: { value: new THREE.Color(BEAM.top) }, uBottom: { value: new THREE.Color(BEAM.bottom) } },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uTop;
+      uniform vec3 uBottom;
+      varying vec2 vUv;
+      void main() {
+        // Laterais bem borradas (curva de sino) e força caindo de cima para baixo. Colada na
+        // lente, a câmera baixa só vê o primeiro ~1 m do facho, então o degradê mora ali.
+        float across = exp(-pow(abs(vUv.x - .5) * 3.2, 2.0));
+        float down = mix(.2, 1.0, smoothstep(.02, .35, vUv.y));
+        vec3 color = mix(uBottom, uTop, smoothstep(.0, .4, vUv.y));
+        gl_FragColor = vec4(color, across * down * ${BEAM.strength.toFixed(2)});
+        #include <colorspace_fragment>
+      }
+    `,
+  });
+  const beam = new THREE.Mesh(new THREE.PlaneGeometry(BEAM.width, BEAM.height), beamMaterial);
+  beam.position.set(BEAM.x, BEAM.height / 2, BEAM.z);
+  beam.renderOrder = 4;
+  space.add(beam);
 
   // glowAmount = 0 a 1: quanto o farol "estoura". figures = as três sombras visíveis.
   // lightsOn = 0 a 1: rosa do céu nas bordas e luz amarela dos postes (acendem depois do wipe).
@@ -484,6 +553,9 @@ export function buildOpalaNight() {
       occluderMaterial.dispose();
       shadowBuilding.geometry.dispose();
       darkPole.geometry.dispose();
+      poleMaterial.dispose();
+      beam.geometry.dispose();
+      beamMaterial.dispose();
     },
   };
 }
