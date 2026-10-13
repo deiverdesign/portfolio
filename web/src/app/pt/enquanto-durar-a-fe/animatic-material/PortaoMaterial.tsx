@@ -1862,6 +1862,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       opala?.update({ glowAmount: 0, figuresOn: true, lightsOn: inOpala ? THREE.MathUtils.smoothstep(streetX, WIPE.poleX + .6, WIPE.poleX + 2.8) : 0 });
       windowViewMaterial.uniforms.uTint.value = red;
       scrollArea.style.setProperty("--street-glow", (1 - red).toFixed(3));
+      // Cena 3: botão da Amazon e linha do header em pink (Deiver, 13/10). Troca no meio do preto.
+      scrollArea.style.setProperty("--opala", inOpala ? "1" : "0");
       updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
       renderStory(storyItems, story, kitchenGroup);
       renderStory(opalaItems, inOpala && wipe >= 1 ? THREE.MathUtils.clamp((progress - NOTES_FROM) / (OPALA_END - NOTES_FROM), 0, 1) : 0, opalaGroup);

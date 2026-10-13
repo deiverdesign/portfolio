@@ -11,10 +11,11 @@
 /* Header do Figma (nós 85:9666 e 95:10148): barra clara a 13 px do topo e a 4% das bordas,
    logo à esquerda e o botão com o ícone de livro à direita. A cor muda com a cena:
    --kitchen vai de 0 (rua: logo, linha e botão azuis) a 1 (cozinha: logo escuro, linha e
-   botão vermelhos), junto com a luz vermelha da janela. */
+   botão vermelhos), junto com a luz vermelha da janela. Na cena 3 (--opala = 1), botão e linha
+   ficam pink #E61188 (Deiver, 13/10). */
 .header {
   --kitchen: calc(1 - var(--street-glow, 1));
-  --header-accent: color-mix(in srgb, #ea3436 calc(var(--kitchen) * 100%), #1a38c7);
+  --header-accent: color-mix(in srgb, #e61188 calc(var(--opala, 0) * 100%), color-mix(in srgb, #ea3436 calc(var(--kitchen) * 100%), #1a38c7));
   position: fixed;
   z-index: 10;
   top: 13px;
@@ -29,7 +30,7 @@
   background: rgba(240,240,251,.94);
 }
 /* Linha fixa embaixo do header, de ponta a ponta (menos 11 px de cada lado): roxa na rua, vermelha na cozinha. */
-.headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2px; background: color-mix(in srgb, #ea3436 calc(var(--kitchen) * 100%), #5e68ef); }
+.headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2px; background: color-mix(in srgb, #e61188 calc(var(--opala, 0) * 100%), color-mix(in srgb, #ea3436 calc(var(--kitchen) * 100%), #5e68ef)); }
 /* Três versões do logo empilhadas: azul (rua), escuro (cozinha) e branco (celular deitado). */
 .logoStack { position: relative; display: block; }
 .logo { display: block; width: 186.883px; height: auto; }
