@@ -46,12 +46,12 @@ const JOTA_PANO_EYES = [new THREE.Vector3(-.0658, .6957, .1816), new THREE.Vecto
 const JOTA_PANO_EYE_RADIUS = .06;
 const JOTA_PANO_URL = "/enquanto-durar-a-fe/jota-pano-web.glb?v=2";
 
-const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp";
+const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp?v=2";
 // Pattern de asfalto molhado do Deiver (13/10), repetido no chão. Um quadro cobre 5 × 10 m
 // (o comprido vai ao longo da rua, então os reflexos rosa ficam esticados para o fundo).
 const ASPHALT_URL = "/enquanto-durar-a-fe/texturas/asfalto-opala.webp";
 const ASPHALT_TILE = new THREE.Vector2(5, 10);
-const SKY_ASPECT = 1672 / 941;
+const SKY_ASPECT = 2044 / 1148;
 // Quantos postes o asfalto molhado reflete (os mais perto da câmera vêm primeiro).
 const MAX_LAMPS = 10;
 
