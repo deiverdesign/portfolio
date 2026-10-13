@@ -17,8 +17,8 @@ export const OPALA = {
   // Comprimento e altura do carro na cena (o modelo do Meshy é estilizado: ~4,1 × 1,45 m).
   scale: 2.15,
   // Faróis, no espaço do carro: um de cada lado da grade, na frente.
-  headlightX: .6,
-  headlightY: .72,
+  headlightX: .64,
+  headlightY: .6,
   headlightZ: 2.0,
   // Câmera: começa colada no farol da direita (detalhe do farol e da grade) e recua até ver
   // o carro inteiro com as três sombras. eye = altura do olho do cameraman em pé.
@@ -38,8 +38,8 @@ export const OPALA = {
 // vidro e pneu; as cores finais vêm do shader.
 // Onde o Jota fica, no espaço do carro: x = do lado esquerdo, z = na porta da frente, virado
 // para a lataria. height = altura dele curvado.
-const JOTA_PANO = { x: 1.45, z: .45, turn: -Math.PI / 2, height: 1.7 };
-const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=2";
+const JOTA_PANO = { x: 1.55, z: .45, turn: -Math.PI / 2, height: 1.7, lean: .14 };
+const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=3";
 // O Jota passando pano no carro (modelo do Deiver no Meshy, 13/10), já na pose da montagem.
 // Centro de cada olho e o raio da sombra em volta, nas unidades do arquivo (não em metros).
 const JOTA_PANO_EYES = [new THREE.Vector3(-.0658, .6957, .1816), new THREE.Vector3(-.1551, .6856, .1756)];
@@ -317,7 +317,11 @@ export function buildOpalaNight() {
     model.position.y -= box.min.y;
     model.position.x -= (box.min.x + box.max.x) / 2;
     model.position.z -= (box.min.z + box.max.z) / 2;
-    jota.add(model);
+    // O Opala novo é mais baixo: o Jota se curva um pouco mais, para o pano encostar no capô.
+    const lean = new THREE.Group();
+    lean.rotation.x = JOTA_PANO.lean;
+    lean.add(model);
+    jota.add(lean);
     // Olhos no espaço do próprio modelo (medidos na textura do Meshy: onde está cada pupila).
     // A cada quadro vão para o mundo, porque o shader compara com a posição no mundo.
     const material = meshes[0].material as THREE.ShaderMaterial;
@@ -395,19 +399,25 @@ function radialTexture() {
 // chapadas e limpas, como num desenho.
 const REGION = { paint: 0, chrome: 1, glass: 2, tire: 3, tail: 4, blinker: 5 };
 
+// Textura do Opala v3 (13/10, já nas cores da cena): azul = lata, amarelo = cromado,
+// laranja = lanternas e piscas, cinza = grade e placa (cromado), azul quase preto = vidro ou
+// pneu (decidido depois pela altura e pelas rodas, em splitDarkParts).
 function regionOfPixel(r: number, g: number, b: number) {
   const high = Math.max(r, g, b);
   const low = Math.min(r, g, b);
   const saturation = high > .001 ? (high - low) / high : 0;
-  const luminance = .2126 * r + .7152 * g + .0722 * b;
-  if (g > r * 1.15 && g > b * .95 && saturation > .2) return REGION.paint;
-  if (r > g * 1.5 && r > .12) return g > r * .3 ? REGION.blinker : REGION.tail;
-  if (saturation < .22 && luminance > .3) return REGION.chrome;
-  return luminance < .1 ? REGION.tire : REGION.glass;
+  if (r > .3 && g < r * .6 && b < r * .4) return REGION.tail;
+  if (r > .3 && g > .25 && b < r * .5) return REGION.chrome;
+  if (saturation < .3 && high > .1) return REGION.chrome;
+  if (high < .1) return REGION.tire;
+  return REGION.paint;
 }
 
 function carRegions(source: THREE.BufferGeometry, map: THREE.Texture | null) {
-  return bakeRegions(source, map, regionOfPixel, keepTiresOnWheels);
+  return bakeRegions(source, map, regionOfPixel, (geometry, region) => {
+    splitDarkParts(geometry, region);
+    paintTires(geometry, region);
+  });
 }
 
 // Igual para qualquer modelo do Meshy: cada triângulo recebe a peça que a maioria dos pontos
@@ -514,6 +524,68 @@ function smoothRegions(geometry: THREE.BufferGeometry, region: Uint8Array) {
 // A ferrugem escura embaixo das portas também é lida como "pneu" e vira um serrilhado preto.
 // Pneu de verdade só existe em volta das duas rodas: acha o centro de cada eixo e o raio, e o
 // que for "pneu" longe das rodas volta a ser lata.
+// Escuro em cima da linha da cintura do carro é vidro. Lanterna na metade da frente (lado -x
+// do modelo) é pisca.
+function splitDarkParts(geometry: THREE.BufferGeometry, region: Uint8Array) {
+  const raw = geometry.attributes.position.array;
+  const stride = geometry.attributes.position.itemSize;
+  let minY = Infinity, maxY = -Infinity, minX = Infinity, maxX = -Infinity;
+  for (let i = 0; i < raw.length; i += stride) {
+    minX = Math.min(minX, raw[i]); maxX = Math.max(maxX, raw[i]);
+    minY = Math.min(minY, raw[i + 1]); maxY = Math.max(maxY, raw[i + 1]);
+  }
+  const belt = minY + (maxY - minY) * .58;
+  const middleX = (minX + maxX) / 2;
+  for (let t = 0; t < region.length; t++) {
+    const o = t * 3 * stride;
+    const y = (raw[o + 1] + raw[o + 1 + stride] + raw[o + 1 + stride * 2]) / 3;
+    const x = (raw[o] + raw[o + stride] + raw[o + stride * 2]) / 3;
+    if (region[t] === REGION.tire && y > belt) region[t] = REGION.glass;
+    if (region[t] === REGION.tail && x < middleX) region[t] = REGION.blinker;
+  }
+}
+
+// Na textura nova o pneu é azul como a lata, então ele é achado pela forma: os pontos mais
+// baixos do carro são onde os pneus tocam o chão (dois grupos, frente e trás). Em volta de cada
+// eixo, um anel (sem o miolo da calota) vira pneu.
+function paintTires(geometry: THREE.BufferGeometry, region: Uint8Array) {
+  const raw = geometry.attributes.position.array;
+  const stride = geometry.attributes.position.itemSize;
+  const triangles = region.length;
+  const center = new Float32Array(triangles * 3);
+  const min = [Infinity, Infinity, Infinity];
+  const max = [-Infinity, -Infinity, -Infinity];
+  for (let t = 0; t < triangles; t++) {
+    for (let k = 0; k < 3; k++) {
+      const o = t * 3 * stride + k;
+      const c = (raw[o] + raw[o + stride] + raw[o + stride * 2]) / 3;
+      center[t * 3 + k] = c;
+      min[k] = Math.min(min[k], c);
+      max[k] = Math.max(max[k], c);
+    }
+  }
+  const height = max[1] - min[1];
+  const halfWidth = (max[2] - min[2]) / 2;
+  const middleZ = (max[2] + min[2]) / 2;
+  const middleX = (max[0] + min[0]) / 2;
+  const contact: number[] = [];
+  for (let t = 0; t < triangles; t++) if (center[t * 3 + 1] < min[1] + height * .015) contact.push(center[t * 3]);
+  if (contact.length < 4) return;
+  const front = contact.filter((x) => x < middleX);
+  const back = contact.filter((x) => x >= middleX);
+  if (!front.length || !back.length) return;
+  const median = (list: number[]) => list.sort((a, b) => a - b)[Math.floor(list.length / 2)];
+  const axles = [median(front), median(back)];
+  const radius = height * .25;
+  const hubY = min[1] + radius;
+  for (let t = 0; t < triangles; t++) {
+    const x = center[t * 3], y = center[t * 3 + 1], z = center[t * 3 + 2];
+    if (Math.abs(z - middleZ) < halfWidth * .55) continue;
+    const d = Math.min(Math.hypot(x - axles[0], y - hubY), Math.hypot(x - axles[1], y - hubY));
+    if (d < radius * .95 && d > radius * .5) region[t] = REGION.tire;
+  }
+}
+
 function keepTiresOnWheels(geometry: THREE.BufferGeometry, region: Uint8Array) {
   // Centro de cada triângulo, calculado uma vez (nas unidades cruas do modelo; só importa a proporção).
   const raw = geometry.attributes.position.array;
