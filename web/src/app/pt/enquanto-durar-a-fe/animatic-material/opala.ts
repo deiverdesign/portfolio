@@ -3,6 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { METER, createOutlineMaterial } from "./celShading";
 import { CITY, buildCity } from "./opalaCidade";
+import { buildRain } from "./opalaChuva";
 
 // Cena 3 — o Opala, à noite (direção do Deiver, 12/10): a cozinha é apagada pela luz do farol
 // do Opala. Quando a luz baixa, o próprio farol aparece, depois o carro inteiro, parado, e só
@@ -144,6 +145,9 @@ export function buildOpalaNight() {
   // --- A cidade: prédios, comércio, calçadas, postes e fios (opalaCidade.ts) -----------------
   const city = buildCity();
   space.add(city.group);
+  // Chuva parada no ar (Aranhaverso), na mesma rua.
+  const rain = buildRain(city.lamps);
+  space.add(rain.group);
   const lampHeads = city.lamps.map((lamp) => new THREE.Vector2(lamp.head.x, lamp.head.z));
   while (lampHeads.length < MAX_LAMPS) lampHeads.push(new THREE.Vector2(0, 9999));
 
@@ -426,6 +430,7 @@ export function buildOpalaNight() {
     halos.forEach((halo) => halo.scale.setScalar(THREE.MathUtils.lerp(.7, 5, glowAmount)));
     figures.forEach((figure) => { figure.visible = figuresOn; });
     city.setLights(lightsOn);
+    rain.setLights(lightsOn);
     groundMaterial.uniforms.uLampOn.value = lightsOn;
   };
 
@@ -436,6 +441,7 @@ export function buildOpalaNight() {
     headlight,
     dispose: () => {
       city.dispose();
+      rain.dispose();
       asphaltMap.dispose();
       occluderMaterial.dispose();
       shadowBuilding.geometry.dispose();
