@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
-import { METER, createCelMaterial } from "./celShading";
+import { METER, createCelMaterial, createOutlineMaterial } from "./celShading";
 import { JOTA_MODEL_URL } from "../personagem-jota/jotaBands";
 
 // Cena 3 — o Opala, à noite (direção do Deiver, 12/10): a cozinha é apagada pela luz do farol
@@ -30,18 +30,20 @@ export const OPALA = {
 
 const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=1";
 
-// Paleta da noite (referência do Deiver: céu e morros em azul e roxo profundos, verde
-// envelhecido do Opala, branco quente do farol).
+const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp";
+const SKY_ASPECT = 1672 / 941;
+
+// Paleta da cena (referência do Deiver, 13/10): céu rosa pintado, prédios e rua em azuis
+// profundos, detalhes em amarelo (postes, farol).
 const NIGHT = {
-  skyTop: "#05062a",
-  skyMid: "#1a1361",
-  skyHorizon: "#4a1f86",
-  ground: "#140f3a",
-  groundFar: "#2a1a63",
-  warm: "#fff1d2",
+  ground: "#10225a",
+  groundFar: "#1b2b72",
+  warm: "#fff4b8",
 };
-// Verde do Opala: claro desbotado na luz, oliva no meio, quase preto-esverdeado na sombra.
-const CAR_GREEN = { lit: "#6f8d58", mid: "#45603f", shade: "#1f3028", deep: "#0e1716" };
+// Azul do Opala, em faixas chapadas como o resto da ilustração: claro na luz, cobalto no
+// meio, marinho na sombra, quase preto embaixo. Contorno escuro de desenho em volta.
+const CAR_BLUE = { lit: "#4d66d4", mid: "#2b45aa", shade: "#172679", deep: "#070d36" };
+const CAR_INK = "#04071f";
 
 export function buildOpalaNight() {
   const root = new THREE.Group();
@@ -50,16 +52,21 @@ export function buildOpalaNight() {
   root.add(space);
   const glow = { value: 1 };
 
-  // --- Céu: degradê vertical em volta de tudo, com estrelas pequenas -------------------------
+  // --- Céu: a pintura rosa do Deiver, presa à tela (como o céu da rua) ----------------------
+  // Na horizontal ela acompanha a tela; na vertical o pé da imagem fica na linha do horizonte
+  // (um pouco abaixo, para a névoa clara do pé da imagem encostar no chão) e o alto dela a ~38° acima, então o céu não "escorrega" quando a câmera baixa ou sobe.
+  const skyMap = new THREE.TextureLoader().load(SKY_URL);
+  skyMap.colorSpace = THREE.SRGBColorSpace;
+  const skyResolution = new THREE.Vector2(1, 1);
   const sky = new THREE.Mesh(
     new THREE.SphereGeometry(60, 32, 16),
     new THREE.ShaderMaterial({
       side: THREE.BackSide,
       depthWrite: false,
       uniforms: {
-        uTop: { value: new THREE.Color(NIGHT.skyTop) },
-        uMid: { value: new THREE.Color(NIGHT.skyMid) },
-        uHorizon: { value: new THREE.Color(NIGHT.skyHorizon) },
+        uMap: { value: skyMap },
+        uResolution: { value: skyResolution },
+        uImageAspect: { value: SKY_ASPECT },
       },
       vertexShader: /* glsl */ `
         varying vec3 vDirection;
@@ -69,31 +76,27 @@ export function buildOpalaNight() {
         }
       `,
       fragmentShader: /* glsl */ `
-        uniform vec3 uTop;
-        uniform vec3 uMid;
-        uniform vec3 uHorizon;
+        uniform sampler2D uMap;
+        uniform vec2 uResolution;
+        uniform float uImageAspect;
         varying vec3 vDirection;
-        float hash(vec2 p) { return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
         void main() {
-          float up = clamp(vDirection.y, 0.0, 1.0);
-          vec3 color = mix(uHorizon, uMid, smoothstep(0.0, .18, up));
-          color = mix(color, uTop, smoothstep(.18, .6, up));
-          // Estrelas: pontinhos redondos esparsos, só no alto.
-          vec2 cell = vec2(atan(vDirection.x, vDirection.z) * 60.0, up * 90.0);
-          vec2 id = floor(cell);
-          vec2 inside = fract(cell) - .5;
-          float star = step(.965, hash(id)) * (1.0 - smoothstep(.08, .16, length(inside))) * smoothstep(.12, .3, up);
-          color += vec3(1.0, .93, .7) * star * .8;
-          gl_FragColor = vec4(color, 1.0);
+          float screenAspect = uResolution.x / uResolution.y;
+          float x = gl_FragCoord.x / uResolution.x - .5;
+          // Tela mais estreita que a imagem: mostra só o meio dela (celular vê o centro).
+          float u = .5 + x * min(1.0, screenAspect / uImageAspect);
+          float v = clamp((vDirection.y + .07) / .69, .004, .996);
+          gl_FragColor = texture2D(uMap, vec2(u, v));
           #include <colorspace_fragment>
         }
       `,
     }),
   );
+  sky.onBeforeRender = (renderer) => { renderer.getDrawingBufferSize(skyResolution); };
   sky.position.y = 2;
   space.add(sky);
 
-  // --- Chão: roxo-azulado escuro, com a mancha quente que o farol joga na frente do carro ----
+  // --- Chão: asfalto azul-marinho, com a mancha quente que o farol joga na frente do carro ----
   const groundMaterial = new THREE.ShaderMaterial({
     uniforms: {
       uBase: { value: new THREE.Color(NIGHT.ground) },
@@ -137,18 +140,24 @@ export function buildOpalaNight() {
   ground.rotation.x = -Math.PI / 2;
   space.add(ground);
 
-  // --- Opala: parado, de frente para a câmera, verde envelhecido ------------------------------
-  const carMaterial = createCelMaterial({ ...CAR_GREEN, rim: "#c9d8a0", rimAmount: .25, clean: true, cleanTones: 3 });
+  // --- Opala: parado, de frente para a câmera, azul em faixas chapadas ------------------------------
+  const carMaterial = createCelMaterial({ ...CAR_BLUE, rim: "#ff6f9a", rimAmount: .14, clean: true, cleanTones: 3 });
+  const carOutline = createOutlineMaterial({ color: CAR_INK, worldWidth: .012 * METER, minPixels: 1.5, maxPixels: 4.5 });
   const car = new THREE.Group();
   space.add(car);
   const loader = new GLTFLoader();
   loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load(OPALA_URL, (gltf) => {
     const model = gltf.scene;
-    model.traverse((child) => {
-      if (!(child instanceof THREE.Mesh)) return;
+    const meshes: THREE.Mesh[] = [];
+    model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
+    meshes.forEach((child) => {
       (child.material as THREE.Material).dispose();
       child.material = carMaterial;
+      // Contorno: a mesma forma, virada do avesso e um pouco maior, toda escura.
+      const ink = new THREE.Mesh(child.geometry, carOutline);
+      ink.onBeforeRender = (renderer) => { renderer.getDrawingBufferSize(carOutline.uniforms.uResolution.value); };
+      child.add(ink);
     });
     model.scale.setScalar(OPALA.scale);
     // O comprimento do modelo está no eixo x: gira 90° para a frente olhar para +z.
