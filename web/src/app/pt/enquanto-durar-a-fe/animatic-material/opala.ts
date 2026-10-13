@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { METER, createOutlineMaterial } from "./celShading";
-import { JOTA_MODEL_URL } from "../personagem-jota/jotaBands";
 import { CITY, buildCity } from "./opalaCidade";
 
 // Cena 3 — o Opala, à noite (direção do Deiver, 12/10): a cozinha é apagada pela luz do farol
@@ -37,7 +36,12 @@ export const OPALA = {
 
 // v2: o modelo agora leva uma textura pequena (1024 px) só para separar pintura, cromado,
 // vidro e pneu; as cores finais vêm do shader.
+// Onde o Jota fica, no espaço do carro: x = do lado esquerdo, z = na porta da frente, virado
+// para a lataria. height = altura dele curvado.
+const JOTA_PANO = { x: -1.45, z: .85, turn: Math.PI / 2, height: 1.7 };
 const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=2";
+// O Jota passando pano no carro (modelo do Deiver no Meshy, 13/10), já na pose da montagem.
+const JOTA_PANO_URL = "/enquanto-durar-a-fe/jota-pano-web.glb?v=1";
 
 const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp";
 // Pattern de asfalto molhado do Deiver (13/10), repetido no chão. Um quadro cobre 5 × 10 m
@@ -277,27 +281,35 @@ export function buildOpalaNight() {
     halos.push(halo);
   });
 
-  // --- Três silhuetas pretas (pose da montagem do Deiver, 13/10): o Jota junto à porta do
-  // motorista, virado para o carro; um amigo encostado na traseira, do mesmo lado; o outro
-  // afastado, na calçada da direita. Sem rosto, roupa ou objeto: só a pose diferencia.
+  // --- O Jota e os dois amigos (montagem do Deiver, 13/10). O Jota, junto à porta do motorista,
+  // curvado, passa um pano na lataria: pintado como na montagem (roupa azul-marinho, pele azul,
+  // pano claro, fio rosa nas bordas). Os amigos continuam sombras pretas: um encostado na
+  // traseira, do mesmo lado; o outro afastado, na calçada da direita.
   const black = new THREE.MeshBasicMaterial({ color: "#020205" });
   const jota = new THREE.Group();
-  // No espaço do carro: lado esquerdo (-x), na altura da porta, de frente para a lataria.
-  jota.position.set(-1.3, 0, .35);
-  jota.rotation.set(.1, Math.PI / 2, 0);
+  // No espaço do carro: lado esquerdo (-x), na altura da porta, de frente para a lataria (+x).
+  jota.position.set(JOTA_PANO.x, 0, JOTA_PANO.z);
+  jota.rotation.y = JOTA_PANO.turn;
   car.add(jota);
   const figures: THREE.Object3D[] = [jota];
-  // Mesmo arquivo do Jota da rua (já no cache), só a forma, toda preta.
-  new GLTFLoader().load(JOTA_MODEL_URL, (gltf) => {
+  const jotaMaterial = createFigureMaterial();
+  new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(JOTA_PANO_URL, (gltf) => {
     const model = gltf.scene;
-    model.traverse((child) => {
-      if (!(child instanceof THREE.Mesh)) return;
-      [child.material].flat().forEach((material) => material.dispose());
-      child.material = black;
+    const meshes: THREE.Mesh[] = [];
+    model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
+    meshes.forEach((child) => {
+      const original = child.material as THREE.MeshStandardMaterial;
+      child.geometry = bakeRegions(child.geometry, original.map, figureRegionOfPixel);
+      original.map?.dispose();
+      original.dispose();
+      child.material = jotaMaterial;
+      const ink = new THREE.Mesh(child.geometry, carOutline);
+      ink.onBeforeRender = (renderer) => { renderer.getDrawingBufferSize(carOutline.uniforms.uResolution.value); };
+      child.add(ink);
     });
+    // O modelo vem curvado; JOTA_PANO.height é a altura dele assim (o Jota em pé tem 1,83 m).
     const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    model.scale.setScalar(1.83 / size.y);
+    model.scale.setScalar(JOTA_PANO.height / box.getSize(new THREE.Vector3()).y);
     box.setFromObject(model);
     model.position.y -= box.min.y;
     model.position.x -= (box.min.x + box.max.x) / 2;
@@ -384,6 +396,17 @@ function regionOfPixel(r: number, g: number, b: number) {
 }
 
 function carRegions(source: THREE.BufferGeometry, map: THREE.Texture | null) {
+  return bakeRegions(source, map, regionOfPixel, keepTiresOnWheels);
+}
+
+// Igual para qualquer modelo do Meshy: cada triângulo recebe a peça que a maioria dos pontos
+// dele indica na textura (classify), depois os vizinhos votam, e por fim um ajuste opcional.
+function bakeRegions(
+  source: THREE.BufferGeometry,
+  map: THREE.Texture | null,
+  classify: (r: number, g: number, b: number) => number,
+  finish?: (geometry: THREE.BufferGeometry, region: Uint8Array) => void,
+) {
   const geometry = source.index ? source.toNonIndexed() : source.clone();
   const count = geometry.attributes.position.count;
   const triangles = count / 3;
@@ -415,14 +438,14 @@ function carRegions(source: THREE.BufferGeometry, map: THREE.Texture | null) {
         const x = Math.min(width - 1, Math.max(0, Math.floor((u - Math.floor(u)) * width)));
         const y = Math.min(height - 1, Math.max(0, Math.floor((v - Math.floor(v)) * height)));
         const i = (y * width + x) * 4;
-        votes[regionOfPixel(linear[pixels[i]], linear[pixels[i + 1]], linear[pixels[i + 2]])]++;
+        votes[classify(linear[pixels[i]], linear[pixels[i + 1]], linear[pixels[i + 2]])]++;
       }
       let best = 0;
       for (let r = 1; r < 6; r++) if (votes[r] > votes[best]) best = r;
       region[t] = best;
     }
     smoothRegions(geometry, region);
-    keepTiresOnWheels(geometry, region);
+    finish?.(geometry, region);
   }
   const perVertex = new Float32Array(count);
   for (let i = 0; i < count; i++) perVertex[i] = region[Math.floor(i / 3)];
@@ -522,6 +545,67 @@ function keepTiresOnWheels(geometry: THREE.BufferGeometry, region: Uint8Array) {
     const nearest = Math.min(Math.abs(c - axles[0]), Math.abs(c - axles[1]));
     if (Math.hypot(nearest, center[t * 3 + 1] - hubY) > radius * 1.15) region[t] = REGION.paint;
   }
+}
+
+// Peças do Jota na textura do Meshy: 0 calça e sapato (quase preto), 1 camisa e cabelo
+// (azul-marinho), 2 pele (azul-claro), 3 pano (cinza claro).
+const FIGURE = { dark: 0, shirt: 1, skin: 2, cloth: 3 };
+function figureRegionOfPixel(r: number, g: number, b: number) {
+  const high = Math.max(r, g, b);
+  const low = Math.min(r, g, b);
+  const saturation = high > .001 ? (high - low) / high : 0;
+  const luminance = .2126 * r + .7152 * g + .0722 * b;
+  if (saturation > .35 && b > r * 1.4) return luminance > .25 ? FIGURE.skin : FIGURE.shirt;
+  if (saturation < .2 && luminance > .12) return FIGURE.cloth;
+  return FIGURE.dark;
+}
+
+// Pintura do Jota: duas faixas por peça (luz e sombra, mesma luz do carro) e o fio rosa do céu.
+function createFigureMaterial() {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uLight: { value: new THREE.Vector3(-.35, .85, .4).normalize() },
+      uShade: { value: [new THREE.Color("#03041a"), new THREE.Color("#070b30"), new THREE.Color("#1d2a92"), new THREE.Color("#6d7cc9")] },
+      uLit: { value: [new THREE.Color("#0b1040"), new THREE.Color("#121a5c"), new THREE.Color("#3f58cf"), new THREE.Color("#d9e0fb")] },
+      uRim: { value: new THREE.Color("#ff4f86") },
+    },
+    vertexShader: /* glsl */ `
+      attribute float aRegion;
+      varying float vRegion;
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        vRegion = aRegion;
+        vec4 world = modelMatrix * vec4(position, 1.0);
+        vNormal = normalize(mat3(modelMatrix) * normal);
+        vView = normalize(cameraPosition - world.xyz);
+        gl_Position = projectionMatrix * viewMatrix * world;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uLight, uRim;
+      uniform vec3 uShade[4];
+      uniform vec3 uLit[4];
+      varying float vRegion;
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        vec3 n = normalize(vNormal);
+        if (!gl_FrontFacing) n = -n;
+        vec3 v = normalize(vView);
+        int r = int(floor(vRegion + .5));
+        vec3 shade = uShade[0], lit = uLit[0];
+        if (r == 1) { shade = uShade[1]; lit = uLit[1]; }
+        else if (r == 2) { shade = uShade[2]; lit = uLit[2]; }
+        else if (r == 3) { shade = uShade[3]; lit = uLit[3]; }
+        vec3 color = dot(n, uLight) > .15 ? lit : shade;
+        float edge = 1.0 - max(dot(n, v), 0.0);
+        color = mix(color, uRim, smoothstep(.62, .82, edge) * step(.0, n.y - n.x * .3) * .85);
+        gl_FragColor = vec4(color, 1.0);
+        #include <colorspace_fragment>
+      }
+    `,
+  });
 }
 
 function createCarMaterial() {
