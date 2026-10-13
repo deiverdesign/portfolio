@@ -1422,7 +1422,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // para cima, ele volta igual. Os bilhetes da Neide só entram com a câmera parada, de
     // NOTES_FROM até OPALA_END.
     const WIPE_AT = STORY_END + .03;
-    const NOTES_FROM = WIPE_AT + .05;
+    const NOTES_FROM = WIPE_AT + .02;
     const OPALA_END = 1.65;
     // Trilho, em metros: na cozinha a câmera vai do lugar final dela até KITCHEN_WIPE_TO (x na
     // cozinha), onde a parede já cobre tudo; na rua ela sai de OPALA_WIPE_FROM (atrás do prédio
@@ -1457,10 +1457,11 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       kitchenGroup = group;
       updateKitchen = update;
       const papersAt = [new THREE.Vector3(0, 1.95, 2.6), new THREE.Vector3(.75, 1.95, 2.6), new THREE.Vector3(.2, 1.95, 2.6)];
-      const paperTimes = [[.06, .4], [.38, .7], [.66, 1]];
+      // Um por vez: o próximo só sai da lente depois que o anterior sumiu (sem sobreposição).
+      const paperTimes = [[0, .3], [.33, .63], [.66, 1]];
       KITCHEN_EXCERPTS.forEach((excerpt, index) => {
         const end = papersAt[index];
-        addStoryPaper(storyItems, space, excerpt, { end, from: paperTimes[index][0], to: paperTimes[index][1], travel: .22, portraitX: end.x * .4 - .45 });
+        addStoryPaper(storyItems, space, excerpt, { end, from: paperTimes[index][0], to: paperTimes[index][1], travel: .15, portraitX: end.x * .4 - .45 });
       });
       return group;
     };
@@ -1903,11 +1904,71 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       frame = window.requestAnimationFrame(animate);
     };
 
+    // RITMO DO SCROLL (Deiver, 13/10): quanto se rola em cada trecho, em vh (100vh = uma tela),
+    // e em que ponto da história (progress) se chega. Os trechos sem bilhete ficaram curtos; cada
+    // bilhete tem um trecho "parado" de ~100vh em que ele está inteiro e nítido (a câmera anda
+    // bem devagar ali). Ex.: [300, .335] → [400, .385] = o 1º bilhete da rua, legível.
+    // No celular tudo vale 84% (como antes). O CSS (min-height) precisa somar o total + 100vh.
+    const PACE: [number, number][] = [
+      [0, 0], [120, INTRO],
+      // Rua: 3 bilhetes (o último fica até a janela).
+      [300, .335], [400, .385], [530, .475], [630, .545], [760, .635], [860, STREET_END],
+      // Janela e recuo na cozinha.
+      [1090, 1],
+      // Cozinha: 3 bilhetes (chega, fica parado, sai).
+      [1130, 1.0375], [1230, 1.06], [1290, 1.12], [1390, 1.1425], [1450, 1.2025], [1550, STORY_END],
+      // Fim da cozinha → wipe (automático) → bilhete do Opala chegando e parado.
+      [1570, WIPE_AT], [1590, NOTES_FROM], [1640, NOTES_FROM + .07], [1740, OPALA_END],
+    ];
+    const PACE_TOTAL = PACE[PACE.length - 1][0];
+    // Ímãs: o meio de cada trecho parado. Quando a pessoa para de rolar perto de um deles, a
+    // página desliza sozinha até ele (o scroll continua livre: rolando, nada segura).
+    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1690];
+    const MAGNET_RANGE = 60;
+    const paceScale = () => (window.innerWidth <= 680 ? .84 : 1);
+    const scrolledVh = () => -scrollArea.getBoundingClientRect().top / (window.innerHeight / 100) / paceScale();
+    const progressAt = (vh: number) => {
+      const at = THREE.MathUtils.clamp(vh, 0, PACE_TOTAL);
+      for (let index = 1; index < PACE.length; index++) {
+        const [toVh, toProgress] = PACE[index];
+        if (at > toVh) continue;
+        const [fromVh, fromProgress] = PACE[index - 1];
+        return THREE.MathUtils.lerp(fromProgress, toProgress, (at - fromVh) / (toVh - fromVh));
+      }
+      return OPALA_END;
+    };
+    // O deslize do ímã é feito aqui (ease in/out em ~0,6 s), não pelo "smooth" do navegador:
+    // assim ele é igual em todo navegador e para na hora se a pessoa voltar a rolar.
+    let magnetTimer = 0;
+    let magnetFrame = 0;
+    const stopMagnet = () => {
+      if (magnetFrame) window.cancelAnimationFrame(magnetFrame);
+      magnetFrame = 0;
+    };
+    const magnet = () => {
+      if (reducedMotion || magnetFrame) return;
+      const here = scrolledVh();
+      const anchor = ANCHORS.find((value) => Math.abs(value - here) < MAGNET_RANGE);
+      if (anchor === undefined || Math.abs(anchor - here) < .5) return;
+      const from = window.scrollY;
+      const to = from + (anchor - here) * paceScale() * window.innerHeight / 100;
+      const duration = THREE.MathUtils.clamp(Math.abs(anchor - here) * 12, 300, 700);
+      const start = performance.now();
+      const glide = () => {
+        const t = Math.min(1, (performance.now() - start) / duration);
+        // "instant": o site tem scroll-behavior: smooth no html, que atrasaria cada passo.
+        window.scrollTo({ top: THREE.MathUtils.lerp(from, to, t * t * (3 - 2 * t)), behavior: "instant" });
+        magnetFrame = t < 1 ? window.requestAnimationFrame(glide) : 0;
+      };
+      magnetFrame = window.requestAnimationFrame(glide);
+    };
+
     const updateScrollProgress = () => {
-      const bounds = scrollArea.getBoundingClientRect();
-      const distance = Math.max(scrollArea.offsetHeight - window.innerHeight, 1);
-      const scrolled = Math.min(1, Math.max(0, -bounds.top / distance));
-      targetProgress = scrolled * OPALA_END;
+      window.clearTimeout(magnetTimer);
+      if (!magnetFrame) magnetTimer = window.setTimeout(magnet, 180);
+      const here = scrolledVh();
+      const scrolled = THREE.MathUtils.clamp(here / PACE_TOTAL, 0, 1);
+      targetProgress = progressAt(here);
       // --scroll-progress continua indo de 0 a 1 só na rua + recuo (o texto de abertura usa ele);
       // a barrinha de progresso usa o scroll inteiro.
       scrollArea.style.setProperty("--scroll-progress", Math.min(targetProgress, 1).toFixed(4));
@@ -1935,13 +1996,19 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     handleMotionPreference();
     window.addEventListener("resize", resize);
     window.addEventListener("scroll", updateScrollProgress, { passive: true });
+    // Se a pessoa voltar a rolar (roda, toque, teclado), o ímã solta na hora.
+    const userScrolls = ["wheel", "touchstart", "keydown"] as const;
+    userScrolls.forEach((name) => window.addEventListener(name, stopMagnet, { passive: true }));
     motionQuery.addEventListener("change", handleMotionPreference);
 
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", updateScrollProgress);
+      userScrolls.forEach((name) => window.removeEventListener(name, stopMagnet));
+      stopMagnet();
       motionQuery.removeEventListener("change", handleMotionPreference);
       if (frame) window.cancelAnimationFrame(frame);
+      window.clearTimeout(magnetTimer);
       disposed = true;
       jota.dispose();
       outlineMaterial.dispose();
