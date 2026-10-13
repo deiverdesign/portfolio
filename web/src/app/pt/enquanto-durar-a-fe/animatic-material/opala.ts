@@ -153,7 +153,8 @@ export function buildOpalaNight() {
   // #E54C87 bem desfocada no ponto de fuga. Fica a ~20 m da câmera, na frente dos prédios do fundo
   // (que ficam rosados, como se a luz do céu atravessasse a neblina) e atrás dos prédios de
   // perto, do carro e das pessoas, que tampam ela normalmente. Acende junto com os postes.
-  const HAZE = { width: 24, height: 15, y: 3, z: -14, color: "#e54c87", strength: .92 };
+  // Força .69 = 25% mais fraca que a primeira versão (.92), pedido do Deiver.
+  const HAZE = { width: 24, height: 15, y: 3, z: -14, color: "#e54c87", strength: .69 };
   const hazeMaterial = new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
