@@ -17,9 +17,9 @@ export const OPALA = {
   // Comprimento e altura do carro na cena (o modelo do Meshy é estilizado: ~4,1 × 1,45 m).
   scale: 2.15,
   // Faróis, no espaço do carro: um de cada lado da grade, na frente.
-  headlightX: .64,
-  headlightY: .6,
-  headlightZ: 2.0,
+  headlightX: .68,
+  headlightY: .57,
+  headlightZ: 1.93,
   // Câmera: começa colada no farol da direita (detalhe do farol e da grade) e recua até ver
   // o carro inteiro com as três sombras. eye = altura do olho do cameraman em pé.
   // No detalhe a lente fecha (closeFov) para o farol e a grade encherem o quadro; no fim ela
@@ -39,7 +39,7 @@ export const OPALA = {
 // Onde o Jota fica, no espaço do carro: x = do lado esquerdo, z = na porta da frente, virado
 // para a lataria. height = altura dele curvado.
 const JOTA_PANO = { x: 1.55, z: .45, turn: -Math.PI / 2, height: 1.7, lean: .14 };
-const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=3";
+const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=4";
 // O Jota passando pano no carro (modelo do Deiver no Meshy, 13/10), já na pose da montagem.
 // Centro de cada olho e o raio da sombra em volta, nas unidades do arquivo (não em metros).
 const JOTA_PANO_EYES = [new THREE.Vector3(-.0658, .6957, .1816), new THREE.Vector3(-.1551, .6856, .1756)];
@@ -247,7 +247,11 @@ export function buildOpalaNight() {
     model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
     meshes.forEach((child) => {
       const original = child.material as THREE.MeshStandardMaterial;
-      child.geometry = carRegions(child.geometry, original.map);
+      // v4: a peça de cada triângulo já vem gravada no arquivo (_REGION), decidida na
+      // resolução cheia do Meshy antes de simplificar. Sem ela, cai no cálculo pela textura.
+      const baked = child.geometry.getAttribute("_region");
+      if (baked) child.geometry.setAttribute("aRegion", baked);
+      else child.geometry = carRegions(child.geometry, original.map);
       const material = createCarMaterial();
       original.map?.dispose();
       original.dispose();
