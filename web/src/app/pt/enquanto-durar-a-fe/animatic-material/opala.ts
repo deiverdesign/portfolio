@@ -41,7 +41,10 @@ export const OPALA = {
 const JOTA_PANO = { x: 1.45, z: .45, turn: -Math.PI / 2, height: 1.7 };
 const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=2";
 // O Jota passando pano no carro (modelo do Deiver no Meshy, 13/10), já na pose da montagem.
-const JOTA_PANO_URL = "/enquanto-durar-a-fe/jota-pano-web.glb?v=1";
+// Centro de cada olho e o raio da sombra em volta, nas unidades do arquivo (não em metros).
+const JOTA_PANO_EYES = [new THREE.Vector3(-.0658, .6957, .1816), new THREE.Vector3(-.1551, .6856, .1756)];
+const JOTA_PANO_EYE_RADIUS = .06;
+const JOTA_PANO_URL = "/enquanto-durar-a-fe/jota-pano-web.glb?v=2";
 
 const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp";
 // Pattern de asfalto molhado do Deiver (13/10), repetido no chão. Um quadro cobre 5 × 10 m
@@ -292,7 +295,6 @@ export function buildOpalaNight() {
   jota.rotation.y = JOTA_PANO.turn;
   car.add(jota);
   const figures: THREE.Object3D[] = [jota];
-  const jotaMaterial = createFigureMaterial();
   new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(JOTA_PANO_URL, (gltf) => {
     const model = gltf.scene;
     const meshes: THREE.Mesh[] = [];
@@ -300,9 +302,10 @@ export function buildOpalaNight() {
     meshes.forEach((child) => {
       const original = child.material as THREE.MeshStandardMaterial;
       child.geometry = bakeRegions(child.geometry, original.map, figureRegionOfPixel);
-      original.map?.dispose();
+      // A textura continua só para o rosto: os traços escuros (olhos, sobrancelha, barba) e a
+      // sombra dos olhos (veja createFigureMaterial).
+      child.material = createFigureMaterial(original.map);
       original.dispose();
-      child.material = jotaMaterial;
       const ink = new THREE.Mesh(child.geometry, carOutline);
       ink.onBeforeRender = (renderer) => { renderer.getDrawingBufferSize(carOutline.uniforms.uResolution.value); };
       child.add(ink);
@@ -315,6 +318,14 @@ export function buildOpalaNight() {
     model.position.x -= (box.min.x + box.max.x) / 2;
     model.position.z -= (box.min.z + box.max.z) / 2;
     jota.add(model);
+    // Olhos no espaço do próprio modelo (medidos na textura do Meshy: onde está cada pupila).
+    // A cada quadro vão para o mundo, porque o shader compara com a posição no mundo.
+    const material = meshes[0].material as THREE.ShaderMaterial;
+    meshes[0].onBeforeRender = () => {
+      model.updateWorldMatrix(true, false);
+      JOTA_PANO_EYES.forEach((eye, i) => material.uniforms.uEyes.value[i].copy(eye).applyMatrix4(model.matrixWorld));
+      material.uniforms.uEyeRadius.value = JOTA_PANO_EYE_RADIUS * model.matrixWorld.getMaxScaleOnAxis();
+    };
   });
   const mannequin = (parent: THREE.Object3D, height: number, x: number, y: number, z: number, turn: number, lean = 0) => {
     const body = new THREE.Group();
@@ -561,9 +572,17 @@ function figureRegionOfPixel(r: number, g: number, b: number) {
 }
 
 // Pintura do Jota: duas faixas por peça (luz e sombra, mesma luz do carro) e o fio rosa do céu.
-function createFigureMaterial() {
+// Na pele, a textura do Meshy dá duas coisas: os traços escuros finos (olhos, sobrancelha, barba)
+// e, lida borrada, uma mancha de sombra em volta dos olhos, como o Jota da cena 1: os olhos
+// ficam escondidos na sombra das sobrancelhas, sem pupila nem brilho.
+function createFigureMaterial(map: THREE.Texture | null) {
   return new THREE.ShaderMaterial({
     uniforms: {
+      uMap: { value: map },
+      uSocket: { value: new THREE.Color("#0c1250") },
+      uEyes: { value: [new THREE.Vector3(0, -1e4, 0), new THREE.Vector3(0, -1e4, 0)] },
+      uEyeRadius: { value: 0 },
+      uInk: { value: new THREE.Color("#03041a") },
       uLight: { value: new THREE.Vector3(-.35, .85, .4).normalize() },
       uShade: { value: [new THREE.Color("#03041a"), new THREE.Color("#070b30"), new THREE.Color("#1d2a92"), new THREE.Color("#6d7cc9")] },
       uLit: { value: [new THREE.Color("#0b1040"), new THREE.Color("#121a5c"), new THREE.Color("#3f58cf"), new THREE.Color("#d9e0fb")] },
@@ -572,17 +591,27 @@ function createFigureMaterial() {
     vertexShader: /* glsl */ `
       attribute float aRegion;
       varying float vRegion;
+      varying vec2 vUv;
+      varying vec3 vWorld;
       varying vec3 vNormal;
       varying vec3 vView;
       void main() {
         vRegion = aRegion;
+        vUv = uv;
         vec4 world = modelMatrix * vec4(position, 1.0);
+        vWorld = world.xyz;
         vNormal = normalize(mat3(modelMatrix) * normal);
         vView = normalize(cameraPosition - world.xyz);
         gl_Position = projectionMatrix * viewMatrix * world;
       }
     `,
     fragmentShader: /* glsl */ `
+      uniform sampler2D uMap;
+      uniform vec3 uSocket, uInk;
+      uniform vec3 uEyes[2];
+      uniform float uEyeRadius;
+      varying vec2 vUv;
+      varying vec3 vWorld;
       uniform vec3 uLight, uRim;
       uniform vec3 uShade[4];
       uniform vec3 uLit[4];
@@ -599,6 +628,15 @@ function createFigureMaterial() {
         else if (r == 2) { shade = uShade[2]; lit = uLit[2]; }
         else if (r == 3) { shade = uShade[3]; lit = uLit[3]; }
         vec3 color = dot(n, uLight) > .15 ? lit : shade;
+        // Olhos: uma sombra chapada em volta de cada um esconde o olho inteiro (pele, branco do
+        // olho e óculos), como no Jota da cena 1. Na pele fora dela, só os traços bem escuros da
+        // textura (sobrancelha, barba, contorno do nariz).
+        float socket = step(min(distance(vWorld, uEyes[0]), distance(vWorld, uEyes[1])), uEyeRadius);
+        if (r == 2) {
+          float sharp = dot(texture2D(uMap, vUv).rgb, vec3(.2126, .7152, .0722));
+          color = mix(color, uInk, step(sharp, .07) * (1.0 - socket));
+        }
+        color = mix(color, uSocket, socket);
         float edge = 1.0 - max(dot(n, v), 0.0);
         color = mix(color, uRim, smoothstep(.62, .82, edge) * step(.0, n.y - n.x * .3) * .85);
         gl_FragColor = vec4(color, 1.0);
