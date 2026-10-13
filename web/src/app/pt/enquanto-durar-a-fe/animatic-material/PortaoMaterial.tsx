@@ -7,6 +7,7 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 import styles from "./material.module.css";
 import { KITCHEN, buildKitchenGray } from "./cozinhaCinza";
 import { OPALA, WIPE, buildOpalaNight } from "./opala";
+import { createTimeline } from "./timeline";
 import { METER, PALETTE, createCelMaterial, createOutlineMaterial, createPaintedMaterial, disposeObject, m, skyVertexShader } from "./celShading";
 import { JOTA_INK, JOTA_RIM } from "../personagem-jota/jotaBands";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
@@ -292,11 +293,13 @@ const TINTA = { sunOrange: "#f0a647", yellow: "#fefb4e", navyDeep: "#060b2c", in
 export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFont?: string } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     const scrollArea = scrollRef.current;
     if (!container || !scrollArea) return;
+    const timeline = timelineRef.current ? createTimeline(timelineRef.current, styles) : null;
 
     let renderer: THREE.WebGLRenderer;
     try {
@@ -1878,6 +1881,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       scrollArea.style.setProperty("--street-glow", (1 - red).toFixed(3));
       // Cena 3: botão da Amazon e linha do header em pink (Deiver, 13/10). Troca no meio do preto.
       scrollArea.style.setProperty("--opala", inOpala ? "1" : "0");
+      // Linha do tempo: rua e cozinha (2017) e Opala (2015). A cozinha conta a partir de quando
+      // a câmera passa pela janela.
+      timeline?.setScene(inOpala ? 2 : inside > .3 ? 1 : 0);
       updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
       renderStory(storyItems, story, kitchenGroup);
       // O bilhete do Opala é parte do cenário: existe sempre que a rua está na tela.
@@ -2098,7 +2104,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
           <span>Role para entrar <i aria-hidden="true">↓</i></span>
         </div>
         <p className={styles.reducedNote}>Quadro estático por preferência de movimento reduzido.</p>
-        <div className={styles.progress} aria-hidden="true"><i /></div>
+        <div className={styles.timeline} ref={timelineRef} aria-hidden="true" />
       </section>
 
       <section className={styles.ending}>
