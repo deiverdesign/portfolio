@@ -294,6 +294,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const outroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -1440,6 +1441,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     const STREET_TO = WIPE_AT + .045;
     const NOTES_FROM = STREET_TO + .005;
     const OPALA_END = 1.65;
+    // ENCERRAMENTO (Deiver, 13/10): depois do bilhete parado, mais um scroll e a câmera sobe um
+    // pouco (OUTRO_RISE m) enquanto o bilhete e a linha do tempo somem (OPALA_END → OUTRO_RISE_END).
+    // Aí, sobre a mesma rua escurecida, entra o bloco final (título + "Conheça o livro").
+    const OUTRO_RISE_END = OPALA_END + .08;
+    const OUTRO_END = OPALA_END + .12;
+    const OUTRO_RISE = 1.1;
+    let outroShown = false;
     // Trilho, em metros: na cozinha a câmera vai do lugar final dela até KITCHEN_WIPE_TO (x na
     // cozinha), onde a parede já cobre tudo; na rua ela sai de OPALA_WIPE_FROM (atrás do prédio
     // em sombra) e vai até o x final. Quanto mais longo o trecho da rua, mais longa a freada.
@@ -1837,7 +1845,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       }
       if (inOpala && opalaGroup) {
         // Do outro lado do preto ela já está agachada (olho a ~40 cm) e com o olhar final.
-        cameraPosition.set(streetX, OPALA.wideFrom.y, OPALA.wideFrom.z).multiplyScalar(METER).add(opalaGroup.position);
+        // No encerramento ela sobe reto, como uma grua, sem mudar o olhar.
+        const rise = OUTRO_RISE * THREE.MathUtils.smoothstep(progress, OPALA_END, OUTRO_RISE_END);
+        cameraPosition.set(streetX, OPALA.wideFrom.y + rise, OPALA.wideFrom.z).multiplyScalar(METER).add(opalaGroup.position);
         lookAt.subVectors(OPALA.wideLookAt, OPALA.wideFrom).multiplyScalar(METER).add(cameraPosition);
         if (portraitView) lookAt.x -= m(.5);
         camera.fov = portraitView ? 80 : 47;
@@ -1888,6 +1898,20 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       renderStory(storyItems, story, kitchenGroup);
       // O bilhete do Opala é parte do cenário: existe sempre que a rua está na tela.
       renderStory(opalaItems, inOpala ? 1 : 0, opalaGroup);
+      // Encerramento: o bilhete e a linha do tempo somem enquanto a câmera sobe; o bloco final
+      // entra quando ela termina de subir (e sai se a pessoa voltar).
+      const outroFade = THREE.MathUtils.smoothstep(progress, OPALA_END, OPALA_END + .05);
+      opalaItems.forEach(({ paper }) => { paper.uniforms.uOpacity.value *= 1 - outroFade; });
+      scrollArea.style.setProperty("--outro-fade", outroFade.toFixed(3));
+      const showOutro = inOpala && progress > OUTRO_RISE_END - .01;
+      if (showOutro !== outroShown) {
+        outroShown = showOutro;
+        if (outroRef.current) {
+          outroRef.current.dataset.shown = showOutro ? "true" : "false";
+          // Escondido, o bloco não recebe foco nem é lido (o botão só existe quando aparece).
+          outroRef.current.inert = !showOutro;
+        }
+      }
       // O papel gira só em torno do eixo vertical, então a borda de baixo fica sempre a 1,90 m.
       papers.forEach(({ group, mesh, material }, index) => {
         paperFacing.set(camera.position.x, group.position.y, camera.position.z);
@@ -1961,11 +1985,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // Cozinha: câmera desliza até a parede (scroll) → preto (automático) → rua até o quadro
       // final (scroll) → bilhete do Opala chegando e parado.
       [1610, WIPE_AT], [1700, STREET_TO], [1720, NOTES_FROM], [1770, NOTES_FROM + .07], [1870, OPALA_END],
+      // Encerramento: câmera sobe e o bilhete some → bloco final → um respiro parado no fim.
+      [1960, OUTRO_RISE_END], [2030, OUTRO_END], [2090, OUTRO_END],
     ];
     const PACE_TOTAL = PACE[PACE.length - 1][0];
     // Ímãs: o meio de cada trecho parado. Quando a pessoa para de rolar perto de um deles, a
     // página desliza sozinha até ele (o scroll continua livre: rolando, nada segura).
-    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1820];
+    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1820, 2060];
     const MAGNET_RANGE = 60;
     const paceScale = () => (window.innerWidth <= 680 ? .84 : 1);
     const scrolledVh = () => -scrollArea.getBoundingClientRect().top / (window.innerHeight / 100) / paceScale();
@@ -1977,7 +2003,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         const [fromVh, fromProgress] = PACE[index - 1];
         return THREE.MathUtils.lerp(fromProgress, toProgress, (at - fromVh) / (toVh - fromVh));
       }
-      return OPALA_END;
+      return OUTRO_END;
     };
     // O deslize do ímã é feito aqui (ease in/out em ~0,6 s), não pelo "smooth" do navegador:
     // assim ele é igual em todo navegador e para na hora se a pessoa voltar a rolar.
@@ -2105,6 +2131,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         </div>
         <p className={styles.reducedNote}>Quadro estático por preferência de movimento reduzido.</p>
         <div className={styles.timeline} ref={timelineRef} aria-hidden="true" />
+        {/* Encerramento dentro da cena 3: a última página da experiência, sobre a rua parada. */}
+        <div className={styles.outro} ref={outroRef} data-shown="false" inert>
+          <div className={styles.outroBlock}>
+            <p className={styles.outroKicker}>Há mais do que o que se ouve.</p>
+            <h2 className={styles.outroTitle}>Enquanto durar a fé</h2>
+            <a className={styles.outroBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">Conheça o livro</a>
+            <p className={styles.outroNote}>Disponível na Amazon</p>
+          </div>
+        </div>
       </section>
 
       <section className={styles.ending}>

@@ -1,8 +1,8 @@
 .animatic {
   --scroll-progress: 0;
-  /* Ritmo do scroll (PACE em PortaoMaterial.tsx): 1740vh de história + 100vh da tela.
-     No celular, 84% disso: 1740 × 0,84 + 100. */
-  min-height: 1970vh;
+  /* Ritmo do scroll (PACE em PortaoMaterial.tsx): 2090vh de história + 100vh da tela.
+     No celular, 84% disso: 2090 × 0,84 + 100. */
+  min-height: 2190vh;
   background: #0e1042;
   color: #f0f0eb;
   font-family: var(--font-dm-sans), Arial, sans-serif;
@@ -90,15 +90,34 @@
 .timelineColumn span { display: block; height: 14px; }
 .reducedNote { display: none; }
 
-.ending { display: grid; min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }
+/* ENCERRAMENTO (Deiver, 13/10): a rua continua visível, só escurece um pouco por cima para o
+   texto ler bem. Nada de bloco branco, capa 3D ou animação chamativa: o bloco sobe 10 px e
+   aparece devagar. A linha do tempo some junto com o bilhete (--outro-fade). */
+.timeline { opacity: calc(1 - var(--outro-fade, 0)); }
+.outro { position: absolute; z-index: 4; inset: 0; display: grid; place-items: center; padding: 96px 24px 72px; background: radial-gradient(ellipse at center, rgba(6,7,30,.62) 0%, rgba(6,7,30,.42) 60%, rgba(6,7,30,.3) 100%); opacity: 0; pointer-events: none; transition: opacity 1.4s ease; }
+.outro[data-shown="true"] { opacity: 1; pointer-events: auto; }
+.outroBlock { display: grid; justify-items: center; max-width: 640px; text-align: center; transform: translateY(10px); transition: transform 1.6s cubic-bezier(.2, .7, .2, 1); }
+.outro[data-shown="true"] .outroBlock { transform: none; }
+.outroKicker { margin: 0 0 30px; color: rgba(244,244,238,.86); font-family: var(--font-dm-mono), monospace; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
+.outroTitle { margin: 0 0 38px; color: #fff; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(40px, 6vw, 84px); font-weight: 300; font-variation-settings: "opsz" 72; letter-spacing: .01em; line-height: 1.02; text-transform: uppercase; text-shadow: 0 2px 18px rgba(6,7,30,.55); }
+.outroBuy { display: inline-flex; min-height: 44px; align-items: center; padding: 0 22px; border-radius: 22px; background: #e3146b; color: #fff; font-family: var(--font-dm-sans), Arial, sans-serif; font-size: 15px; font-weight: 500; text-decoration: none; transition: filter .2s; }
+.outroBuy:hover { filter: brightness(.9); }
+.outroBuy:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.outroNote { margin: 14px 0 0; color: rgba(244,244,238,.62); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* A antiga tela final separada: com o encerramento dentro da cena 3 ela sai (Deiver, 13/10).
+   Continua só para quem pediu movimento reduzido, que não vê a cena andar. */
+.ending { display: none; }
+@media (prefers-reduced-motion: reduce) { .ending { display: grid; } }
+.ending { min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }
 
 @media (max-width: 680px) {
-  .animatic { min-height: 1671vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.2 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { top: 50%; left: 20px; width: calc(100vw - 40px); transform: translateY(calc(-50% - var(--scroll-progress) * 34px)); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
+  .animatic { min-height: 1856vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.2 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { top: 50%; left: 20px; width: calc(100vw - 40px); transform: translateY(calc(-50% - var(--scroll-progress) * 34px)); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
   /* Celular: centralizada no rodapé, acima da safe area, 172 px, ~5 marcadores à vista. O
      marcador fica parado no meio e a linha (40 px por ano) anda por baixo dele. Aparece
      depois que o texto "Role para entrar" sai, para os dois não se cruzarem. */
   /* A caixa tem 44 px de altura (a máscara recorta tudo fora dela) e a linha fica 8 px acima do pé. */
-  .timeline { right: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); left: 50%; width: 172px; height: 44px; margin-bottom: -8px; margin-left: -86px; --span: 280px; background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 35px / 100% 1px no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); opacity: clamp(0, calc((var(--scroll-progress) - .25) * 4), 1); }
+  .timeline { right: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); left: 50%; width: 172px; height: 44px; margin-bottom: -8px; margin-left: -86px; --span: 280px; background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 35px / 100% 1px no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); opacity: calc(clamp(0, calc((var(--scroll-progress) - .25) * 4), 1) * (1 - var(--outro-fade, 0))); }
   .timelineTrack { top: 35px; bottom: auto; left: calc(50% - var(--at) * var(--span)); width: var(--span); background: none; transition: left .75s cubic-bezier(.6, 0, .25, 1); }
   .timelineMarker { top: 35px; left: 50%; transition: none; }
 }
