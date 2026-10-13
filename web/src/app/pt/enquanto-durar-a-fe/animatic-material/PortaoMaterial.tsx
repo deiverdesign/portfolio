@@ -1984,14 +1984,19 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       [1130, 1.0375], [1230, 1.06], [1290, 1.12], [1390, 1.1425], [1450, 1.2025], [1550, STORY_END],
       // Cozinha: câmera desliza até a parede (scroll) → preto (automático) → rua até o quadro
       // final (scroll) → bilhete do Opala chegando e parado.
-      [1610, WIPE_AT], [1700, STREET_TO], [1720, NOTES_FROM], [1770, NOTES_FROM + .07], [1870, OPALA_END],
+      [1610, WIPE_AT], [1700, STREET_TO], [1720, NOTES_FROM], [1760, OPALA_END],
       // Encerramento: câmera sobe e o bilhete some → bloco final → um respiro parado no fim.
-      [1960, OUTRO_RISE_END], [2030, OUTRO_END], [2090, OUTRO_END],
+      // Curto de propósito (Deiver, 13/10): o bilhete já está na tela durante o deslize, então
+      // depois que a câmera para basta um respiro (~60vh) antes de ela subir. Antes eram 170vh
+      // sem nada mudando, e o ímã do bilhete puxava a página de volta: parecia travado.
+      [1840, OUTRO_RISE_END], [1900, OUTRO_END], [1950, OUTRO_END],
     ];
     const PACE_TOTAL = PACE[PACE.length - 1][0];
     // Ímãs: o meio de cada trecho parado. Quando a pessoa para de rolar perto de um deles, a
     // página desliza sozinha até ele (o scroll continua livre: rolando, nada segura).
-    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1820, 2060];
+    // Sem ímã no bilhete do Opala (ele puxava de volta quem tentava seguir para o final);
+    // o último ímã é o encerramento.
+    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1925];
     const MAGNET_RANGE = 60;
     const paceScale = () => (window.innerWidth <= 680 ? .84 : 1);
     const scrolledVh = () => -scrollArea.getBoundingClientRect().top / (window.innerHeight / 100) / paceScale();
