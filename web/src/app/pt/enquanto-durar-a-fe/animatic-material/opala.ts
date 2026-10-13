@@ -39,7 +39,7 @@ export const OPALA = {
 // Onde o Jota fica, no espaço do carro: x = do lado esquerdo, z = na porta da frente, virado
 // para a lataria. height = altura dele curvado.
 const JOTA_PANO = { x: 1.55, z: .45, turn: -Math.PI / 2, height: 1.7, lean: .14 };
-const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=4";
+const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=5";
 // O Jota passando pano no carro (modelo do Deiver no Meshy, 13/10), já na pose da montagem.
 // Centro de cada olho e o raio da sombra em volta, nas unidades do arquivo (não em metros).
 const JOTA_PANO_EYES = [new THREE.Vector3(-.0658, .6957, .1816), new THREE.Vector3(-.1551, .6856, .1756)];
@@ -273,16 +273,13 @@ export function buildOpalaNight() {
     car.add(model);
   });
 
-  // Faróis: disco de luz quente + brilho em volta (o brilho é o que "apaga" a cozinha).
-  const discMaterial = new THREE.MeshBasicMaterial({ color: NIGHT.warm });
+  // Faróis: a própria lente do modelo acende (peça "lâmpada", no shader do carro); aqui fica
+  // só o brilho em volta (o brilho é o que "apaga" a cozinha), centrado na lente.
   const haloTexture = radialTexture();
   const halos: THREE.Sprite[] = [];
   [-1, 1].forEach((side) => {
-    const disc = new THREE.Mesh(new THREE.CircleGeometry(.085, 32), discMaterial);
-    disc.position.set(side * OPALA.headlightX, OPALA.headlightY, OPALA.headlightZ + .01);
-    car.add(disc);
     const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: haloTexture, color: NIGHT.warm, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
-    halo.position.copy(disc.position).add(new THREE.Vector3(0, 0, .05));
+    halo.position.set(side * OPALA.headlightX, OPALA.headlightY, OPALA.headlightZ + .03);
     halo.renderOrder = 5;
     car.add(halo);
     halos.push(halo);
@@ -738,14 +735,17 @@ function createCarMaterial() {
       uTire: { value: new THREE.Color("#02030d") },
       uTail: { value: new THREE.Color("#d42a4a") },
       uRim: { value: new THREE.Color("#ff4f86") },
+      uLamp: { value: new THREE.Color(NIGHT.warm) },
     },
     vertexShader: /* glsl */ `
       attribute float aRegion;
       varying float vRegion;
       varying vec3 vNormal;
       varying vec3 vView;
+      varying vec3 vLocal;
       void main() {
         vRegion = aRegion;
+        vLocal = position;
         vec4 world = modelMatrix * vec4(position, 1.0);
         vNormal = normalize(mat3(modelMatrix) * normal);
         vView = normalize(cameraPosition - world.xyz);
@@ -753,8 +753,9 @@ function createCarMaterial() {
       }
     `,
     fragmentShader: /* glsl */ `
-      uniform vec3 uLight, uDeep, uMid, uLit, uShine, uChromeDark, uChromeLit, uGlass, uGlassLit, uGlint, uTire, uTail, uRim;
+      uniform vec3 uLight, uDeep, uMid, uLit, uShine, uChromeDark, uChromeLit, uGlass, uGlassLit, uGlint, uTire, uTail, uRim, uLamp;
       varying float vRegion;
+      varying vec3 vLocal;
       varying vec3 vNormal;
       varying vec3 vView;
       void main() {
@@ -764,8 +765,20 @@ function createCarMaterial() {
         float diffuse = dot(n, uLight);
         float spec = pow(max(dot(reflect(-uLight, n), v), 0.0), 18.0);
         float edge = 1.0 - max(dot(n, v), 0.0);
-        // Peça deste triângulo (veja carRegions): 0 lata, 1 cromado, 2 vidro, 3 pneu, 4 lanterna, 5 pisca.
+        // Peça deste triângulo (veja carRegions): 0 lata, 1 cromado, 2 vidro, 3 pneu, 4 lanterna,
+        // 5 pisca, 6 lente do farol (acesa, sem sombra nem fio rosa), 7 aro da roda.
         float r = floor(vRegion + .5);
+        if (r > 6.5) {
+          // Aro: a cor do carro, chapada, sem brilho (o brilho virava uma estrela na calota).
+          gl_FragColor = vec4(dot(normalize(vNormal), uLight) < -.05 ? uDeep : uMid, 1.0);
+          #include <colorspace_fragment>
+          return;
+        }
+        if (r > 5.5) {
+          gl_FragColor = vec4(uLamp, 1.0);
+          #include <colorspace_fragment>
+          return;
+        }
         bool paint = r < .5;
         bool chrome = abs(r - 1.0) < .5;
         bool tail = abs(r - 4.0) < .5;
@@ -780,14 +793,16 @@ function createCarMaterial() {
         } else if (tail) {
           color = uTail;
         } else if (chrome) {
-          // Cromado: quase branco onde reflete a luz, azul onde não.
-          color = mix(uChromeDark, uChromeLit, step(.2, diffuse * .6 + spec));
-        } else if (n.y > .35) {
-          // Vidro de cima (para-brisa, vigia): azul claro com um risco de reflexo amarelo.
-          color = mix(uGlass, uGlassLit, smoothstep(.35, .7, n.y));
-          color = mix(color, uGlint, step(.6, spec) * .85);
+          // Cromado (referência do Deiver, 13/10): quase todo claro, azul só no lado de baixo.
+          color = diffuse < -.25 ? uChromeDark : uChromeLit;
+        } else if (abs(r - 2.0) < .5) {
+          // Vidro: um azul só, com dois riscos diagonais de reflexo (como na referência),
+          // presos ao carro para não "nadarem" quando a câmera anda.
+          color = uGlass;
+          float s = fract((vLocal.x * .8 - vLocal.y * 1.4) * 2.2);
+          color = mix(color, uGlassLit, (step(.08, s) - step(.2, s)) + (step(.28, s) - step(.31, s)));
         } else {
-          color = abs(r - 3.0) < .5 ? uTire : uGlass;
+          color = uTire;
         }
         // Fio rosa do céu nas bordas viradas para cima/para a esquerda.
         color = mix(color, uRim, smoothstep(.72, .9, edge) * step(.05, n.y - n.x * .3) * .8);
