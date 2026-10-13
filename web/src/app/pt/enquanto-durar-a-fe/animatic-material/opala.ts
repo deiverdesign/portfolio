@@ -36,15 +36,24 @@ export const OPALA = {
 
 // v2: o modelo agora leva uma textura pequena (1024 px) só para separar pintura, cromado,
 // vidro e pneu; as cores finais vêm do shader.
-// Onde o Jota fica, no espaço do carro: x = do lado esquerdo, z = na porta da frente, virado
-// para a lataria. height = altura dele curvado.
-const JOTA_PANO = { x: 1.55, z: .45, turn: -Math.PI / 2, height: 1.7, lean: .14 };
+// Onde o Jota fica, no espaço do carro: do outro lado do capô (x), perto do para-brisa (z),
+// virado para o carro e debruçado sobre ele, com a mão e o pano em cima do capô (rascunho do
+// Deiver, 13/10). height = altura dele curvado; lean negativo endireita um pouco o corpo e y o
+// ergue 4 cm, para a mão subir até a lataria e aparecer da câmera baixa.
+const JOTA_PANO = { x: 1.17, z: .9, turn: -Math.PI / 2, height: 1.8, lean: -.06, y: .04 };
 const OPALA_URL = "/enquanto-durar-a-fe/opala-web.glb?v=5";
 // O Jota passando pano no carro (modelo do Deiver no Meshy, 13/10), já na pose da montagem.
 // Centro de cada olho e o raio da sombra em volta, nas unidades do arquivo (não em metros).
 const JOTA_PANO_EYES = [new THREE.Vector3(-.0658, .6957, .1816), new THREE.Vector3(-.1551, .6856, .1756)];
 const JOTA_PANO_EYE_RADIUS = .06;
+// Altura do queixo (unidades do arquivo): a pele acima dela é o rosto.
+const JOTA_PANO_CHIN = new THREE.Vector3(-.11, .5, .15);
 const JOTA_PANO_URL = "/enquanto-durar-a-fe/jota-pano-web.glb?v=2";
+// Os dois amigos do Jota (modelos do Deiver no Meshy, 13/10), sem textura: viram sombras.
+const FRIEND_LEANING_URL = "/enquanto-durar-a-fe/amigo-encostado-web.glb";
+const FRIEND_ARMS_URL = "/enquanto-durar-a-fe/amigo-bracos-cruzados-web.glb";
+// Quanto o amigo encostado inclina para trás, contra o carro (radianos).
+const FRIEND_LEANING_TILT = .16;
 
 const SKY_URL = "/enquanto-durar-a-fe/texturas/ceu-opala.webp?v=2";
 // Pattern de asfalto molhado do Deiver (13/10), repetido no chão. Um quadro cobre 5 × 10 m
@@ -289,10 +298,9 @@ export function buildOpalaNight() {
   // curvado, passa um pano na lataria: pintado como na montagem (roupa azul-marinho, pele azul,
   // pano claro, fio rosa nas bordas). Os amigos continuam sombras pretas: um encostado na
   // traseira, do mesmo lado; o outro afastado, na calçada da direita.
-  const black = new THREE.MeshBasicMaterial({ color: "#020205" });
   const jota = new THREE.Group();
   // No espaço do carro: lado esquerdo (-x), na altura da porta, de frente para a lataria (+x).
-  jota.position.set(JOTA_PANO.x, 0, JOTA_PANO.z);
+  jota.position.set(JOTA_PANO.x, JOTA_PANO.y, JOTA_PANO.z);
   jota.rotation.y = JOTA_PANO.turn;
   car.add(jota);
   const figures: THREE.Object3D[] = [jota];
@@ -318,7 +326,7 @@ export function buildOpalaNight() {
     model.position.y -= box.min.y;
     model.position.x -= (box.min.x + box.max.x) / 2;
     model.position.z -= (box.min.z + box.max.z) / 2;
-    // O Opala novo é mais baixo: o Jota se curva um pouco mais, para o pano encostar no capô.
+    // Inclinação do corpo (veja JOTA_PANO.lean), girando em torno dos pés.
     const lean = new THREE.Group();
     lean.rotation.x = JOTA_PANO.lean;
     lean.add(model);
@@ -330,33 +338,47 @@ export function buildOpalaNight() {
       model.updateWorldMatrix(true, false);
       JOTA_PANO_EYES.forEach((eye, i) => material.uniforms.uEyes.value[i].copy(eye).applyMatrix4(model.matrixWorld));
       material.uniforms.uEyeRadius.value = JOTA_PANO_EYE_RADIUS * model.matrixWorld.getMaxScaleOnAxis();
+      material.uniforms.uFaceY.value = JOTA_PANO_CHIN.clone().applyMatrix4(model.matrixWorld).y;
     };
   });
-  const mannequin = (parent: THREE.Object3D, height: number, x: number, y: number, z: number, turn: number, lean = 0) => {
+  // Os dois amigos (modelos do Deiver no Meshy, 13/10, já na pose): sombras quase pretas com o
+  // fio rosa do céu nas bordas, como nos recortes dele. Um encostado na traseira, mãos no bolso e
+  // pernas cruzadas; o outro de braços cruzados na calçada da direita, olhando para o carro.
+  const friendMaterial = createSilhouetteMaterial();
+  const friend = (url: string, parent: THREE.Object3D, height: number, x: number, y: number, z: number, turn: number, lean = 0) => {
     const body = new THREE.Group();
     body.position.set(x, y, z);
-    body.rotation.set(0, turn, lean);
-    const scale = height / 1.8;
-    const part = (geometry: THREE.BufferGeometry, px: number, py: number) => {
-      const mesh = new THREE.Mesh(geometry, black);
-      mesh.position.set(px * scale, py * scale, 0);
-      mesh.scale.setScalar(scale);
-      body.add(mesh);
-      return mesh;
-    };
-    part(new THREE.CapsuleGeometry(.075, .72, 4, 10), -.1, .43);
-    part(new THREE.CapsuleGeometry(.075, .72, 4, 10), .1, .43);
-    part(new THREE.CapsuleGeometry(.19, .42, 4, 14), 0, 1.18).scale.z *= .65;
-    part(new THREE.CapsuleGeometry(.055, .58, 4, 10), -.27, 1.12);
-    part(new THREE.CapsuleGeometry(.055, .58, 4, 10), .27, 1.12);
-    part(new THREE.SphereGeometry(.12, 16, 12), 0, 1.66);
+    body.rotation.y = turn;
+    body.visible = false;
     parent.add(body);
     figures.push(body);
+    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, (gltf) => {
+      const model = gltf.scene;
+      const meshes: THREE.Mesh[] = [];
+      model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
+      meshes.forEach((child) => {
+        (child.material as THREE.Material).dispose();
+        if (!child.geometry.getAttribute("normal")) child.geometry.computeVertexNormals();
+        child.material = friendMaterial;
+        const ink = new THREE.Mesh(child.geometry, carOutline);
+        ink.onBeforeRender = (renderer) => { renderer.getDrawingBufferSize(carOutline.uniforms.uResolution.value); };
+        child.add(ink);
+      });
+      const box = new THREE.Box3().setFromObject(model);
+      model.scale.setScalar(height / box.getSize(new THREE.Vector3()).y);
+      box.setFromObject(model);
+      model.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2);
+      // Inclinação para trás (encostado), girando em torno dos pés.
+      const tilt = new THREE.Group();
+      tilt.rotation.x = -lean;
+      tilt.add(model);
+      body.add(tilt);
+    });
   };
-  // Encostado na traseira, lado esquerdo, de costas para o carro e o corpo inclinado contra ele.
-  mannequin(car, 1.76, -1.2, 0, -1.55, -Math.PI / 2, -.12);
-  // O outro, afastado, em pé na calçada da direita, olhando para o carro.
-  mannequin(space, 1.72, CITY.curbX + .9, CITY.curbHeight, -3.2, -Math.PI / 2 - .5);
+  // Encostado na traseira, lado esquerdo, de costas para o carro.
+  friend(FRIEND_LEANING_URL, car, 1.8, -1.12, 0, -1.3, -Math.PI / 2, FRIEND_LEANING_TILT);
+  // O outro, afastado, em pé na calçada da direita, de braços cruzados olhando para o carro.
+  friend(FRIEND_ARMS_URL, space, 1.85, CITY.curbX + .9, CITY.curbHeight, -3.2, -Math.PI / 2 - .5);
 
   // Posição do farol da direita no mundo (é dali que a luz nasce na cozinha).
   const headlight = (target: THREE.Vector3) => target.set(OPALA.headlightX, OPALA.headlightY, OPALA.headlightZ).applyMatrix4(car.matrixWorld);
@@ -655,6 +677,8 @@ function createFigureMaterial(map: THREE.Texture | null) {
       uSocket: { value: new THREE.Color("#0c1250") },
       uEyes: { value: [new THREE.Vector3(0, -1e4, 0), new THREE.Vector3(0, -1e4, 0)] },
       uEyeRadius: { value: 0 },
+      uFaceY: { value: 1e4 },
+      uFace: { value: new THREE.Color("#0b1040") },
       uInk: { value: new THREE.Color("#03041a") },
       uLight: { value: new THREE.Vector3(-.35, .85, .4).normalize() },
       uShade: { value: [new THREE.Color("#03041a"), new THREE.Color("#070b30"), new THREE.Color("#1d2a92"), new THREE.Color("#6d7cc9")] },
@@ -682,7 +706,8 @@ function createFigureMaterial(map: THREE.Texture | null) {
       uniform sampler2D uMap;
       uniform vec3 uSocket, uInk;
       uniform vec3 uEyes[2];
-      uniform float uEyeRadius;
+      uniform float uEyeRadius, uFaceY;
+      uniform vec3 uFace;
       varying vec2 vUv;
       varying vec3 vWorld;
       uniform vec3 uLight, uRim;
@@ -706,12 +731,52 @@ function createFigureMaterial(map: THREE.Texture | null) {
         // textura (sobrancelha, barba, contorno do nariz).
         float socket = step(min(distance(vWorld, uEyes[0]), distance(vWorld, uEyes[1])), uEyeRadius);
         if (r == 2) {
+          // Rosto (pele acima do queixo): sempre na sombra, azul-marinho chapado, para a cabeça
+          // do Meshy não chamar atenção; o Jota se lê pela silhueta, pelo cabelo e pelo pano.
+          if (vWorld.y > uFaceY) color = uFace;
           float sharp = dot(texture2D(uMap, vUv).rgb, vec3(.2126, .7152, .0722));
           color = mix(color, uInk, step(sharp, .07) * (1.0 - socket));
         }
         color = mix(color, uSocket, socket);
         float edge = 1.0 - max(dot(n, v), 0.0);
         color = mix(color, uRim, smoothstep(.62, .82, edge) * step(.0, n.y - n.x * .3) * .85);
+        gl_FragColor = vec4(color, 1.0);
+        #include <colorspace_fragment>
+      }
+    `,
+  });
+}
+
+// Amigos do Jota: quase pretos, com o fio rosa do céu nas bordas que olham para cima e um
+// azul-marinho bem escuro onde a luz da rua bate (para o volume não sumir de vez).
+function createSilhouetteMaterial() {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uDark: { value: new THREE.Color("#04051a") },
+      uLit: { value: new THREE.Color("#0b0f3c") },
+      uLight: { value: new THREE.Vector3(-.35, .85, .4).normalize() },
+      uRim: { value: new THREE.Color("#ff4f86") },
+    },
+    vertexShader: /* glsl */ `
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        vec4 world = modelMatrix * vec4(position, 1.0);
+        vNormal = normalize(mat3(modelMatrix) * normal);
+        vView = normalize(cameraPosition - world.xyz);
+        gl_Position = projectionMatrix * viewMatrix * world;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uDark, uLit, uLight, uRim;
+      varying vec3 vNormal;
+      varying vec3 vView;
+      void main() {
+        vec3 n = normalize(vNormal);
+        if (!gl_FrontFacing) n = -n;
+        vec3 color = dot(n, uLight) > .35 ? uLit : uDark;
+        float edge = 1.0 - max(dot(n, normalize(vView)), 0.0);
+        color = mix(color, uRim, smoothstep(.6, .8, edge) * step(.0, n.y - n.x * .3) * .9);
         gl_FragColor = vec4(color, 1.0);
         #include <colorspace_fragment>
       }
