@@ -34,6 +34,17 @@ export const OPALA = {
   wideLookAt: new THREE.Vector3(.25, 2.3, -8),
 };
 
+// Transição cozinha → Opala (wipe por oclusão, Deiver 13/10). color = o preto azulado da
+// parede em sombra, igual nas duas cenas (a pessoa não pode ver onde uma acaba e a outra
+// começa). Tudo em metros, no espaço da rua; z = um pouco à frente da lente final.
+export const WIPE = {
+  color: "#05061a",
+  poleX: -(CITY.curbX + .55),
+  poleZ: OPALA.wideFrom.z - .22,
+  poleRadius: .14,
+  buildingZ: OPALA.wideFrom.z - .25,
+};
+
 // v2: o modelo agora leva uma textura pequena (1024 px) só para separar pintura, cromado,
 // vidro e pneu; as cores finais vêm do shader.
 // Onde o Jota fica, no espaço do carro: do outro lado do capô (x), perto do para-brisa (z),
@@ -158,6 +169,7 @@ export function buildOpalaNight() {
       uUnder: { value: new THREE.Color("#2a0418") },
       uMeter: { value: METER },
       uGlow: glow,
+      uLampOn: { value: 1 },
     },
     vertexShader: /* glsl */ `
       uniform float uMeter;
@@ -186,6 +198,7 @@ export function buildOpalaNight() {
       uniform float uCarYaw;
       uniform vec3 uUnder;
       uniform float uGlow;
+      uniform float uLampOn;
       varying vec2 vPoint;
       varying float vDistance;
       varying float vMeters;
@@ -212,8 +225,8 @@ export function buildOpalaNight() {
           float band = .45 + .55 * step(.35, fract(p.y * 1.7 + hash(float(i)) * 3.0));
           streak += exp(-across * across) * smoothstep(-.5, 1.0, along) * (1.0 - smoothstep(4.0, 11.0, along)) * band;
         }
-        color = mix(color, uLamp, min(light, 1.0) * .22);
-        color = mix(color, uLamp, min(streak, 1.0) * .55);
+        color = mix(color, uLamp, min(light, 1.0) * .22 * uLampOn);
+        color = mix(color, uLamp, min(streak, 1.0) * .55 * uLampOn);
         // Daqui para baixo, no espaço do carro (a frente dele aponta para +z).
         float c = cos(uCarYaw), s = sin(uCarYaw);
         vec2 q = vec2(c * p.x - s * p.y, s * p.x + c * p.y);
@@ -394,15 +407,41 @@ export function buildOpalaNight() {
   // Posição do farol da direita no mundo (é dali que a luz nasce na cozinha).
   const headlight = (target: THREE.Vector3) => target.set(OPALA.headlightX, OPALA.headlightY, OPALA.headlightZ).applyMatrix4(car.matrixWorld);
 
-  // glowAmount = 0 a 1: quanto o farol "estoura" (1 = brilho enorme, logo depois do branco).
-  // figures = as três sombras aparecem só quando a câmera já abriu (antes ficam fora do quadro).
-  const update = ({ glowAmount, figuresOn }: { glowAmount: number; figuresOn: boolean }) => {
+  // --- Wipe de entrada (Deiver, 13/10): a câmera desliza para a direita vindo da cozinha e
+  // passa colada atrás de um prédio em sombra e de um poste escuro, da mesma cor da parede da
+  // cozinha. Os dois ficam a ~25 cm da lente, à esquerda do lugar final da câmera: no quadro
+  // final eles estão bem fora da tela. A borda direita do poste é a que revela a rua.
+  const occluderMaterial = new THREE.MeshBasicMaterial({ color: WIPE.color, side: THREE.DoubleSide });
+  const shadowBuilding = new THREE.Mesh(new THREE.BoxGeometry(6, 12, .2), occluderMaterial);
+  shadowBuilding.position.set(WIPE.poleX - .05 - 3, 6, WIPE.buildingZ - .1);
+  space.add(shadowBuilding);
+  const darkPole = new THREE.Mesh(new THREE.CylinderGeometry(WIPE.poleRadius, WIPE.poleRadius, 8.2, 20), occluderMaterial);
+  darkPole.position.set(WIPE.poleX, 4.1, WIPE.poleZ);
+  space.add(darkPole);
+
+  // glowAmount = 0 a 1: quanto o farol "estoura". figures = as três sombras visíveis.
+  // lightsOn = 0 a 1: rosa do céu nas bordas e luz amarela dos postes (acendem depois do wipe).
+  const update = ({ glowAmount, figuresOn, lightsOn = 1 }: { glowAmount: number; figuresOn: boolean; lightsOn?: number }) => {
     glow.value = 1;
     halos.forEach((halo) => halo.scale.setScalar(THREE.MathUtils.lerp(.7, 5, glowAmount)));
     figures.forEach((figure) => { figure.visible = figuresOn; });
+    city.setLights(lightsOn);
+    groundMaterial.uniforms.uLampOn.value = lightsOn;
   };
 
-  return { group: root, space, update, headlight, dispose: () => { city.dispose(); asphaltMap.dispose(); } };
+  return {
+    group: root,
+    space,
+    update,
+    headlight,
+    dispose: () => {
+      city.dispose();
+      asphaltMap.dispose();
+      occluderMaterial.dispose();
+      shadowBuilding.geometry.dispose();
+      darkPole.geometry.dispose();
+    },
+  };
 }
 
 function radialTexture() {

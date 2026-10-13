@@ -272,6 +272,7 @@ export function buildCity() {
   const poleMaterial = new THREE.MeshBasicMaterial({ color: COLORS.pole });
   const lampMaterial = new THREE.MeshBasicMaterial({ color: COLORS.lamp });
   const haloTexture = glowTexture();
+  const halos: THREE.Sprite[] = [];
   const poleHeight = 8.2;
   const poleRim: number[] = [];
   let k = 0;
@@ -303,11 +304,12 @@ export function buildCity() {
     halo.position.copy(bulb.position);
     halo.scale.setScalar(2.4);
     city.add(halo);
+    halos.push(halo);
     disposables.push(pole.geometry, arm.geometry, fixture.geometry, bulb.geometry, halo.material);
     lamps.push({ base, head: bulb.position.clone() });
     k++;
   }
-  const poleRimMaterial = new LineMaterial({ color: new THREE.Color(COLORS.rimSoft).getHex(), worldUnits: true, linewidth: .05 });
+  const poleRimMaterial = new LineMaterial({ color: new THREE.Color(COLORS.rimSoft).getHex(), worldUnits: true, linewidth: .05, transparent: true });
   const poleRimGeometry = new LineSegmentsGeometry().setPositions(poleRim);
   city.add(new LineSegments2(poleRimGeometry, poleRimMaterial));
   disposables.push(poleMaterial, lampMaterial, haloTexture, poleRimMaterial, poleRimGeometry);
@@ -338,8 +340,19 @@ export function buildCity() {
   city.add(new THREE.LineSegments(wireGeometry, wireMaterial));
   disposables.push(wireGeometry, wireMaterial);
 
+  // Luzes da cena (pedido do Deiver para a transição): o rosa do céu nas bordas e o amarelo
+  // dos postes só acendem depois que o poste escuro sai da frente da câmera.
+  // amount 0 = apagadas (lâmpada da cor do poste, sem brilho, sem rosa); 1 = normais.
+  const lampOn = new THREE.Color(COLORS.lamp);
+  const lampOff = new THREE.Color(COLORS.pole);
+  const setLights = (amount: number) => {
+    lampMaterial.color.lerpColors(lampOff, lampOn, amount);
+    halos.forEach((halo) => { halo.material.opacity = .55 * amount; });
+    poleRimMaterial.opacity = amount;
+    rim.setOpacity(amount);
+  };
   const dispose = () => disposables.forEach((item) => item.dispose());
-  return { group: city, lamps, dispose, colors: COLORS };
+  return { group: city, lamps, dispose, setLights, colors: COLORS };
 }
 
 // Recorte de luz do céu (pedido do Deiver, 13/10): o rosa é a luz que vem da abertura do céu
@@ -414,13 +427,17 @@ function skyRimEdges(blocks: Block[]) {
   const materials: LineMaterial[] = [];
   ([[focus, focusColors, .26, true], [soft, softColors, .18, true], [far, farColors, 2.4, false]] as const).forEach(([positions, colors, width, worldUnits]) => {
     if (!positions.length) return;
-    const material = new LineMaterial({ vertexColors: true, worldUnits, linewidth: width });
+    const material = new LineMaterial({ vertexColors: true, worldUnits, linewidth: width, transparent: true });
     const geometry = new LineSegmentsGeometry().setPositions(positions).setColors(colors);
     group.add(new LineSegments2(geometry, material));
     materials.push(material);
   });
   return {
     group,
+    setOpacity: (opacity: number) => {
+      group.visible = opacity > .001;
+      materials.forEach((material) => { material.opacity = opacity; });
+    },
     dispose: () => {
       group.children.forEach((child) => (child as LineSegments2).geometry.dispose());
       materials.forEach((material) => material.dispose());

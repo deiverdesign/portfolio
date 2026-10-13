@@ -6,7 +6,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import styles from "./material.module.css";
 import { KITCHEN, buildKitchenGray } from "./cozinhaCinza";
-import { OPALA, buildOpalaNight } from "./opala";
+import { OPALA, WIPE, buildOpalaNight } from "./opala";
 import { METER, PALETTE, createCelMaterial, createOutlineMaterial, createPaintedMaterial, disposeObject, m, skyVertexShader } from "./celShading";
 import { JOTA_INK, JOTA_RIM } from "../personagem-jota/jotaBands";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
@@ -1409,22 +1409,25 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     };
 
     // ---------------------------------------------------------------------------------
-    // CENA 3: O FAROL DO OPALA (direção do Deiver, 12/10).
-    // No fim da cozinha a câmera continua recuando e uma luz branca quente nasce no ponto da
-    // tela onde o farol vai aparecer. Ela lava primeiro o que está perto, depois a cozinha
-    // inteira, até quase tudo ficar branco. No branco a cozinha é trocada pela cena do Opala;
-    // a luz baixa e mostra o farol que a causou, a grade, o carro parado e, por último, as
-    // três silhuetas. Ex.: scroll 1,25 = fim da cozinha; 1,45 = branco; 1,5 = a luz começa
-    // a baixar; 2,0 = fim. O Opala nunca anda: só o farol acende.
-    const FLASH_FROM = STORY_END;
-    const FLASH_FULL = 1.45;
-    const OPALA_SWAP = 1.47;
-    const REVEAL_FROM = 1.5;
-    const REVEAL_TO = 1.6;
-    // A câmera fica no detalhe do farol até PULL_FROM e recua até ver tudo em PULL_TO.
-    const PULL_FROM = 1.58;
-    const PULL_TO = 1.8;
-    const OPALA_END = 2;
+    // CENA 3: WIPE POR OCLUSÃO (direção do Deiver, 13/10, desenho em vista de cima).
+    // No fim da cozinha a câmera desliza rápido para a DIREITA, sempre olhando para a frente,
+    // como um carrinho num trilho. Uma parede em sombra, a ~25 cm da lente, entra pela direita
+    // e cobre a tela; do outro lado, na rua do Opala, um prédio em sombra e um poste escuro da
+    // mesma cor continuam cobrindo, e a borda do poste revela a rua. A câmera freia e para no
+    // quadro final baixo do Opala. Sem flash, sem fade, sem corte: a troca acontece no preto.
+    // O deslize não segue o scroll: ao passar de WIPE_AT ele roda sozinho, em ~2 s (se
+    // seguisse o scroll, quem parasse no meio veria a tela congelada borrada ou preta); rolando
+    // para cima, ele volta igual. Os bilhetes da Neide só entram com a câmera parada, de
+    // NOTES_FROM até OPALA_END.
+    const WIPE_AT = STORY_END + .03;
+    const NOTES_FROM = WIPE_AT + .05;
+    const OPALA_END = 1.65;
+    // Trilho, em metros: na cozinha a câmera vai do lugar final dela até KITCHEN_WIPE_TO (x na
+    // cozinha), onde a parede já cobre tudo; na rua ela sai de OPALA_WIPE_FROM (atrás do prédio
+    // em sombra) e vai até o x final. Quanto mais longo o trecho da rua, mais longa a freada.
+    const KITCHEN_WALL = { x0: 1.3, x1: KITCHEN.width / 2 + .15, z: KITCHEN.cameraBack + .05 };
+    const KITCHEN_WIPE_TO = 1.6;
+    const OPALA_WIPE_FROM = WIPE.poleX - .35;
     let opalaGroup: THREE.Object3D | null = null;
     let opala: ReturnType<typeof buildOpalaNight> | null = null;
     const opalaItems: StoryItem[] = [];
@@ -1440,6 +1443,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         kitchenCastsShadow = null;
       });
       group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
+      // Parede do wipe: um trecho de parede saindo da parede da direita, logo à frente do lugar
+      // final da câmera, inteira em sombra (a mesma cor do prédio e do poste da rua do Opala).
+      // Antes do wipe ela fica fora do quadro (ao lado da lente).
+      const wipeWall = new THREE.Mesh(
+        new THREE.BoxGeometry(KITCHEN_WALL.x1 - KITCHEN_WALL.x0, KITCHEN.height, .1),
+        new THREE.MeshBasicMaterial({ color: WIPE.color, side: THREE.DoubleSide }),
+      );
+      wipeWall.position.set((KITCHEN_WALL.x0 + KITCHEN_WALL.x1) / 2, KITCHEN.height / 2, KITCHEN_WALL.z);
+      space.add(wipeWall);
       kitchenGroup = group;
       updateKitchen = update;
       const papersAt = [new THREE.Vector3(0, 1.95, 2.6), new THREE.Vector3(.75, 1.95, 2.6), new THREE.Vector3(.2, 1.95, 2.6)];
@@ -1458,7 +1470,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       opala.group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z + m(90));
       opalaGroup = opala.group;
       // Bilhetes da Neide: só depois que o carro e as três sombras estão legíveis. Saem da lente
-      // e param a ~2,8 m dela, ao lado do caminho, um por vez. Tempo de 0 a 1 = PULL_TO a OPALA_END.
+      // e param a ~2,8 m dela, ao lado do caminho, um por vez. Tempo de 0 a 1 = NOTES_FROM a OPALA_END.
       const times = [[0, .4], [.33, .7], [.63, 1]];
       // A câmera olha na diagonal para o carro: "frente" e "lado" seguem o olhar dela, não os
       // eixos do mundo. Lado: + = direita da tela (sobre o carro), − = esquerda (sobre as sombras).
@@ -1601,22 +1613,18 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       windowViewMaterial.uniforms.uMap.value = windowViewTarget.texture;
     };
 
-    // LUZ DO FAROL NA TELA: a cena é desenhada numa imagem e depois passa por este filtro,
-    // que "estoura" a exposição a partir de um ponto (onde o farol está ou vai estar).
-    // flash 0 = imagem normal; ~0,4 = perto do ponto já está lavado; 1 = quase tudo branco,
-    // com um grão bem leve e ~3% da cena por baixo (a "memória" do quadro anterior).
-    const flashTargetSize = new THREE.Vector2();
-    let flashTarget: THREE.WebGLRenderTarget | null = null;
-    const flashMaterial = new THREE.ShaderMaterial({
+    // MOTION BLUR DO WIPE: só no trecho rápido do deslize. A cena é desenhada numa imagem e
+    // este filtro a borra na horizontal (a direção do movimento). uBlur = comprimento do borrão
+    // em pixels da tela; 0 = imagem limpa (a composição final para nítida).
+    const blurTargetSize = new THREE.Vector2();
+    let blurTarget: THREE.WebGLRenderTarget | null = null;
+    const blurMaterial = new THREE.ShaderMaterial({
       depthTest: false,
       depthWrite: false,
       uniforms: {
         uScene: { value: null as THREE.Texture | null },
-        uFlash: { value: 0 },
-        uOrigin: { value: new THREE.Vector2(.6, .5) },
-        uAspect: { value: 1 },
-        uTime: { value: 0 },
-        uWarm: { value: new THREE.Color("#fff6e6") },
+        uBlur: { value: 0 },
+        uTexel: { value: new THREE.Vector2() },
       },
       vertexShader: /* glsl */ `
         varying vec2 vUv;
@@ -1627,77 +1635,59 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       `,
       fragmentShader: /* glsl */ `
         uniform sampler2D uScene;
-        uniform float uFlash;
-        uniform vec2 uOrigin;
-        uniform float uAspect;
-        uniform float uTime;
-        uniform vec3 uWarm;
+        uniform float uBlur;
+        uniform vec2 uTexel;
         varying vec2 vUv;
-        float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
         void main() {
-          vec3 color = texture2D(uScene, vUv).rgb;
-          // Mancha de luz em volta do ponto: nasce pequena e forte e cresce com o flash.
-          // Ex.: flash 0,1 = um ponto quente; 0,4 = lava a parte da cozinha em volta dele.
-          vec2 offset = (vUv - uOrigin) * vec2(uAspect, 1.0);
-          float radius = mix(.025, 1.6, pow(uFlash, 1.8));
-          float near = exp(-dot(offset, offset) / (radius * radius));
-          float on = smoothstep(0.0, .06, uFlash);
-          // Depois da metade, a exposição sobe na tela inteira.
-          float whole = smoothstep(.4, .95, uFlash);
-          color = color * (1.0 + near * uFlash * 14.0 + whole * 20.0) + uWarm * (near * on * (.35 + uFlash * 2.6) + whole * .9);
-          // Estoura sem virar "ponto de luz recortado": comprime o que passa de 1.
-          color = color / (1.0 + max(color - 1.0, 0.0));
-          float light = dot(color, vec3(.2126, .7152, .0722));
-          color = mix(color, vec3(light), whole * .8);
-          // No fim, branco quente com 3% da cena e grão bem discreto.
-          color = mix(color, uWarm, smoothstep(.72, 1.0, uFlash) * .97);
-          color += (hash(gl_FragCoord.xy + fract(uTime) * 91.0) - .5) * .03 * smoothstep(.6, 1.0, uFlash);
-          gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+          vec3 color = vec3(0.0);
+          for (int i = 0; i < 16; i++) {
+            float t = (float(i) + .5) / 16.0 - .5;
+            color += texture2D(uScene, vUv + vec2(t * uBlur * uTexel.x, 0.0)).rgb;
+          }
+          gl_FragColor = vec4(color / 16.0, 1.0);
           #include <colorspace_fragment>
         }
       `,
     });
-    const flashScene = new THREE.Scene();
-    const flashQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), flashMaterial);
-    flashQuad.frustumCulled = false;
-    flashScene.add(flashQuad);
-    const flashCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const dropFlashTarget = () => {
-      flashTarget?.dispose();
-      flashTarget = null;
+    const blurScene = new THREE.Scene();
+    const blurQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), blurMaterial);
+    blurQuad.frustumCulled = false;
+    blurScene.add(blurQuad);
+    const blurCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const dropBlurTarget = () => {
+      blurTarget?.dispose();
+      blurTarget = null;
     };
-    // Onde o farol vai aparecer na tela (0 a 1), calculado com a lente na posição do detalhe do
-    // farol: a luz da cozinha nasce exatamente ali.
-    const probeCamera = new THREE.PerspectiveCamera();
-    const probePoint = new THREE.Vector3();
-    const probeLook = new THREE.Vector3();
-    const opalaCameraPose = (pull: number, portrait: boolean, position: THREE.Vector3, target: THREE.Vector3) => {
-      if (!opalaGroup) return;
-      position.lerpVectors(OPALA.closeFrom, OPALA.wideFrom, pull);
-      target.lerpVectors(OPALA.closeLookAt, OPALA.wideLookAt, pull);
-      // O agachamento vem depois do recuo começar: primeiro a lente sai do farol, depois desce.
-      position.y = THREE.MathUtils.lerp(OPALA.closeFrom.y, OPALA.wideFrom.y, THREE.MathUtils.smoothstep(pull, .25, 1));
-      if (portrait) target.x -= .5 * pull;
-      position.multiplyScalar(METER).add(opalaGroup.position);
-      target.multiplyScalar(METER).add(opalaGroup.position);
-    };
-    const headlightOnScreen = (target: THREE.Vector2, live: boolean) => {
-      if (!opala || !opalaGroup) return;
-      let view: THREE.Camera = camera;
-      if (!live) {
-        probeCamera.fov = OPALA.closeFov * (camera.aspect < 1 ? 1.4 : 1);
-        probeCamera.aspect = camera.aspect;
-        probeCamera.near = camera.near;
-        probeCamera.far = camera.far;
-        probeCamera.updateProjectionMatrix();
-        opalaCameraPose(0, camera.aspect < 1, probeCamera.position, probeLook);
-        probeCamera.lookAt(probeLook);
-        probeCamera.updateMatrixWorld();
-        view = probeCamera;
+
+    // Trilho do wipe, em três trechos: acelera na cozinha (até a parede), passa pelo preto e
+    // pela borda do poste na velocidade máxima (WIPE_SPEED, constante: parece um movimento só) e
+    // freia até parar no quadro final. wipe = 0 a 1; a duração total sai das distâncias.
+    // Ex.: desktop = 0,9 m acelerando (0,26 s) + 0,65 m no preto (0,09 s) + 5,5 m freando (1,6 s).
+    const WIPE_SPEED = 7;
+    const BLACK_LENGTH = WIPE.poleX + .3 - OPALA_WIPE_FROM;
+    const wipeRail = { distance: 0, speed: 0, kitchenLength: 0, seconds: 1 };
+    const railAt = (wipe: number, startX: number) => {
+      const kitchenLength = KITCHEN_WIPE_TO - startX;
+      const brakeLength = OPALA.wideFrom.x - OPALA_WIPE_FROM - BLACK_LENGTH;
+      const accelSeconds = 2 * kitchenLength / WIPE_SPEED;
+      const blackSeconds = BLACK_LENGTH / WIPE_SPEED;
+      const brakeSeconds = 2 * brakeLength / WIPE_SPEED;
+      const seconds = accelSeconds + blackSeconds + brakeSeconds;
+      const time = wipe * seconds;
+      wipeRail.kitchenLength = kitchenLength;
+      wipeRail.seconds = seconds;
+      if (time < accelSeconds) {
+        wipeRail.speed = WIPE_SPEED * time / accelSeconds;
+        wipeRail.distance = wipeRail.speed * time / 2;
+      } else if (time < accelSeconds + blackSeconds) {
+        wipeRail.speed = WIPE_SPEED;
+        wipeRail.distance = kitchenLength + WIPE_SPEED * (time - accelSeconds);
+      } else {
+        const left = 1 - (time - accelSeconds - blackSeconds) / brakeSeconds;
+        wipeRail.speed = WIPE_SPEED * left;
+        wipeRail.distance = kitchenLength + BLACK_LENGTH + brakeLength * (1 - left * left);
       }
-      opalaGroup.updateMatrixWorld(true);
-      opala.headlight(probePoint).project(view);
-      target.set(probePoint.x * .5 + .5, probePoint.y * .5 + .5);
+      return wipeRail;
     };
 
     const ensureKitchen = (scrollProgress: number) => {
@@ -1728,6 +1718,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     const paperCenter = new THREE.Vector3();
     let progress = 0;
     let targetProgress = 0;
+    let wipe = 0;
     let frame = 0;
     let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -1756,7 +1747,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       kitchenRedLineMaterial.resolution.set(width, height);
       // A foto da janela vale só para o tamanho de tela em que foi tirada.
       dropWindowView();
-      dropFlashTarget();
+      dropBlurTarget();
       renderer.getDrawingBufferSize(sky.material.uniforms.uResolution.value);
       const ratio = renderer.getPixelRatio();
       outlineMaterial.uniforms.uMinPixels.value = 1.5 * ratio;
@@ -1801,21 +1792,23 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       }
       // Durante a história a câmera quase para: recua só mais 30 cm.
       if (story > 0) cameraPosition.z += m(.3) * THREE.MathUtils.smoothstep(story, 0, 1);
-      // Enquanto a luz do farol cresce, ela continua recuando devagar (mais 50 cm, até perto
-      // da parede do fundo).
+      // Wipe: a câmera desliza para a direita olhando sempre para a frente (o olhar anda junto).
       const ready = kitchenState === "ready";
-      if (ready) cameraPosition.z += m(.5) * THREE.MathUtils.smoothstep(progress, FLASH_FROM, OPALA_SWAP);
-      // No branco, a câmera passa para a cena do Opala: começa no detalhe do farol e recua até
-      // ver o carro inteiro e as três sombras; no fim, segue recuando devagar (mais 1,5 m).
-      const inOpala = ready && Boolean(opalaGroup) && progress >= OPALA_SWAP;
       const portraitView = camera.aspect < 1;
-      if (inOpala) {
-        const pull = THREE.MathUtils.smoothstep(progress, PULL_FROM, PULL_TO);
-        opalaCameraPose(pull, portraitView, cameraPosition, lookAt);
-        // No detalhe do farol a lente recua só 30 cm, para a luz baixar quase parada.
-        cameraPosition.z += m(.3) * THREE.MathUtils.smoothstep(progress, OPALA_SWAP, PULL_FROM) + m(1.2) * THREE.MathUtils.smoothstep(progress, PULL_TO, OPALA_END);
-        // A lente abre do detalhe (24°) para a normal (47°; no celular, de 34° para 80°).
-        camera.fov = THREE.MathUtils.lerp(OPALA.closeFov * (portraitView ? 1.4 : 1), portraitView ? 80 : 47, pull);
+      const rail = railAt(wipe, KITCHEN.cameraDrift * (portraitView ? .15 : 1));
+      const inOpala = ready && Boolean(opalaGroup) && wipe > 0 && rail.distance > rail.kitchenLength;
+      // Onde a câmera está no trilho da rua (x em metros, no espaço do Opala).
+      const streetX = OPALA_WIPE_FROM + rail.distance - rail.kitchenLength;
+      if (wipe > 0 && !inOpala) {
+        cameraPosition.x += m(rail.distance);
+        lookAt.x += m(rail.distance);
+      }
+      if (inOpala && opalaGroup) {
+        // Do outro lado do preto ela já está agachada (olho a ~40 cm) e com o olhar final.
+        cameraPosition.set(streetX, OPALA.wideFrom.y, OPALA.wideFrom.z).multiplyScalar(METER).add(opalaGroup.position);
+        lookAt.subVectors(OPALA.wideLookAt, OPALA.wideFrom).multiplyScalar(METER).add(cameraPosition);
+        if (portraitView) lookAt.x -= m(.5);
+        camera.fov = portraitView ? 80 : 47;
         camera.updateProjectionMatrix();
       }
       // A luz vermelha acende logo depois que a câmera passa pela janela.
@@ -1850,12 +1843,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       if (inOpala) windowView.visible = false;
       else if (!streetVisible) windowView.visible = true;
       // O farol estoura logo depois do branco e volta ao tamanho normal enquanto a luz baixa.
-      opala?.update({ glowAmount: 1 - THREE.MathUtils.smoothstep(progress, REVEAL_FROM, REVEAL_TO + .06), figuresOn: true });
+      // O rosa e o amarelo dos postes acendem só depois que o poste escuro sai da frente.
+      opala?.update({ glowAmount: 0, figuresOn: true, lightsOn: inOpala ? THREE.MathUtils.smoothstep(streetX, WIPE.poleX + .6, WIPE.poleX + 2.8) : 0 });
       windowViewMaterial.uniforms.uTint.value = red;
       scrollArea.style.setProperty("--street-glow", (1 - red).toFixed(3));
       updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
       renderStory(storyItems, story, kitchenGroup);
-      renderStory(opalaItems, inOpala ? THREE.MathUtils.clamp((progress - PULL_TO) / (OPALA_END - PULL_TO), 0, 1) : 0, opalaGroup);
+      renderStory(opalaItems, inOpala && wipe >= 1 ? THREE.MathUtils.clamp((progress - NOTES_FROM) / (OPALA_END - NOTES_FROM), 0, 1) : 0, opalaGroup);
       // O papel gira só em torno do eixo vertical, então a borda de baixo fica sempre a 1,90 m.
       papers.forEach(({ group, mesh, material }, index) => {
         paperFacing.set(camera.position.x, group.position.y, camera.position.z);
@@ -1873,30 +1867,36 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         material.uniforms.uOpacity.value = passed * THREE.MathUtils.smoothstep(paperDistance, 2.6, 6) * (1 - THREE.MathUtils.smoothstep(inside, .02, .15)) * handOff;
       });
       flyingObjects.forEach(({ object, spin }) => { object.rotation.y = spin * progress * Math.PI; });
-      // Quanto de luz do farol está na tela: sobe no fim da cozinha e baixa já na cena do Opala.
-      const flash = !ready ? 0 : inOpala
-        ? 1 - THREE.MathUtils.smoothstep(progress, REVEAL_FROM, REVEAL_TO)
-        : THREE.MathUtils.smoothstep(progress, FLASH_FROM, FLASH_FULL);
-      scrollArea.style.setProperty("--flash", flash.toFixed(3));
-      if (flash > .001) {
-        renderer.getDrawingBufferSize(flashTargetSize);
-        if (!flashTarget) flashTarget = new THREE.WebGLRenderTarget(flashTargetSize.x, flashTargetSize.y, { type: THREE.HalfFloatType, samples: 4 });
-        headlightOnScreen(flashMaterial.uniforms.uOrigin.value, inOpala);
-        flashMaterial.uniforms.uFlash.value = flash;
-        flashMaterial.uniforms.uAspect.value = camera.aspect;
-        flashMaterial.uniforms.uTime.value = performance.now() / 1000;
-        flashMaterial.uniforms.uScene.value = flashTarget.texture;
-        renderer.setRenderTarget(flashTarget);
+      // Borrão do wipe: proporcional à velocidade na tela (um objeto a ~2,5 m, em ~1/2 quadro de
+      // exposição), com teto. Some antes da câmera parar.
+      renderer.getDrawingBufferSize(blurTargetSize);
+      const horizontalTan = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.aspect;
+      const metersPerSecond = wipe > 0 && wipe < 1 ? rail.speed : 0;
+      const blurPixels = Math.min(metersPerSecond / (2.5 * horizontalTan) * (blurTargetSize.x / 2) / 120, blurTargetSize.x * .03);
+      if (blurPixels > 1) {
+        if (!blurTarget) blurTarget = new THREE.WebGLRenderTarget(blurTargetSize.x, blurTargetSize.y, { type: THREE.HalfFloatType, samples: 4 });
+        blurMaterial.uniforms.uBlur.value = blurPixels;
+        blurMaterial.uniforms.uTexel.value.set(1 / blurTargetSize.x, 1 / blurTargetSize.y);
+        blurMaterial.uniforms.uScene.value = blurTarget.texture;
+        renderer.setRenderTarget(blurTarget);
         renderer.render(scene, camera);
         renderer.setRenderTarget(null);
-        renderer.render(flashScene, flashCamera);
+        renderer.render(blurScene, blurCamera);
       } else {
         renderer.render(scene, camera);
       }
     };
 
+    let lastFrameTime = performance.now();
     const animate = () => {
       progress += (targetProgress - progress) * .075;
+      // O wipe anda no tempo, não no scroll: para a frente depois de WIPE_AT, para trás antes.
+      const now = performance.now();
+      const seconds = Math.min((now - lastFrameTime) / 1000, .1);
+      lastFrameTime = now;
+      const wipeTarget = kitchenState === "ready" && progress >= WIPE_AT ? 1 : 0;
+      const step = seconds / wipeRail.seconds;
+      wipe = wipeTarget > wipe ? Math.min(1, wipe + step) : Math.max(0, wipe - step);
       renderScene();
       frame = window.requestAnimationFrame(animate);
     };
@@ -1950,9 +1950,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       papers.forEach(({ texture }) => texture?.dispose());
       storyTextures.forEach((texture) => texture.dispose());
       windowViewTarget?.dispose();
-      flashTarget?.dispose();
-      flashMaterial.dispose();
-      flashQuad.geometry.dispose();
+      blurTarget?.dispose();
+      blurMaterial.dispose();
+      blurQuad.geometry.dispose();
       windowView.geometry.dispose();
       windowViewMaterial.dispose();
       renderer.dispose();
