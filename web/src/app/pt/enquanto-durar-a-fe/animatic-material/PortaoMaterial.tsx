@@ -1899,7 +1899,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       lastFrameTime = now;
       const wipeTarget = kitchenState === "ready" && progress >= WIPE_AT ? 1 : 0;
       const step = seconds / wipeRail.seconds;
-      wipe = wipeTarget > wipe ? Math.min(1, wipe + step) : Math.max(0, wipe - step);
+      // Já chegou? Fica parado. (Antes, ao chegar em 1 ele voltava um passo e o bilhete piscava.)
+      if (wipeTarget > wipe) wipe = Math.min(1, wipe + step);
+      else if (wipeTarget < wipe) wipe = Math.max(0, wipe - step);
       renderScene();
       frame = window.requestAnimationFrame(animate);
     };
