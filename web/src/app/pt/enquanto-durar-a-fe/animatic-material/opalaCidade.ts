@@ -144,6 +144,10 @@ export function buildCity() {
       varying vec4 vBounds;
       varying float vDistance;
       float hash(vec2 p) { return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
+      // step() com borda suave de ~1 pixel (w = quanto a coordenada muda de um pixel para o
+      // vizinho). Sem isso as bordas das janelas ficavam serrilhadas, principalmente nas
+      // fachadas vistas de lado. Ex.: aa(.18, cell, w) = 0 antes de .18 e 1 depois, sem degrau.
+      float aa(float edge, float x, float w) { return smoothstep(edge - w, edge + w, x); }
       void main() {
         vec3 n = normalize(vNormal);
         float floorHeight = vStyle.x;
@@ -164,23 +168,33 @@ export function buildCity() {
           if (vPoint.y < ground) {
             // Térreo: portas de enrolar (ripas horizontais) entre pilares.
             float bay = fract(along / 4.2);
-            float slat = step(.5, fract(vPoint.y / .09));
+            float bayW = fwidth(along / 4.2) * .75;
+            float slatX = vPoint.y / .09;
+            float slatW = fwidth(slatX) * .75;
+            // Ripas finas demais para a tela (longe) viram o tom médio, em vez de tremer.
+            float slat = mix(aa(.5, fract(slatX), slatW), .5, smoothstep(.25, .5, slatW));
             vec3 shutter = mix(uShutter, uShutterLine, slat * .55);
-            float pillar = step(bay, .07) + step(.93, bay);
+            float pillar = 1.0 - aa(.07, bay, bayW) * (1.0 - aa(.93, bay, bayW));
             color = mix(shutter, color, clamp(pillar, 0.0, 1.0));
-            color = mix(color, uBand * .8, step(ground - .35, vPoint.y));
+            color = mix(color, uBand * .8, aa(ground - .35, vPoint.y, fwidth(vPoint.y) * .75));
           } else {
             float y = vPoint.y - ground;
             float row = fract(y / floorHeight);
             float cell = fract(along / column);
+            float rowW = fwidth(y / floorHeight) * .75;
+            float cellW = fwidth(along / column) * .75;
             vec2 id = vec2(floor(along / column), floor(y / floorHeight));
-            float inside = step(.18, cell) * step(cell, .82) * step(.3, row) * step(row, .86);
-            float frame = step(.12, cell) * step(cell, .88) * step(.24, row) * step(row, .9);
+            float inside = aa(.18, cell, cellW) * (1.0 - aa(.82, cell, cellW)) * aa(.3, row, rowW) * (1.0 - aa(.86, row, rowW));
+            float frame = aa(.12, cell, cellW) * (1.0 - aa(.88, cell, cellW)) * aa(.24, row, rowW) * (1.0 - aa(.9, row, rowW));
+            // Janelas menores que ~3 pixels (bem no fundo da rua) viram a média delas.
+            float tiny = smoothstep(.12, .35, max(cellW, rowW));
+            inside = mix(inside, .36, tiny);
+            frame = mix(frame, .5, tiny);
             vec3 glass = hash(id + floor(vPoint.x * .1)) > .94 ? uLit : uWindow;
             color = mix(color, uFrame, frame * (1.0 - inside) * .7);
             color = mix(color, glass, inside);
             // Faixa de laje entre os andares (sacadas em linha, como na montagem).
-            color = mix(color, uBand, step(row, .08) * (1.0 - shop * .6));
+            color = mix(color, uBand, (1.0 - aa(.08, row, rowW)) * (1.0 - shop * .6));
           }
         }
         // O rosa do céu não é pintado na fachada: é uma linha só nas bordas de fora que recebem
@@ -246,7 +260,7 @@ export function buildCity() {
       varying vec3 vPoint;
       varying float vDistance;
       void main() {
-        vec3 color = mix(uDark, uLight, step(.5, fract(vPoint.z / 2.2)));
+        vec3 color = mix(uDark, uLight, smoothstep(.5 - fwidth(vPoint.z / 2.2), .5 + fwidth(vPoint.z / 2.2), fract(vPoint.z / 2.2)));
         color = mix(color, uHaze, smoothstep(60.0, 300.0, vDistance) * .75);
         gl_FragColor = vec4(color, 1.0);
         #include <colorspace_fragment>
