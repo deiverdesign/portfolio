@@ -26,7 +26,24 @@ const RAIN = {
   lampRadius: 3.2,
 };
 
+// Gotas de perto: entre ~1 m da lente final (z 5,6) e o carro, por toda a largura da rua
+// que a câmera atravessa. Largura em metros (1 cm ≈ 10 px a 1 m da lente).
+const NEAR = {
+  count: 300,
+  minX: -8,
+  maxX: 4,
+  minY: 0,
+  maxY: 4,
+  nearZ: 4.7,
+  farZ: 0,
+  minLength: .9,
+  maxLength: 2.1,
+  minWidth: .006,
+  maxWidth: .014,
+};
+
 const COLORS = {
+  near: new THREE.Color("#ff2f8e"),
   base: new THREE.Color("#c3cbff"),
   pink: new THREE.Color("#ff8cbc"),
   lamp: new THREE.Color("#ffe08a"),
@@ -99,11 +116,74 @@ export function buildRain(lamps: Lamp[]) {
   make(plain);
   const litMaterial = make(lit);
 
+  // GOTAS DE PERTO (Deiver, 13/10, ref. Aranhaverso 2099): na frente, entre a câmera e o
+  // carro, riscos maiores e mais grossos com um degradê de transparente (em cima) para pink
+  // (embaixo). São fitas finas de verdade (não linhas de 1 px), viradas para a câmera.
+  // As de trás continuam como estão. O pink é a luz do céu: acende com os postes.
+  const nearPositions: number[] = [];
+  const nearAlong: number[] = [];
+  const side = new THREE.Vector3(-fall.y, fall.x, 0);
+  for (let i = 0; i < NEAR.count; i++) {
+    const z = THREE.MathUtils.lerp(NEAR.nearZ, NEAR.farZ, Math.pow(random(), .8));
+    const x = THREE.MathUtils.lerp(NEAR.minX, NEAR.maxX, random());
+    const y = THREE.MathUtils.lerp(NEAR.minY, NEAR.maxY, random());
+    const length = THREE.MathUtils.lerp(NEAR.minLength, NEAR.maxLength, random());
+    const half = THREE.MathUtils.lerp(NEAR.minWidth, NEAR.maxWidth, random()) / 2;
+    const bx = x + fall.x * length;
+    const by = y + fall.y * length;
+    // Dois triângulos: topo (along 0) e base (along 1).
+    const corners = [
+      [x - side.x * half, y - side.y * half, 0], [x + side.x * half, y + side.y * half, 0],
+      [bx + side.x * half, by + side.y * half, 1], [bx - side.x * half, by - side.y * half, 1],
+    ];
+    [0, 1, 2, 0, 2, 3].forEach((corner) => {
+      const [cx, cy, along] = corners[corner];
+      nearPositions.push(cx, cy, z);
+      nearAlong.push(along);
+    });
+  }
+  const nearGeometry = new THREE.BufferGeometry();
+  nearGeometry.setAttribute("position", new THREE.Float32BufferAttribute(nearPositions, 3));
+  nearGeometry.setAttribute("along", new THREE.Float32BufferAttribute(nearAlong, 1));
+  const nearMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    uniforms: { uColor: { value: COLORS.near }, uOpacity: { value: 1 } },
+    vertexShader: `
+      attribute float along;
+      varying float vAlong;
+      void main() {
+        vAlong = along;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uColor;
+      uniform float uOpacity;
+      varying float vAlong;
+      void main() {
+        // Transparente em cima, pink forte só no último terço.
+        float alpha = smoothstep(.0, 1.0, vAlong);
+        gl_FragColor = vec4(uColor, alpha * alpha * .95 * uOpacity);
+      }
+    `,
+  });
+  const nearDrops = new THREE.Mesh(nearGeometry, nearMaterial);
+  nearDrops.renderOrder = 3;
+  nearDrops.frustumCulled = false;
+  group.add(nearDrops);
+  geometries.push(nearGeometry);
+
   return {
     group,
     // 0 a 1, junto com os postes.
-    setLights: (amount: number) => { litMaterial.opacity = amount; },
+    setLights: (amount: number) => {
+      litMaterial.opacity = amount;
+      nearMaterial.uniforms.uOpacity.value = amount;
+    },
     dispose: () => {
+      nearMaterial.dispose();
       materials.forEach((material) => material.dispose());
       geometries.forEach((geometry) => geometry.dispose());
     },

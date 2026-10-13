@@ -1426,7 +1426,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     //    quadro final baixo. Sem borrão. O bilhete da Neide só entra com a câmera parada,
     //    de NOTES_FROM até OPALA_END.
     const WIPE_AT = STORY_END + .03;
-    const STREET_FROM = WIPE_AT + .005;
+    // A rua começa no mesmo ponto do scroll em que o preto dispara (Deiver: voltando da cena 3,
+    // assim que a tela mostra o poste escuro, o preto já volta sozinho, sem scroll "morto").
+    const STREET_FROM = WIPE_AT;
     const STREET_TO = WIPE_AT + .045;
     const NOTES_FROM = STREET_TO + .005;
     const OPALA_END = 1.65;
@@ -1901,13 +1903,17 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     };
 
     let lastFrameTime = performance.now();
+    let wipeTarget = 0;
     const animate = () => {
       progress += (targetProgress - progress) * .075;
       // O wipe anda no tempo, não no scroll: para a frente depois de WIPE_AT, para trás antes.
       const now = performance.now();
       const seconds = Math.min((now - lastFrameTime) / 1000, .1);
       lastFrameTime = now;
-      const wipeTarget = kitchenState === "ready" && progress >= WIPE_AT ? 1 : 0;
+      // Indo: dispara quando a câmera (suavizada) chega na parede. Voltando: dispara assim que o
+      // scroll passa para trás do ponto, sem esperar a suavização alcançar.
+      if (kitchenState !== "ready" || targetProgress < WIPE_AT) wipeTarget = 0;
+      else if (progress >= WIPE_AT) wipeTarget = 1;
       const step = seconds / wipeRail.seconds;
       // Já chegou? Fica parado. (Antes, ao chegar em 1 ele voltava um passo e o bilhete piscava.)
       if (wipeTarget > wipe) wipe = Math.min(1, wipe + step);
@@ -1931,12 +1937,12 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       [1130, 1.0375], [1230, 1.06], [1290, 1.12], [1390, 1.1425], [1450, 1.2025], [1550, STORY_END],
       // Cozinha: câmera desliza até a parede (scroll) → preto (automático) → rua até o quadro
       // final (scroll) → bilhete do Opala chegando e parado.
-      [1610, WIPE_AT], [1625, STREET_FROM], [1715, STREET_TO], [1735, NOTES_FROM], [1785, NOTES_FROM + .07], [1885, OPALA_END],
+      [1610, WIPE_AT], [1700, STREET_TO], [1720, NOTES_FROM], [1770, NOTES_FROM + .07], [1870, OPALA_END],
     ];
     const PACE_TOTAL = PACE[PACE.length - 1][0];
     // Ímãs: o meio de cada trecho parado. Quando a pessoa para de rolar perto de um deles, a
     // página desliza sozinha até ele (o scroll continua livre: rolando, nada segura).
-    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1835];
+    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1820];
     const MAGNET_RANGE = 60;
     const paceScale = () => (window.innerWidth <= 680 ? .84 : 1);
     const scrolledVh = () => -scrollArea.getBoundingClientRect().top / (window.innerHeight / 100) / paceScale();
