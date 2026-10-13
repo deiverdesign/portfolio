@@ -1379,6 +1379,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // travel = quanto da história o item leva para chegar ao lugar dele;
     // portraitX = para onde ele vai no celular (o quadro é estreito); portraitEnd, quando
     // existe, troca o ponto inteiro (usado no Opala, onde a câmera olha na diagonal).
+    // facing, quando existe, faz do bilhete um objeto parado no cenário: ele fica virado para
+    // esse ponto (o lugar final da câmera) em vez de girar atrás da câmera; width = largura dele.
     type StoryItem = {
       object: THREE.Object3D;
       end: THREE.Vector3;
@@ -1387,6 +1389,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       travel: number;
       portraitX: number;
       portraitEnd?: THREE.Vector3;
+      facing?: THREE.Vector3;
+      width?: number;
+      portraitWidth?: number;
       paper: THREE.ShaderMaterial;
     };
     const storyItems: StoryItem[] = [];
@@ -1480,9 +1485,11 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       opala = buildOpalaNight();
       opala.group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z + m(90));
       opalaGroup = opala.group;
-      // Bilhetes da Neide: só depois que o carro e as três sombras estão legíveis. Saem da lente
-      // e param a ~2,8 m dela, ao lado do caminho, um por vez. Tempo de 0 a 1 = NOTES_FROM a OPALA_END.
-      const times = [[0, 1]];
+      // Bilhete da Neide (Deiver, 13/10, PDF): não sai da lente nem aparece depois. É um objeto
+      // parado na rua, acima do carro, à direita, a ~3,2 m do lugar final da câmera (perto, mas
+      // longe o bastante para ficar nítido). Enquanto a câmera desliza para a direita ele entra
+      // pela beira direita da tela, como o carro e os prédios (paralaxe), e para acima do carro.
+      const times = [[-1, 1]];
       // A câmera olha na diagonal para o carro: "frente" e "lado" seguem o olhar dela, não os
       // eixos do mundo. Lado: + = direita da tela (sobre o carro), − = esquerda (sobre as sombras).
       const sides = [1.1, -1.2, 1.0];
@@ -1494,8 +1501,11 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         .addScaledVector(ahead, distance).addScaledVector(right, side).setY(OPALA.wideFrom.y + height);
       OPALA_EXCERPTS.forEach((excerpt, index) => {
         const [from, to] = times[index];
-        const end = notePoint(sides[index]);
-        addStoryPaper(opalaItems, opala!.space, excerpt, { end, from, to, travel: .2, portraitX: end.x, portraitEnd: notePoint(-.15, 1.6, .62) });
+        const end = index === 0 ? notePoint(.2, 3.2, 1.2) : notePoint(sides[index]);
+        addStoryPaper(opalaItems, opala!.space, excerpt, {
+          end, from, to, travel: .2, portraitX: end.x, portraitEnd: notePoint(-.15, 1.6, .62),
+          facing: OPALA.wideFrom, width: 1.5, portraitWidth: .62,
+        });
       });
       return opala.group;
     };
@@ -1513,7 +1523,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const portrait = camera.aspect < 1;
       storyCamera.copy(camera.position).sub(origin.position).divideScalar(METER);
       const paperWidth = portrait ? .62 : 1.1;
-      items.forEach(({ object, end, from, to, travel: travelTime, portraitX, portraitEnd, paper }) => {
+      items.forEach(({ object, end, from, to, travel: travelTime, portraitX, portraitEnd, facing, width, portraitWidth, paper }) => {
         object.visible = story > from;
         if (!object.visible) return;
         const travel = THREE.MathUtils.smoothstep(story, from, from + travelTime);
@@ -1528,10 +1538,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         const distance = object.position.distanceTo(storyCamera);
         const appear = THREE.MathUtils.smoothstep(distance, .6, 1.3);
         const leave = to < 1 ? 1 - THREE.MathUtils.smoothstep(story, to - .06, to) : 1;
-        object.scale.setScalar(paperWidth / PAPER_WIDTH);
+        object.scale.setScalar(((portrait ? portraitWidth : width) ?? paperWidth) / PAPER_WIDTH);
         // lookAt pede a posição no mundo: o papel gira só em volta do eixo vertical.
         object.getWorldPosition(storyFacing);
-        storyFacing.set(camera.position.x, storyFacing.y, camera.position.z);
+        if (facing) {
+          const y = storyFacing.y;
+          storyFacing.copy(facing).multiplyScalar(METER).add(origin.position).setY(y);
+        } else storyFacing.set(camera.position.x, storyFacing.y, camera.position.z);
         object.lookAt(storyFacing);
         paper.uniforms.uBlur.value = (1 - THREE.MathUtils.smoothstep(distance, .5, 1.8)) * 6;
         paper.uniforms.uOpacity.value = appear * leave;
@@ -1675,8 +1688,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // OPALA_WIPE_FROM e para quando o poste (a ~22 cm) ainda cobre ~1/4 da tela, à esquerda.
     // Daí em diante é o scroll que leva a câmera. A velocidade sobe e desce como uma onda
     // (sem tranco nas pontas) e chega a WIPE_SPEED no meio do preto.
-    // Ex.: desktop = ~0,5 m na cozinha + ~0,6 m na rua, em ~0,4 s.
-    const WIPE_SPEED = 4;
+    // Ex.: desktop = ~0,5 m na cozinha + ~0,6 m na rua, em ~0,5 s.
+    // 3,2 = 20% mais lento que a primeira versão (4), pedido do Deiver (13/10).
+    const WIPE_SPEED = 3.2;
     const wipeRail = { distance: 0, speed: 0, kitchenLength: 0, seconds: 1, kitchenFrom: 0, streetTo: 0 };
     // horizontalTan = metade da largura da tela a 1 m da lente (muda com a lente e com o celular).
     const railAt = (wipe: number, kitchenTan: number, streetTan: number) => {
@@ -1866,7 +1880,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       scrollArea.style.setProperty("--opala", inOpala ? "1" : "0");
       updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
       renderStory(storyItems, story, kitchenGroup);
-      renderStory(opalaItems, inOpala && wipe >= 1 ? THREE.MathUtils.clamp((progress - NOTES_FROM) / (OPALA_END - NOTES_FROM), 0, 1) : 0, opalaGroup);
+      // O bilhete do Opala é parte do cenário: existe sempre que a rua está na tela.
+      renderStory(opalaItems, inOpala ? 1 : 0, opalaGroup);
       // O papel gira só em torno do eixo vertical, então a borda de baixo fica sempre a 1,90 m.
       papers.forEach(({ group, mesh, material }, index) => {
         paperFacing.set(camera.position.x, group.position.y, camera.position.z);
