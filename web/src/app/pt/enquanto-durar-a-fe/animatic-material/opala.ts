@@ -48,6 +48,8 @@ const JOTA_PANO_EYES = [new THREE.Vector3(-.0658, .6957, .1816), new THREE.Vecto
 const JOTA_PANO_EYE_RADIUS = .06;
 // Altura do queixo (unidades do arquivo): a pele acima dela é o rosto.
 const JOTA_PANO_CHIN = new THREE.Vector3(-.11, .5, .15);
+// Onde fica o poste que ilumina a cabeça do Jota, em metros, a partir do queixo dele.
+const JOTA_LAMP = { up: 2, forward: .7, left: .6 };
 const JOTA_PANO_URL = "/enquanto-durar-a-fe/jota-pano-web.glb?v=2";
 // Os dois amigos do Jota (modelos do Deiver no Meshy, 13/10), sem textura: viram sombras.
 const FRIEND_LEANING_URL = "/enquanto-durar-a-fe/amigo-encostado-web.glb";
@@ -334,8 +336,17 @@ export function buildOpalaNight() {
     // Olhos no espaço do próprio modelo (medidos na textura do Meshy: onde está cada pupila).
     // A cada quadro vão para o mundo, porque o shader compara com a posição no mundo.
     const material = meshes[0].material as THREE.ShaderMaterial;
-    meshes[0].onBeforeRender = () => {
+    const lampOffset = new THREE.Vector3();
+    const cameraLeft = new THREE.Vector3();
+    meshes[0].onBeforeRender = (_renderer, _scene, camera) => {
       model.updateWorldMatrix(true, false);
+      // Poste: 2 m acima da cabeça, um pouco à frente dele (para o lado da câmera) e à esquerda
+      // da câmera. Medido a partir da câmera, para valer em qualquer quadro.
+      const head = material.uniforms.uLampPos.value.copy(JOTA_PANO_CHIN).applyMatrix4(model.matrixWorld);
+      camera.getWorldDirection(lampOffset).setY(0).normalize();
+      cameraLeft.set(lampOffset.z, 0, -lampOffset.x);
+      head.addScaledVector(lampOffset, -JOTA_LAMP.forward).addScaledVector(cameraLeft, JOTA_LAMP.left);
+      head.y += JOTA_LAMP.up;
       JOTA_PANO_EYES.forEach((eye, i) => material.uniforms.uEyes.value[i].copy(eye).applyMatrix4(model.matrixWorld));
       material.uniforms.uEyeRadius.value = JOTA_PANO_EYE_RADIUS * model.matrixWorld.getMaxScaleOnAxis();
       material.uniforms.uFaceY.value = JOTA_PANO_CHIN.clone().applyMatrix4(model.matrixWorld).y;
@@ -678,7 +689,12 @@ function createFigureMaterial(map: THREE.Texture | null) {
       uEyes: { value: [new THREE.Vector3(0, -1e4, 0), new THREE.Vector3(0, -1e4, 0)] },
       uEyeRadius: { value: 0 },
       uFaceY: { value: 1e4 },
-      uFace: { value: new THREE.Color("#0b1040") },
+      uLampPos: { value: new THREE.Vector3(0, 1e4, 0) },
+      // Cabeça sob o poste: 4 tons de azul, do plano que pega a luz até a sombra funda.
+      // [0] sombra funda, [1] sombra, [2] meio, [3] luz (azul claro puxado para o amarelo).
+      uHair: { value: [new THREE.Color("#050828"), new THREE.Color("#0d1450"), new THREE.Color("#2b3ca6"), new THREE.Color("#a4a9dc")] },
+      uHead: { value: [new THREE.Color("#070b34"), new THREE.Color("#121a5c"), new THREE.Color("#3346b4"), new THREE.Color("#b9b9dc")] },
+      uBeard: { value: new THREE.Color("#0c1250") },
       uInk: { value: new THREE.Color("#03041a") },
       uLight: { value: new THREE.Vector3(-.35, .85, .4).normalize() },
       uShade: { value: [new THREE.Color("#03041a"), new THREE.Color("#070b30"), new THREE.Color("#1d2a92"), new THREE.Color("#6d7cc9")] },
@@ -707,7 +723,9 @@ function createFigureMaterial(map: THREE.Texture | null) {
       uniform vec3 uSocket, uInk;
       uniform vec3 uEyes[2];
       uniform float uEyeRadius, uFaceY;
-      uniform vec3 uFace;
+      uniform vec3 uLampPos, uBeard;
+      uniform vec3 uHair[4];
+      uniform vec3 uHead[4];
       varying vec2 vUv;
       varying vec3 vWorld;
       uniform vec3 uLight, uRim;
@@ -730,16 +748,37 @@ function createFigureMaterial(map: THREE.Texture | null) {
         // olho e óculos), como no Jota da cena 1. Na pele fora dela, só os traços bem escuros da
         // textura (sobrancelha, barba, contorno do nariz).
         float socket = step(min(distance(vWorld, uEyes[0]), distance(vWorld, uEyes[1])), uEyeRadius);
-        if (r == 2) {
-          // Rosto (pele acima do queixo): sempre na sombra, azul-marinho chapado, para a cabeça
-          // do Meshy não chamar atenção; o Jota se lê pela silhueta, pelo cabelo e pelo pano.
-          if (vWorld.y > uFaceY) color = uFace;
-          float sharp = dot(texture2D(uMap, vUv).rgb, vec3(.2126, .7152, .0722));
-          color = mix(color, uInk, step(sharp, .07) * (1.0 - socket));
-        }
-        color = mix(color, uSocket, socket);
         float edge = 1.0 - max(dot(n, v), 0.0);
-        color = mix(color, uRim, smoothstep(.62, .82, edge) * step(.0, n.y - n.x * .3) * .85);
+        if (vWorld.y > uFaceY && r != 3) {
+          // Cabeça (acima do queixo): só a luz dura do poste, alto e um pouco à frente dele, como
+          // no rascunho do Deiver. Poucos planos chapados: o topo dos cachos, a testa, a ponte do
+          // nariz e o alto das maçãs pegam luz; olhos, bigode, barba e queixo ficam na sombra.
+          vec3 lamp = normalize(uLampPos - vWorld);
+          float d = dot(n, lamp);
+          int band = d > .62 ? 3 : (d > .42 ? 2 : (d > 0. ? 1 : 0));
+          // Olhos: dentro da órbita a luz não entra (no máximo o tom de sombra, como o resto do
+          // rosto que não pega luz), sem uma mancha de cor própria.
+          if (socket > .5) band = min(band, 1);
+          vec3 tones[4];
+          if (r == 2) { tones[0] = uHead[0]; tones[1] = uHead[1]; tones[2] = uHead[2]; tones[3] = uHead[3]; }
+          else { tones[0] = uHair[0]; tones[1] = uHair[1]; tones[2] = uHair[2]; tones[3] = uHair[3]; }
+          color = band == 3 ? tones[3] : (band == 2 ? tones[2] : (band == 1 ? tones[1] : tones[0]));
+          if (r == 2) {
+            // Barba e bigode (traços escuros da textura): azul-marinho, não preto; a luz só pega o
+            // que estiver bem de frente para o poste.
+            float sharp = dot(texture2D(uMap, vUv).rgb, vec3(.2126, .7152, .0722));
+            color = mix(color, band == 3 ? tones[2] : uBeard, step(sharp, .07));
+          }
+          // Fio rosa fino só no lado oposto ao poste.
+          color = mix(color, uRim, smoothstep(.78, .9, edge) * step(dot(n, lamp), -.15) * .9);
+        } else {
+          if (r == 2) {
+            float sharp = dot(texture2D(uMap, vUv).rgb, vec3(.2126, .7152, .0722));
+            color = mix(color, uInk, step(sharp, .07) * (1.0 - socket));
+          }
+          color = mix(color, uSocket, socket);
+          color = mix(color, uRim, smoothstep(.62, .82, edge) * step(.0, n.y - n.x * .3) * .85);
+        }
         gl_FragColor = vec4(color, 1.0);
         #include <colorspace_fragment>
       }
