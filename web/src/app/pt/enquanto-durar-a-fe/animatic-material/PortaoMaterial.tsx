@@ -1518,8 +1518,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         const [from, to] = times[index];
         const end = index === 0 ? notePoint(.2, 3.2, 1.2) : notePoint(sides[index]);
         addStoryPaper(opalaItems, opala!.space, excerpt, {
-          end, from, to, travel: .2, portraitX: end.x, portraitEnd: notePoint(-.15, 1.6, .62),
-          facing: OPALA.wideFrom, width: 1.5, portraitWidth: .62,
+          end, from, to, travel: .2, portraitX: end.x, portraitEnd: notePoint(-.06, 1.6, .74),
+          // No celular (Deiver, 14/10: "minúsculo"): ~75% da largura da tela, no meio, um pouco
+          // mais alto para não cobrir as cabeças.
+          facing: OPALA.wideFrom, width: 1.5, portraitWidth: .97,
         });
       });
       return opala.group;
