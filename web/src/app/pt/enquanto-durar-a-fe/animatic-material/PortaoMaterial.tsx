@@ -6,7 +6,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import styles from "./material.module.css";
 import { KITCHEN, buildKitchenGray } from "./cozinhaCinza";
-import { OPALA, WIPE, buildOpalaNight } from "./opala";
+import { OPALA, WIPE, buildOpalaNight, opalaPortraitFov } from "./opala";
 import { createTimeline } from "./timeline";
 import { METER, PALETTE, createCelMaterial, createOutlineMaterial, createPaintedMaterial, disposeObject, m, skyVertexShader } from "./celShading";
 import { JOTA_INK, JOTA_RIM } from "../personagem-jota/jotaBands";
@@ -1004,14 +1004,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     world.add(jota.group);
 
 
-    // Objetos no ar: entre 1,50 e 1,90 m, a ~25 cm para o lado da lente. Ficam fora do
+    // Objetos no ar: entre 1,50 e 1,90 m, para o lado da lente (25 cm por padrão). Ficam fora do
     // caminho do cameraman, mas tão perto que passam "quase acertando a tela".
     // side: -1 = esquerda, 1 = direita (olhando para o Jota).
-    const flyingObjects: { object: THREE.Object3D; spin: number; pathX: number; side: -1 | 1; offsetMeters: number }[] = [];
-    const placeFlying = (object: THREE.Object3D, z: number, side: -1 | 1, heightMeters: number, spin: number, offsetMeters = .25) => {
+    // fixedOffset: mantém a mesma distância também no celular (sem a redução do resize).
+    const flyingObjects: { object: THREE.Object3D; spin: number; pathX: number; side: -1 | 1; offsetMeters: number; fixedOffset: boolean }[] = [];
+    const placeFlying = (object: THREE.Object3D, z: number, side: -1 | 1, heightMeters: number, spin: number, offsetMeters = .25, fixedOffset = false) => {
       object.position.set(cameraPathX(z) + side * m(offsetMeters), roadY(z) + m(heightMeters), z);
       world.add(object);
-      flyingObjects.push({ object, spin, pathX: cameraPathX(z), side, offsetMeters });
+      flyingObjects.push({ object, spin, pathX: cameraPathX(z), side, offsetMeters, fixedOffset });
     };
 
     // Um livro grosso de capa preta, sem nada escrito: 16 × 24 cm, 7 cm de espessura.
@@ -1031,7 +1032,11 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Inclinado com a capa virada para a câmera, que vem descendo de costas; o giro do scroll
     // roda o livro como um ponteiro, sem esconder a capa.
     book.rotation.set(1.1, 0, -.2);
-    placeFlying(book, 8, -1, 1.55, .9);
+    // A câmera anda para trás olhando para o Jota, então tudo o que fica parado na rua escorrega
+    // para o meio da tela conforme ela se afasta. A 25 cm do caminho o livro acabava parado na
+    // frente do rosto do Jota (achado do Codex, 14/10). A 90 cm (também no celular) ele ainda
+    // entra pela borda esquerda, mas termina ao lado do Jota, não em cima dele.
+    placeFlying(book, 8, -1, 1.55, .9, .9, true);
 
     // Maços de notas de Real: o modelo do Deiver (Meshy), com a textura pintada como veio.
     // O maço mede ~30 cm no lado maior (o dobro do real: no tamanho certo ele some na tela).
@@ -1512,6 +1517,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const sides = [1.1, -1.2, 1.0];
       const ahead = new THREE.Vector3().subVectors(OPALA.wideLookAt, OPALA.wideFrom).setY(0).normalize();
       const right = new THREE.Vector3(-ahead.z, 0, ahead.x);
+      // No celular o olhar final é outro (OPALA.portraitLookAt): o bilhete segue esse olhar.
+      const portraitAhead = new THREE.Vector3().subVectors(OPALA.portraitLookAt, OPALA.wideFrom).setY(0).normalize();
+      const portraitRight = new THREE.Vector3(-portraitAhead.z, 0, portraitAhead.x);
       // Acima do horizonte, no céu, por cima das cabeças (que estão bem mais longe).
       // No celular o bilhete fica mais perto (o papel é menor e o quadro, estreito).
       const notePoint = (side: number, distance = 4.2, height = 1.4) => OPALA.wideFrom.clone()
@@ -1519,8 +1527,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       OPALA_EXCERPTS.forEach((excerpt, index) => {
         const [from, to] = times[index];
         const end = index === 0 ? notePoint(.2, 3.2, 1.2) : notePoint(sides[index]);
+        const portraitEnd = OPALA.wideFrom.clone().addScaledVector(portraitAhead, 1.5).addScaledVector(portraitRight, 0).setY(OPALA.wideFrom.y + .74);
         addStoryPaper(opalaItems, opala!.space, excerpt, {
-          end, from, to, travel: .2, portraitX: end.x, portraitEnd: notePoint(-.06, 1.6, .74),
+          end, from, to, travel: .2, portraitX: end.x, portraitEnd,
           // Celular deitado: a linha rosa do header cortava o bilhete. Ele vai ~0,5 m para a
           // direita, passando do fim da linha (e ainda acima das cabeças).
           shortEnd: index === 0 ? notePoint(.7, 3.2, 1.2) : undefined,
@@ -1803,8 +1812,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // do quadro no momento de leitura, já que ali o olhar da câmera não aponta para o caminho.
       papers.forEach(({ group, pathX, side, phoneShift }) => { group.position.x = pathX + side * m(1.1) * lateral + (width < 600 ? m(phoneShift) : 0); });
       // O dinheiro nunca chega mais perto que 35 cm, para não raspar na lente.
-      flyingObjects.forEach(({ object, pathX, side, offsetMeters }) => {
-        object.position.x = pathX + side * m(Math.max(Math.min(offsetMeters, .35), offsetMeters * lateral));
+      flyingObjects.forEach(({ object, pathX, side, offsetMeters, fixedOffset }) => {
+        const offset = fixedOffset ? offsetMeters : Math.max(Math.min(offsetMeters, .35), offsetMeters * lateral);
+        object.position.x = pathX + side * m(offset);
       });
       // O contorno do Jota tem espessura mínima e máxima em pixels reais.
       renderer.getDrawingBufferSize(outlineMaterial.uniforms.uResolution.value);
@@ -1869,7 +1879,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const rail = railAt(
         wipe,
         Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.aspect,
-        Math.tan(THREE.MathUtils.degToRad(portraitView ? 80 : 47) / 2) * camera.aspect,
+        Math.tan(THREE.MathUtils.degToRad(portraitView ? opalaPortraitFov(camera.aspect) : 47) / 2) * camera.aspect,
       );
       const inOpala = ready && Boolean(opalaGroup) && wipe > 0 && rail.distance > rail.kitchenLength;
       // Trechos no scroll: na cozinha até a parede; na rua, do fim do preto até o quadro final.
@@ -1889,9 +1899,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         // No encerramento ela sobe reto, como uma grua, sem mudar o olhar.
         const rise = OUTRO_RISE * THREE.MathUtils.smoothstep(progress, OPALA_END, OUTRO_RISE_END);
         cameraPosition.set(streetX, OPALA.wideFrom.y + rise, OPALA.wideFrom.z).multiplyScalar(METER).add(opalaGroup.position);
-        lookAt.subVectors(OPALA.wideLookAt, OPALA.wideFrom).multiplyScalar(METER).add(cameraPosition);
-        if (portraitView) lookAt.x -= m(.5);
-        camera.fov = portraitView ? 80 : 47;
+        lookAt.subVectors(portraitView ? OPALA.portraitLookAt : OPALA.wideLookAt, OPALA.wideFrom).multiplyScalar(METER).add(cameraPosition);
+        camera.fov = portraitView ? opalaPortraitFov(camera.aspect) : 47;
         camera.updateProjectionMatrix();
       }
       // A luz vermelha acende logo depois que a câmera passa pela janela.

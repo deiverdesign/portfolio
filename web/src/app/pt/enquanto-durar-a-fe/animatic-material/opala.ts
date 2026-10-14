@@ -33,7 +33,18 @@ export const OPALA = {
   // abaixo, alinhado com o carro: o carro atravessado no meio da rua esconde o fim dela.
   wideFrom: new THREE.Vector3(.25, .4, 5.6),
   wideLookAt: new THREE.Vector3(.25, 2.3, -8),
+  // Celular em pé (14/10): o quadro é estreito. O olhar vira um pouco para a direita e a lente
+  // abre até cobrir a mesma largura em qualquer tela em pé (tangente de meia largura .46, com
+  // no máximo 90° na vertical), para caberem o carro, o Jota e os dois amigos. Antes o Jota
+  // ficava cortado na borda escura e o amigo de braços cruzados nem aparecia.
+  // Ex.: celular 393 × 852 → 90°; tablet em pé 768 × 1024 → 63°.
+  portraitLookAt: new THREE.Vector3(1.5, 2.8, -8),
+  portraitHalfWidthTan: .46,
 };
+
+/** Abertura vertical (graus) do quadro final do Opala numa tela em pé com essa proporção. */
+export const opalaPortraitFov = (aspect: number) =>
+  THREE.MathUtils.radToDeg(2 * Math.atan(Math.min(1, OPALA.portraitHalfWidthTan / aspect)));
 
 // Transição cozinha → Opala (wipe por oclusão, Deiver 13/10). color = o preto azulado da
 // parede em sombra, igual nas duas cenas (a pessoa não pode ver onde uma acaba e a outra
