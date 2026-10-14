@@ -52,6 +52,13 @@ const cameraPathX = (z: number) => {
   const t = THREE.MathUtils.clamp((z - CAMERA_START_Z) / (CAMERA_END_Z - CAMERA_START_Z), 0, 1);
   return THREE.MathUtils.lerp(CAMERA_START_X, CAMERA_END_X, t) + Math.sin(t * Math.PI) * CAMERA_SWAY;
 };
+// Anda em velocidade constante, com partida e freada suaves só nas pontas (ramp = 10% de cada
+// lado), para não dar tranco. Ex.: cruise(.5) = .5; cruise(.05) ≈ .014 (ainda saindo).
+const cruise = (t: number, ramp = .1) => {
+  if (t < ramp) return t * t / (2 * ramp) / (1 - ramp);
+  if (t > 1 - ramp) return 1 - (1 - t) * (1 - t) / (2 * ramp) / (1 - ramp);
+  return (t - ramp / 2) / (1 - ramp);
+};
 // Dali para trás do alto, o chão fica plano.
 const groundY = (z: number) => roadY(Math.max(z, TOP_Z));
 // Palmeira feita pelo Deiver no Meshy, com a textura pintada do jeito que veio.
@@ -1476,6 +1483,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Cada item tem: onde termina (em metros, dentro da cozinha) e quando anda (from → to,
     // de 0 a 1 dentro da história). Os bilhetes somem quando o próximo chega; o último fica.
     const STORY_END = 1.25;
+    // Durante a história a câmera nunca para (Deiver, 14/10, vídeo do celular: na cozinha 8 gestos
+    // seguidos sem a câmera andar). Ela segue recuando em diagonal para a direita, em ritmo
+    // constante de scroll: 60 cm para trás e 22 cm para o lado (no celular, 25 cm). Ex.: cada
+    // gesto curto (~45vh) leva a câmera uns 10 cm, e a mesa e a Helena se deslocam contra a janela.
+    const STORY_BACK = .6;
+    const STORY_SIDE = .22;
+    const STORY_SIDE_PORTRAIT = .25;
     // travel = quanto da história o item leva para chegar ao lugar dele;
     // portraitX = para onde ele vai no celular (o quadro é estreito); portraitEnd, quando
     // existe, troca o ponto inteiro (usado no Opala, onde a câmera olha na diagonal).
@@ -1549,7 +1563,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Trilho, em metros: na cozinha a câmera vai do lugar final dela até KITCHEN_WIPE_TO (x na
     // cozinha), onde a parede já cobre tudo; na rua ela sai de OPALA_WIPE_FROM (atrás do prédio
     // em sombra) e vai até o x final. Quanto mais longo o trecho da rua, mais longa a freada.
-    const KITCHEN_WALL = { x0: 1.3, x1: KITCHEN.width / 2 + .15, z: KITCHEN.cameraBack + .05 };
+    const KITCHEN_WALL = { x0: 1.3, x1: KITCHEN.width / 2 + .15, z: KITCHEN.cameraBack + STORY_BACK - .25 };
     const KITCHEN_WIPE_TO = 1.6;
     const OPALA_WIPE_FROM = WIPE.poleX - .35;
     let opalaGroup: THREE.Object3D | null = null;
@@ -1965,8 +1979,17 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         camera.fov = THREE.MathUtils.lerp(47, portrait ? 66 : 47, turn);
         camera.updateProjectionMatrix();
       }
-      // Durante a história a câmera quase para: recua só mais 30 cm.
-      if (story > 0) cameraPosition.z += m(.3) * THREE.MathUtils.smoothstep(story, 0, 1);
+      // Durante a história a câmera continua andando (ver STORY_BACK), medida em vh rolados e não
+      // em progresso: nas pausas de leitura o progresso anda devagar, mas o scroll não.
+      const storyMove = story > 0 ? cruise(THREE.MathUtils.clamp((vhAt(progress) - STORY_FROM_VH) / (STORY_END_VH - STORY_FROM_VH), 0, 1)) : 0;
+      const storySide = (camera.aspect < 1 ? STORY_SIDE_PORTRAIT : STORY_SIDE) * storyMove;
+      if (storyMove > 0) {
+        cameraPosition.z += m(STORY_BACK) * storyMove;
+        cameraPosition.x += m(storySide);
+        // O olhar acompanha só parte do deslize (no celular, menos ainda, porque o quadro é
+        // estreito): a sala desliza, mas a Helena não sai do quadro.
+        lookAt.x += m(storySide * (camera.aspect < 1 ? .3 : .6));
+      }
       // Wipe: a câmera desliza para a direita olhando sempre para a frente (o olhar anda junto).
       const ready = kitchenState === "ready";
       const portraitView = camera.aspect < 1;
@@ -1979,8 +2002,12 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const inOpala = ready && Boolean(opalaGroup) && wipe > 0 && rail.distance > rail.kitchenLength;
       // Trechos no scroll: na cozinha até a parede; na rua, do fim do preto até o quadro final.
       const kitchenSlide = ready ? THREE.MathUtils.smoothstep(progress, STORY_END, WIPE_AT) : 0;
-      const kitchenOffset = (rail.kitchenFrom - kitchenStartX) * kitchenSlide + rail.distance;
-      const streetSlide = THREE.MathUtils.clamp((progress - STREET_FROM) / (STREET_TO - STREET_FROM), 0, 1);
+      // O deslize sai de onde a história deixou a câmera (kitchenStartX + storySide).
+      const kitchenOffset = (rail.kitchenFrom - kitchenStartX - storySide) * kitchenSlide + rail.distance;
+      // Na rua do Opala a câmera só termina de chegar no fim do bilhete (OPALA_END), freando aos
+      // poucos, também medido em vh rolados. Antes ela parava em STREET_TO e o bilhete ficava
+      // ~40vh com a tela congelada. Ex.: quando o bilhete fica nítido, ainda faltam ~55 cm.
+      const streetSlide = THREE.MathUtils.clamp((vhAt(progress) - STREET_FROM_VH) / (OPALA_END_VH - STREET_FROM_VH), 0, 1);
       // Se a pessoa já rolou enquanto o preto passava, o trecho automático leva até lá (sem pulo).
       const streetEase = 1 - (1 - streetSlide) * (1 - streetSlide);
       const streetX = OPALA_WIPE_FROM + rail.distance - rail.kitchenLength
@@ -2148,8 +2175,33 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       [1200, OUTRO_RISE_END], [1208, OUTRO_END],
     ];
     const PACE_TOTAL = PACE[PACE.length - 1][0];
+    // O contrário de progressAt: em que vh da tabela a história chega a este progresso.
+    // Ex.: vhAt(STORY_END) = 970. Serve para mover a câmera em ritmo de scroll, não de progresso.
+    const vhAt = (at: number) => {
+      for (let index = 1; index < PACE.length; index++) {
+        const [toVh, toProgress] = PACE[index];
+        if (at > toProgress) continue;
+        const [fromVh, fromProgress] = PACE[index - 1];
+        return THREE.MathUtils.lerp(fromVh, toVh, (at - fromProgress) / Math.max(toProgress - fromProgress, 1e-6));
+      }
+      return PACE_TOTAL;
+    };
+    const STORY_FROM_VH = vhAt(1);
+    const STORY_END_VH = vhAt(STORY_END);
+    const STREET_FROM_VH = vhAt(STREET_FROM);
+    const OPALA_END_VH = vhAt(OPALA_END);
     const paceScale = () => (window.innerWidth <= 680 ? .84 : 1);
-    const scrolledVh = () => -scrollArea.getBoundingClientRect().top / (window.innerHeight / 100) / paceScale();
+    // RÉGUA DO SCROLL: 1vh em pixels exatamente como o CSS mede a página (min-height em vh).
+    // Não dá para usar window.innerHeight: no Chrome do celular ele encolhe ~6,5% quando a barra
+    // de endereço aparece, e a conta pulava sozinha (vídeo do Deiver, 14/10: no fim da página o
+    // bloco final sumia e voltava sem gesto, e os primeiros gestos para cima não faziam nada).
+    const vhProbe = document.createElement("div");
+    vhProbe.setAttribute("aria-hidden", "true");
+    vhProbe.style.cssText = "position:absolute;top:0;left:0;width:0;height:100vh;visibility:hidden;pointer-events:none";
+    scrollArea.appendChild(vhProbe);
+    let vhPixels = window.innerHeight / 100;
+    const measureVh = () => { vhPixels = (vhProbe.offsetHeight || window.innerHeight) / 100; };
+    const scrolledVh = () => -scrollArea.getBoundingClientRect().top / vhPixels / paceScale();
     const progressAt = (vh: number) => {
       const at = THREE.MathUtils.clamp(vh, 0, PACE_TOTAL);
       for (let index = 1; index < PACE.length; index++) {
@@ -2187,14 +2239,17 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       }
     };
 
+    const onResize = () => { measureVh(); resize(); updateScrollProgress(); };
+    measureVh();
     resize();
     handleMotionPreference();
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", onResize);
     window.addEventListener("scroll", updateScrollProgress, { passive: true });
     motionQuery.addEventListener("change", handleMotionPreference);
 
     return () => {
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
+      vhProbe.remove();
       window.removeEventListener("scroll", updateScrollProgress);
       motionQuery.removeEventListener("change", handleMotionPreference);
       if (frame) window.cancelAnimationFrame(frame);
