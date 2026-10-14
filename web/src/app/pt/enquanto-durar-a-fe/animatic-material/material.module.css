@@ -1,8 +1,8 @@
 .animatic {
   --scroll-progress: 0;
-  /* Ritmo do scroll (PACE em PortaoMaterial.tsx): 1950vh de história + 100vh da tela.
-     No celular, 84% disso: 1950 × 0,84 + 100. */
-  min-height: 2050vh;
+  /* Ritmo do scroll (PACE em PortaoMaterial.tsx): 1848vh de história + 100vh da tela.
+     No celular, 84% disso: 1848 × 0,84 + 100. */
+  min-height: 1948vh;
   background: #0e1042;
   color: #f0f0eb;
   font-family: var(--font-dm-sans), Arial, sans-serif;
@@ -117,7 +117,7 @@
 .ending { min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }
 
 @media (max-width: 680px) {
-  .animatic { min-height: 1738vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.2 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
+  .animatic { min-height: 1653vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.2 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
   /* Celular: centralizada no rodapé, acima da safe area, 164 px, com os pontos dos anos. O
      marcador fica parado no meio e a linha (60 px entre pontos) anda por baixo dele. Aparece
      depois que o texto "Role para entrar" sai, para os dois não se cruzarem. */

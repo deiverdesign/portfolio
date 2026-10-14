@@ -1909,7 +1909,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const outroFade = THREE.MathUtils.smoothstep(progress, OPALA_END, OPALA_END + .05);
       opalaItems.forEach(({ paper }) => { paper.uniforms.uOpacity.value *= 1 - outroFade; });
       scrollArea.style.setProperty("--outro-fade", outroFade.toFixed(3));
-      const showOutro = inOpala && progress > OUTRO_RISE_END - .01;
+      const showOutro = inOpala && progress > OUTRO_RISE_END - .002;
       if (showOutro !== outroShown) {
         outroShown = showOutro;
         if (outroRef.current) {
@@ -1995,14 +1995,17 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // Curto de propósito (Deiver, 13/10): o bilhete já está na tela durante o deslize, então
       // depois que a câmera para basta um respiro (~60vh) antes de ela subir. Antes eram 170vh
       // sem nada mudando, e o ímã do bilhete puxava a página de volta: parecia travado.
-      [1840, OUTRO_RISE_END], [1900, OUTRO_END], [1950, OUTRO_END],
+      // Voltar do final (Deiver, 14/10): antes havia ~110vh parados depois do bloco final e um
+      // ímã nele; no celular eram 4 ou 5 swipes para cima sem nada mudar. Agora o bloco aparece
+      // no fim da página: o primeiro swipe para cima já esconde o bloco e a câmera desce.
+      [1840, OUTRO_RISE_END], [1848, OUTRO_END],
     ];
     const PACE_TOTAL = PACE[PACE.length - 1][0];
     // Ímãs: o meio de cada trecho parado. Quando a pessoa para de rolar perto de um deles, a
     // página desliza sozinha até ele (o scroll continua livre: rolando, nada segura).
     // Sem ímã no bilhete do Opala (ele puxava de volta quem tentava seguir para o final);
-    // o último ímã é o encerramento.
-    const ANCHORS = [350, 580, 810, 1180, 1340, 1500, 1925];
+    // nem no encerramento (o fim da página já é o lugar onde ele para).
+    const ANCHORS = [350, 580, 810, 1180, 1340, 1500];
     const MAGNET_RANGE = 60;
     const paceScale = () => (window.innerWidth <= 680 ? .84 : 1);
     const scrolledVh = () => -scrollArea.getBoundingClientRect().top / (window.innerHeight / 100) / paceScale();
