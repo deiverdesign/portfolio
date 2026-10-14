@@ -77,17 +77,19 @@
 /* Linha do tempo (Deiver, 13/10): narrativa, nada clicável. Desktop: canto inferior direito,
    linha de 200 px com um marcador por ano (2010 a 2017) e o ano ativo acima do marcador.
    --at = posição de 0 a 1 na linha (no marcador: o ano ativo; em cada risquinho: o ano dele). */
-.timeline { position: absolute; z-index: 3; right: clamp(20px, 3vw, 48px); bottom: 30px; width: 200px; height: 1px; pointer-events: none; user-select: none; --span: 100%; }
-.timelineTrack { position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: rgba(255,255,255,.34); }
-.timelineTick { position: absolute; top: -2px; left: calc(var(--at) * 100%); width: 1px; height: 5px; background: rgba(255,255,255,.55); }
+.timeline { position: absolute; z-index: 3; right: clamp(20px, 3vw, 48px); bottom: 30px; width: 180px; height: 1px; pointer-events: none; user-select: none; }
+.timelineTrack { position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: rgba(255,255,255,.28); }
+/* Ponto de um ano das cenas: bolinha vazada pequena. O ativo fica coberto pela bolinha branca. */
+.timelinePoint { position: absolute; top: -2.5px; left: calc(var(--at) * 100% - 3px); width: 6px; height: 6px; box-sizing: border-box; border: 1px solid rgba(255,255,255,.6); border-radius: 50%; background: #10123f; }
 .timelineMarker { position: absolute; top: 0; left: calc(var(--at) * 100%); transition: left .75s cubic-bezier(.6, 0, .25, 1); }
-.timelineDot { position: absolute; top: -3px; left: -3px; width: 7px; height: 7px; border-radius: 50%; background: #f2f2ec; box-shadow: 0 0 6px rgba(10,11,48,.5); }
+.timelineDot { position: absolute; top: -3.5px; left: -4px; width: 8px; height: 8px; border-radius: 50%; background: #f7f7f2; box-shadow: 0 0 6px rgba(10,11,48,.5); }
 .timelinePulse { animation: timelinePulse .45s ease-out; }
 @keyframes timelinePulse { 0% { box-shadow: 0 0 0 0 rgba(242,242,236,.7); transform: scale(1); } 40% { transform: scale(1.6); } 100% { box-shadow: 0 0 0 9px rgba(242,242,236,0); transform: scale(1); } }
 /* O ano: uma máscara de uma linha só; dentro dela a coluna de anos gira como um contador. */
-.timelineYear { position: absolute; bottom: 9px; left: 0; height: 14px; overflow: hidden; transform: translateX(-50%); color: #f2f2ec; font-family: var(--font-dm-mono), monospace; font-size: 11px; letter-spacing: .08em; line-height: 14px; text-shadow: 0 1px 4px rgba(10,11,48,.6); }
-.timelineColumn { display: flex; flex-direction: column; }
-.timelineColumn span { display: block; height: 14px; }
+/* Largura fixa para os 4 dígitos, centrada na bolinha: o ano aparece sempre inteiro. */
+.timelineYear { position: absolute; bottom: 10px; left: -24px; width: 48px; height: 14px; overflow: hidden; color: #f2f2ec; font-family: var(--font-dm-mono), monospace; font-size: 11px; font-variant-numeric: tabular-nums; letter-spacing: .08em; line-height: 14px; text-align: center; white-space: nowrap; text-shadow: 0 1px 4px rgba(10,11,48,.6); }
+.timelineColumn { display: flex; width: 100%; flex-direction: column; }
+.timelineColumn span { display: block; width: 100%; height: 14px; flex: none; }
 .reducedNote { display: none; }
 
 /* ENCERRAMENTO (Deiver, 13/10): a rua continua visível, só escurece um pouco por cima para o
@@ -113,11 +115,11 @@
 
 @media (max-width: 680px) {
   .animatic { min-height: 1738vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.2 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { top: 50%; left: 20px; width: calc(100vw - 40px); transform: translateY(calc(-50% - var(--scroll-progress) * 34px)); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
-  /* Celular: centralizada no rodapé, acima da safe area, 172 px, ~5 marcadores à vista. O
-     marcador fica parado no meio e a linha (40 px por ano) anda por baixo dele. Aparece
+  /* Celular: centralizada no rodapé, acima da safe area, 164 px, com os pontos dos anos. O
+     marcador fica parado no meio e a linha (60 px entre pontos) anda por baixo dele. Aparece
      depois que o texto "Role para entrar" sai, para os dois não se cruzarem. */
   /* A caixa tem 44 px de altura (a máscara recorta tudo fora dela) e a linha fica 8 px acima do pé. */
-  .timeline { right: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); left: 50%; width: 172px; height: 44px; margin-bottom: -8px; margin-left: -86px; --span: 280px; background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 35px / 100% 1px no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); opacity: calc(clamp(0, calc((var(--scroll-progress) - .25) * 4), 1) * (1 - var(--outro-fade, 0))); }
+  .timeline { right: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); left: 50%; width: 164px; height: 44px; margin-bottom: -8px; margin-left: -82px; --span: calc((var(--points, 2) + 1) * 60px); background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 35px / 100% 1px no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); opacity: calc(clamp(0, calc((var(--scroll-progress) - .25) * 4), 1) * (1 - var(--outro-fade, 0))); }
   .timelineTrack { top: 35px; bottom: auto; left: calc(50% - var(--at) * var(--span)); width: var(--span); background: none; transition: left .75s cubic-bezier(.6, 0, .25, 1); }
   .timelineMarker { top: 35px; left: 50%; transition: none; }
 }
