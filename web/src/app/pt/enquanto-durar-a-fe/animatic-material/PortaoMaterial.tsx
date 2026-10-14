@@ -1234,6 +1234,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       [poolMaterial("#f1ef34", .3), 1.8, 1.6],
       [poolMaterial("#fffebe", .6), 1.1, .55],
     ];
+    // Onde fica a luminária do poste com vaga-lumes (preenchido no laço abaixo).
+    const FIREFLY_POLE_Z = 18;
+    const fireflyLamp = new THREE.Vector3();
     [18, 32].forEach((z) => {
       const pole = new THREE.Group();
       pole.position.set(-ROAD_HALF - m(.25), roadY(z) + CURB, z);
@@ -1253,6 +1256,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const lampX = pole.position.x + m(1.55);
       const lampY = pole.position.y + POLE_HEIGHT + m(.18);
       const floorY = roadY(z);
+      if (z === FIREFLY_POLE_Z) fireflyLamp.set(lampX, lampY, z);
       const cone = new THREE.Mesh(new THREE.CylinderGeometry(m(.22), m(1.1), lampY - floorY, 32, 1, true), lightConeMaterial);
       cone.position.set(lampX, (lampY + floorY) / 2, z);
       cone.userData.noShadow = true;
@@ -1268,6 +1272,93 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         world.add(pool);
       });
     });
+
+    // VAGA-LUMES NA LUZ DO POSTE (Deiver, 14/10: "como as bolinhas da cozinha, mas menores, só
+    // ali na luz do poste"). Só no poste que aparece no quadro (o de z 18; o outro fica colado
+    // na lente no fim da rua). Dois tamanhos: os "pequenos" (~5,5 cm de brilho) e os "menores
+    // ainda", mais transparentes (~3 cm). Quase todos ficam a menos de 1 m da luminária, metade
+    // dentro do feixe. Cada um voa devagar em volta do próprio lugar (~20 cm) e pisca no seu ritmo.
+    // Ex.: a 7 m da câmera, num desktop, um pequeno tem ~8 px de brilho; um menor, ~4,5 px.
+    const FIREFLY_COUNT = 20;
+    const fireflyPositions = new Float32Array(FIREFLY_COUNT * 3);
+    const fireflySeeds = new Float32Array(FIREFLY_COUNT);
+    const fireflySizes = new Float32Array(FIREFLY_COUNT);
+    const fireflyAlphas = new Float32Array(FIREFLY_COUNT);
+    for (let index = 0; index < FIREFLY_COUNT; index++) {
+      const small = index % 2 === 1;
+      const angle = Math.random() * Math.PI * 2;
+      let x: number, y: number, z: number;
+      if (index < FIREFLY_COUNT / 2) {
+        // Dentro do feixe, logo abaixo da luminária: quanto mais baixo, mais largo o feixe.
+        const below = .15 + Math.pow(Math.random(), 1.4) * 1.4;
+        const radius = Math.sqrt(Math.random()) * (.15 + below * .2);
+        x = Math.cos(angle) * radius; y = -below; z = Math.sin(angle) * radius;
+      } else {
+        // Em volta da luminária, bem perto (30 cm a 1 m), um pouco mais abaixo que acima dela.
+        const radius = .3 + Math.pow(Math.random(), 1.5) * .7;
+        x = Math.cos(angle) * radius; y = THREE.MathUtils.lerp(-.7, .25, Math.random()); z = Math.sin(angle) * radius;
+      }
+      fireflyPositions.set([fireflyLamp.x + m(x), fireflyLamp.y + m(y), fireflyLamp.z + m(z)], index * 3);
+      fireflySeeds[index] = Math.random();
+      fireflySizes[index] = (small ? .032 : .055) * (.85 + Math.random() * .3);
+      fireflyAlphas[index] = small ? .55 : 1;
+    }
+    const fireflyGeometry = new THREE.BufferGeometry();
+    fireflyGeometry.setAttribute("position", new THREE.BufferAttribute(fireflyPositions, 3));
+    fireflyGeometry.setAttribute("aSeed", new THREE.BufferAttribute(fireflySeeds, 1));
+    fireflyGeometry.setAttribute("aSize", new THREE.BufferAttribute(fireflySizes, 1));
+    fireflyGeometry.setAttribute("aAlpha", new THREE.BufferAttribute(fireflyAlphas, 1));
+    const fireflyMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: { uTime: { value: 0 }, uPixels: { value: 800 }, uMeter: { value: METER }, uBoost: { value: 1 } },
+      vertexShader: /* glsl */ `
+        attribute float aSeed;
+        attribute float aSize;
+        attribute float aAlpha;
+        uniform float uTime;
+        uniform float uPixels;
+        uniform float uMeter;
+        uniform float uBoost;
+        varying float vAlpha;
+        void main() {
+          // Voo de vaga-lume: uma volta lenta e larga somada a um zigue-zague curto.
+          float s = aSeed * 6.2832;
+          vec3 drift = vec3(
+            sin(uTime * (.31 + aSeed * .2) + s) * .16 + sin(uTime * (.9 + aSeed * .5) + s * 3.0) * .05,
+            sin(uTime * (.23 + aSeed * .15) + s * 2.0) * .12 + sin(uTime * (1.3 + aSeed * .4) + s) * .04,
+            cos(uTime * (.27 + aSeed * .18) + s * 1.7) * .16
+          );
+          vec4 view = modelViewMatrix * vec4(position + drift * uMeter, 1.0);
+          gl_Position = projectionMatrix * view;
+          // aSize está em metros. Abaixo de 1,5 px o ponto piscaria de um pixel para outro:
+          // fica com 1,5 px e mais transparente.
+          float size = aSize * uBoost * uMeter * uPixels * projectionMatrix[1][1] / -view.z;
+          gl_PointSize = max(size, 1.5);
+          float fade = min(1.0, size / 1.5);
+          // Pisca devagar: acende, fica um tempo aceso e apaga quase de todo, cada um no seu ritmo.
+          float pulse = .5 + .5 * sin(uTime * (.8 + aSeed * .9) + aSeed * 40.0);
+          vAlpha = aAlpha * fade * fade * (.2 + .8 * smoothstep(.15, .85, pulse));
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        varying float vAlpha;
+        void main() {
+          float r = length(gl_PointCoord - .5);
+          float core = 1.0 - smoothstep(.12, .22, r);
+          float halo = (1.0 - smoothstep(.08, .5, r)) * .55;
+          float alpha = (core + halo) * vAlpha;
+          if (alpha < .01) discard;
+          // Miolo amarelo-claro e brilho em volta no amarelo da luz do poste (#E7E209).
+          gl_FragColor = vec4(mix(vec3(.91, .89, .04), vec3(1.0, .98, .72), core) * alpha, 1.0);
+        }
+      `,
+    });
+    const fireflies = new THREE.Points(fireflyGeometry, fireflyMaterial);
+    fireflies.frustumCulled = false;
+    fireflies.renderOrder = 4;
+    world.add(fireflies);
 
     // Cidade baixa: prédios de 6 a 15 m, longe o bastante para quase não se moverem no recuo.
     const skyline = new THREE.Group();
@@ -1671,12 +1762,16 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       if (kitchenGroup) kitchenGroup.visible = false;
       // Os bilhetes da rua também ficam de fora: são texto para ler na rua, não parte da
       // paisagem. Ex.: o último ("Jota não é o seu nome, né?") aparecia vermelho na janela.
+      // Os vaga-lumes também: parados na foto, virariam pontinhos congelados.
       const papersWere = papers.map(({ group }) => group.visible);
       papers.forEach(({ group }) => { group.visible = false; });
+      const firefliesWere = fireflies.visible;
+      fireflies.visible = false;
       renderer.setRenderTarget(windowViewTarget);
       renderer.render(scene, wide);
       renderer.setRenderTarget(null);
       papers.forEach(({ group }, index) => { group.visible = papersWere[index]; });
+      fireflies.visible = firefliesWere;
       if (kitchenGroup) kitchenGroup.visible = true;
       if (opalaGroup) opalaGroup.visible = opalaWas;
       showStreet(streetWas);
@@ -1949,6 +2044,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // a câmera passa pela janela.
       timeline?.setScene(inOpala ? 2 : inside > .3 ? 1 : 0);
       updateKitchen?.({ red, time: performance.now() / 1000, pixels: renderer.domElement.height });
+      fireflyMaterial.uniforms.uTime.value = performance.now() / 1000;
+      fireflyMaterial.uniforms.uPixels.value = renderer.domElement.height * .5;
+      // A tela do celular é fisicamente pequena: o mesmo vaga-lume em pixels fica minúsculo.
+      fireflyMaterial.uniforms.uBoost.value = camera.aspect < 1 ? 1.5 : 1;
       renderStory(storyItems, story, kitchenGroup);
       // O bilhete do Opala é parte do cenário: existe sempre que a rua está na tela.
       renderStory(opalaItems, inOpala ? 1 : 0, opalaGroup);
@@ -2104,6 +2203,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       outlineMaterial.dispose();
       helenaOutlineMaterial.dispose();
       disposeObject(world);
+      fireflyGeometry.dispose();
+      fireflyMaterial.dispose();
       sky.geometry.dispose();
       sky.material.dispose();
       papers.forEach(({ texture }) => texture?.dispose());
