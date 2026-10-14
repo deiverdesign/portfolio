@@ -1821,7 +1821,11 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       cameraPosition.x += Math.sin(walk * Math.PI) * CAMERA_SWAY;
       cameraPosition.y += Math.sin(walk * Math.PI) * .22;
       lookAt.lerpVectors(startLookAt, endLookAt, walk);
-      const descent = THREE.MathUtils.smoothstep(progress, 0, INTRO);
+      // Descida da abertura com curva que começa rápido e freia no fim (Deiver, 14/10): o primeiro
+      // scroll curto precisa mostrar movimento claro, senão a pessoa acha que o site não respondeu.
+      // Ex.: 10% do trecho → câmera já fez ~27% da descida (antes, com smoothstep, ~3%).
+      const descentT = THREE.MathUtils.clamp(progress / INTRO, 0, 1);
+      const descent = 1 - Math.pow(1 - descentT, 3);
       cameraPosition.lerpVectors(highPosition, cameraPosition, descent);
       lookAt.lerpVectors(houseLookAt, lookAt, descent);
       // Depois da rua: recua reto, na altura do olho, atravessando a janela.
@@ -1978,13 +1982,17 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     };
 
     let lastFrameTime = performance.now();
+    // Quanto a câmera "alcança" o scroll por segundo (maior = mais grudada no dedo).
+    const CAMERA_FOLLOW = 6;
     let wipeTarget = 0;
     const animate = () => {
-      progress += (targetProgress - progress) * .075;
       // O wipe anda no tempo, não no scroll: para a frente depois de WIPE_AT, para trás antes.
       const now = performance.now();
       const seconds = Math.min((now - lastFrameTime) / 1000, .1);
       lastFrameTime = now;
+      // A câmera segue o scroll com um pequeno embalo, medido em segundos (não em quadros):
+      // igual num celular lento ou numa tela de 120 Hz. Ao soltar, ela ainda anda ~0,3 s.
+      progress += (targetProgress - progress) * (1 - Math.exp(-seconds * CAMERA_FOLLOW));
       // Indo: dispara quando a câmera (suavizada) chega na parede. Voltando: dispara assim que o
       // scroll passa para trás do ponto, sem esperar a suavização alcançar.
       if (kitchenState !== "ready" || targetProgress < WIPE_AT) wipeTarget = 0;
@@ -1997,38 +2005,28 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       frame = window.requestAnimationFrame(animate);
     };
 
-    // RITMO DO SCROLL (Deiver, 13/10): quanto se rola em cada trecho, em vh (100vh = uma tela),
-    // e em que ponto da história (progress) se chega. Os trechos sem bilhete ficaram curtos; cada
-    // bilhete tem um trecho "parado" de ~100vh em que ele está inteiro e nítido (a câmera anda
-    // bem devagar ali). Ex.: [300, .335] → [400, .385] = o 1º bilhete da rua, legível.
-    // No celular tudo vale 84% (como antes). O CSS (min-height) precisa somar o total + 100vh.
+    // RITMO DO SCROLL: quanto se rola em cada trecho, em vh (100vh = uma tela), e em que ponto
+    // da história (progress) se chega. Ex.: [180, .335] → [240, .385] = o 1º bilhete da rua.
+    // Refeito (Deiver, 14/10: "muito scroll pra andar pouco", pensado para scroll curto): ~35%
+    // mais curto e sem trecho parado. Nos bilhetes a câmera anda mais devagar, mas sempre anda:
+    // todo scroll curto mostra movimento. Sem ímãs (eles puxavam a página de volta).
+    // No celular tudo vale 84%. O CSS (min-height) precisa somar o total + 100vh.
     const PACE: [number, number][] = [
-      [0, 0], [120, INTRO],
+      [0, 0], [70, INTRO],
       // Rua: 3 bilhetes (o último fica até a janela).
-      [300, .335], [400, .385], [530, .475], [630, .545], [760, .635], [860, STREET_END],
+      [180, .335], [240, .385], [320, .475], [380, .545], [460, .635], [520, STREET_END],
       // Janela e recuo na cozinha.
-      [1090, 1],
-      // Cozinha: 3 bilhetes (chega, fica parado, sai).
-      [1130, 1.0375], [1230, 1.06], [1290, 1.12], [1390, 1.1425], [1450, 1.2025], [1550, STORY_END],
+      [670, 1],
+      // Cozinha: 3 bilhetes (chega, fica na tela, sai).
+      [700, 1.0375], [760, 1.06], [805, 1.12], [865, 1.1425], [910, 1.2025], [970, STORY_END],
       // Cozinha: câmera desliza até a parede (scroll) → preto (automático) → rua até o quadro
-      // final (scroll) → bilhete do Opala chegando e parado.
-      [1610, WIPE_AT], [1700, STREET_TO], [1720, NOTES_FROM], [1760, OPALA_END],
-      // Encerramento: câmera sobe e o bilhete some → bloco final → um respiro parado no fim.
-      // Curto de propósito (Deiver, 13/10): o bilhete já está na tela durante o deslize, então
-      // depois que a câmera para basta um respiro (~60vh) antes de ela subir. Antes eram 170vh
-      // sem nada mudando, e o ímã do bilhete puxava a página de volta: parecia travado.
-      // Voltar do final (Deiver, 14/10): antes havia ~110vh parados depois do bloco final e um
-      // ímã nele; no celular eram 4 ou 5 swipes para cima sem nada mudar. Agora o bloco aparece
-      // no fim da página: o primeiro swipe para cima já esconde o bloco e a câmera desce.
-      [1840, OUTRO_RISE_END], [1848, OUTRO_END],
+      // final (scroll) → bilhete do Opala na tela.
+      [1015, WIPE_AT], [1085, STREET_TO], [1100, NOTES_FROM], [1140, OPALA_END],
+      // Encerramento: câmera sobe e o bilhete some; o bloco final aparece no fim da página, então
+      // o primeiro scroll para cima já o esconde.
+      [1200, OUTRO_RISE_END], [1208, OUTRO_END],
     ];
     const PACE_TOTAL = PACE[PACE.length - 1][0];
-    // Ímãs: o meio de cada trecho parado. Quando a pessoa para de rolar perto de um deles, a
-    // página desliza sozinha até ele (o scroll continua livre: rolando, nada segura).
-    // Sem ímã no bilhete do Opala (ele puxava de volta quem tentava seguir para o final);
-    // nem no encerramento (o fim da página já é o lugar onde ele para).
-    const ANCHORS = [350, 580, 810, 1180, 1340, 1500];
-    const MAGNET_RANGE = 60;
     const paceScale = () => (window.innerWidth <= 680 ? .84 : 1);
     const scrolledVh = () => -scrollArea.getBoundingClientRect().top / (window.innerHeight / 100) / paceScale();
     const progressAt = (vh: number) => {
@@ -2041,35 +2039,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       }
       return OUTRO_END;
     };
-    // O deslize do ímã é feito aqui (ease in/out em ~0,6 s), não pelo "smooth" do navegador:
-    // assim ele é igual em todo navegador e para na hora se a pessoa voltar a rolar.
-    let magnetTimer = 0;
-    let magnetFrame = 0;
-    const stopMagnet = () => {
-      if (magnetFrame) window.cancelAnimationFrame(magnetFrame);
-      magnetFrame = 0;
-    };
-    const magnet = () => {
-      if (reducedMotion || magnetFrame) return;
-      const here = scrolledVh();
-      const anchor = ANCHORS.find((value) => Math.abs(value - here) < MAGNET_RANGE);
-      if (anchor === undefined || Math.abs(anchor - here) < .5) return;
-      const from = window.scrollY;
-      const to = from + (anchor - here) * paceScale() * window.innerHeight / 100;
-      const duration = THREE.MathUtils.clamp(Math.abs(anchor - here) * 12, 300, 700);
-      const start = performance.now();
-      const glide = () => {
-        const t = Math.min(1, (performance.now() - start) / duration);
-        // "instant": o site tem scroll-behavior: smooth no html, que atrasaria cada passo.
-        window.scrollTo({ top: THREE.MathUtils.lerp(from, to, t * t * (3 - 2 * t)), behavior: "instant" });
-        magnetFrame = t < 1 ? window.requestAnimationFrame(glide) : 0;
-      };
-      magnetFrame = window.requestAnimationFrame(glide);
-    };
-
     const updateScrollProgress = () => {
-      window.clearTimeout(magnetTimer);
-      if (!magnetFrame) magnetTimer = window.setTimeout(magnet, 180);
       const here = scrolledVh();
       const scrolled = THREE.MathUtils.clamp(here / PACE_TOTAL, 0, 1);
       targetProgress = progressAt(here);
@@ -2100,19 +2070,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     handleMotionPreference();
     window.addEventListener("resize", resize);
     window.addEventListener("scroll", updateScrollProgress, { passive: true });
-    // Se a pessoa voltar a rolar (roda, toque, teclado), o ímã solta na hora.
-    const userScrolls = ["wheel", "touchstart", "keydown"] as const;
-    userScrolls.forEach((name) => window.addEventListener(name, stopMagnet, { passive: true }));
     motionQuery.addEventListener("change", handleMotionPreference);
 
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", updateScrollProgress);
-      userScrolls.forEach((name) => window.removeEventListener(name, stopMagnet));
-      stopMagnet();
       motionQuery.removeEventListener("change", handleMotionPreference);
       if (frame) window.cancelAnimationFrame(frame);
-      window.clearTimeout(magnetTimer);
       disposed = true;
       jota.dispose();
       outlineMaterial.dispose();
