@@ -135,7 +135,7 @@ const OPALA_EXCERPTS: Excerpt[] = [
 // o papel caber inteiro no quadro e ficar um tempo parado ali antes do próximo (o último,
 // em 24, fica inteiro quando a descida termina). Entre eles passam o livro (z 8) e o dinheiro (z 14,2).
 const BOOK_EXCERPTS: (Excerpt & { z: number; phoneShift: number })[] = [
-  { z: 5, phoneShift: -.3, text: "Ele percebe que teria adorado ser criança naquele lugar.", footer: "CAPÍTULO 1 — A SUBIDA" },
+  { z: 5, phoneShift: -.42, text: "Ele percebe que teria adorado ser criança naquele lugar.", footer: "CAPÍTULO 1 — A SUBIDA" },
   {
     z: 14,
     phoneShift: .1,
@@ -1385,6 +1385,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // existe, troca o ponto inteiro (usado no Opala, onde a câmera olha na diagonal).
     // facing, quando existe, faz do bilhete um objeto parado no cenário: ele fica virado para
     // esse ponto (o lugar final da câmera) em vez de girar atrás da câmera; width = largura dele.
+    // shortEnd = ponto para tela deitada e baixa (celular deitado, até 500 px de altura).
     type StoryItem = {
       object: THREE.Object3D;
       end: THREE.Vector3;
@@ -1393,6 +1394,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       travel: number;
       portraitX: number;
       portraitEnd?: THREE.Vector3;
+      shortEnd?: THREE.Vector3;
       facing?: THREE.Vector3;
       width?: number;
       portraitWidth?: number;
@@ -1519,6 +1521,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         const end = index === 0 ? notePoint(.2, 3.2, 1.2) : notePoint(sides[index]);
         addStoryPaper(opalaItems, opala!.space, excerpt, {
           end, from, to, travel: .2, portraitX: end.x, portraitEnd: notePoint(-.06, 1.6, .74),
+          // Celular deitado: a linha rosa do header cortava o bilhete. Ele vai ~0,5 m para a
+          // direita, passando do fim da linha (e ainda acima das cabeças).
+          shortEnd: index === 0 ? notePoint(.7, 3.2, 1.2) : undefined,
           // No celular (Deiver, 14/10: "minúsculo"): ~75% da largura da tela, no meio, um pouco
           // mais alto para não cobrir as cabeças.
           facing: OPALA.wideFrom, width: 1.5, portraitWidth: .97,
@@ -1540,7 +1545,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const portrait = camera.aspect < 1;
       storyCamera.copy(camera.position).sub(origin.position).divideScalar(METER);
       const paperWidth = portrait ? .62 : 1.1;
-      items.forEach(({ object, end, from, to, travel: travelTime, portraitX, portraitEnd, facing, width, portraitWidth, paper }) => {
+      const short = !portrait && window.innerHeight <= 500;
+      items.forEach(({ object, end, from, to, travel: travelTime, portraitX, portraitEnd, shortEnd, facing, width, portraitWidth, paper }) => {
         object.visible = story > from;
         if (!object.visible) return;
         const travel = THREE.MathUtils.smoothstep(story, from, from + travelTime);
@@ -1549,7 +1555,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         if (portrait) {
           if (portraitEnd) storyEnd.copy(portraitEnd);
           else storyEnd.x = portraitX;
-        }
+        } else if (short && shortEnd) storyEnd.copy(shortEnd);
         storyStart.copy(storyCamera).lerp(storyEnd, .15);
         object.position.lerpVectors(storyStart, storyEnd, travel);
         const distance = object.position.distanceTo(storyCamera);
@@ -1654,9 +1660,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       showStreet(true);
       if (opalaGroup) opalaGroup.visible = false;
       if (kitchenGroup) kitchenGroup.visible = false;
+      // Os bilhetes da rua também ficam de fora: são texto para ler na rua, não parte da
+      // paisagem. Ex.: o último ("Jota não é o seu nome, né?") aparecia vermelho na janela.
+      const papersWere = papers.map(({ group }) => group.visible);
+      papers.forEach(({ group }) => { group.visible = false; });
       renderer.setRenderTarget(windowViewTarget);
       renderer.render(scene, wide);
       renderer.setRenderTarget(null);
+      papers.forEach(({ group }, index) => { group.visible = papersWere[index]; });
       if (kitchenGroup) kitchenGroup.visible = true;
       if (opalaGroup) opalaGroup.visible = opalaWas;
       showStreet(streetWas);
@@ -1781,7 +1792,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       renderer.setSize(width, height, false);
       camera.aspect = width / Math.max(height, 1);
       camera.updateProjectionMatrix();
-      papers.forEach(({ group }) => group.scale.setScalar(width < 600 ? .38 : .8));
+      // No celular os bilhetes da rua ficam do tamanho dos da cozinha (~75% da largura da tela);
+      // antes (.38) ocupavam só metade e a letra ficava miúda.
+      papers.forEach(({ group }) => group.scale.setScalar(width < 600 ? .58 : .8));
       // Os bilhetes ficam a 1,1 m do caminho, em 80% do tamanho, para caberem inteiros no quadro.
       // Na tela em pé (celular) o quadro é estreito, então a distância lateral encolhe junto com
       // a largura. Ex.: computador (1,6 de proporção) = 100%; celular (~0,46) = 29%.
