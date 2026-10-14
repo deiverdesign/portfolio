@@ -1483,9 +1483,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const papersAt = [new THREE.Vector3(0, 1.95, 2.6), new THREE.Vector3(.75, 1.95, 2.6), new THREE.Vector3(.2, 1.95, 2.6)];
       // Um por vez: o próximo só sai da lente depois que o anterior sumiu (sem sobreposição).
       const paperTimes = [[0, .3], [.33, .63], [.66, 1]];
+      const KITCHEN_PORTRAIT_WIDTH = 1.15;
+      const KITCHEN_PORTRAIT_X = -.37;
       KITCHEN_EXCERPTS.forEach((excerpt, index) => {
         const end = papersAt[index];
-        addStoryPaper(storyItems, space, excerpt, { end, from: paperTimes[index][0], to: paperTimes[index][1], travel: .15, portraitX: end.x * .4 - .45 });
+        // No celular (Deiver, 14/10: "muito pequeno"): papel quase o dobro (1,15 m em vez de
+        // 0,62 m, ~75% da largura da tela) e sempre no meio do quadro, para caber inteiro.
+        addStoryPaper(storyItems, space, excerpt, { end, from: paperTimes[index][0], to: paperTimes[index][1], travel: .15, portraitX: KITCHEN_PORTRAIT_X, portraitWidth: KITCHEN_PORTRAIT_WIDTH });
       });
       return group;
     };
