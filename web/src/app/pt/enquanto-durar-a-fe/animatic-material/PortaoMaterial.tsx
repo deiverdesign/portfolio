@@ -1615,9 +1615,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       sky.visible = visible;
       windowView.visible = !visible;
     };
-    const dropWindowView = () => {
+    // De onde a foto foi tirada (a câmera entrando pela janela). Se a foto precisar ser refeita
+    // (a tela mudou de tamanho), ela sai do mesmo ponto, igual à primeira. Ao sair da cozinha
+    // pela janela (voltando para a rua), esse ponto é esquecido.
+    let windowPose: { position: THREE.Vector3; quaternion: THREE.Quaternion; fov: number } | null = null;
+    const dropWindowView = (forgetPose = false) => {
       windowViewTarget?.dispose();
       windowViewTarget = null;
+      if (forgetPose) windowPose = null;
       showStreet(true);
     };
     const bufferSize = new THREE.Vector2();
@@ -1628,28 +1633,41 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const targetWidth = Math.round(bufferSize.x * WINDOW_VIEW_SCALE * fit);
       const targetHeight = Math.round(bufferSize.y * WINDOW_VIEW_SCALE * fit);
       windowViewTarget = new THREE.WebGLRenderTarget(targetWidth, targetHeight, { type: THREE.HalfFloatType, samples: 4 });
-      // Mesma posição e direção da câmera, só com a lente mais aberta.
+      if (!windowPose) windowPose = { position: camera.position.clone(), quaternion: camera.quaternion.clone(), fov: camera.fov };
+      // Mesma posição e direção da câmera (da primeira foto), só com a lente mais aberta.
       const wide = camera.clone();
-      wide.fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * WINDOW_VIEW_SCALE));
+      wide.position.copy(windowPose.position);
+      wide.quaternion.copy(windowPose.quaternion);
+      wide.fov = windowPose.fov;
+      wide.updateMatrixWorld();
+      wide.fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(windowPose.fov) / 2) * WINDOW_VIEW_SCALE));
       wide.updateProjectionMatrix();
       // O céu se pinta pela altura na tela: aqui ele precisa saber onde a tela fica dentro da foto.
       const skyUniforms = sky.material.uniforms;
       const savedResolution = skyUniforms.uResolution.value.clone();
       skyUniforms.uResolution.value.set(bufferSize.x * fit, bufferSize.y * fit);
       skyUniforms.uOffsetY.value = (targetHeight - bufferSize.y * fit) / 2;
+      // Na foto só entra a rua: nem a cozinha nem o Opala (que ainda pode estar ligado quando a
+      // foto é refeita na volta da cena 3).
+      const streetWas = streetVisible;
+      const opalaWas = opalaGroup?.visible ?? false;
+      showStreet(true);
+      if (opalaGroup) opalaGroup.visible = false;
       if (kitchenGroup) kitchenGroup.visible = false;
       renderer.setRenderTarget(windowViewTarget);
       renderer.render(scene, wide);
       renderer.setRenderTarget(null);
       if (kitchenGroup) kitchenGroup.visible = true;
+      if (opalaGroup) opalaGroup.visible = opalaWas;
+      showStreet(streetWas);
       skyUniforms.uResolution.value.copy(savedResolution);
       skyUniforms.uOffsetY.value = 0;
       // A placa fica 7 m à frente da câmera (bem depois da janela), do tamanho exato da foto.
       const distance = m(7);
       const placeHeight = 2 * distance * Math.tan(THREE.MathUtils.degToRad(wide.fov) / 2);
-      camera.getWorldDirection(viewForward);
-      windowView.position.copy(camera.position).addScaledVector(viewForward, distance);
-      windowView.quaternion.copy(camera.quaternion);
+      wide.getWorldDirection(viewForward);
+      windowView.position.copy(windowPose.position).addScaledVector(viewForward, distance);
+      windowView.quaternion.copy(windowPose.quaternion);
       windowView.scale.set(placeHeight * camera.aspect, placeHeight, 1);
       windowViewMaterial.uniforms.uMap.value = windowViewTarget.texture;
     };
@@ -1880,11 +1898,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       camera.updateMatrixWorld();
       sky.position.copy(camera.position);
       // Dentro da cozinha: troca a rua pela foto (tirada neste mesmo quadro, se ainda não existe).
+      // Só tira a foto com a câmera na cozinha. No Opala a câmera está em outro lugar: se a foto
+      // fosse (re)tirada ali (ex.: no celular a barra do navegador muda o tamanho da tela e a
+      // foto antiga é descartada), a janela voltava preta (Deiver, 14/10). Ela é tirada de novo
+      // no primeiro quadro de volta na cozinha.
       if (kitchenGroup && camera.position.z > WINDOW_INSIDE_Z) {
-        if (!windowViewTarget) takeWindowView();
+        if (!windowViewTarget && !inOpala) takeWindowView();
         showStreet(false);
-      } else if (windowViewTarget) {
-        dropWindowView();
+      } else if (windowViewTarget || windowPose) {
+        dropWindowView(true);
       }
       if (kitchenGroup) kitchenGroup.visible = !inOpala;
       if (opalaGroup) opalaGroup.visible = inOpala;
