@@ -1574,11 +1574,19 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const { group, space, update, setHelena } = buildKitchenGray(kitchenLineMaterial, kitchenRedLineMaterial);
       const helenaLoader = new GLTFLoader();
       helenaLoader.setMeshoptDecoder(MeshoptDecoder);
-      helenaLoader.load(HELENA_URL, (gltf) => {
-        if (disposed) return;
-        const mesh = gltf.scene.getObjectByProperty("type", "Mesh") as THREE.Mesh | undefined;
-        if (mesh) setHelena(mesh.geometry, helenaOutlineMaterial);
-        kitchenCastsShadow = null;
+      // Cumpre quando a Helena já está sentada na cena (ou se o arquivo falhar: o site não trava).
+      const ready = new Promise<void>((resolve) => {
+        helenaLoader.load(HELENA_URL, (gltf) => {
+          if (!disposed) {
+            const mesh = gltf.scene.getObjectByProperty("type", "Mesh") as THREE.Mesh | undefined;
+            if (mesh) setHelena(mesh.geometry, helenaOutlineMaterial);
+            kitchenCastsShadow = null;
+          }
+          resolve();
+        }, undefined, (error) => {
+          console.warn("Cozinha: não carregou a Helena", error);
+          resolve();
+        });
       });
       group.position.set(WINDOW_X, KITCHEN_FLOOR, WINDOW_Z);
       // Parede do wipe: um trecho de parede saindo da parede da direita, logo à frente do lugar
@@ -1603,7 +1611,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         // 0,62 m, ~75% da largura da tela) e sempre no meio do quadro, para caber inteiro.
         addStoryPaper(storyItems, space, excerpt, { end, from: paperTimes[index][0], to: paperTimes[index][1], travel: .15, portraitX: KITCHEN_PORTRAIT_X, portraitWidth: KITCHEN_PORTRAIT_WIDTH });
       });
-      return group;
+      return { group, ready };
     };
 
     // O Opala fica num lugar só dele, 90 m atrás da cozinha (nunca aparecem juntos: a troca
@@ -1643,7 +1651,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
           facing: OPALA.wideFrom, width: 1.5, portraitWidth: .97,
         });
       });
-      return opala.group;
+      return opala;
     };
 
     const storyCamera = new THREE.Vector3();
@@ -1872,16 +1880,92 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       return wipeRail;
     };
 
+    // Envia para a placa de vídeo todas as texturas de um grupo (mapas e texturas dos shaders),
+    // para nada aparecer sem textura ou travar na primeira vez que entra no quadro.
+    const uploadTextures = (root: THREE.Object3D) => {
+      const sent = new Set<THREE.Texture>();
+      const send = (value: unknown) => {
+        if (!(value instanceof THREE.Texture) || sent.has(value)) return;
+        sent.add(value);
+        renderer.initTexture(value);
+      };
+      root.traverse((object) => {
+        const material = (object as THREE.Mesh).material;
+        if (!material) return;
+        (Array.isArray(material) ? material : [material]).forEach((each) => {
+          Object.values(each).forEach(send);
+          Object.values((each as THREE.ShaderMaterial).uniforms ?? {}).forEach((uniform) => send(uniform.value));
+        });
+      });
+    };
+
+    // Compila os shaders de "objects" do jeito exato em que vão ser desenhados. O three cria um
+    // programa diferente para cada combinação de luzes acesas e de destino (a tela ou uma textura,
+    // como a foto da janela e o borrão do wipe). Ex.: no Opala a cozinha some, a lâmpada dela
+    // apaga, e cada material do Opala precisa de outro programa. Sem preparar, esse programa era
+    // compilado no meio do preto, e a passagem travava.
+    const compileFor = (objects: THREE.Object3D[], lights: THREE.Light[], target: THREE.WebGLRenderTarget | null) => {
+      const lightScene = new THREE.Scene();
+      lights.forEach((light) => lightScene.add(light.clone()));
+      // As luzes de dentro dos objetos já estão em lightScene: escondidas aqui para não contarem duas vezes.
+      const hidden: THREE.Object3D[] = [];
+      objects.forEach((root) => root.traverse((child) => {
+        if ((child as THREE.Light).isLight && child.visible) {
+          child.visible = false;
+          hidden.push(child);
+        }
+      }));
+      renderer.setRenderTarget(target);
+      const jobs = objects.map((object) => renderer.compileAsync(object, camera, lightScene));
+      renderer.setRenderTarget(null);
+      hidden.forEach((child) => { child.visible = true; });
+      return Promise.all(jobs);
+    };
+
+    // PRONTIDÃO (Deiver, 14/10). Quando o 1º bilhete da rua aparece (PRELOAD_AT), a cozinha e o
+    // Opala começam a carregar juntos, em segundo plano. "Pronto" espera, nesta ordem:
+    // 1. os arquivos já montados na cena: a Helena (cozinha); o céu, o asfalto, o Opala, o Jota
+    //    com o pano e os dois amigos (Opala); e as fontes dos bilhetes;
+    // 2. a placa de vídeo: as texturas enviadas (initTexture) e os shaders compilados para cada
+    //    trecho da passagem (compileFor).
+    // Até lá a câmera espera no fim da rua, de frente para a janela (veja animate), e a cozinha
+    // fica escondida (a lâmpada dela não muda a luz da rua enquanto carrega).
     const ensureKitchen = (scrollProgress: number) => {
       if (kitchenState !== "idle" || scrollProgress < PRELOAD_AT) return;
       kitchenState = "loading";
       const kitchen = buildKitchen();
-      world.add(kitchen);
-      // O Opala é montado junto (o carro tem ~500 KB) e preparado na mesma hora.
-      world.add(buildOpala());
-      renderer.compileAsync(scene, camera).then(() => {
-        if (!disposed) kitchenState = "ready";
-      });
+      kitchen.group.visible = false;
+      world.add(kitchen.group);
+      const opalaScene = buildOpala();
+      opalaScene.group.visible = false;
+      world.add(opalaScene.group);
+      Promise.all([kitchen.ready, opalaScene.ready, document.fonts.ready])
+        .then(() => {
+          if (disposed) return;
+          uploadTextures(kitchen.group);
+          uploadTextures(opalaScene.group);
+          const kitchenLights: THREE.Light[] = [sun];
+          kitchen.group.traverse((child) => { if ((child as THREE.Light).isLight) kitchenLights.push(child as THREE.Light); });
+          const street = [...world.children.filter((child) => child !== kitchen.group && child !== opalaScene.group), sky];
+          const texture = new THREE.WebGLRenderTarget(1, 1);
+          return Promise.all([
+            // Rua e cozinha na tela, com a lâmpada da cozinha acesa (indo e voltando pela janela).
+            compileFor([...street, kitchen.group, windowView], kitchenLights, null),
+            // Cozinha no borrão do wipe.
+            compileFor([kitchen.group, windowView], kitchenLights, texture),
+            // Foto da rua na janela (só o sol) e o Opala no borrão do wipe.
+            compileFor([...street, opalaScene.group], [sun], texture),
+            // Opala na tela (só o sol: a cozinha está escondida).
+            compileFor([opalaScene.group], [sun], null),
+            // O próprio borrão.
+            compileFor([blurScene], [], null),
+          ]).finally(() => texture.dispose());
+        })
+        // Se a preparação falhar, segue assim mesmo (melhor do que a câmera presa na janela).
+        .catch((error) => console.warn("Cozinha/Opala: a preparação falhou", error))
+        .then(() => {
+          if (!disposed) kitchenState = "ready";
+        });
     };
 
     const startPosition = new THREE.Vector3(CAMERA_START_X, roadY(CAMERA_START_Z) + EYE_HEIGHT, CAMERA_START_Z);
@@ -2056,7 +2140,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       } else if (windowViewTarget || windowPose) {
         dropWindowView(true);
       }
-      if (kitchenGroup) kitchenGroup.visible = !inOpala;
+      if (kitchenGroup) kitchenGroup.visible = kitchenState === "ready" && !inOpala;
       if (opalaGroup) opalaGroup.visible = inOpala;
       if (inOpala) windowView.visible = false;
       else if (!streetVisible) windowView.visible = true;
@@ -2067,6 +2151,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       scrollArea.style.setProperty("--street-glow", (1 - red).toFixed(3));
       // Cena 3: botão da Amazon e linha do header em pink (Deiver, 13/10). Troca no meio do preto.
       scrollArea.style.setProperty("--opala", inOpala ? "1" : "0");
+      // Linha do header (Deiver, 14/10): cresce com o scroll, de 10 px no topo da página até o
+      // tamanho inteiro no fim da cena 3 (fim da página). Segue a câmera, em ritmo de scroll.
+      scrollArea.style.setProperty("--header-fill", (vhAt(progress) / PACE_TOTAL).toFixed(4));
       // Linha do tempo: rua e cozinha (2017) e Opala (2015). A cozinha conta a partir de quando
       // a câmera passa pela janela.
       timeline?.setScene(inOpala ? 2 : inside > .3 ? 1 : 0);
@@ -2141,6 +2228,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // A câmera segue o scroll com um pequeno embalo, medido em segundos (não em quadros):
       // igual num celular lento ou numa tela de 120 Hz. Ao soltar, ela ainda anda ~0,3 s.
       progress += (targetProgress - progress) * (1 - Math.exp(-seconds * CAMERA_FOLLOW));
+      // Cozinha e Opala ainda não prontos: a câmera para no fim da rua, de frente para a janela.
+      // Quando ficam prontos, ela sai dali com o mesmo embalo (sem pular o trecho que o scroll já
+      // passou de uma vez).
+      if (kitchenState !== "ready") progress = Math.min(progress, STREET_END);
       // Indo: dispara quando a câmera (suavizada) chega na parede. Voltando: dispara assim que o
       // scroll passa para trás do ponto, sem esperar a suavização alcançar.
       if (kitchenState !== "ready" || targetProgress < WIPE_AT) wipeTarget = 0;

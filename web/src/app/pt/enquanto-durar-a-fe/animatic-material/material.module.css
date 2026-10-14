@@ -30,7 +30,9 @@
   background: rgba(240,240,251,.94);
 }
 /* Linha fixa embaixo do header, de ponta a ponta (menos 11 px de cada lado): roxa na rua, vermelha na cozinha. */
-.headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2px; background: color-mix(in srgb, #e3146b calc(var(--opala, 0) * 100%), color-mix(in srgb, #ea3436 calc(var(--kitchen) * 100%), #5e68ef)); }
+/* A linha cresce com o scroll (Deiver, 14/10): --header-fill vai de 0 (topo, só 10 px à mostra)
+   a 1 (fim da cena 3, a linha inteira). O recorte esconde o resto pela direita. */
+.headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2px; background: color-mix(in srgb, #e3146b calc(var(--opala, 0) * 100%), color-mix(in srgb, #ea3436 calc(var(--kitchen) * 100%), #5e68ef)); clip-path: inset(0 calc((1 - var(--header-fill, 0)) * (100% - 10px)) 0 0); }
 /* Três versões do logo empilhadas: azul (rua), escuro (cozinha) e branco (celular deitado). */
 .logoStack { position: relative; display: block; }
 .logo { display: block; width: 186.883px; height: auto; }
@@ -134,5 +136,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animatic { min-height: 100svh; }.stage { position: relative; }.scrollHint, .timeline { display: none; }.reducedNote { position: absolute; z-index: 3; right: 18px; bottom: 18px; left: 18px; display: block; color: rgba(244,244,238,.85); font-family: var(--font-dm-mono), monospace; font-size: 9px; letter-spacing: .07em; text-align: center; text-transform: uppercase; }.ending { min-height: 48svh; }
+  .animatic { min-height: 100svh; }.stage { position: relative; }.scrollHint, .timeline { display: none; }.headerLine { clip-path: none; }.reducedNote { position: absolute; z-index: 3; right: 18px; bottom: 18px; left: 18px; display: block; color: rgba(244,244,238,.85); font-family: var(--font-dm-mono), monospace; font-size: 9px; letter-spacing: .07em; text-align: center; text-transform: uppercase; }.ending { min-height: 48svh; }
 }

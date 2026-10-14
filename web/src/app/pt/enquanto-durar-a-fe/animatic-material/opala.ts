@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { METER, createOutlineMaterial } from "./celShading";
 import { CITY, buildCity } from "./opalaCidade";
@@ -105,11 +105,39 @@ export function buildOpalaNight() {
   space.scale.setScalar(METER);
   root.add(space);
   const glow = { value: 1 };
+  // PRONTIDÃO (Deiver, 14/10): a passagem para esta cena só começa quando todos os arquivos dela
+  // chegaram e já viraram objetos na cena (veja "ready" no fim). Cada download entra nesta lista.
+  // Um arquivo que falhar também conta como resolvido, com aviso no console: o site nunca fica
+  // preso na janela esperando um arquivo que não vem.
+  const assets: Promise<void>[] = [];
+  const gltfLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  const loadTexture = (url: string) => {
+    let texture!: THREE.Texture;
+    assets.push(new Promise((resolve) => {
+      texture = new THREE.TextureLoader().load(url, () => resolve(), undefined, (error) => {
+        console.warn(`Opala: não carregou ${url}`, error);
+        resolve();
+      });
+    }));
+    return texture;
+  };
+  // "use" monta o modelo na cena; a promessa só cumpre depois disso.
+  const loadModel = (url: string, use: (gltf: GLTF) => void) => {
+    assets.push(new Promise((resolve) => {
+      gltfLoader.load(url, (gltf) => {
+        use(gltf);
+        resolve();
+      }, undefined, (error) => {
+        console.warn(`Opala: não carregou ${url}`, error);
+        resolve();
+      });
+    }));
+  };
 
   // --- Céu: a pintura rosa do Deiver, presa à tela (como o céu da rua) ----------------------
   // Na horizontal ela acompanha a tela; na vertical o pé da imagem fica na linha do horizonte
   // (um pouco abaixo, para a névoa clara do pé da imagem encostar no chão) e o alto dela a ~38° acima, então o céu não "escorrega" quando a câmera baixa ou sobe.
-  const skyMap = new THREE.TextureLoader().load(SKY_URL);
+  const skyMap = loadTexture(SKY_URL);
   skyMap.colorSpace = THREE.SRGBColorSpace;
   const skyResolution = new THREE.Vector2(1, 1);
   const sky = new THREE.Mesh(
@@ -199,7 +227,7 @@ export function buildOpalaNight() {
   // --- Asfalto molhado: azul-marinho, com a luz dos postes no chão, os reflexos esticados das
   // lâmpadas vindo na direção da câmera, o rosa do céu refletido ao longe e a mancha quente
   // que o farol joga na frente do carro.
-  const asphaltMap = new THREE.TextureLoader().load(ASPHALT_URL);
+  const asphaltMap = loadTexture(ASPHALT_URL);
   asphaltMap.colorSpace = THREE.SRGBColorSpace;
   asphaltMap.wrapS = asphaltMap.wrapT = THREE.RepeatWrapping;
   asphaltMap.anisotropy = 8;
@@ -312,9 +340,7 @@ export function buildOpalaNight() {
   car.rotation.y = OPALA.yaw;
   space.add(car);
   const carMaterials: THREE.Material[] = [];
-  const loader = new GLTFLoader();
-  loader.setMeshoptDecoder(MeshoptDecoder);
-  loader.load(OPALA_URL, (gltf) => {
+  loadModel(OPALA_URL, (gltf) => {
     const model = gltf.scene;
     const meshes: THREE.Mesh[] = [];
     model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
@@ -368,7 +394,7 @@ export function buildOpalaNight() {
   jota.rotation.y = JOTA_PANO.turn;
   car.add(jota);
   const figures: THREE.Object3D[] = [jota];
-  new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(JOTA_PANO_URL, (gltf) => {
+  loadModel(JOTA_PANO_URL, (gltf) => {
     const model = gltf.scene;
     const meshes: THREE.Mesh[] = [];
     model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
@@ -425,7 +451,7 @@ export function buildOpalaNight() {
     body.visible = false;
     parent.add(body);
     figures.push(body);
-    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, (gltf) => {
+    loadModel(url, (gltf) => {
       const model = gltf.scene;
       const meshes: THREE.Mesh[] = [];
       model.traverse((child) => { if (child instanceof THREE.Mesh) meshes.push(child); });
@@ -555,6 +581,8 @@ export function buildOpalaNight() {
     space,
     update,
     headlight,
+    // Cumpre quando o céu, o asfalto, o Opala, o Jota com o pano e os dois amigos já estão na cena.
+    ready: Promise.all(assets).then(() => {}),
     dispose: () => {
       city.dispose();
       rain.dispose();
