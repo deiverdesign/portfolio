@@ -2124,7 +2124,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // A luz vermelha acende logo depois que a câmera passa pela janela.
       const red = THREE.MathUtils.smoothstep(inside, .26, .45);
       // O sol da rua só serve para a sombra; dentro da cozinha ele não pode iluminar os móveis.
-      sun.intensity = inside > 0 ? 0 : 1;
+      // Antes desligava de golpe (0 ou 1) assim que "inside" passava de zero: o poste dos
+      // vaga-lumes, que ainda está em quadro nesse ponto, mudava de aparência num único frame
+      // (Deiver, 16/10). Agora apaga suavemente numa faixa curta, igual a luz vermelha ao lado.
+      sun.intensity = 1 - THREE.MathUtils.smoothstep(inside, 0, .05);
       // A cozinha (paredes de 2,7 m logo atrás do começo da rua) jogava a sombra do sol em cima
       // da parte baixa da rua. Ela só faz sombra lá dentro, onde quem ilumina é a lâmpada.
       const kitchenCasts = inside > 0;
