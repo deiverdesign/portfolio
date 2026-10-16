@@ -558,7 +558,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     cobbleTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     const roadLength = (STREET_END_Z - TOP_Z) / Math.cos(slopeAngle);
     cobbleTexture.repeat.set(1, roadLength / (2 * ROAD_HALF * COBBLE_ASPECT));
-    const cobbles = new THREE.Mesh(new THREE.PlaneGeometry(2 * ROAD_HALF, roadLength), createPaintedMaterial(cobbleTexture, "#3a4498"));
+    // A textura plana precisava de uma imperfeição pequena para pertencer à linguagem pintada
+    // da cena. O grão é do próprio chão, não uma camada de ruído sobre toda a tela.
+    const cobbles = new THREE.Mesh(new THREE.PlaneGeometry(2 * ROAD_HALF, roadLength), createPaintedMaterial(cobbleTexture, "#3a4498", .09));
     // Deitado na laje: o alto da imagem aponta para o alto da ladeira.
     cobbles.rotation.x = -Math.PI / 2;
     cobbles.position.y = m(.2) + .005;

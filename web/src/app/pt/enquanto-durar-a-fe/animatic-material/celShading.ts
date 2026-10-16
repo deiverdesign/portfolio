@@ -377,6 +377,7 @@ const paintedVertexShader = /* glsl */ `
   #include <shadowmap_pars_vertex>
   uniform mat3 uMapTransform;
   varying vec2 vUv;
+  varying vec3 vWorldPosition;
   void main() {
     // Repetição e deslocamento da textura (texture.repeat/offset).
     vUv = (uMapTransform * vec3(uv, 1.0)).xy;
@@ -385,6 +386,7 @@ const paintedVertexShader = /* glsl */ `
     #include <begin_vertex>
     #include <project_vertex>
     #include <worldpos_vertex>
+    vWorldPosition = worldPosition.xyz;
     #include <shadowmap_vertex>
   }
 `;
@@ -399,21 +401,30 @@ const paintedFragmentShader = /* glsl */ `
   ${SUN_SHADOW_GLSL}
   uniform sampler2D uMap;
   uniform vec3 uShadow;
+  uniform float uGrain;
   varying vec2 vUv;
+  varying vec3 vWorldPosition;
+  float grainHash(vec2 point) {
+    return fract(sin(dot(point, vec2(127.1, 311.7))) * 43758.5453123);
+  }
   void main() {
     vec3 color = texture2D(uMap, vUv).rgb;
+    // Grão ancorado no chão (não na tela): ajuda a textura pintada a conversar com os
+    // materiais ilustrados, sem "nadar" quando a câmera se move.
+    float fleck = smoothstep(0.84, 0.98, grainHash(floor(vWorldPosition.xz * 56.0)));
+    color *= 1.0 - fleck * uGrain;
     color = mix(color * uShadow, color, step(0.5, getSunShadowMask()));
     gl_FragColor = vec4(color, 1.0);
     #include <colorspace_fragment>
   }
 `;
 
-export function createPaintedMaterial(map: THREE.Texture, shadow = "#5a68c8") {
+export function createPaintedMaterial(map: THREE.Texture, shadow = "#5a68c8", grain = 0) {
   const material = new THREE.ShaderMaterial({
     lights: true,
     uniforms: THREE.UniformsUtils.merge([
       THREE.UniformsLib.lights,
-      { uMap: { value: null }, uMapTransform: { value: new THREE.Matrix3() }, uShadow: { value: new THREE.Color(shadow) } },
+      { uMap: { value: null }, uMapTransform: { value: new THREE.Matrix3() }, uShadow: { value: new THREE.Color(shadow) }, uGrain: { value: grain } },
     ]),
     vertexShader: paintedVertexShader,
     fragmentShader: paintedFragmentShader,
