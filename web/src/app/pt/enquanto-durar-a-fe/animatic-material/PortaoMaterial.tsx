@@ -80,6 +80,7 @@ const COBBLE_URL = "/enquanto-durar-a-fe/texturas/paralelepipedo.jpg?v=2";
 // Fundo da direita (PNGs do Deiver, convertidos para webp de 2048 px).
 const BACKDROP_CITY_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-cidade.webp?v=1";
 const BACKDROP_TREES_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-frente.webp?v=2";
+const BIRD_SPRITE_URL = "/enquanto-durar-a-fe/texturas/passaros-voo.png?v=1";
 const COBBLE_ASPECT = 2120 / 1100;
 const PAPER_WIDTH = 5.2;
 // Bilhete cortado rente ao texto (o Deiver marcou o corte): 1024 × 400 px de textura.
@@ -1413,6 +1414,37 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     addBackdrop(BACKDROP_CITY_URL, 120, 2398 / 1760, 45, 30, -50);
     addBackdrop(BACKDROP_TREES_URL, 44, 2000 / 1561, 22, 8, -2).renderOrder = 1;
 
+    // Pássaros no céu da cidade: quatro poses de asa em uma única textura transparente.
+    // Cada sprite fica em uma profundidade diferente e se move no tempo real — o scroll leva
+    // apenas a câmera. Assim, eles são vida distante, não uma animação grudada na tela.
+    const birdFlock = new THREE.Group();
+    birdFlock.renderOrder = 2;
+    world.add(birdFlock);
+    const birdSheet = backdropLoader.load(BIRD_SPRITE_URL);
+    birdSheet.colorSpace = THREE.SRGBColorSpace;
+    birdSheet.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; span: number; lift: number; speed: number; phase: number; opacity: number };
+    const birds: BirdFlight[] = [];
+    [
+      [13.5, 8.0, -23, 5.2, .55, .075, .05, .42],
+      [16.0, 7.25, -29, 4.5, .32, .09, .28, .34],
+      [19.5, 8.5, -35, 5.8, .46, .068, .54, .30],
+      [22.0, 7.65, -41, 4.0, .28, .10, .76, .24],
+      [25.5, 8.9, -47, 5.0, .38, .082, .42, .20],
+      [29.0, 7.5, -52, 3.8, .24, .11, .88, .18],
+    ].forEach(([x, y, z, span, lift, speed, phase, opacity]) => {
+      const frameMap = birdSheet.clone();
+      frameMap.repeat.set(.25, 1);
+      frameMap.offset.set(0, 0);
+      frameMap.needsUpdate = true;
+      const material = new THREE.SpriteMaterial({ map: frameMap, transparent: true, opacity, alphaTest: .04, depthWrite: false });
+      const sprite = new THREE.Sprite(material);
+      const size = THREE.MathUtils.lerp(.42, .18, THREE.MathUtils.clamp((-z - 20) / 36, 0, 1));
+      sprite.scale.set(size * 1.45, size, 1);
+      birdFlock.add(sprite);
+      birds.push({ sprite, material, frameMap, x, y, z, span, lift, speed, phase, opacity });
+    });
+
     // No animatic cinza este plano era o "céu". Aqui ele vira só a massa escura de morro
     // abaixo da linha da cidade, para o degradê amarelo aparecer acima dela.
     const horizon = new THREE.Mesh(new THREE.PlaneGeometry(130, 7), hillMaterial);
@@ -1809,11 +1841,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       papers.forEach(({ group }) => { group.visible = false; });
       const firefliesWere = fireflies.visible;
       fireflies.visible = false;
+      const birdsWere = birdFlock.visible;
+      birdFlock.visible = false;
       renderer.setRenderTarget(windowViewTarget);
       renderer.render(scene, wide);
       renderer.setRenderTarget(null);
       papers.forEach(({ group }, index) => { group.visible = papersWere[index]; });
       fireflies.visible = firefliesWere;
+      birdFlock.visible = birdsWere;
       if (kitchenGroup) kitchenGroup.visible = true;
       if (opalaGroup) opalaGroup.visible = opalaWas;
       showStreet(streetWas);
@@ -2190,6 +2225,18 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       fireflyMaterial.uniforms.uPixels.value = renderer.domElement.height * .5;
       // A tela do celular é fisicamente pequena: o mesmo vaga-lume em pixels fica minúsculo.
       fireflyMaterial.uniforms.uBoost.value = camera.aspect < 1 ? 1.5 : 1;
+      // Só entra quando a cidade já aparece à direita e desaparece antes da foto fixa da janela.
+      const birdPresence = (1 - inside) * THREE.MathUtils.smoothstep(sceneProgress, .28, .38) * (1 - THREE.MathUtils.smoothstep(sceneProgress, .64, .69));
+      birdFlock.visible = !reducedMotion && birdPresence > .005;
+      if (birdFlock.visible) {
+        const birdTime = performance.now() / 1000;
+        birds.forEach((bird) => {
+          const flight = (birdTime * bird.speed + bird.phase) % 1;
+          bird.sprite.position.set(bird.x + flight * bird.span, bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift, bird.z);
+          bird.frameMap.offset.x = Math.floor(birdTime * 7 + bird.phase * 4) % 4 * .25;
+          bird.material.opacity = bird.opacity * birdPresence;
+        });
+      }
       renderStory(storyItems, story, kitchenGroup);
       // O bilhete do Opala é parte do cenário: existe sempre que a rua está na tela.
       renderStory(opalaItems, inOpala ? 1 : 0, opalaGroup);
@@ -2407,6 +2454,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       fireflyMaterial.dispose();
       sky.geometry.dispose();
       sky.material.dispose();
+      birdSheet.dispose();
       papers.forEach(({ texture }) => texture?.dispose());
       storyTextures.forEach((texture) => texture.dispose());
       windowViewTarget?.dispose();
