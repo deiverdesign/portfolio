@@ -2140,10 +2140,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       sun.intensity = 1 - THREE.MathUtils.smoothstep(inside, 0, .05);
       // A cozinha (paredes de 2,7 m logo atrás do começo da rua) jogava a sombra do sol em cima
       // da parte baixa da rua. Ela só faz sombra lá dentro, onde quem ilumina é a lâmpada.
-      // Liga só depois que o sol já apagou de todo (mesmo ponto do smoothstep acima: inside .05):
-      // ligar exatamente em inside > 0, junto com o sol ainda suavizando, deixava a sombra
-      // piscar por uma fresta de alguns quadros (Deiver, 16/10).
-      const kitchenCasts = inside >= .05;
+      // sun.intensity não resolve isso: o shader de toon shading usa uma direção de luz fixa
+      // (uLightDirection em celShading.ts), não a intensidade do three.js, então apagar o sol
+      // não apaga a sombra. O castShadow da cozinha ligava de uma vez (inside >= .05) ainda com
+      // a rua desenhada ao vivo, e a sombra pipocava bem no meio da subida da câmera pra dentro
+      // da janela (Deiver, 16/10). Agora só liga quando a rua ao vivo já virou a foto congelada
+      // (showStreet(false)) — nesse ponto o chão que receberia a sombra nem está mais visível,
+      // então o pop nunca chega a aparecer na tela.
+      const kitchenCasts = !streetVisible;
       if (kitchenGroup && kitchenCasts !== kitchenCastsShadow) {
         kitchenCastsShadow = kitchenCasts;
         kitchenGroup.traverse((child) => {
