@@ -1251,6 +1251,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Onde fica a luminária do poste com vaga-lumes (preenchido no laço abaixo).
     const FIREFLY_POLE_Z = 18;
     const fireflyLamp = new THREE.Vector3();
+    // Peças do poste em z=18 (o que aparece aceso no quadro do bilhete "Jota não é o seu
+    // nome, né?"), guardadas para a falha de luz em STREETLIGHT_FLICKER_Z (ver animate()).
+    const flickerParts: THREE.Mesh[] = [];
     [18, 32].forEach((z) => {
       const pole = new THREE.Group();
       pole.position.set(-ROAD_HALF - m(.25), roadY(z) + CURB, z);
@@ -1275,6 +1278,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       cone.position.set(lampX, (lampY + floorY) / 2, z);
       cone.userData.noShadow = true;
       world.add(cone);
+      if (z === FIREFLY_POLE_Z) flickerParts.push(glow, cone);
       // Deitadas na rua (que desce 40 cm por metro): a normal aponta para cima e um pouco para a câmera.
       POOL_LAYERS.forEach(([material, width, depth], index) => {
         const pool = new THREE.Mesh(new THREE.CircleGeometry(.5, 48), material);
@@ -1284,6 +1288,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         pool.renderOrder = 2 + index;
         pool.userData.noShadow = true;
         world.add(pool);
+        if (z === FIREFLY_POLE_Z) flickerParts.push(pool);
       });
     });
 
@@ -2227,6 +2232,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Quanto a câmera "alcança" o scroll por segundo (maior = mais grudada no dedo).
     const CAMERA_FOLLOW = 6;
     let wipeTarget = 0;
+    // Falha de luz no poste da cena 1 (Deiver, 16/10): quando a câmera chega perto do bilhete
+    // "Jota não é o seu nome, né?" (z 24), a luminária, o feixe e a mancha no chão piscam uma
+    // vez — desliga, liga, desliga, liga — como uma queda de energia breve. Só acontece uma vez
+    // por visita: o flag fica marcado para sempre assim que dispara, mesmo se a pessoa rolar
+    // de volta e passar pelo mesmo ponto de novo.
+    const STREETLIGHT_FLICKER_Z = 24;
+    const STREETLIGHT_FLICKER_STEPS: [number, boolean][] = [[0, false], [90, true], [160, false], [260, true]];
+    let streetlightFlickerTriggered = false;
+    let streetlightFlickerStart: number | null = null;
     const animate = () => {
       // O wipe anda no tempo, não no scroll: para a frente depois de WIPE_AT, para trás antes.
       const now = performance.now();
@@ -2248,6 +2262,19 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       if (wipeTarget > wipe) wipe = Math.min(1, wipe + step);
       else if (wipeTarget < wipe) wipe = Math.max(0, wipe - step);
       renderScene();
+      if (!streetlightFlickerTriggered && cameraPosition.z >= STREETLIGHT_FLICKER_Z) {
+        streetlightFlickerTriggered = true;
+        streetlightFlickerStart = now;
+      }
+      if (streetlightFlickerStart !== null) {
+        const elapsed = now - streetlightFlickerStart;
+        let visible = true;
+        for (const [at, state] of STREETLIGHT_FLICKER_STEPS) {
+          if (elapsed >= at) visible = state;
+        }
+        flickerParts.forEach((part) => { part.visible = visible; });
+        if (elapsed >= STREETLIGHT_FLICKER_STEPS[STREETLIGHT_FLICKER_STEPS.length - 1][0]) streetlightFlickerStart = null;
+      }
       frame = window.requestAnimationFrame(animate);
     };
 
