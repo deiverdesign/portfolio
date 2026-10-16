@@ -33,13 +33,13 @@
 /* A linha cresce com o scroll (Deiver, 14/10): --header-fill vai de 0 (topo, só 10 px à mostra)
    a 1 (fim da cena 3, a linha inteira). O recorte esconde o resto pela direita. */
 .headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2px; background: color-mix(in srgb, #e3146b calc(var(--opala, 0) * 100%), color-mix(in srgb, #7026c1 calc(var(--kitchen) * 100%), #5e68ef)); clip-path: inset(0 calc((1 - var(--header-fill, 0)) * (100% - 10px)) 0 0); }
-/* Três versões do logo empilhadas: azul (rua), escuro (cozinha) e branco (celular deitado). */
+/* Um SVG limpo fornecido pelo Deiver vira três cores com máscara; o risco existe apenas no motion. */
 .logoStack { position: relative; display: block; }
-.logo { display: block; width: 186.883px; height: auto; }
+.logo { display: block; width: 186.883px; height: auto; aspect-ratio: 187 / 16; -webkit-mask: url('/enquanto-durar-a-fe/logo-enquanto-fe-clean.svg') center / contain no-repeat; mask: url('/enquanto-durar-a-fe/logo-enquanto-fe-clean.svg') center / contain no-repeat; }
 .logoKitchen, .logoCinema { position: absolute; top: 0; left: 0; }
-.logoStreet { opacity: calc(1 - var(--kitchen)); }
-.logoKitchen { opacity: var(--kitchen); }
-.logoCinema { opacity: 0; }
+.logoStreet { background: #1f2abd; opacity: calc(1 - var(--kitchen)); }
+.logoKitchen { background: #2d2d2d; opacity: var(--kitchen); }
+.logoCinema { background: #fff; opacity: 0; }
 /* "Durar" ganha um risco curto: é uma pista editorial, não um estado do título.
    As medidas acompanham o logo de 187 × 16 px; com movimento reduzido ele não existe. */
 @keyframes durarStrike { from { opacity: 1; transform: scaleX(.02); } to { opacity: 1; transform: scaleX(1); } }

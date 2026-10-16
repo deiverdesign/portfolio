@@ -2371,13 +2371,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     <main className={styles.animatic} ref={scrollRef}>
       <header className={styles.header}>
         {/* Logo do Deiver (Figma, nó 95:10148): azul na rua, escuro na cozinha, branco no celular deitado. */}
-        <span className={styles.logoStack}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={`${styles.logo} ${styles.logoStreet}`} src="/enquanto-durar-a-fe/logo-enquanto-fe-azul.svg" width={187} height={16} alt="Enquanto durar a fé" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={`${styles.logo} ${styles.logoKitchen}`} src="/enquanto-durar-a-fe/logo-enquanto-fe-escuro.svg" width={187} height={16} alt="" aria-hidden="true" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={`${styles.logo} ${styles.logoCinema}`} src="/enquanto-durar-a-fe/logo-enquanto-fe.svg" width={187} height={16} alt="" aria-hidden="true" />
+        <span className={styles.logoStack} role="img" aria-label="Enquanto durar a fé">
+          <i className={`${styles.logo} ${styles.logoStreet}`} aria-hidden="true" />
+          <i className={`${styles.logo} ${styles.logoKitchen}`} aria-hidden="true" />
+          <i className={`${styles.logo} ${styles.logoCinema}`} aria-hidden="true" />
         </span>
         <a className={styles.headerBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">
           <span className={styles.headerBookIcon} aria-hidden="true">
