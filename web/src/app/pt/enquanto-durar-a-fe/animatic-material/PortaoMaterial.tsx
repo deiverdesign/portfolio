@@ -2232,12 +2232,16 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Quanto a câmera "alcança" o scroll por segundo (maior = mais grudada no dedo).
     const CAMERA_FOLLOW = 6;
     let wipeTarget = 0;
-    // Falha de luz no poste da cena 1 (Deiver, 16/10): quando a câmera chega perto do bilhete
-    // "Jota não é o seu nome, né?" (z 24), a luminária, o feixe e a mancha no chão piscam uma
+    // Falha de luz no poste da cena 1 (Deiver, 16/10; recalibrado em 16/10 depois de medir a
+    // posição da poça em tela): dispara em z 27, não mais 24. Em z 24 a câmera ainda mostra o
+    // bilhete anterior ("Maria, posso pedir só um favor?") e a poça do poste dos vaga-lumes
+    // está fora do quadro (abaixo da borda); só por volta de z 27 o bilhete "Jota não é o seu
+    // nome, né?" já tomou a tela e a poça entra de fato em quadro (ainda perto da borda, mas
+    // visível, não só uma fatia no canto). A luminária, o feixe e a mancha no chão piscam uma
     // vez — desliga, liga, desliga, liga — como uma queda de energia breve. Só acontece uma vez
     // por visita: o flag fica marcado para sempre assim que dispara, mesmo se a pessoa rolar
     // de volta e passar pelo mesmo ponto de novo.
-    const STREETLIGHT_FLICKER_Z = 24;
+    const STREETLIGHT_FLICKER_Z = 27;
     const STREETLIGHT_FLICKER_STEPS: [number, boolean][] = [[0, false], [90, true], [160, false], [260, true]];
     let streetlightFlickerTriggered = false;
     let streetlightFlickerStart: number | null = null;
