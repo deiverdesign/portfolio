@@ -1787,6 +1787,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const savedResolution = skyUniforms.uResolution.value.clone();
       skyUniforms.uResolution.value.set(bufferSize.x * fit, bufferSize.y * fit);
       skyUniforms.uOffsetY.value = (targetHeight - bufferSize.y * fit) / 2;
+      // As linhas (contorno do Jota e as quinas da casa) têm espessura fixa em pixels, calculada
+      // a partir da resolução da tela ao vivo. Como a foto é tirada numa lente mais aberta e num
+      // alvo de outro tamanho, sem avisar essas duas, elas desenhavam mais grossas que no quadro
+      // anterior — o "salto" nas linhas que o Deiver viu ao entrar na janela (16/10).
+      const savedOutlineResolution = outlineMaterial.uniforms.uResolution.value.clone();
+      const savedSceneryResolution = sceneryLineMaterial.resolution.clone();
+      outlineMaterial.uniforms.uResolution.value.set(targetWidth, targetHeight);
+      sceneryLineMaterial.resolution.set(targetWidth, targetHeight);
       // Na foto só entra a rua: nem a cozinha nem o Opala (que ainda pode estar ligado quando a
       // foto é refeita na volta da cena 3).
       const streetWas = streetVisible;
@@ -1811,6 +1819,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       showStreet(streetWas);
       skyUniforms.uResolution.value.copy(savedResolution);
       skyUniforms.uOffsetY.value = 0;
+      outlineMaterial.uniforms.uResolution.value.copy(savedOutlineResolution);
+      sceneryLineMaterial.resolution.copy(savedSceneryResolution);
       // A placa fica 7 m à frente da câmera (bem depois da janela), do tamanho exato da foto.
       const distance = m(7);
       const placeHeight = 2 * distance * Math.tan(THREE.MathUtils.degToRad(wide.fov) / 2);
