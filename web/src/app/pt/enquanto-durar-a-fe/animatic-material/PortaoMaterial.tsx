@@ -109,6 +109,7 @@ const paperFragmentShader = /* glsl */ `
 `;
 
 const AMAZON_URL = "https://www.amazon.com.br/Enquanto-durar-f%C3%A9-Deiver-Brito-ebook/dp/B0H6Y8K6ND";
+const PORTFOLIO_URL = "https://deiver.com.br/";
 
 // Bilhetes: fragmentos do romance, não propaganda. Regra do Deiver:
 // - fala vai entre aspas e o rodapé diz quem fala (ex.: "— JOTA");
@@ -2407,6 +2408,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
             <h2 className={styles.outroTitle}>Enquanto durar a fé</h2>
             <a className={styles.outroBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">Conheça o livro</a>
             <p className={styles.outroNote}>Disponível na Amazon</p>
+            <p className={styles.outroCredit}>Experiência digital criada por <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">Deiver Brito ↗</a></p>
           </div>
         </div>
       </section>
@@ -2415,6 +2417,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         <p>“E sobre o que você queria falar mesmo?”</p>
         <span>Até onde podemos ir por quem amamos?</span>
         <a className={styles.buy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">Ler na Amazon · R$ 17,99 ou no Kindle Unlimited ↗</a>
+        <a className={styles.endingCredit} href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">Experiência digital criada por Deiver Brito ↗</a>
       </section>
     </main>
   );

@@ -111,12 +111,16 @@
 .outroBuy:hover { filter: brightness(.9); }
 .outroBuy:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .outroNote { margin: 14px 0 0; color: rgba(244,244,238,.62); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.outroCredit { margin: 24px 0 0; color: rgba(244,244,238,.52); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .04em; line-height: 1.5; }
+.outroCredit a { color: rgba(244,244,238,.78); text-underline-offset: 3px; }
+.outroCredit a:hover { color: #fff; }
+.outroCredit a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 /* A antiga tela final separada: com o encerramento dentro da cena 3 ela sai (Deiver, 13/10).
    Continua só para quem pediu movimento reduzido, que não vê a cena andar. */
 .ending { display: none; }
 @media (prefers-reduced-motion: reduce) { .ending { display: grid; } }
-.ending { min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }
+.ending { min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }.endingCredit { margin-top: 24px; color: rgba(237,237,231,.72); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .05em; text-underline-offset: 3px; }.endingCredit:hover { color: #fff; }.endingCredit:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 680px) {
   .animatic { min-height: 1115vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.2 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; opacity: clamp(0, calc(1 - var(--scroll-progress) * 4.5), 1); }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
