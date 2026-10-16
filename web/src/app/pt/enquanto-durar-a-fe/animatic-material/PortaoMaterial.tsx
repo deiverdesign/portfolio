@@ -369,6 +369,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         fragmentShader: skyGradientShader,
       }),
     );
+    sky.renderOrder = -1;
     scene.add(sky);
 
     // Cores tiradas da pintura do Deiver (pintura-alvo), objeto por objeto. Quase tudo tem
@@ -1438,33 +1439,33 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Pássaros no céu da cidade: seis cópias pequenas da mesma silhueta, em formação.
     // Todos trocam a pose de asa juntos; variam somente tamanho, altura e deslocamento.
     const birdFlock = new THREE.Group();
-    birdFlock.renderOrder = 2;
+    // O céu não grava profundidade. Portanto a oclusão aqui é intencionalmente por
+    // ordem de camada: cenário, pássaros, bilhetes (estes últimos recebem renderOrder 2).
+    birdFlock.renderOrder = 1;
     world.add(birdFlock);
     const birdSheet = backdropLoader.load(BIRD_SPRITE_URL);
     birdSheet.colorSpace = THREE.SRGBColorSpace;
     birdSheet.anisotropy = renderer.capabilities.getMaxAnisotropy();
     // Sem RepeatWrapping, offset.x fica preso no último frame da folha de sprites.
     birdSheet.wrapS = THREE.RepeatWrapping;
+    birdSheet.repeat.set(.25, 1);
+    birdSheet.offset.set(0, 0);
     type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; span: number; lift: number; speed: number; phase: number; opacity: number };
     const birds: BirdFlight[] = [];
     [
-      // direita, alto, distância, deslocamento, oscilação, velocidade, fase, opacidade, tamanho.
-      // O fundo da direita é uma ilustração plana; por isso o bando é ancorado no espaço à
-      // frente da câmera, sempre no recorte de céu do lado direito — nunca atrás do morro.
-      // A folha tem margem transparente generosa em cada frame; os tamanhos abaixo
-      // compensam essa margem para a silhueta ser lida como pássaro, não como ponto.
-      [5.8, 1.6, 18, .80, .04, .07, .05, .92, .800],
-      [6.5, 1.9, 19, .80, .04, .06, .17, .88, .706],
-      [7.2, 2.2, 20, .80, .04, .07, .29, .84, .648],
-      [7.9, 2.5, 21, .80, .04, .06, .42, .80, .598],
-      [6.4, 2.9, 20, .80, .04, .07, .58, .76, .544],
-      [7.2, 3.2, 21, .80, .04, .06, .71, .72, .496],
+      // x, y, z, deslocamento, oscilação, velocidade, fase, opacidade, tamanho.
+      // O bando existe atrás do bilhete e das casas — não preso ao enquadramento da câmera.
+      // A escala compensa as margens transparentes generosas da folha de sprites.
+      [3.3, 13.45, -4.8, 4.8, .10, .28, .05, .92, .800],
+      [4.4, 13.17, -5.0, 4.8, .10, .28, .17, .88, .706],
+      [5.5, 12.89, -5.2, 4.8, .10, .28, .29, .84, .648],
+      [6.6, 12.61, -5.4, 4.8, .10, .28, .42, .80, .598],
+      [4.9, 14.07, -5.6, 4.8, .10, .28, .58, .76, .544],
+      [6.1, 14.43, -5.8, 4.8, .10, .28, .71, .72, .496],
     ].forEach(([x, y, z, span, lift, speed, phase, opacity, size]) => {
-      const frameMap = birdSheet.clone();
-      frameMap.repeat.set(.25, 1);
-      frameMap.offset.set(0, 0);
-      frameMap.needsUpdate = true;
-      // A árvore do fundo também é uma imagem plana; não pode cobrir o bando no céu.
+      // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
+      // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
+      const frameMap = birdSheet;
       const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false, depthTest: false });
       const sprite = new THREE.Sprite(material);
       sprite.scale.set(size * 1.45, size, 1);
@@ -1501,6 +1502,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         fragmentShader: paperFragmentShader,
       });
       const mesh = new THREE.Mesh(new THREE.PlaneGeometry(PAPER_WIDTH, PAPER_HEIGHT), material);
+      mesh.renderOrder = 2;
       mesh.position.y = PAPER_HEIGHT / 2;
       mesh.userData.noShadow = true;
       group.add(mesh);
@@ -2067,9 +2069,6 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     const lookAt = new THREE.Vector3();
     const paperFacing = new THREE.Vector3();
     const paperCenter = new THREE.Vector3();
-    const birdDirection = new THREE.Vector3();
-    const birdRight = new THREE.Vector3();
-    const birdUp = new THREE.Vector3();
     let progress = 0;
     let targetProgress = 0;
     let wipe = 0;
@@ -2256,21 +2255,21 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       fireflyMaterial.uniforms.uPixels.value = renderer.domElement.height * .5;
       // A tela do celular é fisicamente pequena: o mesmo vaga-lume em pixels fica minúsculo.
       fireflyMaterial.uniforms.uBoost.value = camera.aspect < 1 ? 1.5 : 1;
-      // O bando existe durante toda a rua e só sai quando a câmera entra na cozinha.
-      // Assim não depende de uma faixa estreita de scroll para ficar visível.
-      const birdPresence = 1 - inside;
+      // O bando pertence ao encontro com o 2º bilhete: entra no céu à direita,
+      // permanece enquanto ele é lido e desaparece antes da próxima passagem.
+      const birdPresence = (1 - inside)
+        * THREE.MathUtils.smoothstep(sceneProgress, .40, .43)
+        * (1 - THREE.MathUtils.smoothstep(sceneProgress, .53, .57));
       birdFlock.visible = !reducedMotion && birdPresence > .005;
       if (birdFlock.visible) {
         const birdTime = performance.now() / 1000;
-        camera.getWorldDirection(birdDirection);
-        birdRight.crossVectors(birdDirection, camera.up).normalize();
-        birdUp.crossVectors(birdRight, birdDirection).normalize();
         birds.forEach((bird) => {
           const flight = birdTime * bird.speed;
-          bird.sprite.position.copy(camera.position)
-            .addScaledVector(birdDirection, bird.z)
-            .addScaledVector(birdRight, bird.x + flight % bird.span)
-            .addScaledVector(birdUp, bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift);
+          bird.sprite.position.set(
+            bird.x + flight % bird.span,
+            bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift,
+            bird.z,
+          );
           // O bando todo compartilha a mesma batida de asas: é a mesma silhueta em seis escalas.
           bird.frameMap.offset.x = Math.floor(birdTime * 7) % 4 * .25;
           bird.material.opacity = bird.opacity * birdPresence;
