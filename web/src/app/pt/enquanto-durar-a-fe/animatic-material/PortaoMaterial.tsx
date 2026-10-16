@@ -237,24 +237,24 @@ const SUN_LINE_HEIGHT = m(6.5);
 const SUN_LINE = new THREE.Vector4(SUN_LINE_RISE, 1, 0, SUN_LINE_HEIGHT);
 // Sem linha: tudo fica "acima" dela (o resto do cenário).
 const NO_SUN_LINE = new THREE.Vector4(0, 1, 0, -1e6);
-// Tinta "meio suja", como nas texturas do Deiver: manchas largas, arabescos claros bem
-// fracos e pintinhas soltas. Tudo preso ao mundo (não escorrega quando a câmera anda) e
-// projetado pela face do objeto (parede usa xy/zy, chão usa xz). Ex.: num muro de 2 m
-// aparecem ~3 manchas, alguns riscos curvos e umas 60 pintinhas rosadas.
+// Tinta "meio suja", como nas texturas do Deiver: manchas largas, arabescos e pintinhas
+// pretas a até 30% de opacidade. Tudo preso ao mundo (não escorrega quando a câmera anda) e
+// projetado pela face do objeto (parede usa xy/zy, chão usa xz). Assim o ruído é sempre um
+// pouco mais escuro que a superfície em que entra, sem ganhar uma cor própria.
 const DIRT_GLSL = /* glsl */ `
+    const float dirtOpacity = 0.30;
     vec3 dirtNormal = abs(normal);
     vec2 dirtUv = dirtNormal.y > 0.6 ? vWorldPosition.xz : (dirtNormal.x > dirtNormal.z ? vWorldPosition.zy : vWorldPosition.xy);
     float dirtStain = valueNoise(dirtUv * 0.7) * 0.65 + valueNoise(dirtUv * 2.1 + 7.3) * 0.35;
-    color *= 0.86 + dirtStain * 0.28;
+    color = mix(color, vec3(0.0), dirtStain * dirtOpacity);
     float dirtSwirl = (valueNoise(dirtUv * 2.2 + 3.1) + valueNoise(dirtUv * 5.0 - 1.7) * 0.35) * 6.0;
     float dirtLine = 1.0 - smoothstep(0.0, 0.07, abs(fract(dirtSwirl) - 0.5) - 0.42);
-    color = mix(color, color * 1.35 + vec3(0.03, 0.0, 0.03), dirtLine * 0.22);
+    color = mix(color, vec3(0.0), dirtLine * dirtOpacity);
     vec2 dirtCell = floor(dirtUv * 14.0);
     float dirtPick = hash(dirtCell);
     vec2 dirtSpot = fract(dirtUv * 14.0) - 0.5 - (vec2(hash(dirtCell + 1.7), hash(dirtCell + 4.3)) - 0.5) * 0.5;
     float dirtSpeck = step(0.93, dirtPick) * (1.0 - smoothstep(0.09, 0.15, length(dirtSpot)));
-    vec3 dirtSpeckColor = dirtPick > 0.985 ? vec3(0.02, 0.02, 0.08) : vec3(0.75, 0.45, 0.62);
-    color = mix(color, dirtSpeckColor, dirtSpeck * 0.6);
+    color = mix(color, vec3(0.0), dirtSpeck * dirtOpacity);
 `;
 
 const SKY_SPAN = 0.55;
