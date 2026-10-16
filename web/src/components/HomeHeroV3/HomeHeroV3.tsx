@@ -101,7 +101,7 @@ export function HomeHeroV3({
         ref={graphismRef}
         className={styles.graphism}
         src={HOME_ASSETS.hero.graphism.src}
-        srcSet={`${HOME_ASSETS.hero.graphism.srcMobile} 1600w, ${HOME_ASSETS.hero.graphism.src} ${HOME_ASSETS.hero.graphism.width}w`}
+        srcSet={`${HOME_ASSETS.hero.graphism.srcMobile} 2280w, ${HOME_ASSETS.hero.graphism.src} ${HOME_ASSETS.hero.graphism.width}w`}
         sizes="(max-width: 599px) 1140px, 1755px"
         width={HOME_ASSETS.hero.graphism.width}
         height={HOME_ASSETS.hero.graphism.height}

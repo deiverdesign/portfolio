@@ -22,10 +22,12 @@ export const HOME_ASSETS = {
     graphismFooter: "/images/v3/home/identity/graphism-footer.svg",
   },
   hero: {
-    // srcMobile: variante de 1600px de largura (vs 3040 do arquivo cheio),
+    // srcMobile: variante de 2280px de largura (vs 3040 do arquivo cheio),
     // pro <img srcSet> do HomeHeroV3 não baixar a versão desktop em telas
-    // pequenas (Deiver, 16/10 — ~45KB em vez de ~150KB nesse tamanho).
-    graphism: { ...raster("/images/v3/home/hero/deiver-graphism.webp", 3040, 1864), srcMobile: "/images/v3/home/hero/deiver-graphism-1600.webp" },
+    // pequenas (Deiver, 16/10 — ~85KB em vez de ~150KB nesse tamanho).
+    // 2280, não 1140: o slot mobile no CSS é 1140px, mas a maioria dos
+    // celulares tem DPR 2 (precisa de ~2280px físicos pra ficar nítido).
+    graphism: { ...raster("/images/v3/home/hero/deiver-graphism.webp", 3040, 1864), srcMobile: "/images/v3/home/hero/deiver-graphism-2280.webp" },
   },
   capabilities: [
     raster("/images/v3/home/capabilities/capability-01.webp", 895, 510),
