@@ -2380,8 +2380,12 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
           <img className={`${styles.logo} ${styles.logoCinema}`} src="/enquanto-durar-a-fe/logo-enquanto-fe.svg" width={187} height={16} alt="" aria-hidden="true" />
         </span>
         <a className={styles.headerBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/enquanto-durar-a-fe/icone-livro.svg" width={14} height={14} alt="" />
+          <span className={styles.headerBookIcon} aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.headerBookIconStreet} src="/enquanto-durar-a-fe/icone-livro.svg" width={14} height={14} alt="" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.headerBookIconKitchen} src="/enquanto-durar-a-fe/icone-livro-cozinha.svg" width={14} height={14} alt="" />
+          </span>
           Ler na Amazon
         </a>
         <i className={styles.headerLine} aria-hidden="true" />
