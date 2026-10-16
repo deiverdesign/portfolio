@@ -1414,9 +1414,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     addBackdrop(BACKDROP_CITY_URL, 120, 2398 / 1760, 45, 30, -50);
     addBackdrop(BACKDROP_TREES_URL, 44, 2000 / 1561, 22, 8, -2).renderOrder = 1;
 
-    // Pássaros no céu da cidade: quatro poses de asa em uma única textura transparente.
-    // Cada sprite fica em uma profundidade diferente e se move no tempo real — o scroll leva
-    // apenas a câmera. Assim, eles são vida distante, não uma animação grudada na tela.
+    // Pássaros no céu da cidade: só silhuetas muito distantes, em formação. A textura ainda
+    // troca quatro poses de asa, mas o preto e a escala pequena deixam o bando ser lido antes
+    // de ser percebido como um efeito.
     const birdFlock = new THREE.Group();
     birdFlock.renderOrder = 2;
     world.add(birdFlock);
@@ -1426,20 +1426,25 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; span: number; lift: number; speed: number; phase: number; opacity: number };
     const birds: BirdFlight[] = [];
     [
-      [13.5, 8.0, -23, 5.2, .55, .075, .05, .42],
-      [16.0, 7.25, -29, 4.5, .32, .09, .28, .34],
-      [19.5, 8.5, -35, 5.8, .46, .068, .54, .30],
-      [22.0, 7.65, -41, 4.0, .28, .10, .76, .24],
-      [25.5, 8.9, -47, 5.0, .38, .082, .42, .20],
-      [29.0, 7.5, -52, 3.8, .24, .11, .88, .18],
+      [17.0, 8.20, -42, .80, .08, .11, .05, .74],
+      [18.0, 7.93, -42, .80, .08, .08, .17, .68],
+      [19.0, 7.67, -43, .80, .08, .10, .29, .64],
+      [20.0, 7.40, -43, .80, .08, .07, .42, .60],
+      [18.1, 8.65, -44, .80, .08, .09, .58, .58],
+      [19.2, 9.05, -44, .80, .08, .07, .71, .54],
+      [20.3, 9.42, -45, .80, .08, .10, .84, .50],
+      [21.4, 9.77, -45, .80, .08, .06, .36, .46],
+      [21.1, 7.15, -46, .80, .08, .08, .64, .45],
+      [22.2, 6.88, -46, .80, .08, .06, .91, .41],
+      [23.3, 6.62, -47, .80, .08, .08, .23, .38],
     ].forEach(([x, y, z, span, lift, speed, phase, opacity]) => {
       const frameMap = birdSheet.clone();
       frameMap.repeat.set(.25, 1);
       frameMap.offset.set(0, 0);
       frameMap.needsUpdate = true;
-      const material = new THREE.SpriteMaterial({ map: frameMap, transparent: true, opacity, alphaTest: .04, depthWrite: false });
+      const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false });
       const sprite = new THREE.Sprite(material);
-      const size = THREE.MathUtils.lerp(.42, .18, THREE.MathUtils.clamp((-z - 20) / 36, 0, 1));
+      const size = THREE.MathUtils.lerp(.16, .095, THREE.MathUtils.clamp((-z - 40) / 10, 0, 1));
       sprite.scale.set(size * 1.45, size, 1);
       birdFlock.add(sprite);
       birds.push({ sprite, material, frameMap, x, y, z, span, lift, speed, phase, opacity });
@@ -2231,8 +2236,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       if (birdFlock.visible) {
         const birdTime = performance.now() / 1000;
         birds.forEach((bird) => {
-          const flight = (birdTime * bird.speed + bird.phase) % 1;
-          bird.sprite.position.set(bird.x + flight * bird.span, bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift, bird.z);
+          const flight = birdTime * bird.speed;
+          bird.sprite.position.set(bird.x + flight % bird.span, bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift, bird.z);
           bird.frameMap.offset.x = Math.floor(birdTime * 7 + bird.phase * 4) % 4 * .25;
           bird.material.opacity = bird.opacity * birdPresence;
         });
