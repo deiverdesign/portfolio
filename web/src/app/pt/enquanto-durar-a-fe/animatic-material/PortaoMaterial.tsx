@@ -1427,15 +1427,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; span: number; lift: number; speed: number; phase: number; opacity: number };
     const birds: BirdFlight[] = [];
     [
-      // x, y, z, deslocamento, oscilação, velocidade, fase, opacidade, tamanho.
-      // O fundo da direita é uma ilustração plana: estes valores foram posicionados no
-      // céu realmente visível à direita da casa, e não na "cidade" matemática distante.
-      [7.3, 5.85, -6, .80, .04, .07, .05, .74, .180],
-      [7.9, 6.10, -6, .80, .04, .06, .17, .68, .156],
-      [8.5, 6.35, -6, .80, .04, .07, .29, .64, .144],
-      [9.1, 6.60, -6, .80, .04, .06, .42, .60, .132],
-      [8.2, 6.95, -6, .80, .04, .07, .58, .58, .120],
-      [8.9, 7.25, -6, .80, .04, .06, .71, .54, .108],
+      // direita, alto, distância, deslocamento, oscilação, velocidade, fase, opacidade, tamanho.
+      // O fundo da direita é uma ilustração plana; por isso o bando é ancorado no espaço à
+      // frente da câmera, sempre no recorte de céu do lado direito — nunca atrás do morro.
+      [5.8, 2.5, 18, .80, .04, .07, .05, .74, .230],
+      [6.5, 2.8, 19, .80, .04, .06, .17, .68, .200],
+      [7.2, 3.1, 20, .80, .04, .07, .29, .64, .184],
+      [7.9, 3.4, 21, .80, .04, .06, .42, .60, .168],
+      [6.4, 3.8, 20, .80, .04, .07, .58, .58, .152],
+      [7.2, 4.1, 21, .80, .04, .06, .71, .54, .138],
     ].forEach(([x, y, z, span, lift, speed, phase, opacity, size]) => {
       const frameMap = birdSheet.clone();
       frameMap.repeat.set(.25, 1);
@@ -2044,6 +2044,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     const lookAt = new THREE.Vector3();
     const paperFacing = new THREE.Vector3();
     const paperCenter = new THREE.Vector3();
+    const birdDirection = new THREE.Vector3();
+    const birdRight = new THREE.Vector3();
+    const birdUp = new THREE.Vector3();
     let progress = 0;
     let targetProgress = 0;
     let wipe = 0;
@@ -2235,9 +2238,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       birdFlock.visible = !reducedMotion && birdPresence > .005;
       if (birdFlock.visible) {
         const birdTime = performance.now() / 1000;
+        camera.getWorldDirection(birdDirection);
+        birdRight.crossVectors(birdDirection, camera.up).normalize();
+        birdUp.crossVectors(birdRight, birdDirection).normalize();
         birds.forEach((bird) => {
           const flight = birdTime * bird.speed;
-          bird.sprite.position.set(bird.x + flight % bird.span, bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift, bird.z);
+          bird.sprite.position.copy(camera.position)
+            .addScaledVector(birdDirection, bird.z)
+            .addScaledVector(birdRight, bird.x + flight % bird.span)
+            .addScaledVector(birdUp, bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift);
           // O bando todo compartilha a mesma batida de asas: é a mesma silhueta em seis escalas.
           bird.frameMap.offset.x = Math.floor(birdTime * 7) % 4 * .25;
           bird.material.opacity = bird.opacity * birdPresence;
