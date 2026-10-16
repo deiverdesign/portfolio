@@ -79,7 +79,7 @@ const PALM_HEIGHT = 6.3;
 const COBBLE_URL = "/enquanto-durar-a-fe/texturas/paralelepipedo.jpg?v=2";
 // Fundo da direita (PNGs do Deiver, convertidos para webp de 2048 px).
 const BACKDROP_CITY_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-cidade.webp?v=1";
-const BACKDROP_TREES_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-frente.webp?v=1";
+const BACKDROP_TREES_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-frente.webp?v=2";
 const COBBLE_ASPECT = 2120 / 1100;
 const PAPER_WIDTH = 5.2;
 // Bilhete cortado rente ao texto (o Deiver marcou o corte): 1024 × 400 px de textura.
@@ -1402,7 +1402,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       return plane;
     };
     addBackdrop(BACKDROP_CITY_URL, 120, 2398 / 1760, 45, 30, -50);
-    addBackdrop(BACKDROP_TREES_URL, 44, 2408 / 522, 22, 8, -2).renderOrder = 1;
+    addBackdrop(BACKDROP_TREES_URL, 44, 2000 / 1561, 22, 8, -2).renderOrder = 1;
 
     // No animatic cinza este plano era o "céu". Aqui ele vira só a massa escura de morro
     // abaixo da linha da cidade, para o degradê amarelo aparecer acima dela.
