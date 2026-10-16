@@ -2130,7 +2130,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       sun.intensity = 1 - THREE.MathUtils.smoothstep(inside, 0, .05);
       // A cozinha (paredes de 2,7 m logo atrás do começo da rua) jogava a sombra do sol em cima
       // da parte baixa da rua. Ela só faz sombra lá dentro, onde quem ilumina é a lâmpada.
-      const kitchenCasts = inside > 0;
+      // Liga só depois que o sol já apagou de todo (mesmo ponto do smoothstep acima: inside .05):
+      // ligar exatamente em inside > 0, junto com o sol ainda suavizando, deixava a sombra
+      // piscar por uma fresta de alguns quadros (Deiver, 16/10).
+      const kitchenCasts = inside >= .05;
       if (kitchenGroup && kitchenCasts !== kitchenCastsShadow) {
         kitchenCastsShadow = kitchenCasts;
         kitchenGroup.traverse((child) => {
