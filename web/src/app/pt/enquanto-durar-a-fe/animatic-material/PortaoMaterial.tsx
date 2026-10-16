@@ -2233,8 +2233,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       fireflyMaterial.uniforms.uPixels.value = renderer.domElement.height * .5;
       // A tela do celular é fisicamente pequena: o mesmo vaga-lume em pixels fica minúsculo.
       fireflyMaterial.uniforms.uBoost.value = camera.aspect < 1 ? 1.5 : 1;
-      // Só entra quando a cidade já aparece à direita e desaparece antes da foto fixa da janela.
-      const birdPresence = (1 - inside) * THREE.MathUtils.smoothstep(sceneProgress, .28, .38) * (1 - THREE.MathUtils.smoothstep(sceneProgress, .64, .69));
+      // O bando existe durante toda a rua e só sai quando a câmera entra na cozinha.
+      // Assim não depende de uma faixa estreita de scroll para ficar visível.
+      const birdPresence = 1 - inside;
       birdFlock.visible = !reducedMotion && birdPresence > .005;
       if (birdFlock.visible) {
         const birdTime = performance.now() / 1000;
