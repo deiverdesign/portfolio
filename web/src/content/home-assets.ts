@@ -22,12 +22,12 @@ export const HOME_ASSETS = {
     graphismFooter: "/images/v3/home/identity/graphism-footer.svg",
   },
   hero: {
-    graphism: raster("/images/v3/home/hero/deiver-graphism.png", 3040, 1864),
+    graphism: raster("/images/v3/home/hero/deiver-graphism.webp", 3040, 1864),
   },
   capabilities: [
-    raster("/images/v3/home/capabilities/capability-01.png", 895, 510),
-    raster("/images/v3/home/capabilities/capability-02.png", 895, 510),
-    raster("/images/v3/home/capabilities/capability-03.png", 895, 551),
+    raster("/images/v3/home/capabilities/capability-01.webp", 895, 510),
+    raster("/images/v3/home/capabilities/capability-02.webp", 895, 510),
+    raster("/images/v3/home/capabilities/capability-03.webp", 895, 551),
   ],
   contact: {
     availableLabel: {
@@ -37,7 +37,7 @@ export const HOME_ASSETS = {
     // Substituído em 27/09/2026: o Deiver atualizou o recorte no Figma
     // (node 1729:13198) — retrato já cortado no hexágono, sem o fundo
     // solto em volta que o antigo portrait.png tinha.
-    portrait: raster("/images/v3/home/contact/portrait-hex.png", 1128, 1368),
+    portrait: raster("/images/v3/home/contact/portrait-hex.webp", 1128, 1368),
     graphismBackground: "/images/v3/home/contact/graphism-background.svg",
     graphismBackgroundTablet: "/images/v3/home/contact/graphism-tablet.svg",
   },
@@ -46,24 +46,24 @@ export const HOME_ASSETS = {
   },
   cases: {
     scrioo: {
-      container: raster("/images/v3/home/cases/scrioo-container.png", 716, 771),
-      devices: raster("/images/v3/home/cases/scrioo-devices.png", 2585, 1915),
+      container: raster("/images/v3/home/cases/scrioo-container.webp", 716, 771),
+      devices: raster("/images/v3/home/cases/scrioo-devices.webp", 2585, 1915),
     },
     hp: {
-      devices: raster("/images/v3/home/cases/hp-devices.png", 1300, 912),
-      devicesMobile: raster("/images/v3/home/cases/hp-devices-mobile.png", 4096, 2895),
+      devices: raster("/images/v3/home/cases/hp-devices.webp", 1300, 912),
+      devicesMobile: raster("/images/v3/home/cases/hp-devices-mobile.webp", 4096, 2895),
     },
     theodoor: {
-      device: raster("/images/v3/home/cases/theodoor-device.png", 1121, 1038),
-      deviceMobile: raster("/images/v3/home/cases/theodoor-device-mobile.png", 2248, 1760),
+      device: raster("/images/v3/home/cases/theodoor-device.webp", 1121, 1038),
+      deviceMobile: raster("/images/v3/home/cases/theodoor-device-mobile.webp", 2248, 1760),
     },
     intuit: {
-      device: raster("/images/v3/home/cases/intuit-device.png", 942, 1224),
-      deviceMobile: raster("/images/v3/home/cases/intuit-device-mobile.png", 1084, 1416),
+      device: raster("/images/v3/home/cases/intuit-device.webp", 942, 1224),
+      deviceMobile: raster("/images/v3/home/cases/intuit-device-mobile.webp", 1084, 1416),
     },
     aster: {
-      background: raster("/images/v3/home/cases/aster-background.png", 1497, 1885),
-      foreground: raster("/images/v3/home/cases/aster-foreground.png", 1200, 1008),
+      background: raster("/images/v3/home/cases/aster-background.webp", 1497, 1885),
+      foreground: raster("/images/v3/home/cases/aster-foreground.webp", 1200, 1008),
     },
   },
 } as const;

@@ -14,13 +14,13 @@ export const ABOUT_ASSETS = {
     // Recorte com leve overflow no Figma (a ilustração é ~5% maior que o
     // frame que a contém, cortada por overflow:hidden) — ver
     // AboutHeroV3.module.css pro tratamento exato dessa borda.
-    graphism: raster("/images/v3/about/hero/deiver-graphism-about.png", 2145, 1472),
-    photo: raster("/images/v3/about/hero/deiver-photo-about.png", 1320, 1485),
+    graphism: raster("/images/v3/about/hero/deiver-graphism-about.webp", 2145, 1472),
+    photo: raster("/images/v3/about/hero/deiver-photo-about.webp", 1320, 1485),
   },
   beliefs: {
-    photo1: raster("/images/v3/about/beliefs/deiver-about-photo1.png", 1371, 582),
-    photo2: raster("/images/v3/about/beliefs/deiver-about-photo2.png", 504, 555),
-    photo3: raster("/images/v3/about/beliefs/deiver-about-photo3.png", 819, 555),
+    photo1: raster("/images/v3/about/beliefs/deiver-about-photo1.webp", 1371, 582),
+    photo2: raster("/images/v3/about/beliefs/deiver-about-photo2.webp", 504, 555),
+    photo3: raster("/images/v3/about/beliefs/deiver-about-photo3.webp", 819, 555),
     // Diferente do badge estático usado no Home (HOME_ASSETS.contact.
     // availableLabel): este tem o texto "AVAILABLE TO WORK" cravado no
     // próprio SVG, sem variante por idioma — conferido visualmente no
@@ -28,11 +28,11 @@ export const ABOUT_ASSETS = {
     availableBadge: "/images/v3/about/beliefs/available-badge.svg",
   },
   process: {
-    banner: raster("/images/v3/about/complex-products-banner.png", 1336, 846),
+    banner: raster("/images/v3/about/complex-products-banner.webp", 1336, 846),
     showreel: {
       src: "/video/deiver-showreel.mp4",
       poster: "/video/deiver-showreel-poster.jpg",
-      thumbnail: "/images/v3/about/showreel-thumbnail.png",
+      thumbnail: "/images/v3/about/showreel-thumbnail.webp",
     },
   },
 } as const;
