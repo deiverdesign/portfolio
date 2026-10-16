@@ -243,13 +243,17 @@ const NO_SUN_LINE = new THREE.Vector4(0, 1, 0, -1e6);
 // pouco mais escuro que a superfície em que entra, sem ganhar uma cor própria.
 const DIRT_GLSL = /* glsl */ `
     const float dirtOpacity = 0.30;
+    // As linhas (dirtLine) ficam bem mais fracas que mancha e pintinha: em preto cheio elas
+    // liam como ondas/contorno no chão (16/10). Mais discretas, continuam dando textura sem
+    // virar um padrão visível.
+    const float dirtLineOpacity = 0.11;
     vec3 dirtNormal = abs(normal);
     vec2 dirtUv = dirtNormal.y > 0.6 ? vWorldPosition.xz : (dirtNormal.x > dirtNormal.z ? vWorldPosition.zy : vWorldPosition.xy);
     float dirtStain = valueNoise(dirtUv * 0.7) * 0.65 + valueNoise(dirtUv * 2.1 + 7.3) * 0.35;
     color = mix(color, vec3(0.0), dirtStain * dirtOpacity);
     float dirtSwirl = (valueNoise(dirtUv * 2.2 + 3.1) + valueNoise(dirtUv * 5.0 - 1.7) * 0.35) * 6.0;
     float dirtLine = 1.0 - smoothstep(0.0, 0.07, abs(fract(dirtSwirl) - 0.5) - 0.42);
-    color = mix(color, vec3(0.0), dirtLine * dirtOpacity);
+    color = mix(color, vec3(0.0), dirtLine * dirtLineOpacity);
     vec2 dirtCell = floor(dirtUv * 14.0);
     float dirtPick = hash(dirtCell);
     vec2 dirtSpot = fract(dirtUv * 14.0) - 0.5 - (vec2(hash(dirtCell + 1.7), hash(dirtCell + 4.3)) - 0.5) * 0.5;
