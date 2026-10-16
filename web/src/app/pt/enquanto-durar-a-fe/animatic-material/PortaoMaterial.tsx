@@ -1430,12 +1430,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // direita, alto, distância, deslocamento, oscilação, velocidade, fase, opacidade, tamanho.
       // O fundo da direita é uma ilustração plana; por isso o bando é ancorado no espaço à
       // frente da câmera, sempre no recorte de céu do lado direito — nunca atrás do morro.
-      [5.8, 1.6, 18, .80, .04, .07, .05, .92, .360],
-      [6.5, 1.9, 19, .80, .04, .06, .17, .88, .318],
-      [7.2, 2.2, 20, .80, .04, .07, .29, .84, .292],
-      [7.9, 2.5, 21, .80, .04, .06, .42, .80, .270],
-      [6.4, 2.9, 20, .80, .04, .07, .58, .76, .246],
-      [7.2, 3.2, 21, .80, .04, .06, .71, .72, .224],
+      // A folha tem margem transparente generosa em cada frame; os tamanhos abaixo
+      // compensam essa margem para a silhueta ser lida como pássaro, não como ponto.
+      [5.8, 1.6, 18, .80, .04, .07, .05, .92, .800],
+      [6.5, 1.9, 19, .80, .04, .06, .17, .88, .706],
+      [7.2, 2.2, 20, .80, .04, .07, .29, .84, .648],
+      [7.9, 2.5, 21, .80, .04, .06, .42, .80, .598],
+      [6.4, 2.9, 20, .80, .04, .07, .58, .76, .544],
+      [7.2, 3.2, 21, .80, .04, .06, .71, .72, .496],
     ].forEach(([x, y, z, span, lift, speed, phase, opacity, size]) => {
       const frameMap = birdSheet.clone();
       frameMap.repeat.set(.25, 1);
