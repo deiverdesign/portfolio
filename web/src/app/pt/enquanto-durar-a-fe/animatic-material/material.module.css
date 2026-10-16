@@ -69,15 +69,16 @@
 
 /* Filtro fixo na tela, desenhado pelo Deiver no Figma (frame 1465 x 761, "fixed mask"): vinheta
    azul-noite e manchas de luz borradas nas bordas. Posições em % desse frame. Cada mancha é filha
-   direta do .stage para o mix-blend-mode misturar com o 3D. */
-.vignette { position: absolute; z-index: 2; inset: 0; background: radial-gradient(ellipse 52.2% 70.8% at 50.9% 29.2%, rgba(5,7,35,0) 35.9%, #050723 100%); opacity: calc(.9 * (1 - var(--flash, 0))); pointer-events: none; }
+   direta do .stage para o mix-blend-mode misturar com o 3D. Ajuste de 16/10: vinheta em 55/80
+   da força anterior e luzes em 50%, para a moldura não competir com a cena. */
+.vignette { position: absolute; z-index: 2; inset: 0; background: radial-gradient(ellipse 52.2% 70.8% at 50.9% 29.2%, rgba(5,7,35,0) 35.9%, #050723 100%); opacity: calc(.61875 * (1 - var(--flash, 0))); pointer-events: none; }
 /* Manchas de cor da rua: somem quando a luz vermelha da cozinha acende (--street-glow vai de 1 a 0). */
 .glow { position: absolute; z-index: 2; border-radius: 50%; pointer-events: none; }
-.glowBottomLeft { left: -30.6%; top: 94.3%; width: 49.1%; height: 24%; background: #c0683a; opacity: calc(.35 * var(--street-glow, 1)); filter: blur(5.1vw); }
-.glowRight { left: 82.5%; top: 61.9%; width: 46.8%; height: 26.2%; background: #f0a647; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.4 * var(--street-glow, 1)); }
-.glowRightHigh { left: 96.6%; top: 42.3%; width: 16.6%; height: 30.3%; background: #f3c35a; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.4 * var(--street-glow, 1)); }
-.glowBottom { left: 21.7%; top: 104.2%; width: 63.4%; height: 15.7%; background: #1f8fc4; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.7 * var(--street-glow, 1)); }
-.glowPurple { left: 87.2%; top: 50.6%; width: 14%; height: 11.3%; background: #b31bf4; opacity: calc(.5 * var(--street-glow, 1)); filter: blur(3.75vw); }
+.glowBottomLeft { left: -30.6%; top: 94.3%; width: 49.1%; height: 24%; background: #c0683a; opacity: calc(.175 * var(--street-glow, 1)); filter: blur(5.1vw); }
+.glowRight { left: 82.5%; top: 61.9%; width: 46.8%; height: 26.2%; background: #f0a647; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.2 * var(--street-glow, 1)); }
+.glowRightHigh { left: 96.6%; top: 42.3%; width: 16.6%; height: 30.3%; background: #f3c35a; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.2 * var(--street-glow, 1)); }
+.glowBottom { left: 21.7%; top: 104.2%; width: 63.4%; height: 15.7%; background: #1f8fc4; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.35 * var(--street-glow, 1)); }
+.glowPurple { left: 87.2%; top: 50.6%; width: 14%; height: 11.3%; background: #b31bf4; opacity: calc(.25 * var(--street-glow, 1)); filter: blur(3.75vw); }
 /* Máscara da abertura (Deiver, 2026-10-10): escura no alto e transparente embaixo, para
    ler o título no meio da tela. Some no começo do scroll. Ex.: com 8% do scroll ela já
    está pela metade; com 16%, sumiu. */
@@ -136,7 +137,7 @@
 .ending { min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }.endingCredit { margin-top: 24px; color: rgba(237,237,231,.72); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .05em; text-underline-offset: 3px; }.endingCredit:hover { color: #fff; }.endingCredit:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 680px) {
-  .animatic { min-height: 1115vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.2 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; opacity: clamp(0, calc(1 - var(--scroll-progress) * 4.5), 1); }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
+  .animatic { min-height: 1115vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.1 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; opacity: clamp(0, calc(1 - var(--scroll-progress) * 4.5), 1); }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
   /* Celular: centralizada no rodapé, acima da safe area, 164 px, com os pontos dos anos. O
      marcador fica parado no meio e a linha (60 px entre pontos) anda por baixo dele. Aparece
      depois que o texto "Role para entrar" sai, para os dois não se cruzarem. */
