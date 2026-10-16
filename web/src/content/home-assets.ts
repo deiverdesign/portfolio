@@ -22,7 +22,10 @@ export const HOME_ASSETS = {
     graphismFooter: "/images/v3/home/identity/graphism-footer.svg",
   },
   hero: {
-    graphism: raster("/images/v3/home/hero/deiver-graphism.webp", 3040, 1864),
+    // srcMobile: variante de 1600px de largura (vs 3040 do arquivo cheio),
+    // pro <img srcSet> do HomeHeroV3 não baixar a versão desktop em telas
+    // pequenas (Deiver, 16/10 — ~45KB em vez de ~150KB nesse tamanho).
+    graphism: { ...raster("/images/v3/home/hero/deiver-graphism.webp", 3040, 1864), srcMobile: "/images/v3/home/hero/deiver-graphism-1600.webp" },
   },
   capabilities: [
     raster("/images/v3/home/capabilities/capability-01.webp", 895, 510),

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
 
 import type { Locale } from "@/content/i18n";
 import { getCopy } from "@/content/site-copy";
@@ -98,16 +97,17 @@ export function HomeHeroV3({
       data-content-visible={contentVisible}
       inert={contentVisible ? undefined : true}
     >
-      <Image
+      <img
         ref={graphismRef}
         className={styles.graphism}
         src={HOME_ASSETS.hero.graphism.src}
+        srcSet={`${HOME_ASSETS.hero.graphism.srcMobile} 1600w, ${HOME_ASSETS.hero.graphism.src} ${HOME_ASSETS.hero.graphism.width}w`}
+        sizes="(max-width: 599px) 1140px, 1755px"
         width={HOME_ASSETS.hero.graphism.width}
         height={HOME_ASSETS.hero.graphism.height}
         alt=""
         aria-hidden="true"
-        priority
-        unoptimized
+        fetchPriority="high"
       />
 
       <NavBarV3
@@ -129,8 +129,9 @@ export function HomeHeroV3({
                 28/09/2026: ícone de imagem quebrada no lugar do coqueiro,
                 arquivo em si estava correto). Mesmo padrão já usado em
                 todo o resto do site pra SVG (NavBarV3, BrandsSectionV3,
-                etc.) — só a foto grande do grafismo (PNG, linha acima)
-                usa next/image de verdade. */}
+                etc.) — o grafismo grande (webp, linha acima) também virou
+                <img> simples com srcSet manual, já que o export estático
+                não tem o otimizador do Next pra gerar isso sozinho. */}
             <img
               src={HOME_ASSETS.identity.locationTree}
               width={14}

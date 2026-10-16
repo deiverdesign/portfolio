@@ -1,10 +1,32 @@
-import { Fragment, type CSSProperties, type MouseEventHandler } from "react";
+import { Fragment, type CSSProperties, type MouseEventHandler, useEffect, useState } from "react";
 
 import { CaseHeroNoise } from "@/components/CaseHeroBackground/CaseHeroNoise";
 import { IconV3 } from "@/components/IconV3/IconV3";
 import { TagV3 } from "@/components/TagV3/TagV3";
 import type { RasterAsset } from "@/content/home-assets";
 import styles from "./CaseCardLargeV3.module.css";
+
+// Mesmo breakpoint do CSS (.mobileDevices vira display:block aí — ver
+// CaseCardLargeV3.module.css). Antes os dois <img> (devices e
+// mobileDevices) ficavam sempre no DOM e o CSS só escondia um com
+// display:none — o navegador baixava as duas imagens em qualquer tela.
+// Aqui só o <img> certo é renderizado, então só ele baixa.
+// null = ainda não sabemos (SSR/antes do primeiro efeito): não renderiza
+// nenhum dos dois <img> ainda, pra nunca começar a baixar o errado. Como
+// os dois são position:absolute, não ter a imagem por um instante não
+// move mais nada no card (sem layout shift).
+const MOBILE_DEVICES_QUERY = "(max-width: 599px)";
+function useIsMobileDevices() {
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  useEffect(() => {
+    const query = window.matchMedia(MOBILE_DEVICES_QUERY);
+    setIsMobile(query.matches);
+    const onChange = (event: MediaQueryListEvent) => setIsMobile(event.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+  return isMobile;
+}
 
 export interface CaseCardLargeV3Props {
   /** "large" (742×480) é o card "destaque" — só a SCRIOO tem hoje, mas
@@ -146,6 +168,12 @@ export function CaseCardLargeV3({
   const sizeClass = size === "small" ? styles.small : styles.large;
   const classes = className ? `${styles.root} ${sizeClass} ${className}` : `${styles.root} ${sizeClass}`;
   const resolvedBackground = background ?? `linear-gradient(to bottom, ${gradientFrom}, ${gradientTo})`;
+  const isMobileDevices = useIsMobileDevices();
+  const activeDevices = isMobileDevices ? (mobileDevices ?? devices) : devices;
+  const activeDevicesStyle = isMobileDevices ? mobileDevicesStyle : devicesStyle;
+  // No tamanho ainda desconhecido (isMobileDevices === null) .mobileDevices
+  // serve só pra manter escondido por padrão (mesma regra de sempre do CSS).
+  const activeDevicesClass = isMobileDevices ? styles.mobileDevices : styles.devices;
 
   return (
     <a href={href} className={classes} style={{ background: resolvedBackground }} onClick={onClick} aria-haspopup={ariaHasPopup}>
@@ -187,23 +215,16 @@ export function CaseCardLargeV3({
         />
       )}
 
-      <img
-        src={devices.src}
-        width={devices.width}
-        height={devices.height}
-        alt=""
-        className={styles.devices}
-        style={devicesStyle}
-      />
-
-      <img
-        src={(mobileDevices ?? devices).src}
-        width={(mobileDevices ?? devices).width}
-        height={(mobileDevices ?? devices).height}
-        alt=""
-        className={styles.mobileDevices}
-        style={mobileDevicesStyle}
-      />
+      {isMobileDevices !== null && (
+        <img
+          src={activeDevices.src}
+          width={activeDevices.width}
+          height={activeDevices.height}
+          alt=""
+          className={activeDevicesClass}
+          style={activeDevicesStyle}
+        />
+      )}
 
       <p className={styles.title} style={titleColor ? { color: titleColor } : undefined}>
         {titleLines.map((line, index) => (
