@@ -44,8 +44,8 @@
    As medidas acompanham o logo de 187 × 16 px; com movimento reduzido ele não existe. */
 @keyframes durarStrike { from { opacity: 1; transform: scaleX(.02); } to { opacity: 1; transform: scaleX(1); } }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .logoStack::after { position: absolute; top: 52%; left: 33.2%; width: 29.1%; height: 1.5px; border-radius: 999px; background: #131a42; content: ""; opacity: 0; pointer-events: none; transform: scaleX(.02); transform-origin: left center; }
-  .logoStack:hover::after { animation: durarStrike .3s cubic-bezier(.2, .8, .2, 1) both; }
+  .logoStack::after { position: absolute; top: 52%; left: 33.2%; width: 29.1%; height: 1.5px; border-radius: 999px; background: #131a42; content: ""; opacity: 0; pointer-events: none; transform: scaleX(.02); transform-origin: left center; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+  .logoStack:hover::after { opacity: 1; transform: scaleX(1); }
 }
 @media (hover: none) and (pointer: coarse) and (max-width: 680px) and (prefers-reduced-motion: no-preference) {
   .logoStack::after { position: absolute; top: 52%; left: 33.2%; width: 29.1%; height: 1.5px; border-radius: 999px; background: #131a42; content: ""; opacity: 0; pointer-events: none; transform: scaleX(.02); transform-origin: left center; animation: durarStrike .3s cubic-bezier(.2, .8, .2, 1) 3s forwards; }
