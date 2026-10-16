@@ -61,8 +61,9 @@ const cruise = (t: number, ramp = .1) => {
 };
 // Dali para trás do alto, o chão fica plano.
 const groundY = (z: number) => roadY(Math.max(z, TOP_Z));
-// Palmeira feita pelo Deiver no Meshy, com a textura pintada do jeito que veio.
-const PALM_URL = "/enquanto-durar-a-fe/palmeira-web.glb";
+// Bananeira de Sketchfab (The_Structure_World, CC-BY 4.0), sem a textura fotográfica original:
+// a cor final vem do material cel-shading desta cena.
+const BANANA_URL = "/enquanto-durar-a-fe/bananeira-web.glb";
 // Helena do Meshy, simplificada para 10% dos triângulos e comprimida (meshopt): 330 KB.
 const HELENA_URL = "/enquanto-durar-a-fe/helena-web.glb?v=1";
 const MONEY_URL = "/enquanto-durar-a-fe/notas-real-web.glb?v=1";
@@ -72,7 +73,7 @@ const VINE_URL = "/enquanto-durar-a-fe/trepadeira-web.glb?v=2";
 // Planta de vaso do Sketchfab ("plant.glb" do Deiver), só a planta (sem o vaso), simplificada:
 // 1 m de altura, origem no pé do caule. Pintada com as mesmas cores da trepadeira.
 const POTTED_PLANT_URL = "/enquanto-durar-a-fe/planta-vaso-web.glb?v=1";
-const PALM_HEIGHT = 6.3;
+const BANANA_HEIGHT = 4.2;
 // Paralelepípedo desenhado pelo Deiver no Figma: a largura da imagem é a largura da rua
 // e ela se repete só no comprimento. 1100 × 2120 px em 5 m dá ~9,6 m por repetição.
 // O ?v= muda a cada textura nova, senão o navegador mostra a antiga.
@@ -1188,13 +1189,33 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       world.add(plants);
     });
 
-    // Palmeira de ~6,3 m (30% menor que antes), à esquerda, para não cobrir a casa.
-    loadPainted(PALM_URL, (palm) => {
-      fitBox.setFromObject(palm);
+    // Bananeira à esquerda: descarta a textura fotográfica e recebe as faixas de tinta da rua.
+    // Como folhas são planos finos, DoubleSide evita que desapareçam ao serem vistas por baixo.
+    const bananaMaterial = addManualRim(sceneCel({
+      lit: "#92ae2c",
+      mid: "#1b4c79",
+      shade: "#13245f",
+      deep: TINTA.navyDeep,
+      rim: TINTA.yellow,
+      rimAmount: .22,
+    }), new THREE.Vector3(1, .35, -.35), .3);
+    bananaMaterial.side = THREE.DoubleSide;
+    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(BANANA_URL, (gltf) => {
+      if (disposed) return;
+      const banana = gltf.scene;
+      banana.traverse((child) => {
+        if (!(child instanceof THREE.Mesh)) return;
+        const original = child.material as THREE.Material;
+        child.material = bananaMaterial;
+        original.dispose();
+        child.castShadow = true;
+      });
+      fitBox.setFromObject(banana);
       fitBox.getSize(fitSize);
-      palm.scale.setScalar(m(PALM_HEIGHT) / fitSize.y);
-      fitBox.setFromObject(palm);
-      palm.position.set(-m(5) - (fitBox.min.x + fitBox.max.x) / 2, groundY(GATE_Z) - fitBox.min.y, GATE_Z - m(1.6) - (fitBox.min.z + fitBox.max.z) / 2);
+      banana.scale.setScalar(m(BANANA_HEIGHT) / fitSize.y);
+      fitBox.setFromObject(banana);
+      banana.position.set(-m(4.8) - (fitBox.min.x + fitBox.max.x) / 2, groundY(GATE_Z) - fitBox.min.y, GATE_Z - m(1.55) - (fitBox.min.z + fitBox.max.z) / 2);
+      world.add(banana);
     });
 
     // Postes de 4,5 m na calçada da esquerda, com um braço curvo e a luminária sobre a rua
