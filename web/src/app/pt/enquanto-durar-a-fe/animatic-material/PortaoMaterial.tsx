@@ -1430,12 +1430,12 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // direita, alto, distância, deslocamento, oscilação, velocidade, fase, opacidade, tamanho.
       // O fundo da direita é uma ilustração plana; por isso o bando é ancorado no espaço à
       // frente da câmera, sempre no recorte de céu do lado direito — nunca atrás do morro.
-      [5.8, 2.5, 18, .80, .04, .07, .05, .74, .230],
-      [6.5, 2.8, 19, .80, .04, .06, .17, .68, .200],
-      [7.2, 3.1, 20, .80, .04, .07, .29, .64, .184],
-      [7.9, 3.4, 21, .80, .04, .06, .42, .60, .168],
-      [6.4, 3.8, 20, .80, .04, .07, .58, .58, .152],
-      [7.2, 4.1, 21, .80, .04, .06, .71, .54, .138],
+      [5.8, 1.6, 18, .80, .04, .07, .05, .92, .360],
+      [6.5, 1.9, 19, .80, .04, .06, .17, .88, .318],
+      [7.2, 2.2, 20, .80, .04, .07, .29, .84, .292],
+      [7.9, 2.5, 21, .80, .04, .06, .42, .80, .270],
+      [6.4, 2.9, 20, .80, .04, .07, .58, .76, .246],
+      [7.2, 3.2, 21, .80, .04, .06, .71, .72, .224],
     ].forEach(([x, y, z, span, lift, speed, phase, opacity, size]) => {
       const frameMap = birdSheet.clone();
       frameMap.repeat.set(.25, 1);
