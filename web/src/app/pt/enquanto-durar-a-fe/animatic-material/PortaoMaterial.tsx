@@ -1428,20 +1428,24 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     const birds: BirdFlight[] = [];
     [
       // x, y, z, deslocamento, oscilação, velocidade, fase, opacidade, tamanho.
-      [17.0, 8.20, -42, .80, .08, .11, .05, .74, .128],
-      [18.3, 7.93, -42, .80, .08, .08, .17, .68, .102],
-      [19.6, 7.67, -43, .80, .08, .10, .29, .64, .096],
-      [20.9, 7.40, -43, .80, .08, .07, .42, .60, .088],
-      [19.0, 8.82, -44, .80, .08, .09, .58, .58, .080],
-      [20.6, 9.18, -45, .80, .08, .07, .71, .54, .072],
+      // O fundo da direita é uma ilustração plana: estes valores foram posicionados no
+      // céu realmente visível à direita da casa, e não na "cidade" matemática distante.
+      [7.3, 5.85, -6, .80, .04, .07, .05, .74, .180],
+      [7.9, 6.10, -6, .80, .04, .06, .17, .68, .156],
+      [8.5, 6.35, -6, .80, .04, .07, .29, .64, .144],
+      [9.1, 6.60, -6, .80, .04, .06, .42, .60, .132],
+      [8.2, 6.95, -6, .80, .04, .07, .58, .58, .120],
+      [8.9, 7.25, -6, .80, .04, .06, .71, .54, .108],
     ].forEach(([x, y, z, span, lift, speed, phase, opacity, size]) => {
       const frameMap = birdSheet.clone();
       frameMap.repeat.set(.25, 1);
       frameMap.offset.set(0, 0);
       frameMap.needsUpdate = true;
-      const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false });
+      // A árvore do fundo também é uma imagem plana; não pode cobrir o bando no céu.
+      const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false, depthTest: false });
       const sprite = new THREE.Sprite(material);
       sprite.scale.set(size * 1.45, size, 1);
+      sprite.frustumCulled = false;
       birdFlock.add(sprite);
       birds.push({ sprite, material, frameMap, x, y, z, span, lift, speed, phase, opacity });
     });
