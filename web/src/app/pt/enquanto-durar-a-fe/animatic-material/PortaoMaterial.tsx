@@ -1456,13 +1456,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // x, y, z, ganho para ultrapassar, oscilação, velocidade, fase, opacidade, tamanho.
       // O começo fica escondido pela casa; as silhuetas são deliberadamente pequenas,
       // baixas no horizonte e passam rápido demais para competir com a narrativa.
-      [1.65, 11.35, -4.8, 0, .06, .62, .05, .80, .430],
-      [2.22, 11.18, -5.0, 0, .06, .62, .17, .76, .390],
-      [2.79, 11.01, -5.2, 0, .06, .62, .29, .72, .360],
-      [3.36, 10.84, -5.4, 0, .06, .62, .42, .68, .330],
+      [1.65, 11.35, -29.0, 0, .06, .62, .05, .80, .430],
+      [2.22, 11.18, -29.2, 0, .06, .62, .17, .76, .390],
+      [2.79, 11.01, -29.4, 0, .06, .62, .29, .72, .360],
+      [3.36, 10.84, -29.6, 0, .06, .62, .42, .68, .330],
       // A quinta começa atrás, acelera no meio da travessia e assume a ponta do V.
-      [2.48, 11.68, -5.6, 1.65, .06, .62, .58, .64, .310],
-      [3.05, 11.98, -5.8, 0, .06, .62, .71, .60, .285],
+      [2.48, 11.68, -29.8, 1.65, .06, .62, .58, .64, .310],
+      [3.05, 11.98, -30.0, 0, .06, .62, .71, .60, .285],
     ].forEach(([x, y, z, leadBoost, lift, speed, phase, opacity, size]) => {
       // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
       // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
