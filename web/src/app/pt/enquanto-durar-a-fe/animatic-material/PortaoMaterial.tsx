@@ -1436,7 +1436,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     addBackdrop(BACKDROP_CITY_URL, 120, 2398 / 1760, 45, 30, -50);
     addBackdrop(BACKDROP_TREES_URL, 44, 2000 / 1561, 22, 8, -2).renderOrder = 1;
 
-    // Pássaros no céu da cidade: seis cópias pequenas da mesma silhueta, em formação.
+    // Pássaros no céu da cidade: um detalhe distante, revelado atrás da casa.
     // Todos trocam a pose de asa juntos; variam somente tamanho, altura e deslocamento.
     const birdFlock = new THREE.Group();
     // A profundidade é a da própria cena: a casa e os objetos mais próximos podem
@@ -1454,15 +1454,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     const birds: BirdFlight[] = [];
     [
       // x, y, z, ganho para ultrapassar, oscilação, velocidade, fase, opacidade, tamanho.
-      // O bando existe atrás do bilhete e das casas — não preso ao enquadramento da câmera.
-      // A escala compensa as margens transparentes generosas da folha de sprites.
-      [3.3, 13.45, -4.8, 0, .10, .28, .05, .92, .800],
-      [4.4, 13.17, -5.0, 0, .10, .28, .17, .88, .706],
-      [5.5, 12.89, -5.2, 0, .10, .28, .29, .84, .648],
-      [6.6, 12.61, -5.4, 0, .10, .28, .42, .80, .598],
+      // O começo fica escondido pela casa; as silhuetas são deliberadamente pequenas,
+      // baixas no horizonte e passam rápido demais para competir com a narrativa.
+      [1.65, 11.35, -4.8, 0, .06, .62, .05, .80, .430],
+      [2.22, 11.18, -5.0, 0, .06, .62, .17, .76, .390],
+      [2.79, 11.01, -5.2, 0, .06, .62, .29, .72, .360],
+      [3.36, 10.84, -5.4, 0, .06, .62, .42, .68, .330],
       // A quinta começa atrás, acelera no meio da travessia e assume a ponta do V.
-      [4.9, 14.07, -5.6, 2.7, .10, .28, .58, .76, .544],
-      [6.1, 14.43, -5.8, 0, .10, .28, .71, .72, .496],
+      [2.48, 11.68, -5.6, 1.65, .06, .62, .58, .64, .310],
+      [3.05, 11.98, -5.8, 0, .06, .62, .71, .60, .285],
     ].forEach(([x, y, z, leadBoost, lift, speed, phase, opacity, size]) => {
       // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
       // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
@@ -2268,8 +2268,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       if (birdFlock.visible) {
         const birdTime = performance.now() / 1000;
         const flightTime = Math.max(0, birdTime - (birdFlightStartedAt ?? birdTime));
-        // Aos 3,5 s uma ave de trás começa a ultrapassar; aos 6 s ela está na liderança.
-        const leadChange = THREE.MathUtils.smoothstep(flightTime, 3.5, 6);
+        // Em uma travessia curta, uma ave de trás começa a ultrapassar e assume a ponta.
+        const leadChange = THREE.MathUtils.smoothstep(flightTime, 1.5, 3.2);
         birds.forEach((bird) => {
           const flight = flightTime * bird.speed + leadChange * bird.leadBoost;
           bird.sprite.position.set(
