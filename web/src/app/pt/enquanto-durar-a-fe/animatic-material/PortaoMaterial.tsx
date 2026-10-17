@@ -1436,13 +1436,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     addBackdrop(BACKDROP_CITY_URL, 120, 2398 / 1760, 45, 30, -50);
     addBackdrop(BACKDROP_TREES_URL, 44, 2000 / 1561, 22, 8, -2).renderOrder = 1;
 
-    // Pássaros no céu da cidade: um detalhe distante, revelado atrás da casa.
-    // Todos trocam a pose de asa juntos; variam somente tamanho, altura e deslocamento.
+    // Pássaros no céu da cidade: um detalhe distante, ancorado à casa da Maria.
+    // Sendo filho da casa, o bando herda sua profundidade e rotação: o volume da
+    // construção o encobre antes de ele emergir pela lateral direita.
     const birdFlock = new THREE.Group();
-    // A profundidade é a da própria cena: a casa e os objetos mais próximos podem
-    // ocultar o bando, que está na paisagem ao fundo.
+    birdFlock.name = "birds-behind-maria-house";
     birdFlock.renderOrder = 0;
-    world.add(birdFlock);
+    house.add(birdFlock);
     const birdSheet = backdropLoader.load(BIRD_SPRITE_URL);
     birdSheet.colorSpace = THREE.SRGBColorSpace;
     birdSheet.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -1453,16 +1453,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; leadBoost: number; lift: number; speed: number; phase: number; opacity: number };
     const birds: BirdFlight[] = [];
     [
-      // x, y, z, ganho para ultrapassar, oscilação, velocidade, fase, opacidade, tamanho.
-      // O começo fica escondido pela casa; as silhuetas são deliberadamente pequenas,
-      // baixas no horizonte e passam rápido demais para competir com a narrativa.
-      [1.65, 11.35, -29.0, 0, .06, .62, .05, .80, .430],
-      [2.22, 11.18, -29.2, 0, .06, .62, .17, .76, .390],
-      [2.79, 11.01, -29.4, 0, .06, .62, .29, .72, .360],
-      [3.36, 10.84, -29.6, 0, .06, .62, .42, .68, .330],
+      // Coordenadas locais da casa: x, y, z, ganho para ultrapassar, oscilação,
+      // velocidade, fase, opacidade, tamanho. O começo está dentro do volume da casa.
+      [1.27, 5.85, -4.15, 0, .06, .62, .05, .80, .430],
+      [1.86, 5.68, -4.35, 0, .06, .62, .17, .76, .390],
+      [2.45, 5.51, -4.55, 0, .06, .62, .29, .72, .360],
+      [3.04, 5.34, -4.75, 0, .06, .62, .42, .68, .330],
       // A quinta começa atrás, acelera no meio da travessia e assume a ponta do V.
-      [2.48, 11.68, -29.8, 1.65, .06, .62, .58, .64, .310],
-      [3.05, 11.98, -30.0, 0, .06, .62, .71, .60, .285],
+      [2.08, 6.18, -4.95, 1.65, .06, .62, .58, .64, .310],
+      [2.67, 6.48, -5.15, 0, .06, .62, .71, .60, .285],
     ].forEach(([x, y, z, leadBoost, lift, speed, phase, opacity, size]) => {
       // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
       // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
