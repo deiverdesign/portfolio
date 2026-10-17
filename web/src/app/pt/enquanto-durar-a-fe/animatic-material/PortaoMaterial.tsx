@@ -1455,13 +1455,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     [
       // Coordenadas locais da casa: x, y, z, ganho para ultrapassar, oscilação,
       // velocidade, fase, opacidade, tamanho. O começo está dentro do volume da casa.
-      [1.27, 5.85, -4.15, 0, .06, .62, .05, .80, .430],
-      [1.86, 5.68, -4.35, 0, .06, .62, .17, .76, .390],
-      [2.45, 5.51, -4.55, 0, .06, .62, .29, .72, .360],
-      [3.04, 5.34, -4.75, 0, .06, .62, .42, .68, .330],
+      [12.10, 5.85, -4.15, 0, .06, .62, .05, .80, .430],
+      [12.62, 5.68, -4.35, 0, .06, .62, .17, .76, .390],
+      [13.14, 5.51, -4.55, 0, .06, .62, .29, .72, .360],
+      [13.66, 5.34, -4.75, 0, .06, .62, .42, .68, .330],
       // A quinta começa atrás, acelera no meio da travessia e assume a ponta do V.
-      [2.08, 6.18, -4.95, 1.65, .06, .62, .58, .64, .310],
-      [2.67, 6.48, -5.15, 0, .06, .62, .71, .60, .285],
+      [12.38, 6.18, -4.95, 1.65, .06, .62, .58, .64, .310],
+      [12.90, 6.48, -5.15, 0, .06, .62, .71, .60, .285],
     ].forEach(([x, y, z, leadBoost, lift, speed, phase, opacity, size]) => {
       // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
       // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
