@@ -2265,7 +2265,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // cada ave atravessa o céu e só some ao passar naturalmente para fora do quadro.
       const birdCue = THREE.MathUtils.smoothstep(sceneProgress, .40, .43);
       if (birdCue > .98 && birdFlightStartedAt === null) {
-        birdFlightStartedAt = performance.now() / 1000;
+        // O relógio começa antes do ponto de emergência: o bando já está voando
+        // escondido pela casa quando entra no enquadramento.
+        const birdPreRoll = 1.2;
+        birdFlightStartedAt = performance.now() / 1000 - birdPreRoll;
         // O plano fica depois da profundidade máxima da casa (em relação à câmera), mas
         // antes do fundo da cidade. Projetar a borda direita da casa nesse plano produz
         // uma entrada escondida tanto no enquadramento próximo quanto no distante.
@@ -2281,6 +2284,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         const planeT = (birdPlaneZ - camera.position.z) / birdRay.z;
         birdFlightOrigin = camera.position.clone().addScaledVector(birdRay, planeT);
         birdFlightOrigin.z = birdPlaneZ;
+        // Volta a origem para trás da borda projetada. A animação só fica visível
+        // depois de atravessar a máscara da casa; ela continua depois do limite direito.
+        birdFlightOrigin.x -= birdPreRoll * .62;
       }
       // Ao voltar antes do gatilho, a sequência fica pronta para ser vista de novo.
       if (sceneProgress < .38) {
@@ -2290,6 +2296,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const birdPresence = (1 - inside) * birdCue;
       birdFlock.visible = !reducedMotion && birdPresence > .005;
       if (birdFlock.visible && birdFlightOrigin) {
+        const flightOrigin = birdFlightOrigin;
         const birdTime = performance.now() / 1000;
         const flightTime = Math.max(0, birdTime - (birdFlightStartedAt ?? birdTime));
         // Em uma travessia curta, uma ave de trás começa a ultrapassar e assume a ponta.
@@ -2297,9 +2304,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         birds.forEach((bird) => {
           const flight = flightTime * bird.speed + leadChange * bird.leadBoost;
           bird.sprite.position.set(
-            birdFlightOrigin.x + bird.x + flight,
-            birdFlightOrigin.y + bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift,
-            birdFlightOrigin.z + bird.z,
+            flightOrigin.x + bird.x + flight,
+            flightOrigin.y + bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift,
+            flightOrigin.z + bird.z,
           );
           // O bando todo compartilha a mesma batida de asas: é a mesma silhueta em seis escalas.
           bird.frameMap.offset.x = Math.floor(birdTime * 7) % 4 * .25;
