@@ -1444,7 +1444,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     birdFlock.name = "birds-behind-maria-house-plane";
     birdFlock.renderOrder = 0;
     world.add(birdFlock);
-    const birdSheet = backdropLoader.load(BIRD_SPRITE_URL);
+    const birdMaps: THREE.Texture[] = [];
+    const birdSheet = backdropLoader.load(BIRD_SPRITE_URL, () => {
+      // Os clones compartilham a imagem carregada, mas mantêm coordenadas de frame
+      // independentes. Assim, cada ave bate as asas no seu próprio tempo.
+      birdMaps.forEach((map) => {
+        map.image = birdSheet.image;
+        map.needsUpdate = true;
+      });
+    });
     birdSheet.colorSpace = THREE.SRGBColorSpace;
     birdSheet.anisotropy = renderer.capabilities.getMaxAnisotropy();
     // Sem RepeatWrapping, offset.x fica preso no último frame da folha de sprites.
@@ -1456,17 +1464,20 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     [
       // Deslocamentos a partir da origem matemática: x, y, z, ultrapassagem,
       // oscilação, velocidade, fase, opacidade, tamanho.
-      [-.56, .18, 0, 0, .06, .62, .05, .80, .430],
-      [-.10, .02, -.08, 0, .06, .62, .17, .76, .390],
-      [.36, -.14, -.16, 0, .06, .62, .29, .72, .360],
-      [.82, -.30, -.24, 0, .06, .62, .42, .68, .330],
+      [-1.65, .22, 0, 0, .06, .62, .05, .80, .430],
+      [-.85, -.18, -.08, 0, .06, .62, .17, .76, .390],
+      [-.05, .18, -.16, 0, .06, .62, .29, .72, .360],
+      [.75, -.18, -.24, 0, .06, .62, .42, .68, .330],
       // A quinta começa atrás, acelera no meio da travessia e assume a ponta do V.
-      [.08, .48, -.32, 1.65, .06, .62, .58, .64, .310],
-      [.54, .76, -.40, 0, .06, .62, .71, .60, .285],
+      [-.72, .84, -.32, 1.65, .06, .62, .58, .64, .310],
+      [.22, 1.20, -.40, 0, .06, .62, .71, .60, .285],
     ].forEach(([x, y, z, leadBoost, lift, speed, phase, opacity, size]) => {
-      // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
-      // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
-      const frameMap = birdSheet;
+      // Mesma folha e mesma silhueta; o clone só torna o offset do atlas independente.
+      const frameMap = birdSheet.clone();
+      frameMap.wrapS = THREE.RepeatWrapping;
+      frameMap.repeat.set(.25, 1);
+      frameMap.offset.set(0, 0);
+      birdMaps.push(frameMap);
       const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false, depthTest: true });
       const sprite = new THREE.Sprite(material);
       // A folha tem margens transparentes grandes. 810% da escala original faz a
@@ -2310,8 +2321,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
             flightOrigin.y + bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift,
             flightOrigin.z + bird.z,
           );
-          // O bando todo compartilha a mesma batida de asas: é a mesma silhueta em seis escalas.
-          bird.frameMap.offset.x = Math.floor(birdTime * 7) % 4 * .25;
+          // A fase individual evita seis silhuetas idênticas virarem uma mancha só.
+          bird.frameMap.offset.x = Math.floor(birdTime * 7 + bird.phase * 8) % 4 * .25;
           bird.material.opacity = bird.opacity * birdPresence;
         });
       }
@@ -2532,6 +2543,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       fireflyMaterial.dispose();
       sky.geometry.dispose();
       sky.material.dispose();
+      birdMaps.forEach((map) => map.dispose());
       birdSheet.dispose();
       papers.forEach(({ texture }) => texture?.dispose());
       storyTextures.forEach((texture) => texture.dispose());
