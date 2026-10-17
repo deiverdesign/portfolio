@@ -2277,7 +2277,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       fireflyMaterial.uniforms.uBoost.value = camera.aspect < 1 ? 1.5 : 1;
       // O bando é disparado pelo 2º bilhete, mas não é desligado por uma faixa de scroll:
       // cada ave atravessa o céu e só some ao passar naturalmente para fora do quadro.
-      const birdCue = THREE.MathUtils.smoothstep(sceneProgress, .40, .43);
+      // Começam durante o segundo bilhete, enquanto o dinheiro ainda está no quadro.
+      // Não dependem da transição para a cozinha.
+      const birdCue = THREE.MathUtils.smoothstep(sceneProgress, .36, .38);
       if (birdCue > .98 && birdFlightStartedAt === null) {
         // O relógio começa antes do ponto de emergência: o bando já está voando
         // escondido pela casa quando entra no enquadramento.
@@ -2305,11 +2307,13 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         birdFlightOrigin.x -= birdPreRoll * .62;
       }
       // Ao voltar antes do gatilho, a sequência fica pronta para ser vista de novo.
-      if (sceneProgress < .38) {
+      if (sceneProgress < .34) {
         birdFlightStartedAt = null;
         birdFlightOrigin = null;
       }
-      const birdPresence = (1 - inside) * birdCue;
+      // A opacidade pertence ao bando. A câmera pode seguir para a cozinha sem apagar
+      // aves que ainda estejam cruzando o céu; elas saem apenas pelo próprio movimento.
+      const birdPresence = birdCue;
       birdFlock.visible = !reducedMotion && birdPresence > .005;
       if (birdFlock.visible && birdFlightOrigin) {
         const flightOrigin = birdFlightOrigin;
