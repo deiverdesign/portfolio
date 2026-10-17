@@ -14,6 +14,7 @@ import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { loadJotaFigure } from "../personagem-jota/jotaFigura";
+import { PORTUGUESE_STORY, type StoryContent, type StoryExcerpt } from "../../../_shared/faithStory";
 
 // POC 3 — material. Mesma geometria e mesma trajetória do animatic cinza
 // (../animatic/PortaoAnimatic.tsx); aqui muda a "tinta" de cada objeto e a câmera
@@ -111,50 +112,7 @@ const paperFragmentShader = /* glsl */ `
   }
 `;
 
-const AMAZON_URL = "https://www.amazon.com.br/Enquanto-durar-f%C3%A9-Deiver-Brito-ebook/dp/B0H6Y8K6ND";
 const PORTFOLIO_URL = "https://deiver.com.br/";
-
-// Bilhetes: fragmentos do romance, não propaganda. Regra do Deiver:
-// - fala vai entre aspas e o rodapé diz quem fala (ex.: "— JOTA");
-// - narrador vai sem aspas e, quando tem rodapé, é só o capítulo;
-// - "\n" quebra a linha onde o Deiver quebrou; footer vazio = sem rodapé.
-type Excerpt = { text: string; footer?: string };
-
-// Cozinha (capítulo 3), na ordem em que saem da lente. Sem spoiler: o visitante vê
-// dinheiro guardado e geladeira quase vazia, e monta as próprias hipóteses.
-const KITCHEN_EXCERPTS: Excerpt[] = [
-  {
-    text: "No corredor, uma fotografia antiga descansava sobre um aparador.\nA moldura estava virada para a parede.\nComo acontecia havia meses.",
-    footer: "CAPÍTULO 3 — A LATA AZUL",
-  },
-  { text: "Lá dentro não havia biscoitos.\nNotas dobradas. Comprovantes. Alguns envelopes.\nContou o dinheiro. Depois contou novamente." },
-  { text: "Abriu a geladeira.\nHavia pouca coisa dentro.\nUm pedaço de queijo. Leite. Alguns ovos." },
-];
-
-// Opala (cena 3): um bilhete só (Deiver, 13/10). Diálogo do capítulo 5, entre a Neide e a
-// Helena; com duas vozes, a etiqueta é a do capítulo.
-const OPALA_EXCERPTS: Excerpt[] = [
-  {
-    text: "— Mas as pessoas gostam muito de falar.\n— É verdade.\n— Principalmente quando não conhecem a história inteira.",
-    footer: "CAPÍTULO 5 — A COSTUREIRA",
-  },
-];
-
-// Rua (capítulos 1 e 2), na ordem em que a câmera passa por eles. A sequência primeiro
-// aproxima o Jota da rua, depois mostra o jeito dele e por fim deixa a pergunta.
-// z = onde o papel fica na ladeira. O espaço entre eles é o que a câmera precisa andar para
-// o papel caber inteiro no quadro e ficar um tempo parado ali antes do próximo (o último,
-// em 24, fica inteiro quando a descida termina). Entre eles passam o livro (z 8) e o dinheiro (z 14,2).
-const BOOK_EXCERPTS: (Excerpt & { z: number; phoneShift: number })[] = [
-  { z: 5, phoneShift: -.42, text: "Ele percebe que teria adorado ser criança naquele lugar.", footer: "CAPÍTULO 1 — A SUBIDA" },
-  {
-    z: 14,
-    phoneShift: .1,
-    text: "“Maria, posso pedir só um favor?\nPode me dar um copo d’água?\nFique à vontade para recusar.\nÉ mais comum do que você imagina.”",
-    footer: "— JOTA",
-  },
-  { z: 24, phoneShift: -.6, text: "“Jota não é o seu nome, né?”", footer: "— MARIA" },
-];
 
 // Quebra o trecho em linhas que cabem no papel (respeitando as quebras do Deiver) e
 // diminui a letra até o bloco caber na altura. Ex.: "Jota não é o seu nome, né?" sai em
@@ -163,7 +121,7 @@ const BOOK_EXCERPTS: (Excerpt & { z: number; phoneShift: number })[] = [
 // menor que a citação e com pouco espaço entre letras, como crédito de documento. A citação
 // segue em serif. creditFont é a família da Plex que a página carregou.
 const CREDIT_FONT_FALLBACK = "'IBM Plex Mono', monospace";
-function createTextTexture({ text, footer }: Excerpt, creditFont = CREDIT_FONT_FALLBACK) {
+function createTextTexture({ text, footer }: StoryExcerpt, creditFont = CREDIT_FONT_FALLBACK) {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 400;
@@ -183,7 +141,7 @@ function createTextTexture({ text, footer }: Excerpt, creditFont = CREDIT_FONT_F
   return texture;
 }
 
-function drawExcerpt(context: CanvasRenderingContext2D, { text, footer }: Excerpt, creditStyle: string) {
+function drawExcerpt(context: CanvasRenderingContext2D, { text, footer }: StoryExcerpt, creditStyle: string) {
   const { canvas } = context;
   context.fillStyle = "#ebe8c8";
   context.fillRect(0, 0, canvas.width, canvas.height);
@@ -305,7 +263,7 @@ const skyGradientShader = /* glsl */ `
 
 const TINTA = { sunOrange: "#f0a647", yellow: "#fefb4e", navyDeep: "#060b2c", ink: "#030a1a" };
 
-export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFont?: string } = {}) {
+export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORTUGUESE_STORY }: { creditFont?: string; story?: StoryContent } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -1506,7 +1464,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // passa por baixo deles; assim a passagem é consequência da trajetória real.
     // A origem de cada grupo é a borda de baixo do papel, presa a 1,90 m do chão.
     // Eles alternam de lado (direita, esquerda...) para um não tampar o outro.
-    const papers = BOOK_EXCERPTS.map(({ z, phoneShift, text, footer }, index) => {
+    const papers = story.bookExcerpts.map(({ z, phoneShift, text, footer }, index) => {
       const texture = createTextTexture({ text, footer }, creditFont);
       const group = new THREE.Group();
       const side = index % 2 ? -1 : 1;
@@ -1609,7 +1567,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     const storyItems: StoryItem[] = [];
     const storyTextures: THREE.Texture[] = [];
     // Cria um bilhete preso em "space" (grupo em metros). Ex.: o primeiro da cozinha.
-    const addStoryPaper = (items: StoryItem[], space: THREE.Object3D, excerpt: Excerpt, item: Omit<StoryItem, "object" | "paper">) => {
+    const addStoryPaper = (items: StoryItem[], space: THREE.Object3D, excerpt: StoryExcerpt, item: Omit<StoryItem, "object" | "paper">) => {
       const texture = createTextTexture(excerpt, creditFont);
       if (texture) storyTextures.push(texture);
       const material = new THREE.ShaderMaterial({
@@ -1701,7 +1659,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const paperTimes = [[0, .3], [.33, .63], [.66, 1]];
       const KITCHEN_PORTRAIT_WIDTH = 1.15;
       const KITCHEN_PORTRAIT_X = -.37;
-      KITCHEN_EXCERPTS.forEach((excerpt, index) => {
+      story.kitchenExcerpts.forEach((excerpt, index) => {
         const end = papersAt[index];
         // No celular (Deiver, 14/10: "muito pequeno"): papel quase o dobro (1,15 m em vez de
         // 0,62 m, ~75% da largura da tela) e sempre no meio do quadro, para caber inteiro.
@@ -1733,7 +1691,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // No celular o bilhete fica mais perto (o papel é menor e o quadro, estreito).
       const notePoint = (side: number, distance = 4.2, height = 1.4) => OPALA.wideFrom.clone()
         .addScaledVector(ahead, distance).addScaledVector(right, side).setY(OPALA.wideFrom.y + height);
-      OPALA_EXCERPTS.forEach((excerpt, index) => {
+      story.opalaExcerpts.forEach((excerpt, index) => {
         const [from, to] = times[index];
         const end = index === 0 ? notePoint(.2, 3.2, 1.2) : notePoint(sides[index]);
         const portraitEnd = OPALA.wideFrom.clone().addScaledVector(portraitAhead, 1.5).addScaledVector(portraitRight, 0).setY(OPALA.wideFrom.y + .74);
@@ -2583,60 +2541,73 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [creditFont]);
+  }, [creditFont, story]);
 
   return (
     <main className={styles.animatic} ref={scrollRef}>
       <header className={styles.header}>
         {/* Logo do Deiver (Figma, nó 95:10148): azul na rua, escuro na cozinha, branco no celular deitado. */}
-        <span className={styles.logoStack} role="img" aria-label="Enquanto durar a fé">
-          <i className={`${styles.logo} ${styles.logoStreet}`} aria-hidden="true" />
-          <i className={`${styles.logo} ${styles.logoKitchen}`} aria-hidden="true" />
-          <i className={`${styles.logo} ${styles.logoCinema}`} aria-hidden="true" />
-        </span>
-        <a className={styles.headerBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">
-          <span className={styles.headerBookIcon} aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={styles.headerBookIconStreet} src="/enquanto-durar-a-fe/icone-livro.svg" width={14} height={14} alt="" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={styles.headerBookIconKitchen} src="/enquanto-durar-a-fe/icone-livro-cozinha.svg" width={14} height={14} alt="" />
+        {story.locale === "pt-BR" ? (
+          <span className={styles.logoStack} role="img" aria-label={story.title}>
+            <i className={`${styles.logo} ${styles.logoStreet}`} aria-hidden="true" />
+            <i className={`${styles.logo} ${styles.logoKitchen}`} aria-hidden="true" />
+            <i className={`${styles.logo} ${styles.logoCinema}`} aria-hidden="true" />
           </span>
-          Ler na Amazon
-        </a>
+        ) : <span className={styles.englishWordmark}>{story.shortTitle}</span>}
+        <div className={styles.headerActions}>
+          <a className={styles.headerBuy} href={story.amazonUrl} target="_blank" rel="noopener noreferrer">
+            <span className={styles.headerBookIcon} aria-hidden="true">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className={styles.headerBookIconStreet} src="/enquanto-durar-a-fe/icone-livro.svg" width={14} height={14} alt="" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className={styles.headerBookIconKitchen} src="/enquanto-durar-a-fe/icone-livro-cozinha.svg" width={14} height={14} alt="" />
+            </span>
+            {story.headerCta}
+          </a>
+          <details className={styles.languageMenu}>
+            <summary aria-label={story.locale === "pt-BR" ? "Mudar idioma" : "Change language"}>
+              {story.locale === "pt-BR" ? "PT" : "EN"}
+              <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5" /></svg>
+            </summary>
+            <a href={story.locale === "pt-BR" ? "/give-us-this-day-our-daily-lie/animatic-material" : "/pt/enquanto-durar-a-fe/animatic-material"}>
+              {story.locale === "pt-BR" ? "EN" : "PT"}
+            </a>
+          </details>
+        </div>
         <i className={styles.headerLine} aria-hidden="true" />
       </header>
 
       <section className={styles.stage} aria-labelledby="book-title">
-        <div className={styles.canvasShell} ref={containerRef} role="img" aria-label="Jota, de camisa clara e bolsa transversal, em frente ao portão da última casa de uma ladeira de paralelepípedos, no fim da tarde, enquanto a câmera desce a rua de costas" />
+        <div className={styles.canvasShell} ref={containerRef} role="img" aria-label={story.canvasLabel} />
         <div className={styles.vignette} aria-hidden="true" />
         {[styles.glowBottomLeft, styles.glowRight, styles.glowRightHigh, styles.glowBottom, styles.glowPurple].map((glow) => <i key={glow} className={`${styles.glow} ${glow}`} aria-hidden="true" />)}
         <div className={styles.introMask} aria-hidden="true" />
         <div className={styles.copy}>
-          <h1 id="book-title">Há quem tenha fé.<br />Há quem se aproveite dela.<br />E há Jota.</h1>
+          <h1 id="book-title">{story.intro.map((line, index) => <span key={line}>{line}{index < story.intro.length - 1 && <br />}</span>)}</h1>
         </div>
         <div className={styles.scrollHint}>
-          <p>Jota vende Bíblias de porta em porta.<br />O resto é mais difícil de explicar.</p>
-          <span>Role para entrar <i aria-hidden="true">↓</i></span>
+          <p>{story.scrollHint.map((line, index) => <span key={line}>{line}{index < story.scrollHint.length - 1 && <br />}</span>)}</p>
+          <span>{story.scrollPrompt} <i aria-hidden="true">↓</i></span>
         </div>
-        <p className={styles.reducedNote}>Quadro estático por preferência de movimento reduzido.</p>
+        <p className={styles.reducedNote}>{story.reducedMotionNote}</p>
         <div className={styles.timeline} ref={timelineRef} aria-hidden="true" />
         {/* Encerramento dentro da cena 3: a última página da experiência, sobre a rua parada. */}
         <div className={styles.outro} ref={outroRef} data-shown="false" inert>
           <div className={styles.outroBlock}>
-            <p className={styles.outroKicker}>Há mais do que o que se ouve.</p>
-            <h2 className={styles.outroTitle}>Enquanto durar a fé</h2>
-            <a className={styles.outroBuy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">Conheça o livro</a>
-            <p className={styles.outroNote}>Disponível na Amazon</p>
-            <p className={styles.outroCredit}>Experiência digital criada por <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">Deiver Brito ↗</a></p>
+            <p className={styles.outroKicker}>{story.outroKicker}</p>
+            <h2 className={styles.outroTitle}>{story.title}</h2>
+            <a className={styles.outroBuy} href={story.amazonUrl} target="_blank" rel="noopener noreferrer">{story.outroCta}</a>
+            <p className={styles.outroNote}>{story.amazonAvailability}</p>
+            <p className={styles.outroCredit}>{story.credit} <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">Deiver Brito ↗</a></p>
           </div>
         </div>
       </section>
 
       <section className={styles.ending}>
-        <p>“E sobre o que você queria falar mesmo?”</p>
-        <span>Até onde podemos ir por quem amamos?</span>
-        <a className={styles.buy} href={AMAZON_URL} target="_blank" rel="noopener noreferrer">Ler na Amazon · R$ 17,99 ou no Kindle Unlimited ↗</a>
-        <a className={styles.endingCredit} href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">Experiência digital criada por Deiver Brito ↗</a>
+        <p>{story.endingQuote}</p>
+        <span>{story.endingQuestion}</span>
+        <a className={styles.buy} href={story.amazonUrl} target="_blank" rel="noopener noreferrer">{story.endingCta}</a>
+        <a className={styles.endingCredit} href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">{story.credit} Deiver Brito ↗</a>
       </section>
     </main>
   );

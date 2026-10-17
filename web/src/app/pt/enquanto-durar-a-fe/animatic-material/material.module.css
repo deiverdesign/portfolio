@@ -40,6 +40,16 @@
 .logoStreet { background: #1f2abd; opacity: calc(1 - var(--kitchen)); }
 .logoKitchen { background: #2d2d2d; opacity: var(--kitchen); }
 .logoCinema { background: #fff; opacity: 0; }
+.englishWordmark { color: #1f2abd; font-family: var(--font-newsreader), Georgia, serif; font-size: 15px; font-weight: 600; letter-spacing: .025em; line-height: .95; white-space: pre-line; }
+.headerActions { display: flex; align-items: center; gap: 12px; }
+.languageMenu { position: relative; flex: 0 0 auto; color: #1f2abd; font-family: var(--font-dm-mono), monospace; font-size: 10px; font-weight: 500; letter-spacing: .06em; }
+.languageMenu summary { display: inline-flex; min-height: 30px; align-items: center; gap: 5px; cursor: pointer; list-style: none; }
+.languageMenu summary::-webkit-details-marker { display: none; }
+.languageMenu summary svg { width: 9px; height: 6px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; transition: transform .2s ease; }
+.languageMenu[open] summary svg { transform: rotate(180deg); }
+.languageMenu a { position: absolute; z-index: 1; top: calc(100% + 4px); right: -8px; display: grid; min-width: 34px; min-height: 30px; place-items: center; padding: 0 8px; border-radius: 4px; background: rgba(240,240,251,.98); box-shadow: 0 4px 12px rgba(6,11,44,.14); color: #1f2abd; text-decoration: none; }
+.languageMenu a:hover { background: #fff; }
+.languageMenu summary:focus-visible, .languageMenu a:focus-visible { outline: 2px solid var(--header-accent); outline-offset: 3px; }
 /* "Durar" ganha um risco curto: é uma pista editorial, não um estado do título.
    As medidas acompanham o logo de 187 × 16 px; com movimento reduzido ele não existe. */
 @keyframes durarStrike { from { opacity: 1; transform: scaleX(.02); } to { opacity: 1; transform: scaleX(1); } }
@@ -137,7 +147,7 @@
 .ending { min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }.endingCredit { margin-top: 24px; color: rgba(237,237,231,.72); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .05em; text-underline-offset: 3px; }.endingCredit:hover { color: #fff; }.endingCredit:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 680px) {
-  .animatic { min-height: 1115vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.glowRight, .glowRightHigh { opacity: calc(.1 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; opacity: clamp(0, calc(1 - var(--scroll-progress) * 4.5), 1); }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
+  .animatic { min-height: 1115vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.englishWordmark { font-size: 12px; }.headerActions { gap: 8px; }.languageMenu { font-size: 8px; }.languageMenu summary { min-width: 44px; min-height: 44px; justify-content: center; gap: 4px; margin: -6px; }.languageMenu a { right: -7px; min-width: 44px; min-height: 44px; }.glowRight, .glowRightHigh { opacity: calc(.1 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; opacity: clamp(0, calc(1 - var(--scroll-progress) * 4.5), 1); }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
   /* Celular: centralizada no rodapé, acima da safe area, 164 px, com os pontos dos anos. O
      marcador fica parado no meio e a linha (60 px entre pontos) anda por baixo dele. Aparece
      depois que o texto "Role para entrar" sai, para os dois não se cruzarem. */
@@ -150,7 +160,7 @@
 /* Celular deitado (Figma, "modo cinema"): sem a barra clara, logo branco e a linha só embaixo
    do logo (371 px), para a tela baixa ficar quase toda para a cena. */
 @media (orientation: landscape) and (max-height: 500px) {
-  .header { top: 19px; right: 4vw; left: 4vw; height: auto; padding: 12px; background: none; }.headerLine { right: auto; width: 371px; max-width: 45%; }.logo { width: 186.883px; }.logoStreet, .logoKitchen { opacity: 0; }.logoCinema { opacity: 1; }.headerBuy { height: 34px; padding: 4px 12px; gap: 8px; font-size: 14px; }
+  .header { top: 19px; right: 4vw; left: 4vw; height: auto; padding: 12px; background: none; }.headerLine { right: auto; width: 371px; max-width: 45%; }.logo { width: 186.883px; }.logoStreet, .logoKitchen { opacity: 0; }.logoCinema { opacity: 1; }.englishWordmark, .languageMenu { color: #fff; }.languageMenu a { background: rgba(14,16,66,.98); color: #fff; }.headerBuy { height: 34px; padding: 4px 12px; gap: 8px; font-size: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

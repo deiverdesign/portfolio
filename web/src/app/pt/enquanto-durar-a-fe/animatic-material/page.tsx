@@ -26,7 +26,13 @@ export const metadata: Metadata = {
   // do portfólio) — agora é um site publicado com domínio próprio, deve
   // ser indexado e rastreado normalmente (Deiver, 16/10 — inscrito no CSS
   // Design Awards, que também depende de conseguir rastrear a página).
-  alternates: { canonical: SITE_URL },
+  alternates: {
+    canonical: `${SITE_URL}/pt/enquanto-durar-a-fe/animatic-material`,
+    languages: {
+      "pt-BR": `${SITE_URL}/pt/enquanto-durar-a-fe/animatic-material`,
+      en: `${SITE_URL}/give-us-this-day-our-daily-lie/animatic-material`,
+    },
+  },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
