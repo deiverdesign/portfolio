@@ -1464,13 +1464,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     [
       // Deslocamentos a partir da origem matemática: x, y, z, ultrapassagem,
       // oscilação, velocidade, fase, opacidade, tamanho.
-      [-1.65, .22, 0, 0, .06, .62, .05, .80, .430],
-      [-.85, -.18, -.08, 0, .06, .62, .17, .76, .390],
-      [-.05, .18, -.16, 0, .06, .62, .29, .72, .360],
-      [.75, -.18, -.24, 0, .06, .62, .42, .68, .330],
+      // Espaçamento 2× a partir do centro da formação: cada silhueta respira no céu.
+      [-2.92, .09, 0, 0, .06, .62, .05, .80, .430],
+      [-1.32, -.71, -.08, 0, .06, .62, .17, .76, .390],
+      [.28, .01, -.16, 0, .06, .62, .29, .72, .360],
+      [1.88, -.71, -.24, 0, .06, .62, .42, .68, .330],
       // A quinta começa atrás, acelera no meio da travessia e assume a ponta do V.
-      [-.72, .84, -.32, 1.65, .06, .62, .58, .64, .310],
-      [.22, 1.20, -.40, 0, .06, .62, .71, .60, .285],
+      [-1.06, 1.33, -.32, 1.65, .06, .62, .58, .64, .310],
+      [.82, 2.05, -.40, 0, .06, .62, .71, .60, .285],
     ].forEach(([x, y, z, leadBoost, lift, speed, phase, opacity, size]) => {
       // Mesma folha e mesma silhueta; o clone só torna o offset do atlas independente.
       const frameMap = birdSheet.clone();
