@@ -1436,13 +1436,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     addBackdrop(BACKDROP_CITY_URL, 120, 2398 / 1760, 45, 30, -50);
     addBackdrop(BACKDROP_TREES_URL, 44, 2000 / 1561, 22, 8, -2).renderOrder = 1;
 
-    // Pássaros no céu da cidade: um detalhe distante, ancorado à casa da Maria.
-    // Sendo filho da casa, o bando herda sua profundidade e rotação: o volume da
-    // construção o encobre antes de ele emergir pela lateral direita.
+    // Pássaros no céu da cidade: um plano distante atrás da casa da Maria.
+    // A origem não é uma coordenada "no olho": ela é a interseção do raio da câmera
+    // com o plano de voo, passando pela borda direita da casa. Assim, a casa vira a
+    // máscara de entrada e o bando continua livre no céu depois dela.
     const birdFlock = new THREE.Group();
-    birdFlock.name = "birds-behind-maria-house";
+    birdFlock.name = "birds-behind-maria-house-plane";
     birdFlock.renderOrder = 0;
-    house.add(birdFlock);
+    world.add(birdFlock);
     const birdSheet = backdropLoader.load(BIRD_SPRITE_URL);
     birdSheet.colorSpace = THREE.SRGBColorSpace;
     birdSheet.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -1453,15 +1454,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; leadBoost: number; lift: number; speed: number; phase: number; opacity: number };
     const birds: BirdFlight[] = [];
     [
-      // Coordenadas locais da casa: x, y, z, ganho para ultrapassar, oscilação,
-      // velocidade, fase, opacidade, tamanho. O começo está dentro do volume da casa.
-      [12.10, 5.85, -4.15, 0, .06, .62, .05, .80, .430],
-      [12.62, 5.68, -4.35, 0, .06, .62, .17, .76, .390],
-      [13.14, 5.51, -4.55, 0, .06, .62, .29, .72, .360],
-      [13.66, 5.34, -4.75, 0, .06, .62, .42, .68, .330],
+      // Deslocamentos a partir da origem matemática: x, y, z, ultrapassagem,
+      // oscilação, velocidade, fase, opacidade, tamanho.
+      [-.56, .18, 0, 0, .06, .62, .05, .80, .430],
+      [-.10, .02, -.08, 0, .06, .62, .17, .76, .390],
+      [.36, -.14, -.16, 0, .06, .62, .29, .72, .360],
+      [.82, -.30, -.24, 0, .06, .62, .42, .68, .330],
       // A quinta começa atrás, acelera no meio da travessia e assume a ponta do V.
-      [12.38, 6.18, -4.95, 1.65, .06, .62, .58, .64, .310],
-      [12.90, 6.48, -5.15, 0, .06, .62, .71, .60, .285],
+      [.08, .48, -.32, 1.65, .06, .62, .58, .64, .310],
+      [.54, .76, -.40, 0, .06, .62, .71, .60, .285],
     ].forEach(([x, y, z, leadBoost, lift, speed, phase, opacity, size]) => {
       // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
       // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
@@ -2074,6 +2075,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     let wipe = 0;
     let frame = 0;
     let birdFlightStartedAt: number | null = null;
+    let birdFlightOrigin: THREE.Vector3 | null = null;
+    const birdHouseBounds = new THREE.Box3();
+    const birdHouseEdge = new THREE.Vector3();
+    const birdRay = new THREE.Vector3();
     let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -2259,12 +2264,32 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // O bando é disparado pelo 2º bilhete, mas não é desligado por uma faixa de scroll:
       // cada ave atravessa o céu e só some ao passar naturalmente para fora do quadro.
       const birdCue = THREE.MathUtils.smoothstep(sceneProgress, .40, .43);
-      if (birdCue > .98 && birdFlightStartedAt === null) birdFlightStartedAt = performance.now() / 1000;
+      if (birdCue > .98 && birdFlightStartedAt === null) {
+        birdFlightStartedAt = performance.now() / 1000;
+        // O plano fica depois da profundidade máxima da casa (em relação à câmera), mas
+        // antes do fundo da cidade. Projetar a borda direita da casa nesse plano produz
+        // uma entrada escondida tanto no enquadramento próximo quanto no distante.
+        house.updateWorldMatrix(true, true);
+        birdHouseBounds.setFromObject(house);
+        birdHouseEdge.set(
+          birdHouseBounds.max.x,
+          birdHouseBounds.min.y + (birdHouseBounds.max.y - birdHouseBounds.min.y) * .40,
+          birdHouseBounds.max.z,
+        );
+        const birdPlaneZ = birdHouseBounds.min.z - m(3);
+        birdRay.subVectors(birdHouseEdge, camera.position);
+        const planeT = (birdPlaneZ - camera.position.z) / birdRay.z;
+        birdFlightOrigin = camera.position.clone().addScaledVector(birdRay, planeT);
+        birdFlightOrigin.z = birdPlaneZ;
+      }
       // Ao voltar antes do gatilho, a sequência fica pronta para ser vista de novo.
-      if (sceneProgress < .38) birdFlightStartedAt = null;
+      if (sceneProgress < .38) {
+        birdFlightStartedAt = null;
+        birdFlightOrigin = null;
+      }
       const birdPresence = (1 - inside) * birdCue;
       birdFlock.visible = !reducedMotion && birdPresence > .005;
-      if (birdFlock.visible) {
+      if (birdFlock.visible && birdFlightOrigin) {
         const birdTime = performance.now() / 1000;
         const flightTime = Math.max(0, birdTime - (birdFlightStartedAt ?? birdTime));
         // Em uma travessia curta, uma ave de trás começa a ultrapassar e assume a ponta.
@@ -2272,9 +2297,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         birds.forEach((bird) => {
           const flight = flightTime * bird.speed + leadChange * bird.leadBoost;
           bird.sprite.position.set(
-            bird.x + flight,
-            bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift,
-            bird.z,
+            birdFlightOrigin.x + bird.x + flight,
+            birdFlightOrigin.y + bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift,
+            birdFlightOrigin.z + bird.z,
           );
           // O bando todo compartilha a mesma batida de asas: é a mesma silhueta em seis escalas.
           bird.frameMap.offset.x = Math.floor(birdTime * 7) % 4 * .25;
