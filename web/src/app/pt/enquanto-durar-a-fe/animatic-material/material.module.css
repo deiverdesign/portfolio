@@ -32,7 +32,7 @@
 /* Linha fixa embaixo do header, de ponta a ponta (menos 11 px de cada lado): azulada na rua, roxa na cozinha. */
 /* A linha cresce com o scroll (Deiver, 14/10): --header-fill vai de 0 (topo, só 10 px à mostra)
    a 1 (fim da cena 3, a linha inteira). O recorte esconde o resto pela direita. */
-.headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2px; background: color-mix(in srgb, #e3146b calc(var(--opala, 0) * 100%), color-mix(in srgb, #7026c1 calc(var(--kitchen) * 100%), #5e68ef)); clip-path: inset(0 calc((1 - var(--header-fill, 0)) * (100% - 10px)) 0 0); }
+.headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2.6px; background: color-mix(in srgb, #e3146b calc(var(--opala, 0) * 100%), color-mix(in srgb, #7026c1 calc(var(--kitchen) * 100%), #5e68ef)); clip-path: inset(0 calc((1 - var(--header-fill, 0)) * (100% - 10px)) 0 0); }
 /* Um SVG limpo fornecido pelo Deiver vira três cores com máscara; o risco existe apenas no motion. */
 .logoStack { position: relative; display: block; }
 .logo { display: block; width: 186.883px; height: auto; aspect-ratio: 187 / 16; -webkit-mask: url('/enquanto-durar-a-fe/logo-enquanto-fe-clean.svg') center / contain no-repeat; mask: url('/enquanto-durar-a-fe/logo-enquanto-fe-clean.svg') center / contain no-repeat; }
