@@ -1480,9 +1480,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       birdMaps.push(frameMap);
       const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false, depthTest: true });
       const sprite = new THREE.Sprite(material);
-      // A folha tem margens transparentes grandes. 810% da escala original faz a
-      // silhueta ser lida como ave, não como um ponto, sem disputar a cena.
-      sprite.scale.set(size * 1.45 * 8.1, size * 8.1, 1);
+      // O bando é um detalhe no plano do céu: pequeno, mas ainda legível como silhueta.
+      sprite.scale.set(size * 1.45 * 3.2, size * 3.2, 1);
       sprite.frustumCulled = false;
       birdFlock.add(sprite);
       birds.push({ sprite, material, frameMap, x, y, z, leadBoost, lift, speed, phase, opacity });
@@ -2292,7 +2291,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
           birdHouseBounds.min.y + (birdHouseBounds.max.y - birdHouseBounds.min.y) * .40,
           birdHouseBounds.max.z,
         );
-        const birdPlaneZ = birdHouseBounds.min.z - m(3);
+        // Mais longe que o telhado e o dinheiro: a distância também entra na perspectiva,
+        // em vez de depender só de diminuir a escala dos sprites.
+        const birdPlaneZ = birdHouseBounds.min.z - m(7);
         birdRay.subVectors(birdHouseEdge, camera.position);
         const planeT = (birdPlaneZ - camera.position.z) / birdRay.z;
         birdFlightOrigin = camera.position.clone().addScaledVector(birdRay, planeT);
