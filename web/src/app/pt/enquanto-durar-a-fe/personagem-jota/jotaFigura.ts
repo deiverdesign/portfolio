@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { DecalGeometry } from "three/examples/jsm/geometries/DecalGeometry.js";
 import { createCelMaterial } from "../animatic-material/celShading";
 import { createJotaWatchFace, JOTA_BANDS, JOTA_MODEL_URL, JOTA_PARTS, loadJotaRegions, type JotaPart } from "./jotaBands";
@@ -47,7 +48,7 @@ export function loadJotaFigure({ outline, anisotropy = 1, paintedFace = false }:
   let disposed = false;
 
   const ready = Promise.all([
-    new GLTFLoader().loadAsync(JOTA_MODEL_URL),
+    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(JOTA_MODEL_URL),
     loadJotaRegions(),
     Promise.all(faceParts.map((part) => new THREE.TextureLoader().loadAsync(FACE_URL + part.file))),
   ]).then(([gltf, regions, faces]) => {

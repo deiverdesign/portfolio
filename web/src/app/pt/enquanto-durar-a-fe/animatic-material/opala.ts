@@ -75,8 +75,8 @@ const JOTA_PANO_CHIN = new THREE.Vector3(-.11, .5, .15);
 const JOTA_LAMP = { up: 2, forward: .7, left: .6 };
 const JOTA_PANO_URL = "/enquanto-durar-a-fe/jota-pano-web.glb?v=2";
 // Os dois amigos do Jota (modelos do Deiver no Meshy, 13/10), sem textura: viram sombras.
-const FRIEND_LEANING_URL = "/enquanto-durar-a-fe/amigo-encostado-web.glb";
-const FRIEND_ARMS_URL = "/enquanto-durar-a-fe/amigo-bracos-cruzados-web.glb";
+const FRIEND_LEANING_URL = "/enquanto-durar-a-fe/amigo-encostado-web.glb?v=2";
+const FRIEND_ARMS_URL = "/enquanto-durar-a-fe/amigo-bracos-cruzados-web.glb?v=2";
 // Quanto o amigo encostado inclina para trás, contra o carro (radianos).
 const FRIEND_LEANING_TILT = .16;
 

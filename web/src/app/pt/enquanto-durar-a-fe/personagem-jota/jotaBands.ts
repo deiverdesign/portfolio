@@ -35,7 +35,7 @@ export const JOTA_BANDS: Record<JotaPart, Bands> = {
 // Modelo do Meshy com textura, separado em regiões. Cada região usa as faixas acima e da
 // textura sai só o traço: olhos, barba, colarinho, costuras.
 // O "?v=" muda a cada versão do arquivo, para o navegador não usar a cópia antiga.
-export const JOTA_MODEL_URL = "/enquanto-durar-a-fe/jota-meshy-textura-web.glb?v=9";
+export const JOTA_MODEL_URL = "/enquanto-durar-a-fe/jota-meshy-textura-web.glb?v=10";
 
 // Mesma ordem de tools/build_jota.py: o número de cada parte no mapa de regiões.
 export const JOTA_PARTS: JotaPart[] = ["skin", "shirt", "trousers", "hair", "shoes", "bag", "watch"];

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import styles from "./jota.module.css";
 import { JOTA_BANDS, JOTA_MODEL_URL, JOTA_PARTS, loadJotaRegions, type JotaPart } from "./jotaBands";
 import {
@@ -344,7 +345,7 @@ export function JotaCorpo() {
       holder.position.x = x;
       world.add(holder);
       figures.push(holder);
-      new GLTFLoader().load(url, (gltf) => {
+      new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(url, (gltf) => {
         if (disposed) return;
         const model = gltf.scene;
         model.traverse((child) => {

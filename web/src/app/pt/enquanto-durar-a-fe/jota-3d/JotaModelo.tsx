@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { DecalGeometry } from "three/examples/jsm/geometries/DecalGeometry.js";
 import styles from "../personagem-jota/jota.module.css";
@@ -133,7 +134,7 @@ export function JotaModelo() {
     let disposed = false;
     let regionMap: THREE.Texture | undefined;
     // O modelo e o mapa de regiões chegam juntos: cada parte só desenha os seus pixels.
-    Promise.all([new GLTFLoader().loadAsync(JOTA_MODEL_URL), loadJotaRegions()]).then(([gltf, regions]) => {
+    Promise.all([new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(JOTA_MODEL_URL), loadJotaRegions()]).then(([gltf, regions]) => {
       regionMap = regions;
       if (disposed) { regions.dispose(); return; }
       const model = gltf.scene;

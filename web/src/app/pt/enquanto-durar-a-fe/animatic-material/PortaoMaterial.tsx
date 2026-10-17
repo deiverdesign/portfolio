@@ -66,7 +66,7 @@ const groundY = (z: number) => roadY(Math.max(z, TOP_Z));
 const BANANA_URL = "/enquanto-durar-a-fe/bananeira-web.glb";
 // Helena do Meshy, simplificada para 10% dos triângulos e comprimida (meshopt): 330 KB.
 const HELENA_URL = "/enquanto-durar-a-fe/helena-web.glb?v=1";
-const MONEY_URL = "/enquanto-durar-a-fe/notas-real-web.glb?v=1";
+const MONEY_URL = "/enquanto-durar-a-fe/notas-real-web.glb?v=2";
 // Trepadeira do Sketchfab ("Purple Creeper Plant"), só a forma: sem texturas, 1 m de altura,
 // origem no alto (é de onde ela fica pendurada). A cor vem toda do site.
 const VINE_URL = "/enquanto-durar-a-fe/trepadeira-web.glb?v=2";
@@ -325,7 +325,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       return;
     }
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    // Em tela vertical estreita, a área desenhada e a sombra custam mais que o ganho visual.
+    // A composição não mostra as aves nesse enquadramento, então elas também não são carregadas.
+    const portraitMobile = window.matchMedia("(max-width: 680px) and (orientation: portrait)").matches;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, portraitMobile ? 1.25 : 1.75));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -341,7 +344,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     sun.target.position.set(0, 0, 8);
     sun.position.copy(sun.target.position).addScaledVector(SCENE_LIGHT, 70);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.mapSize.set(portraitMobile ? 1024 : 2048, portraitMobile ? 1024 : 2048);
     sun.shadow.camera.left = -34;
     sun.shadow.camera.right = 34;
     sun.shadow.camera.top = 40;
@@ -1071,7 +1074,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       placeFlying(holder, z, side, height, spin, .9);
       return holder;
     });
-    new GLTFLoader().load(MONEY_URL, (gltf) => {
+    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(MONEY_URL, (gltf) => {
       if (disposed) return;
       const model = gltf.scene;
       fitBox.setFromObject(model);
@@ -1446,23 +1449,27 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     birdFlock.renderOrder = 0;
     world.add(birdFlock);
     const birdMaps: THREE.Texture[] = [];
-    const birdSheet = backdropLoader.load(BIRD_SPRITE_URL, () => {
+    let birdSheet: THREE.Texture | null = null;
+    if (!portraitMobile) {
+      const sheet = backdropLoader.load(BIRD_SPRITE_URL, () => {
       // Os clones compartilham a imagem carregada, mas mantêm coordenadas de frame
       // independentes. Assim, cada ave bate as asas no seu próprio tempo.
       birdMaps.forEach((map) => {
-        map.image = birdSheet.image;
+        map.image = sheet.image;
         map.needsUpdate = true;
       });
-    });
-    birdSheet.colorSpace = THREE.SRGBColorSpace;
-    birdSheet.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      });
+      birdSheet = sheet;
+      sheet.colorSpace = THREE.SRGBColorSpace;
+      sheet.anisotropy = renderer.capabilities.getMaxAnisotropy();
     // Sem RepeatWrapping, offset.x fica preso no último frame da folha de sprites.
-    birdSheet.wrapS = THREE.RepeatWrapping;
-    birdSheet.repeat.set(.25, 1);
-    birdSheet.offset.set(0, 0);
+      sheet.wrapS = THREE.RepeatWrapping;
+      sheet.repeat.set(.25, 1);
+      sheet.offset.set(0, 0);
+    }
     type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; leadBoost: number; lift: number; speed: number; phase: number; opacity: number };
     const birds: BirdFlight[] = [];
-    [
+    if (birdSheet) [
       // Deslocamentos a partir da origem matemática: x, y, z, ultrapassagem,
       // oscilação, velocidade, fase, opacidade, tamanho.
       // Espaçamento 2× a partir do centro da formação: cada silhueta respira no céu.
@@ -2280,7 +2287,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // Começam durante o primeiro bilhete, antes de a câmera alcançar o dinheiro.
       // Não dependem da transição para a cozinha.
       const birdCue = THREE.MathUtils.smoothstep(sceneProgress, .33, .35);
-      if (birdCue > .98 && birdFlightStartedAt === null) {
+      if (!portraitMobile && birdCue > .98 && birdFlightStartedAt === null) {
         // O relógio começa antes do ponto de emergência: o bando já está voando
         // escondido pela casa quando entra no enquadramento.
         const birdPreRoll = 1.2;
@@ -2314,7 +2321,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // A opacidade pertence ao bando. A câmera pode seguir para a cozinha sem apagar
       // aves que ainda estejam cruzando o céu; elas saem apenas pelo próprio movimento.
       const birdPresence = birdCue;
-      birdFlock.visible = !reducedMotion && birdPresence > .005;
+      birdFlock.visible = !portraitMobile && !reducedMotion && birdPresence > .005;
       if (birdFlock.visible && birdFlightOrigin) {
         const flightOrigin = birdFlightOrigin;
         const birdTime = performance.now() / 1000;
@@ -2510,6 +2517,16 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       scrollArea.style.setProperty("--scroll-progress", Math.min(targetProgress, 1).toFixed(4));
       scrollArea.style.setProperty("--scroll-total", scrolled.toFixed(4));
     };
+    // Não há motivo para manter WebGL animando e consumindo bateria numa aba escondida.
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        if (frame) window.cancelAnimationFrame(frame);
+        frame = 0;
+        return;
+      }
+      lastFrameTime = performance.now();
+      if (!reducedMotion && !frame) animate();
+    };
 
     const handleMotionPreference = () => {
       reducedMotion = motionQuery.matches;
@@ -2535,12 +2552,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", updateScrollProgress, { passive: true });
     motionQuery.addEventListener("change", handleMotionPreference);
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       window.removeEventListener("resize", onResize);
       vhProbe.remove();
       window.removeEventListener("scroll", updateScrollProgress);
       motionQuery.removeEventListener("change", handleMotionPreference);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       if (frame) window.cancelAnimationFrame(frame);
       disposed = true;
       jota.dispose();
@@ -2552,7 +2571,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       sky.geometry.dispose();
       sky.material.dispose();
       birdMaps.forEach((map) => map.dispose());
-      birdSheet.dispose();
+      birdSheet?.dispose();
       papers.forEach(({ texture }) => texture?.dispose());
       storyTextures.forEach((texture) => texture.dispose());
       windowViewTarget?.dispose();
