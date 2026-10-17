@@ -1439,9 +1439,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     // Pássaros no céu da cidade: seis cópias pequenas da mesma silhueta, em formação.
     // Todos trocam a pose de asa juntos; variam somente tamanho, altura e deslocamento.
     const birdFlock = new THREE.Group();
-    // O céu não grava profundidade. Portanto a oclusão aqui é intencionalmente por
-    // ordem de camada: cenário, pássaros, bilhetes (estes últimos recebem renderOrder 2).
-    birdFlock.renderOrder = 1;
+    // A profundidade é a da própria cena: a casa e os objetos mais próximos podem
+    // ocultar o bando, que está na paisagem ao fundo.
+    birdFlock.renderOrder = 0;
     world.add(birdFlock);
     const birdSheet = backdropLoader.load(BIRD_SPRITE_URL);
     birdSheet.colorSpace = THREE.SRGBColorSpace;
@@ -1466,7 +1466,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
       // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
       const frameMap = birdSheet;
-      const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false, depthTest: false });
+      const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false, depthTest: true });
       const sprite = new THREE.Sprite(material);
       sprite.scale.set(size * 1.45, size, 1);
       sprite.frustumCulled = false;
