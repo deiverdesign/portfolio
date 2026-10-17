@@ -1,0 +1,168 @@
+.animatic {
+  --scroll-progress: 0;
+  /* Ritmo do scroll (PACE em PortaoMaterial.tsx): 1208vh de história + 100vh da tela.
+     No celular, 84% disso: 1208 × 0,84 + 100. */
+  min-height: 1308vh;
+  background: #0e1042;
+  color: #f0f0eb;
+  font-family: var(--font-dm-sans), Arial, sans-serif;
+}
+
+/* Header do Figma (nós 85:9666 e 95:10148): barra clara a 13 px do topo e a 4% das bordas,
+   logo à esquerda e o botão com o ícone de livro à direita. A cor muda com a cena:
+   --kitchen vai de 0 (rua: logo, linha e botão azuis) a 1 (cozinha: logo escuro, linha e
+   botão roxos), junto com a luz vermelha da janela. Na cena 3 (--opala = 1), botão e linha
+   ficam pink avermelhado #E3146B (Deiver, 13/10; antes #E61188). */
+.header {
+  --kitchen: calc(1 - var(--street-glow, 1));
+  --header-accent: color-mix(in srgb, #e3146b calc(var(--opala, 0) * 100%), color-mix(in srgb, #7026c1 calc(var(--kitchen) * 100%), #1a38c7));
+  position: fixed;
+  z-index: 10;
+  top: 13px;
+  right: 4vw;
+  left: 4vw;
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 5px;
+  background: rgba(240,240,251,.94);
+}
+/* Linha fixa embaixo do header, de ponta a ponta (menos 11 px de cada lado): azulada na rua, roxa na cozinha. */
+/* A linha cresce com o scroll (Deiver, 14/10): --header-fill vai de 0 (topo, só 10 px à mostra)
+   a 1 (fim da cena 3, a linha inteira). O recorte esconde o resto pela direita. */
+.headerLine { position: absolute; right: 11px; bottom: 0; left: 11px; height: 2.6px; background: color-mix(in srgb, #e3146b calc(var(--opala, 0) * 100%), color-mix(in srgb, #7026c1 calc(var(--kitchen) * 100%), #5e68ef)); clip-path: inset(0 calc((1 - var(--header-fill, 0)) * (100% - 10px)) 0 0); }
+/* Um SVG limpo fornecido pelo Deiver vira três cores com máscara; o risco existe apenas no motion. */
+.logoStack { position: relative; display: block; }
+.logo { display: block; width: 186.883px; height: auto; aspect-ratio: 187 / 16; -webkit-mask: url('/enquanto-durar-a-fe/logo-enquanto-fe-clean.svg') center / contain no-repeat; mask: url('/enquanto-durar-a-fe/logo-enquanto-fe-clean.svg') center / contain no-repeat; }
+.logoKitchen, .logoCinema { position: absolute; top: 0; left: 0; }
+.logoStreet { background: #1f2abd; opacity: calc(1 - var(--kitchen)); }
+.logoKitchen { background: #2d2d2d; opacity: var(--kitchen); }
+.logoCinema { background: #fff; opacity: 0; }
+.englishWordmark { color: #1f2abd; font-family: var(--font-newsreader), Georgia, serif; font-size: 15px; font-weight: 600; letter-spacing: .025em; line-height: .95; white-space: pre-line; }
+.headerActions { display: flex; align-items: center; gap: 12px; }
+.languageMenu { position: relative; flex: 0 0 auto; color: #1f2abd; font-family: var(--font-dm-mono), monospace; font-size: 10px; font-weight: 500; letter-spacing: .06em; }
+.languageMenu summary { display: inline-flex; min-height: 30px; align-items: center; gap: 5px; cursor: pointer; list-style: none; }
+.languageMenu summary::-webkit-details-marker { display: none; }
+.languageMenu summary svg { width: 9px; height: 6px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; transition: transform .2s ease; }
+.languageMenu[open] summary svg { transform: rotate(180deg); }
+.languageMenu a { position: absolute; z-index: 1; top: calc(100% + 4px); right: -8px; display: grid; min-width: 34px; min-height: 30px; place-items: center; padding: 0 8px; border-radius: 4px; background: rgba(240,240,251,.98); box-shadow: 0 4px 12px rgba(6,11,44,.14); color: #1f2abd; text-decoration: none; }
+.languageMenu a:hover { background: #fff; }
+.languageMenu summary:focus-visible, .languageMenu a:focus-visible { outline: 2px solid var(--header-accent); outline-offset: 3px; }
+/* "Durar" ganha um risco curto: é uma pista editorial, não um estado do título.
+   As medidas acompanham o logo de 187 × 16 px; com movimento reduzido ele não existe. */
+@keyframes durarStrike { from { opacity: 1; transform: scaleX(.02); } to { opacity: 1; transform: scaleX(1); } }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .logoStack::after { position: absolute; top: 52%; left: 49.2%; width: 26.4%; height: 1.5px; border-radius: 999px; background: #131a42; content: ""; opacity: 0; pointer-events: none; transform: scaleX(.02); transform-origin: left center; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+  .logoStack:hover::after { opacity: 1; transform: scaleX(1); }
+}
+@media (hover: none) and (pointer: coarse) and (max-width: 680px) and (prefers-reduced-motion: no-preference) {
+  .logoStack::after { position: absolute; top: 52%; left: 49.2%; width: 26.4%; height: 1.5px; border-radius: 999px; background: #131a42; content: ""; opacity: 0; pointer-events: none; transform: scaleX(.02); transform-origin: left center; animation: durarStrike .3s cubic-bezier(.2, .8, .2, 1) 3s forwards; }
+}
+.headerBuy { display: inline-flex; min-width: 16px; min-height: 30px; height: 34px; box-sizing: border-box; align-items: center; justify-content: center; gap: 8px; padding: 4px 12px; border-radius: 18px; background: var(--header-accent); color: #fff; font-family: var(--font-dm-sans), Arial, sans-serif; font-size: 14px; font-weight: 500; line-height: 20.8px; text-decoration: none; white-space: nowrap; transition: filter .2s; }
+.headerBookIcon { position: relative; display: block; flex: 0 0 14px; width: 14px; height: 14px; }
+.headerBookIcon img { position: absolute; inset: 0; display: block; }
+.headerBookIconStreet { opacity: calc(1 - var(--kitchen) + var(--opala, 0)); }
+.headerBookIconKitchen { opacity: calc(var(--kitchen) * (1 - var(--opala, 0))); }
+.headerBuy:hover { filter: brightness(.88); }
+.headerBuy:focus-visible { outline: 2px solid var(--header-accent); outline-offset: 3px; }
+.buy { text-shadow: none; padding: 10px 16px; border-radius: 999px; background: #f1ee3c; color: #0e1042; font-family: var(--font-dm-mono), monospace; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; text-decoration: none; transition: background .2s; }
+.buy:hover { background: #fffebe; }
+.buy:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+
+.stage { position: sticky; top: 0; height: 100svh; height: 100dvh; overflow: hidden; background: #0e1042; }
+.canvasShell { position: absolute; inset: 0; }
+.canvasShell canvas { display: block; width: 100%; height: 100%; }
+.canvasShell[data-webgl-unavailable] { display: grid; place-items: center; background: repeating-linear-gradient(135deg, #1a1f6e 0 12px, #141858 12px 24px); }
+.canvasShell[data-webgl-unavailable]::after { max-width: 270px; padding: 18px; border: 1px solid #292a27; background: #dcdcd5; color: #20211f; content: "WebGL não está disponível neste navegador. O animatic precisa de aceleração gráfica para renderizar a câmera espacial."; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.5; }
+
+/* Filtro fixo na tela, desenhado pelo Deiver no Figma (frame 1465 x 761, "fixed mask"): vinheta
+   azul-noite e manchas de luz borradas nas bordas. Posições em % desse frame. Cada mancha é filha
+   direta do .stage para o mix-blend-mode misturar com o 3D. Ajuste de 16/10: vinheta em 55/80
+   da força anterior e luzes em 50%, para a moldura não competir com a cena. */
+.vignette { position: absolute; z-index: 2; inset: 0; background: radial-gradient(ellipse 52.2% 70.8% at 50.9% 29.2%, rgba(5,7,35,0) 35.9%, #050723 100%); opacity: calc(.61875 * (1 - var(--flash, 0))); pointer-events: none; }
+/* Manchas de cor da rua: somem quando a luz vermelha da cozinha acende (--street-glow vai de 1 a 0). */
+.glow { position: absolute; z-index: 2; border-radius: 50%; pointer-events: none; }
+.glowBottomLeft { left: -30.6%; top: 94.3%; width: 49.1%; height: 24%; background: #c0683a; opacity: calc(.175 * var(--street-glow, 1)); filter: blur(5.1vw); }
+.glowRight { left: 82.5%; top: 61.9%; width: 46.8%; height: 26.2%; background: #f0a647; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.2 * var(--street-glow, 1)); }
+.glowRightHigh { left: 96.6%; top: 42.3%; width: 16.6%; height: 30.3%; background: #f3c35a; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.2 * var(--street-glow, 1)); }
+.glowBottom { left: 21.7%; top: 104.2%; width: 63.4%; height: 15.7%; background: #1f8fc4; filter: blur(5.1vw); mix-blend-mode: lighten; opacity: calc(.35 * var(--street-glow, 1)); }
+.glowPurple { left: 87.2%; top: 50.6%; width: 14%; height: 11.3%; background: #b31bf4; opacity: calc(.25 * var(--street-glow, 1)); filter: blur(3.75vw); }
+/* Máscara da abertura (Deiver, 2026-10-10): escura no alto e transparente embaixo, para
+   ler o título no meio da tela. Some no começo do scroll. Ex.: com 8% do scroll ela já
+   está pela metade; com 16%, sumiu. */
+.introMask { position: absolute; z-index: 2; inset: 0; background: linear-gradient(180deg, rgba(5,7,35,.82) 0%, rgba(5,7,35,.55) 45%, rgba(5,7,35,0) 100%); opacity: clamp(0, calc(1 - var(--scroll-progress) * 6.25), 1); pointer-events: none; }
+/* Título no meio do vão entre o header e o texto "Jota vende Bíblias..." (Deiver, 14/10):
+   a caixa vai da base do header (--copy-top) até o topo desse texto (--copy-bottom) e o h1
+   fica centralizado na vertical dentro dela. Ex.: desktop 1000×520 → vão de 71 a 413 px. */
+.copy { --copy-top: 71px; --copy-bottom: 106px; position: absolute; z-index: 3; top: var(--copy-top); bottom: var(--copy-bottom); display: flex; align-items: center; left: 4.75vw; width: min(820px, 86vw); transform: translateY(calc(var(--scroll-progress) * -34px)); opacity: clamp(0, calc(1 - var(--scroll-progress) * 2.8), 1); pointer-events: none; }
+.copy h1 { color: #fff; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(38px, 4.5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; letter-spacing: normal; line-height: 1.15; white-space: nowrap; text-shadow: 0 2px 12px rgba(10,11,48,.45); }
+
+.scrollHint { position: absolute; z-index: 3; bottom: 24px; left: clamp(20px, 3vw, 48px); width: min(340px, 80vw); opacity: calc(1 - var(--scroll-progress) * 1.3); }
+.scrollHint p { margin-bottom: 14px; color: #f5f5ef; font-family: var(--font-dm-sans), Arial, sans-serif; font-size: 17px; line-height: 1.35; text-shadow: 0 1px rgba(10,11,48,.5); }
+.scrollHint span { color: rgba(244,244,238,.88); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .075em; text-transform: uppercase; }
+.scrollHint i { display: inline-block; margin-left: 6px; font-size: 15px; font-style: normal; vertical-align: -1px; }
+/* Linha do tempo (Deiver, 13/10): narrativa, nada clicável. Desktop: canto inferior direito,
+   linha de 200 px com um marcador por ano (2010 a 2017) e o ano ativo acima do marcador.
+   --at = posição de 0 a 1 na linha (no marcador: o ano ativo; em cada risquinho: o ano dele). */
+.timeline { position: absolute; z-index: 3; right: clamp(20px, 3vw, 48px); bottom: 30px; width: 180px; height: 1px; pointer-events: none; user-select: none; }
+.timelineTrack { position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: rgba(255,255,255,.28); }
+/* Ponto de um ano das cenas: bolinha vazada pequena. O ativo fica coberto pela bolinha branca. */
+.timelinePoint { position: absolute; top: -2.5px; left: calc(var(--at) * 100% - 3px); width: 6px; height: 6px; box-sizing: border-box; border: 1px solid rgba(255,255,255,.6); border-radius: 50%; background: #10123f; }
+.timelineMarker { position: absolute; top: 0; left: calc(var(--at) * 100%); transition: left .75s cubic-bezier(.6, 0, .25, 1); }
+.timelineDot { position: absolute; top: -3.5px; left: -4px; width: 8px; height: 8px; border-radius: 50%; background: #f7f7f2; box-shadow: 0 0 6px rgba(10,11,48,.5); }
+.timelinePulse { animation: timelinePulse .45s ease-out; }
+@keyframes timelinePulse { 0% { box-shadow: 0 0 0 0 rgba(242,242,236,.7); transform: scale(1); } 40% { transform: scale(1.6); } 100% { box-shadow: 0 0 0 9px rgba(242,242,236,0); transform: scale(1); } }
+/* O ano: uma máscara de uma linha só; dentro dela a coluna de anos gira como um contador. */
+/* Largura fixa para os 4 dígitos, centrada na bolinha: o ano aparece sempre inteiro. */
+.timelineYear { position: absolute; bottom: 10px; left: -24px; width: 48px; height: 14px; overflow: hidden; color: #f2f2ec; font-family: var(--font-dm-mono), monospace; font-size: 11px; font-variant-numeric: tabular-nums; letter-spacing: .08em; line-height: 14px; text-align: center; white-space: nowrap; text-shadow: 0 1px 4px rgba(10,11,48,.6); }
+.timelineColumn { display: flex; width: 100%; flex-direction: column; }
+.timelineColumn span { display: block; width: 100%; height: 14px; flex: none; }
+.reducedNote { display: none; }
+
+/* ENCERRAMENTO (Deiver, 13/10): a rua continua visível, só escurece um pouco por cima para o
+   texto ler bem. Nada de bloco branco, capa 3D ou animação chamativa: o bloco sobe 10 px e
+   aparece devagar. A linha do tempo some junto com o bilhete (--outro-fade). */
+.timeline { opacity: calc(1 - var(--outro-fade, 0)); }
+.outro { position: absolute; z-index: 4; inset: 0; display: grid; place-items: center; padding: 96px 24px 72px; background: radial-gradient(ellipse at center, rgba(6,7,30,.62) 0%, rgba(6,7,30,.42) 60%, rgba(6,7,30,.3) 100%); opacity: 0; pointer-events: none; transition: opacity 1.4s ease; }
+.outro[data-shown="true"] { opacity: 1; pointer-events: auto; }
+.outroBlock { display: grid; justify-items: center; max-width: 640px; text-align: center; transform: translateY(10px); transition: transform 1.6s cubic-bezier(.2, .7, .2, 1); }
+.outro[data-shown="true"] .outroBlock { transform: none; }
+.outroKicker { margin: 0 0 30px; color: rgba(244,244,238,.86); font-family: var(--font-dm-mono), monospace; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
+.outroTitle { margin: 0 0 38px; color: #fff; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(40px, 6vw, 84px); font-weight: 300; font-variation-settings: "opsz" 72; letter-spacing: .01em; line-height: 1.02; text-transform: uppercase; text-shadow: 0 2px 18px rgba(6,7,30,.55); }
+.outroBuy { display: inline-flex; min-height: 44px; align-items: center; padding: 0 22px; border-radius: 22px; background: #e3146b; color: #fff; font-family: var(--font-dm-sans), Arial, sans-serif; font-size: 15px; font-weight: 500; text-decoration: none; transition: filter .2s; }
+.outroBuy:hover { filter: brightness(.9); }
+.outroBuy:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.outroNote { margin: 14px 0 0; color: rgba(244,244,238,.62); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.outroCredit { margin: 24px 0 0; color: rgba(244,244,238,.52); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .04em; line-height: 1.5; }
+.outroCredit a { color: rgba(244,244,238,.78); text-underline-offset: 3px; }
+.outroCredit a:hover { color: #fff; }
+.outroCredit a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* A antiga tela final separada: com o encerramento dentro da cena 3 ela sai (Deiver, 13/10).
+   Continua só para quem pediu movimento reduzido, que não vê a cena andar. */
+.ending { display: none; }
+@media (prefers-reduced-motion: reduce) { .ending { display: grid; } }
+.ending { min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }.endingCredit { margin-top: 24px; color: rgba(237,237,231,.72); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .05em; text-underline-offset: 3px; }.endingCredit:hover { color: #fff; }.endingCredit:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+@media (max-width: 680px) {
+  .animatic { min-height: 1115vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logo { width: 168px; }.englishWordmark { font-size: 12px; }.headerActions { gap: 8px; }.languageMenu { font-size: 8px; }.languageMenu summary { min-width: 44px; min-height: 44px; justify-content: center; gap: 4px; margin: -6px; }.languageMenu a { right: -7px; min-width: 44px; min-height: 44px; }.glowRight, .glowRightHigh { opacity: calc(.1 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; opacity: clamp(0, calc(1 - var(--scroll-progress) * 4.5), 1); }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
+  /* Celular: centralizada no rodapé, acima da safe area, 164 px, com os pontos dos anos. O
+     marcador fica parado no meio e a linha (60 px entre pontos) anda por baixo dele. Aparece
+     depois que o texto "Role para entrar" sai, para os dois não se cruzarem. */
+  /* A caixa tem 44 px de altura (a máscara recorta tudo fora dela) e a linha fica 8 px acima do pé. */
+  .timeline { right: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); left: 50%; width: 164px; height: 44px; margin-bottom: -8px; margin-left: -82px; --span: calc((var(--points, 2) + 1) * 60px); background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 35px / 100% 1px no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent); opacity: calc(clamp(0, calc((var(--scroll-progress) - .25) * 4), 1) * (1 - var(--outro-fade, 0))); }
+  .timelineTrack { top: 35px; bottom: auto; left: calc(50% - var(--at) * var(--span)); width: var(--span); background: none; transition: left .75s cubic-bezier(.6, 0, .25, 1); }
+  .timelineMarker { top: 35px; left: 50%; transition: none; }
+}
+
+/* Celular deitado (Figma, "modo cinema"): sem a barra clara, logo branco e a linha só embaixo
+   do logo (371 px), para a tela baixa ficar quase toda para a cena. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .header { top: 19px; right: 4vw; left: 4vw; height: auto; padding: 12px; background: none; }.headerLine { right: auto; width: 371px; max-width: 45%; }.logo { width: 186.883px; }.logoStreet, .logoKitchen { opacity: 0; }.logoCinema { opacity: 1; }.englishWordmark, .languageMenu { color: #fff; }.languageMenu a { background: rgba(14,16,66,.98); color: #fff; }.headerBuy { height: 34px; padding: 4px 12px; gap: 8px; font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animatic { min-height: 100svh; }.stage { position: relative; }.scrollHint, .timeline { display: none; }.headerLine { clip-path: none; }.reducedNote { position: absolute; z-index: 3; right: 18px; bottom: 18px; left: 18px; display: block; color: rgba(244,244,238,.85); font-family: var(--font-dm-mono), monospace; font-size: 9px; letter-spacing: .07em; text-align: center; text-transform: uppercase; }.ending { min-height: 48svh; }
+}
