@@ -1450,19 +1450,20 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     birdSheet.wrapS = THREE.RepeatWrapping;
     birdSheet.repeat.set(.25, 1);
     birdSheet.offset.set(0, 0);
-    type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; span: number; lift: number; speed: number; phase: number; opacity: number };
+    type BirdFlight = { sprite: THREE.Sprite; material: THREE.SpriteMaterial; frameMap: THREE.Texture; x: number; y: number; z: number; leadBoost: number; lift: number; speed: number; phase: number; opacity: number };
     const birds: BirdFlight[] = [];
     [
-      // x, y, z, deslocamento, oscilação, velocidade, fase, opacidade, tamanho.
+      // x, y, z, ganho para ultrapassar, oscilação, velocidade, fase, opacidade, tamanho.
       // O bando existe atrás do bilhete e das casas — não preso ao enquadramento da câmera.
       // A escala compensa as margens transparentes generosas da folha de sprites.
-      [3.3, 13.45, -4.8, 4.8, .10, .28, .05, .92, .800],
-      [4.4, 13.17, -5.0, 4.8, .10, .28, .17, .88, .706],
-      [5.5, 12.89, -5.2, 4.8, .10, .28, .29, .84, .648],
-      [6.6, 12.61, -5.4, 4.8, .10, .28, .42, .80, .598],
-      [4.9, 14.07, -5.6, 4.8, .10, .28, .58, .76, .544],
-      [6.1, 14.43, -5.8, 4.8, .10, .28, .71, .72, .496],
-    ].forEach(([x, y, z, span, lift, speed, phase, opacity, size]) => {
+      [3.3, 13.45, -4.8, 0, .10, .28, .05, .92, .800],
+      [4.4, 13.17, -5.0, 0, .10, .28, .17, .88, .706],
+      [5.5, 12.89, -5.2, 0, .10, .28, .29, .84, .648],
+      [6.6, 12.61, -5.4, 0, .10, .28, .42, .80, .598],
+      // A quinta começa atrás, acelera no meio da travessia e assume a ponta do V.
+      [4.9, 14.07, -5.6, 2.7, .10, .28, .58, .76, .544],
+      [6.1, 14.43, -5.8, 0, .10, .28, .71, .72, .496],
+    ].forEach(([x, y, z, leadBoost, lift, speed, phase, opacity, size]) => {
       // É a mesma folha — e, portanto, a mesma batida de asa — para toda a formação.
       // Cloná-la antes do carregamento assíncrono deixava cópias sem dados de imagem no WebGL.
       const frameMap = birdSheet;
@@ -1471,7 +1472,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       sprite.scale.set(size * 1.45, size, 1);
       sprite.frustumCulled = false;
       birdFlock.add(sprite);
-      birds.push({ sprite, material, frameMap, x, y, z, span, lift, speed, phase, opacity });
+      birds.push({ sprite, material, frameMap, x, y, z, leadBoost, lift, speed, phase, opacity });
     });
 
     // No animatic cinza este plano era o "céu". Aqui ele vira só a massa escura de morro
@@ -2073,6 +2074,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
     let targetProgress = 0;
     let wipe = 0;
     let frame = 0;
+    let birdFlightStartedAt: number | null = null;
     let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -2255,18 +2257,23 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       fireflyMaterial.uniforms.uPixels.value = renderer.domElement.height * .5;
       // A tela do celular é fisicamente pequena: o mesmo vaga-lume em pixels fica minúsculo.
       fireflyMaterial.uniforms.uBoost.value = camera.aspect < 1 ? 1.5 : 1;
-      // O bando pertence ao encontro com o 2º bilhete: entra no céu à direita,
-      // permanece enquanto ele é lido e desaparece antes da próxima passagem.
-      const birdPresence = (1 - inside)
-        * THREE.MathUtils.smoothstep(sceneProgress, .40, .43)
-        * (1 - THREE.MathUtils.smoothstep(sceneProgress, .53, .57));
+      // O bando é disparado pelo 2º bilhete, mas não é desligado por uma faixa de scroll:
+      // cada ave atravessa o céu e só some ao passar naturalmente para fora do quadro.
+      const birdCue = THREE.MathUtils.smoothstep(sceneProgress, .40, .43);
+      if (birdCue > .98 && birdFlightStartedAt === null) birdFlightStartedAt = performance.now() / 1000;
+      // Ao voltar antes do gatilho, a sequência fica pronta para ser vista de novo.
+      if (sceneProgress < .38) birdFlightStartedAt = null;
+      const birdPresence = (1 - inside) * birdCue;
       birdFlock.visible = !reducedMotion && birdPresence > .005;
       if (birdFlock.visible) {
         const birdTime = performance.now() / 1000;
+        const flightTime = Math.max(0, birdTime - (birdFlightStartedAt ?? birdTime));
+        // Aos 3,5 s uma ave de trás começa a ultrapassar; aos 6 s ela está na liderança.
+        const leadChange = THREE.MathUtils.smoothstep(flightTime, 3.5, 6);
         birds.forEach((bird) => {
-          const flight = birdTime * bird.speed;
+          const flight = flightTime * bird.speed + leadChange * bird.leadBoost;
           bird.sprite.position.set(
-            bird.x + flight % bird.span,
+            bird.x + flight,
             bird.y + Math.sin((flight + bird.phase) * Math.PI * 2) * bird.lift,
             bird.z,
           );
