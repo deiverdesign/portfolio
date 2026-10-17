@@ -1469,9 +1469,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       const frameMap = birdSheet;
       const material = new THREE.SpriteMaterial({ map: frameMap, color: "#03040b", transparent: true, opacity, alphaTest: .04, depthWrite: false, depthTest: true });
       const sprite = new THREE.Sprite(material);
-      // A folha tem margens transparentes grandes; no plano distante, 270% mantém o
-      // bando legível sem fazê-lo disputar atenção com a casa ou os bilhetes.
-      sprite.scale.set(size * 1.45 * 2.7, size * 2.7, 1);
+      // A folha tem margens transparentes grandes. 810% da escala original faz a
+      // silhueta ser lida como ave, não como um ponto, sem disputar a cena.
+      sprite.scale.set(size * 1.45 * 8.1, size * 8.1, 1);
       sprite.frustumCulled = false;
       birdFlock.add(sprite);
       birds.push({ sprite, material, frameMap, x, y, z, leadBoost, lift, speed, phase, opacity });
