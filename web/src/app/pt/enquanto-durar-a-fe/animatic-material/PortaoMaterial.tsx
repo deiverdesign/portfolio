@@ -82,6 +82,7 @@ const COBBLE_URL = "/enquanto-durar-a-fe/texturas/paralelepipedo.jpg?v=2";
 const BACKDROP_CITY_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-cidade.webp?v=1";
 const BACKDROP_TREES_URL = "/enquanto-durar-a-fe/texturas/fundo-morro-frente.webp?v=2";
 const BIRD_SPRITE_URL = "/enquanto-durar-a-fe/texturas/passaros-voo.png?v=1";
+const BIRD_FLOCK_ALPHA = .7;
 const COBBLE_ASPECT = 2120 / 1100;
 const PAPER_WIDTH = 5.2;
 // Bilhete cortado rente ao texto (o Deiver marcou o corte): 1024 × 400 px de textura.
@@ -2325,7 +2326,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
           );
           // A fase individual evita seis silhuetas idênticas virarem uma mancha só.
           bird.frameMap.offset.x = Math.floor(birdTime * 7 + bird.phase * 8) % 4 * .25;
-          bird.material.opacity = bird.opacity * birdPresence;
+          // O bando fica presente no céu, mas não compete com a casa e os bilhetes.
+          bird.material.opacity = bird.opacity * BIRD_FLOCK_ALPHA * birdPresence;
         });
       }
       renderStory(storyItems, story, kitchenGroup);
