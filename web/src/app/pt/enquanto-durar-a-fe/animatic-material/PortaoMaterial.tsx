@@ -2275,11 +2275,11 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
       fireflyMaterial.uniforms.uPixels.value = renderer.domElement.height * .5;
       // A tela do celular é fisicamente pequena: o mesmo vaga-lume em pixels fica minúsculo.
       fireflyMaterial.uniforms.uBoost.value = camera.aspect < 1 ? 1.5 : 1;
-      // O bando é disparado pelo 2º bilhete, mas não é desligado por uma faixa de scroll:
+      // O bando é disparado pelo 1º bilhete, mas não é desligado por uma faixa de scroll:
       // cada ave atravessa o céu e só some ao passar naturalmente para fora do quadro.
-      // Começam durante o segundo bilhete, enquanto o dinheiro ainda está no quadro.
+      // Começam durante o primeiro bilhete, antes de a câmera alcançar o dinheiro.
       // Não dependem da transição para a cozinha.
-      const birdCue = THREE.MathUtils.smoothstep(sceneProgress, .36, .38);
+      const birdCue = THREE.MathUtils.smoothstep(sceneProgress, .33, .35);
       if (birdCue > .98 && birdFlightStartedAt === null) {
         // O relógio começa antes do ponto de emergência: o bando já está voando
         // escondido pela casa quando entra no enquadramento.
@@ -2307,7 +2307,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK }: { creditFo
         birdFlightOrigin.x -= birdPreRoll * .62;
       }
       // Ao voltar antes do gatilho, a sequência fica pronta para ser vista de novo.
-      if (sceneProgress < .34) {
+      if (sceneProgress < .31) {
         birdFlightStartedAt = null;
         birdFlightOrigin = null;
       }
