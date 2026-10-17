@@ -1516,9 +1516,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     // vermelho nas quinas viradas para a janela, que acende junto com a luz vermelha.
     const kitchenLineMaterial = new LineMaterial({ color: "#07031a", linewidth: 1.6 });
     const kitchenRedLineMaterial = new LineMaterial({ color: "#ff2650", linewidth: 2.2, transparent: true, opacity: 0 });
-    // A cozinha é montada só quando a pessoa passa de PRELOAD_AT (35%) da rua, e
-    // preparada para a placa de vídeo (compileAsync) antes de aparecer. Se ainda
-    // não estiver pronta quando a câmera chegar à janela, a câmera espera ali.
+    // A cozinha é preparada durante o começo da rua e a terceira cena só começa a
+    // carregar na cozinha, enquanto há três bilhetes para ler. Se alguma preparação
+    // não terminar a tempo, a câmera espera na transição em vez de mostrar a cena crua.
     const PRELOAD_AT = .35;
     const kitchenTarget = new THREE.Vector3();
     const kitchenPortraitLookAt = new THREE.Vector3(WINDOW_X - m(.8), roadY(CAMERA_END_Z) + m(3.2) + m(1.05), CAMERA_END_Z + m(1.2));
@@ -1622,6 +1622,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     const OPALA_WIPE_FROM = WIPE.poleX - .35;
     let opalaGroup: THREE.Object3D | null = null;
     let opala: ReturnType<typeof buildOpalaNight> | null = null;
+    let opalaState: "idle" | "loading" | "ready" = "idle";
     const opalaItems: StoryItem[] = [];
 
     const buildKitchen = () => {
@@ -1989,50 +1990,103 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       return Promise.all(jobs);
     };
 
-    // PRONTIDÃO (Deiver, 14/10). Quando o 1º bilhete da rua aparece (PRELOAD_AT), a cozinha e o
-    // Opala começam a carregar juntos, em segundo plano. "Pronto" espera, nesta ordem:
-    // 1. os arquivos já montados na cena: a Helena (cozinha); o céu, o asfalto, o Opala, o Jota
-    //    com o pano e os dois amigos (Opala); e as fontes dos bilhetes;
-    // 2. a placa de vídeo: as texturas enviadas (initTexture) e os shaders compilados para cada
-    //    trecho da passagem (compileFor).
-    // Até lá a câmera espera no fim da rua, de frente para a janela (veja animate), e a cozinha
-    // fica escondida (a lâmpada dela não muda a luz da rua enquanto carrega).
-    const ensureKitchen = (scrollProgress: number) => {
-      if (kitchenState !== "idle" || scrollProgress < PRELOAD_AT) return;
+    // PRONTIDÃO. A cozinha e o Opala não podem começar a existir no primeiro bilhete: montar
+    // geometria, desenhar os papéis e pedir modelos nesse mesmo quadro criava uma queda de FPS.
+    // Cada etapa abaixo ganha seu próprio tempo ocioso: cozinha → Opala → upload/compilação.
+    // Assim a rua continua respondendo ao scroll e, quando a câmera chega à janela, a próxima
+    // cena já está pronta. O PRELOAD_AT continua como rede de segurança para quem rolar muito
+    // rápido antes de o navegador oferecer um tempo ocioso.
+    type IdleWindow = Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const idleWindow = window as IdleWindow;
+    let preloadHandle: number | null = null;
+    let preloadUsesIdleCallback = false;
+    let preloadScheduled = false;
+    const cancelPreload = () => {
+      if (preloadHandle === null) return;
+      if (preloadUsesIdleCallback) idleWindow.cancelIdleCallback?.(preloadHandle);
+      else window.clearTimeout(preloadHandle);
+      preloadHandle = null;
+      preloadScheduled = false;
+    };
+    const schedulePreloadStep = (step: () => void, timeout: number) => {
+      if (disposed || preloadScheduled) return;
+      preloadScheduled = true;
+      const run = () => {
+        preloadHandle = null;
+        preloadScheduled = false;
+        if (!disposed) step();
+      };
+      if (idleWindow.requestIdleCallback) {
+        preloadUsesIdleCallback = true;
+        preloadHandle = idleWindow.requestIdleCallback(run, { timeout });
+      } else {
+        preloadUsesIdleCallback = false;
+        preloadHandle = window.setTimeout(run, Math.min(timeout, 350));
+      }
+    };
+    const prepareKitchen = () => {
+      if (kitchenState !== "idle") return;
       kitchenState = "loading";
       const kitchen = buildKitchen();
       kitchen.group.visible = false;
       world.add(kitchen.group);
-      const opalaScene = buildOpala();
-      opalaScene.group.visible = false;
-      world.add(opalaScene.group);
-      Promise.all([kitchen.ready, opalaScene.ready, document.fonts.ready])
+      Promise.all([kitchen.ready, document.fonts.ready])
+        .then(() => new Promise<void>((resolve) => schedulePreloadStep(resolve, 300)))
         .then(() => {
           if (disposed) return;
           uploadTextures(kitchen.group);
-          uploadTextures(opalaScene.group);
           const kitchenLights: THREE.Light[] = [sun];
           kitchen.group.traverse((child) => { if ((child as THREE.Light).isLight) kitchenLights.push(child as THREE.Light); });
-          const street = [...world.children.filter((child) => child !== kitchen.group && child !== opalaScene.group), sky];
+          const street = [...world.children.filter((child) => child !== kitchen.group), sky];
           const texture = new THREE.WebGLRenderTarget(1, 1);
           return Promise.all([
             // Rua e cozinha na tela, com a lâmpada da cozinha acesa (indo e voltando pela janela).
             compileFor([...street, kitchen.group, windowView], kitchenLights, null),
             // Cozinha no borrão do wipe.
             compileFor([kitchen.group, windowView], kitchenLights, texture),
-            // Foto da rua na janela (só o sol) e o Opala no borrão do wipe.
-            compileFor([...street, opalaScene.group], [sun], texture),
-            // Opala na tela (só o sol: a cozinha está escondida).
-            compileFor([opalaScene.group], [sun], null),
             // O próprio borrão.
             compileFor([blurScene], [], null),
           ]).finally(() => texture.dispose());
         })
-        // Se a preparação falhar, segue assim mesmo (melhor do que a câmera presa na janela).
-        .catch((error) => console.warn("Cozinha/Opala: a preparação falhou", error))
+        .catch((error) => console.warn("Cozinha: a preparação falhou", error))
         .then(() => {
           if (!disposed) kitchenState = "ready";
         });
+    };
+    const prepareOpala = () => {
+      if (opalaState !== "idle") return;
+      opalaState = "loading";
+      const opalaScene = buildOpala();
+      opalaScene.group.visible = false;
+      world.add(opalaScene.group);
+      Promise.all([opalaScene.ready, document.fonts.ready])
+        .then(() => new Promise<void>((resolve) => schedulePreloadStep(resolve, 300)))
+        .then(() => {
+          if (disposed) return;
+          uploadTextures(opalaScene.group);
+          const street = [...world.children.filter((child) => child !== kitchenGroup && child !== opalaScene.group), sky];
+          const texture = new THREE.WebGLRenderTarget(1, 1);
+          return Promise.all([
+            // Foto da rua na janela (só o sol) e o Opala no borrão do wipe.
+            compileFor([...street, opalaScene.group], [sun], texture),
+            // Opala na tela (só o sol: a cozinha está escondida).
+            compileFor([opalaScene.group], [sun], null),
+          ]).finally(() => texture.dispose());
+        })
+        .catch((error) => console.warn("Opala: a preparação falhou", error))
+        .then(() => {
+          if (!disposed) opalaState = "ready";
+        });
+    };
+    // O primeiro frame já foi pintado quando a cozinha começa a ser preparada. Se a pessoa rolar
+    // muito cedo, o timeout impede que essa tarefa fique indefinidamente para trás.
+    const scheduleKitchenPreload = () => schedulePreloadStep(prepareKitchen, 900);
+    const scheduleOpalaPreload = () => schedulePreloadStep(prepareOpala, 600);
+    const ensureKitchen = (scrollProgress: number) => {
+      if (kitchenState === "idle" && scrollProgress >= PRELOAD_AT) scheduleKitchenPreload();
     };
 
     const startPosition = new THREE.Vector3(CAMERA_START_X, roadY(CAMERA_START_Z) + EYE_HEIGHT, CAMERA_START_Z);
@@ -2118,6 +2172,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       lookAt.lerpVectors(houseLookAt, lookAt, descent);
       // Depois da rua: recua reto, na altura do olho, atravessando a janela.
       const inside = THREE.MathUtils.smoothstep(sceneProgress, STREET_END, 1);
+      // A segunda cena é a janela de carregamento da terceira: há três bilhetes para ler,
+      // então o Opala não precisa competir com a abertura nem com o primeiro da rua.
+      if (inside > .08 && opalaState === "idle") scheduleOpalaPreload();
       if (inside > 0) {
         const rise = THREE.MathUtils.smoothstep(inside, 0, .2);
         // Depois de passar pela janela, a câmera recua em diagonal para a direita, para a
@@ -2148,6 +2205,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       }
       // Wipe: a câmera desliza para a direita olhando sempre para a frente (o olhar anda junto).
       const ready = kitchenState === "ready";
+      const opalaReady = opalaState === "ready";
       const portraitView = camera.aspect < 1;
       const kitchenStartX = KITCHEN.cameraDrift * (portraitView ? .15 : 1);
       const rail = railAt(
@@ -2155,7 +2213,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
         Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.aspect,
         Math.tan(THREE.MathUtils.degToRad(portraitView ? opalaPortraitFov(camera.aspect) : 47) / 2) * camera.aspect,
       );
-      const inOpala = ready && Boolean(opalaGroup) && wipe > 0 && rail.distance > rail.kitchenLength;
+      const inOpala = ready && opalaReady && Boolean(opalaGroup) && wipe > 0 && rail.distance > rail.kitchenLength;
       // Trechos no scroll: na cozinha até a parede; na rua, do fim do preto até o quadro final.
       const kitchenSlide = ready ? THREE.MathUtils.smoothstep(progress, STORY_END, WIPE_AT) : 0;
       // O deslize sai de onde a história deixou a câmera (kitchenStartX + storySide).
@@ -2384,7 +2442,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       if (kitchenState !== "ready") progress = Math.min(progress, STREET_END);
       // Indo: dispara quando a câmera (suavizada) chega na parede. Voltando: dispara assim que o
       // scroll passa para trás do ponto, sem esperar a suavização alcançar.
-      if (kitchenState !== "ready" || targetProgress < WIPE_AT) wipeTarget = 0;
+      if (kitchenState !== "ready" || opalaState !== "ready" || targetProgress < WIPE_AT) wipeTarget = 0;
       else if (progress >= WIPE_AT) wipeTarget = 1;
       const step = seconds / wipeRail.seconds;
       // Já chegou? Fica parado. (Antes, ao chegar em 1 ele voltava um passo e o bilhete piscava.)
@@ -2507,6 +2565,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     measureVh();
     resize();
     handleMotionPreference();
+    if (!reducedMotion) scheduleKitchenPreload();
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", updateScrollProgress, { passive: true });
     motionQuery.addEventListener("change", handleMotionPreference);
@@ -2518,6 +2577,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       window.removeEventListener("scroll", updateScrollProgress);
       motionQuery.removeEventListener("change", handleMotionPreference);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      cancelPreload();
       if (frame) window.cancelAnimationFrame(frame);
       disposed = true;
       jota.dispose();
