@@ -13,8 +13,7 @@ const newsreader = Newsreader({
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: "500", display: "swap" });
 
 const SITE_URL = "https://enquantodurarafe.com.br";
-const PATH = "/give-us-this-day-our-daily-lie/animatic-material";
-const PORTUGUESE_PATH = "/pt/enquanto-durar-a-fe/animatic-material";
+const PATH = "/give-us-this-day-our-daily-lie";
 const TITLE = "Give Us This Day Our Daily Lie — A novel by Deiver Brito";
 const DESCRIPTION = "Jota goes door to door selling Bibles. He knows exactly what to say — but there are things about himself he would rather keep in silence.";
 
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${SITE_URL}${PATH}`,
     languages: {
-      "pt-BR": `${SITE_URL}${PORTUGUESE_PATH}`,
+      "pt-BR": SITE_URL,
       en: `${SITE_URL}${PATH}`,
     },
   },

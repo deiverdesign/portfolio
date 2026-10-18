@@ -2629,7 +2629,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
               {story.locale === "pt-BR" ? "PT" : "EN"}
               <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5" /></svg>
             </summary>
-            <a href={story.locale === "pt-BR" ? "/give-us-this-day-our-daily-lie/animatic-material" : "/pt/enquanto-durar-a-fe/animatic-material"}>
+            <a href={story.locale === "pt-BR" ? "/give-us-this-day-our-daily-lie" : "/"}>
               {story.locale === "pt-BR" ? "EN" : "PT"}
             </a>
           </details>

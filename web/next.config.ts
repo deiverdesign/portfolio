@@ -4,7 +4,7 @@ import type { NextConfig } from "next";
 // quem abre qualquer um desses hosts cai direto na experiência do livro, sem o
 // caminho longo. A barra de endereço continua mostrando só o domínio curto
 // (é um "rewrite": o servidor entrega outra página, mas o link não muda).
-// Ex.: enquantodurarafe.com.br/ → /pt/enquanto-durar-a-fe/animatic-material
+// Ex.: enquantodurarafe.com.br/ → /pt/enquanto-durar-a-fe
 // Só vale para esses domínios; deiver.com.br e as outras prévias não mudam.
 const HOTSITE_HOSTS = [
   "enquanto-durar-a-fe.vercel.app",
@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
       beforeFiles: HOTSITE_HOSTS.map((host) => ({
         source: "/",
         has: [{ type: "host" as const, value: host }],
-        destination: "/pt/enquanto-durar-a-fe/animatic-material",
+        destination: "/pt/enquanto-durar-a-fe",
       })),
       afterFiles: [],
       fallback: [],
