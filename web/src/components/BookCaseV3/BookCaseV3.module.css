@@ -466,6 +466,7 @@
   .meshPair p.caption {
     font-size: 11px;
   }
+  .mobileVideo { width: 72%; margin-inline: auto; }
   .mobileVideo video { aspect-ratio:580/1270; }
   .pullquote {
     font-size: var(--font-size-body-lead);
