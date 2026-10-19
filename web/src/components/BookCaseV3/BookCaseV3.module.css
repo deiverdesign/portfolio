@@ -227,7 +227,7 @@
 .videoToggle {
   position: absolute;
   right: 16px;
-  top: 16px;
+  bottom: 16px;
   min-height: 44px;
   min-width: 80px;
   padding: 8px 16px;
