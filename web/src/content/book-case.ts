@@ -44,7 +44,7 @@ export const BOOK_CASE_COPY: Localized<BookCaseCopy> = {
     title: "Enquanto\ndurar a fé",
     summary:
       "Uma experiência imersiva para apresentar meu romance e despertar a vontade de ler. Direção de arte, narrativa e interação conduzidas pelo scroll.",
-    tourLabel: "ENQUANTO DURAR A FÉ · EXPERIÊNCIA INTERATIVA",
+    tourLabel: "Enquanto durar a fé · Experiência interativa",
     tourCaption:
       "O vídeo apresenta um percurso. No site, cada pessoa pode encontrar o próprio ritmo.",
     context: [
@@ -143,7 +143,7 @@ export const BOOK_CASE_COPY: Localized<BookCaseCopy> = {
     title: "Give us This Day\nOur Daily Lie",
     summary:
       "An immersive experience to introduce my novel and make people want to read it. Art direction, storytelling and interaction driven by scrolling.",
-    tourLabel: "GIVE US THIS DAY OUR DAILY LIE · INTERACTIVE EXPERIENCE",
+    tourLabel: "Give Us This Day Our Daily Lie · Interactive Experience",
     tourCaption:
       "The video follows one path. On the website, each person can find their own pace.",
     context: [

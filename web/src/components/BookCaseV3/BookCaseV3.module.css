@@ -80,6 +80,14 @@
 .studyCard h3:first-child {
   margin-top: 0;
 }
+.tourHeading {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-display-statement);
+  font-weight: var(--font-weight-display-regular);
+  line-height: var(--line-height-display-statement);
+  color: var(--color-foreground-neutral-subtle);
+  margin: 0 0 var(--space-700);
+}
 .benchmarkGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

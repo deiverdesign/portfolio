@@ -170,7 +170,7 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
         </section>
         <section className={styles.section} aria-label={c.tourLabel}>
           <div className={`${styles.inner} ${styles.tourInner}`}>
-            <p className={styles.caption}>{c.tourLabel}</p>
+            <p className={styles.tourHeading}>{c.tourLabel}</p>
             {media("tour", "tour-" + locale, c.tourLabel)}
             <p className={styles.caption}>{c.tourCaption}</p>
           </div>
