@@ -14,6 +14,8 @@ export interface CaseReflectionV3NextCase {
   logoWidth?: number;
   /** Mostra o selo visual de acesso protegido, usado pelo case Aster. */
   locked?: boolean;
+  editorial?: boolean;
+  darkForeground?: boolean;
 }
 
 export interface CaseReflectionV3Props {
@@ -69,11 +71,12 @@ export function CaseReflectionV3({ eyebrow, title, lead, quote, close, nextLabel
           <MotionReveal
             as="a"
             href={next.href}
-            className={styles.nextCard}
+            className={`${styles.nextCard}${next.editorial ? ` ${styles.editorialCard}` : ""}${next.darkForeground ? ` ${styles.darkForeground}` : ""}`}
             style={{ background: next.background }}
             delayMs={80}
             offsetPx={40}
           >
+            {(next.editorial || next.darkForeground) && <span className={styles.bookTexture} aria-hidden="true" />}
             <img
               src={next.logoSrc}
               alt={next.logoAlt}

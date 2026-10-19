@@ -54,7 +54,10 @@ export interface CaseCardLargeV3Props {
    * "mark"/"wordmark" — cada logo tem sua própria proporção calibrada. */
   logoWidth?: number;
   logoHeight?: number;
-  devices: RasterAsset;
+  devices?: RasterAsset;
+  /** Full-bleed artwork, with an independently composed mobile crop. */
+  artwork?: { desktop: string; mobile: string };
+  hoverLogoSrc?: string;
   /** Asset específico do enquadramento mobile. Quando omitido, reutiliza
    * `devices`; a posição continua vindo de `mobileDevicesStyle`. */
   mobileDevices?: RasterAsset;
@@ -145,6 +148,8 @@ export function CaseCardLargeV3({
   logoAlt,
   logoWidth,
   logoHeight,
+  artwork,
+  hoverLogoSrc,
   devices,
   mobileDevices,
   devicesStyle,
@@ -176,7 +181,7 @@ export function CaseCardLargeV3({
   const activeDevicesClass = isMobileDevices ? styles.mobileDevices : styles.devices;
 
   return (
-    <a href={href} className={classes} style={{ background: resolvedBackground }} onClick={onClick} aria-haspopup={ariaHasPopup}>
+    <a href={href} className={`${classes}${artwork ? ` ${styles.editorialCard}` : ""}`} style={{ background: resolvedBackground }} onClick={onClick} aria-haspopup={ariaHasPopup}>
       {decorative && (
         <img
           src={decorative.src}
@@ -187,7 +192,12 @@ export function CaseCardLargeV3({
         />
       )}
 
-      <CaseHeroNoise color={noiseColor} />
+      {artwork ? (
+        <picture>
+          <source media="(max-width: 599px)" srcSet={artwork.mobile} />
+          <img src={artwork.desktop} alt="" className={styles.artwork} loading="lazy" />
+        </picture>
+      ) : <CaseHeroNoise color={noiseColor} />}
 
       {logoSrc && (
         <img
@@ -215,7 +225,7 @@ export function CaseCardLargeV3({
         />
       )}
 
-      {isMobileDevices !== null && (
+      {isMobileDevices !== null && activeDevices && (
         <img
           src={activeDevices.src}
           width={activeDevices.width}
@@ -245,6 +255,7 @@ export function CaseCardLargeV3({
       </div>
 
       <div className={styles.hoverPanel}>
+        {hoverLogoSrc && <img src={hoverLogoSrc} alt="" className={styles.logo} style={{ width: logoWidth, height: logoHeight }} />}
         {/* Brilho decorativo removido a pedido do Deiver em 27/09 — a
             aproximação por radial-gradient não convenceu. Vai ser
             repensado na v3.2, não é pra reimplementar sem pedido novo. */}

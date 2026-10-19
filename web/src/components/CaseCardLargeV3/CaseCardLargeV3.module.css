@@ -74,6 +74,39 @@
      por logo, ver `getHomeBrandLogoSize` em home-assets.ts. */
 }
 
+.artwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.editorialCard .title {
+  left: 32px;
+  bottom: 32px;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.editorialCard .hoverTitle {
+  top: 130px;
+  font-size: 44px;
+  line-height: 1.08;
+}
+
+.editorialCard .hoverQuote {
+  top: 242px;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+@media (max-width: 599px) {
+  .root.editorialCard {
+    height: 461px;
+  }
+}
+
 .lockBadge {
   position: absolute;
   z-index: 1;

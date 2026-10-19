@@ -10,12 +10,12 @@ import { FooterV3 } from "@/components/FooterV3/FooterV3";
 import { NavBarV3, type NavBarV3Link } from "@/components/NavBarV3/NavBarV3";
 import { RESUME_HREF } from "@/components/NavBar/constants";
 import { ASTER_ASSETS } from "@/content/aster-assets";
+import { BOOK_NEXT_BACKGROUND } from "@/content/book-next-card";
 import type { Locale } from "@/content/i18n";
 import { getCopy, type CopyKey } from "@/content/site-copy";
 
 const LINKEDIN_HREF = "https://linkedin.com/in/deiverbrito";
 const TAG_KEYS = ["shared.tags.ai-interaction", "shared.tags.healthcare", "shared.tags.trust-safety"] as const;
-const SCRIOO_CARD_BACKGROUND = "linear-gradient(160deg, #5ed763 0%, #51ac55 100%)";
 
 export function AsterPageV3({ locale }: { locale: Locale }) {
   const homeHref = locale === "pt" ? "/pt" : "/";
@@ -23,6 +23,7 @@ export function AsterPageV3({ locale }: { locale: Locale }) {
   const languageHref = locale === "pt" ? "/cases/aster" : "/pt/cases/aster";
   const links: NavBarV3Link[] = [{ label:getCopy(locale,"shared.nav.home"),href:homeHref },{ label:getCopy(locale,"shared.nav.about"),href:aboutHref },{ label:getCopy(locale,"shared.nav.contact"),href:`${homeHref}#contact` },{ label:getCopy(locale,"shared.nav.resume"),href:RESUME_HREF[locale] }];
   const copy = (key: CopyKey) => getCopy(locale, key);
+  const bookHref = `${locale === "pt" ? "/pt" : ""}/v3/cases/enquanto-durar-a-fe`;
   return <><NavBarV3 locale={locale} identityHref={homeHref} languageHref={languageHref} context="light" links={links}/><main>
     <CaseHeroV3 locale={locale} tags={TAG_KEYS.map(copy)} title={copy("aster.hero.title")} summary={copy("aster.hero.summary")} disclaimer={copy("aster.hero.disclaimer")} disclaimerTooltip={copy("aster.hero.disclaimer.tooltip")} backHref={`${homeHref}#selected-work`} prevCaseHref={locale === "pt" ? "/pt/cases/intuit" : "/cases/intuit"} nextCaseHref={locale === "pt" ? "/pt/cases/scrioo" : "/cases/scrioo"} devices={ASTER_ASSETS.hero.devices} backgroundDesktop={ASTER_ASSETS.hero.backgroundDesktop} backgroundTablet={ASTER_ASSETS.hero.backgroundTablet} backgroundMobile={`url(${ASTER_ASSETS.hero.backgroundMobile.src})`} noiseColor="var(--color-case-aster-surface)" />
     <CaseContextV3 eyebrow={copy("shared.case.context.eyebrow")} title={copy("aster.context.title")} paragraphs={([1,2,3] as const).map(n=>copy(`aster.context.p${n}` as CopyKey))} media={<img src={ASTER_ASSETS.context.src} width={ASTER_ASSETS.context.width} height={ASTER_ASSETS.context.height} alt=""/>}/>
@@ -30,6 +31,6 @@ export function AsterPageV3({ locale }: { locale: Locale }) {
     <CaseDecisionsV3 locale={locale} eyebrow={copy("shared.case.decisions.eyebrow")} title={copy("aster.decisions.title")} items={([1,2,3] as const).map((n)=>({title:copy(`aster.decisions.${n}.title` as CopyKey),problem:copy(`aster.decisions.${n}.problem` as CopyKey),proposal:copy(`aster.decisions.${n}.proposal` as CopyKey),argument:copy(`aster.decisions.${n}.argument` as CopyKey),media:n===1?ASTER_ASSETS.decisions.primary:n===2?ASTER_ASSETS.decisions.secondary:ASTER_ASSETS.decisions.tertiary}))} mediaThumbnails={[ASTER_ASSETS.decisions.secondary,ASTER_ASSETS.decisions.tertiary]}/>
     <CaseLimitsV3 eyebrow={copy("aster.limits.eyebrow")} title={copy("aster.limits.title")} body={copy("aster.limits.body")} overview={ASTER_ASSETS.limits.overview} statement={copy("aster.limits.statement")} footnoteLead={copy("aster.limits.footnote.lead")} footnoteList={copy("aster.limits.footnote.list")} items={([1,2,3] as const).map((n)=>({name:copy(`aster.limits.${n}.name` as CopyKey),missing:copy(`aster.limits.${n}.missing` as CopyKey),why:copy(`aster.limits.${n}.why` as CopyKey),status:copy(`aster.limits.${n}.status` as CopyKey),banner:ASTER_ASSETS.limits.cards[n-1]})).reverse()}/>
     <CaseOutcomeV3 eyebrow={copy("shared.case.outcome.eyebrow")} title={copy("aster.outcome.title")} body={copy("aster.outcome.body")} checklist={([1,2,3,4] as const).map(n=>copy(`aster.outcome.${n}` as CopyKey))} primaryMedia={ASTER_ASSETS.outcome.primary} secondaryMedia={ASTER_ASSETS.outcome.secondary} extra={<img src={ASTER_ASSETS.outcome.extra.src} width={ASTER_ASSETS.outcome.extra.width} height={ASTER_ASSETS.outcome.extra.height} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>}/>
-    <CaseReflectionV3 eyebrow={copy("shared.case.reflection.eyebrow")} title={copy("aster.reflection.title")} lead={copy("aster.reflection.question")} quote={copy("aster.reflection.lead")} close={copy("aster.reflection.body")} nextLabel={copy("shared.case.next")} next={{href:locale==="pt"?"/pt/cases/scrioo":"/cases/scrioo",logoSrc:"/images/v3/home/brands/white/scrioo.svg",logoAlt:"SCRIOO",logoWidth:63,name:copy("shared.cases.scrioo.name"),summary:copy("shared.cases.scrioo.summary"),background:SCRIOO_CARD_BACKGROUND}}/>
+    <CaseReflectionV3 eyebrow={copy("shared.case.reflection.eyebrow")} title={copy("aster.reflection.title")} lead={copy("aster.reflection.question")} quote={copy("aster.reflection.lead")} close={copy("aster.reflection.body")} nextLabel={copy("shared.case.next")} next={{href:bookHref,logoSrc:`/images/v3/home/book/logo-${locale}-white.svg`,logoAlt:locale==="pt"?"Enquanto durar a fé":"Give us This Day Our Daily Lie",logoWidth:107,name:locale==="pt"?"Enquanto durar a fé":"Give us This Day Our Daily Lie",summary:locale==="pt"?"Direção de arte, motion e desenvolvimento.":"Art direction, motion and development.",background:BOOK_NEXT_BACKGROUND,editorial:true}}/>
     <div id="contact"><ContactCTA locale={locale} contactHref={`${homeHref}#contact`}/></div></main><FooterV3 locale={locale} homeHref={homeHref} aboutHref={aboutHref} resumeHref={RESUME_HREF[locale]} linkedinHref={LINKEDIN_HREF}/></>;
 }
