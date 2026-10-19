@@ -1,0 +1,158 @@
+[
+  {
+    "name": "vegetation-layer",
+    "source": "Figma node export",
+    "width": 522,
+    "height": 275
+  },
+  {
+    "name": "kitchen-study",
+    "source": "Figma node export",
+    "width": 641,
+    "height": 467
+  },
+  {
+    "name": "kitchen-poster",
+    "source": "Figma node export",
+    "width": 642,
+    "height": 361
+  },
+  {
+    "name": "character-study",
+    "source": "Figma node export",
+    "width": 636,
+    "height": 496
+  },
+  {
+    "name": "ending",
+    "source": "Figma node export",
+    "width": 658,
+    "height": 370
+  },
+  {
+    "name": "opala-poster",
+    "source": "Figma node export",
+    "width": 428,
+    "height": 241
+  },
+  {
+    "name": "mockup",
+    "source": "Figma node export",
+    "width": 658,
+    "height": 370
+  },
+  {
+    "name": "city-layer",
+    "source": "Figma node export",
+    "width": 470,
+    "height": 235
+  },
+  {
+    "name": "hill-poster",
+    "source": "Figma node export",
+    "width": 1348,
+    "height": 650
+  },
+  {
+    "name": "hero",
+    "source": "Figma node export",
+    "width": 1640,
+    "height": 600
+  },
+  {
+    "name": "opala-benchmark",
+    "source": "Figma node export",
+    "width": 641,
+    "height": 409
+  },
+  {
+    "name": "hill-study",
+    "source": "Figma node export",
+    "width": 578,
+    "height": 576
+  },
+  {
+    "name": "motion-poster",
+    "source": "Figma node export",
+    "width": 1348,
+    "height": 590
+  },
+  {
+    "name": "mesh-before",
+    "source": "649k triângulos.png",
+    "width": 297,
+    "height": 966
+  },
+  {
+    "name": "mesh-after",
+    "source": "53k triângulos.png",
+    "width": 300,
+    "height": 978
+  },
+  {
+    "name": "technical-2",
+    "source": "Imagem - carrossel - 2.png",
+    "width": 1054,
+    "height": 850
+  },
+  {
+    "name": "technical-3",
+    "source": "Imagem - carrossel - 3.png",
+    "width": 1054,
+    "height": 850
+  },
+  {
+    "name": "technical-4",
+    "source": "Imagem - carrossel - 4.png",
+    "width": 1054,
+    "height": 850
+  },
+  {
+    "name": "tour-pt",
+    "source": "/Users/deiverbrito/livro-site/Post-Linkedin/videos-1/video1--flow-completo-Portugues-desktop.mov",
+    "type": "video",
+    "output": "tour-pt.mp4"
+  },
+  {
+    "name": "tour-en",
+    "source": "/Users/deiverbrito/livro-site/Post-Linkedin/English/video1-flow-completo-English-desktop.mov",
+    "type": "video",
+    "output": "tour-en.mp4"
+  },
+  {
+    "name": "parallax-pt",
+    "source": "/Users/deiverbrito/livro-site/Post-Linkedin/Videos-Deiver-Portfolio-portuguese/scene1-elements on the air while the camera moves.mov",
+    "type": "video",
+    "output": "parallax-pt.mp4"
+  },
+  {
+    "name": "parallax-en",
+    "source": "/Users/deiverbrito/livro-site/Post-Linkedin/English/trecho-cena1-ingles-foco.rosto-jota-camera-indo-para-tras.mov",
+    "type": "video",
+    "output": "parallax-en.mp4"
+  },
+  {
+    "name": "transition-pt",
+    "source": "/Users/deiverbrito/livro-site/Post-Linkedin/Videos-Deiver-Portfolio-portuguese/transition-scene 2 to scene 3.mov",
+    "type": "video",
+    "output": "transition-pt.mp4"
+  },
+  {
+    "name": "rain-pt",
+    "source": "/Users/deiverbrito/livro-site/Post-Linkedin/Videos-Deiver-Portfolio-portuguese/scene 3 - camera moving to show the rain.mov",
+    "type": "video",
+    "output": "rain-pt.mp4"
+  },
+  {
+    "name": "rain-en",
+    "source": "/Users/deiverbrito/livro-site/Post-Linkedin/English/Gravação de Tela 2026-10-19 às 10.24.47.mov",
+    "type": "video",
+    "output": "rain-en.mp4"
+  },
+  {
+    "name": "evolution",
+    "source": "/Users/deiverbrito/livro-site/Post-Linkedin/Videos-Deiver-Portfolio-portuguese/opala-evolucao-web-v1.mp4",
+    "type": "video",
+    "output": "evolution.mp4"
+  }
+]

@@ -1,0 +1,495 @@
+{
+  "mockup-en": {
+    "width": 2732,
+    "height": 1536,
+    "variants": [
+      { "src": "/images/v3/cases/enquanto-durar-a-fe/mockup-en-720.webp", "width": 720 },
+      { "src": "/images/v3/cases/enquanto-durar-a-fe/mockup-en-1440.webp", "width": 1440 },
+      { "src": "/images/v3/cases/enquanto-durar-a-fe/mockup-en-2000.webp", "width": 2000 }
+    ]
+  },
+  "two-layers": {
+    "width": 779,
+    "height": 513,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/two-layers.webp",
+        "width": 779
+      }
+    ]
+  },
+  "character-study": {
+    "width": 636,
+    "height": 496,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/character-study-1440.webp",
+        "width": 636
+      }
+    ]
+  },
+  "city-layer": {
+    "width": 470,
+    "height": 235,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/city-layer-1440.webp",
+        "width": 470
+      }
+    ]
+  },
+  "ending": {
+    "width": 658,
+    "height": 370,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/ending-1440.webp",
+        "width": 658
+      }
+    ]
+  },
+  "ending-en": {
+    "width": 2000,
+    "height": 1042,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/ending-en-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/ending-en-1440.webp",
+        "width": 1440
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/ending-en-2000.webp",
+        "width": 2000
+      }
+    ]
+  },
+  "evolution": {
+    "width": 1440,
+    "height": 810,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/evolution-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/evolution-1440.webp",
+        "width": 1440
+      }
+    ]
+  },
+  "hero": {
+    "width": 1640,
+    "height": 600,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hero-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hero-1440.webp",
+        "width": 1440
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hero-2000.webp",
+        "width": 1640
+      }
+    ]
+  },
+  "hill-poster": {
+    "width": 1348,
+    "height": 650,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hill-poster-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hill-poster-1440.webp",
+        "width": 1348
+      }
+    ]
+  },
+  "hill-study": {
+    "width": 746,
+    "height": 690,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hill-study-1440.webp",
+        "width": 746
+      }
+    ]
+  },
+  "hill-study-en": {
+    "width": 746,
+    "height": 690,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hill-study-en-1440.webp",
+        "width": 746
+      }
+    ]
+  },
+  "kitchen-poster": {
+    "width": 642,
+    "height": 361,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-poster-1440.webp",
+        "width": 642
+      }
+    ]
+  },
+  "kitchen-study": {
+    "width": 641,
+    "height": 467,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-study-1440.webp",
+        "width": 641
+      }
+    ]
+  },
+  "mesh-after": {
+    "width": 300,
+    "height": 978,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/mesh-after-1440.webp",
+        "width": 300
+      }
+    ]
+  },
+  "mesh-before": {
+    "width": 297,
+    "height": 966,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/mesh-before-1440.webp",
+        "width": 297
+      }
+    ]
+  },
+  "mockup": {
+    "width": 658,
+    "height": 370,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/mockup-1440.webp",
+        "width": 658
+      }
+    ]
+  },
+  "motion-poster": {
+    "width": 1348,
+    "height": 590,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/motion-poster-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/motion-poster-1440.webp",
+        "width": 1348
+      }
+    ]
+  },
+  "opala-benchmark": {
+    "width": 641,
+    "height": 409,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/opala-benchmark-1440.webp",
+        "width": 641
+      }
+    ]
+  },
+  "kitchen-study-volume": {
+    "width": 846,
+    "height": 444,
+    "variants": [
+      { "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-study-volume-1440.webp", "width": 846 }
+    ]
+  },
+  "kitchen-study-gray": {
+    "width": 846,
+    "height": 444,
+    "variants": [
+      { "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-study-gray-1440.webp", "width": 846 }
+    ]
+  },
+  "kitchen-study-color": {
+    "width": 846,
+    "height": 471,
+    "variants": [
+      { "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-study-color-1440.webp", "width": 846 }
+    ]
+  },
+  "kitchen-study-street": {
+    "width": 846,
+    "height": 471,
+    "variants": [
+      { "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-study-street-1440.webp", "width": 846 }
+    ]
+  },
+  "opala-ref-cor": {
+    "width": 327,
+    "height": 402,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/opala-ref-cor-1440.webp",
+        "width": 327
+      }
+    ]
+  },
+  "opala-ref-perspectiva": {
+    "width": 516,
+    "height": 414,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/opala-ref-perspectiva-1440.webp",
+        "width": 516
+      }
+    ]
+  },
+  "opala-ref-chuva": {
+    "width": 516,
+    "height": 402,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/opala-ref-chuva-1440.webp",
+        "width": 516
+      }
+    ]
+  },
+  "opala-poster": {
+    "width": 428,
+    "height": 241,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/opala-poster-1440.webp",
+        "width": 428
+      }
+    ]
+  },
+  "parallax-en": {
+    "width": 1438,
+    "height": 748,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/parallax-en-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/parallax-en-1440.webp",
+        "width": 1438
+      }
+    ]
+  },
+  "parallax-pt": {
+    "width": 1440,
+    "height": 812,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/parallax-pt-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/parallax-pt-1440.webp",
+        "width": 1440
+      }
+    ]
+  },
+  "rain-en": {
+    "width": 1440,
+    "height": 722,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/rain-en-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/rain-en-1440.webp",
+        "width": 1440
+      }
+    ]
+  },
+  "rain-pt": {
+    "width": 1440,
+    "height": 812,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/rain-pt-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/rain-pt-1440.webp",
+        "width": 1440
+      }
+    ]
+  },
+  "technical-2": {
+    "width": 1054,
+    "height": 850,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/technical-2-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/technical-2-1440.webp",
+        "width": 1054
+      }
+    ]
+  },
+  "technical-3": {
+    "width": 1054,
+    "height": 850,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/technical-3-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/technical-3-1440.webp",
+        "width": 1054
+      }
+    ]
+  },
+  "technical-4": {
+    "width": 1054,
+    "height": 850,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/technical-4-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/technical-4-1440.webp",
+        "width": 1054
+      }
+    ]
+  },
+  "tour-en": {
+    "width": 1440,
+    "height": 738,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/tour-en-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/tour-en-1440.webp",
+        "width": 1440
+      }
+    ]
+  },
+  "tour-pt": {
+    "width": 1440,
+    "height": 738,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/tour-pt-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/tour-pt-1440.webp",
+        "width": 1440
+      }
+    ]
+  },
+  "transition-en": {
+    "width": 1440,
+    "height": 738,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/transition-en-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/transition-en-1440.webp",
+        "width": 1440
+      }
+    ]
+  },
+  "transition-pt": {
+    "width": 1440,
+    "height": 812,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/transition-pt-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/transition-pt-1440.webp",
+        "width": 1440
+      }
+    ]
+  },
+  "vegetation-layer": {
+    "width": 522,
+    "height": 275,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/vegetation-layer-1440.webp",
+        "width": 522
+      }
+    ]
+  },
+  "kitchen-poster-en": {
+    "width": 2000,
+    "height": 1042,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-poster-en-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-poster-en-1440.webp",
+        "width": 1440
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/kitchen-poster-en-2000.webp",
+        "width": 2000
+      }
+    ]
+  },
+  "hill-poster-en": {
+    "width": 2000,
+    "height": 1042,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hill-poster-en-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hill-poster-en-1440.webp",
+        "width": 1440
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/hill-poster-en-2000.webp",
+        "width": 2000
+      }
+    ]
+  },
+  "opala-poster-en": {
+    "width": 2000,
+    "height": 1042,
+    "variants": [
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/opala-poster-en-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/opala-poster-en-1440.webp",
+        "width": 1440
+      },
+      {
+        "src": "/images/v3/cases/enquanto-durar-a-fe/opala-poster-en-2000.webp",
+        "width": 2000
+      }
+    ]
+  }
+}
