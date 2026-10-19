@@ -413,7 +413,7 @@
     padding: var(--space-500) var(--space-500) var(--space-800);
   }
   .hero {
-    min-height: 560px;
+    min-height: 360px;
   }
   .heroCopy {
     padding-top: var(--space-layout-100);
