@@ -268,6 +268,16 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
   const scrollRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const outroRef = useRef<HTMLDivElement>(null);
+  const languageRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const closeOutside = (event: PointerEvent) => {
+      const menu = languageRef.current;
+      if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -2624,14 +2634,39 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
             </span>
             {story.headerCta}
           </a>
-          <details className={styles.languageMenu}>
-            <summary aria-label={story.locale === "pt-BR" ? "Mudar idioma" : "Change language"}>
+          <details
+            className={styles.languageMenu}
+            ref={languageRef}
+            onKeyDown={(event) => {
+              if (event.key === "Escape" && event.currentTarget.open) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.currentTarget.open = false;
+                event.currentTarget.querySelector("summary")?.focus();
+              }
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false;
+            }}
+          >
+            <summary aria-label={story.locale === "pt-BR" ? "Mudar idioma. Idioma atual: Português" : "Change language. Current language: English"}>
               {story.locale === "pt-BR" ? "PT" : "EN"}
               <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5" /></svg>
             </summary>
-            <a href={story.locale === "pt-BR" ? "/give-us-this-day-our-daily-lie" : "/"}>
-              {story.locale === "pt-BR" ? "EN" : "PT"}
-            </a>
+            <nav className={styles.languageOptions} aria-label={story.locale === "pt-BR" ? "Idiomas disponíveis" : "Available languages"}>
+              {[
+                { locale: "pt-BR", label: "Português", href: "/" },
+                { locale: "en", label: "English", href: "/give-us-this-day-our-daily-lie" },
+              ].map((language) => {
+                const selected = language.locale === story.locale;
+                return (
+                  <a key={language.locale} href={language.href} hrefLang={language.locale} lang={language.locale} aria-current={selected ? "page" : undefined}>
+                    <span>{language.label}</span>
+                    {selected && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>}
+                  </a>
+                );
+              })}
+            </nav>
           </details>
         </div>
         <i className={styles.headerLine} aria-hidden="true" />
