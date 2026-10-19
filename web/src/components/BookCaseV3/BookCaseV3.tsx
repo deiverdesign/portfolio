@@ -135,16 +135,16 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
                 <div className={styles.otherCases}>
                   <span>{pt ? "OUTROS PROJETOS" : "OTHER PROJECTS"}</span>
                   <ButtonV3
+                    href={(pt ? "/pt" : "") + "/cases/intuit"}
                     variant="secondary"
                     context="inverted"
                     size="medium"
-                    disabled
                     aria-label={pt ? "Projeto anterior" : "Previous project"}
                   >
                     <IconV3 name="arrow-left" size={16} />
                   </ButtonV3>
                   <ButtonV3
-                    href={(pt ? "/pt" : "") + "/cases/scrioo"}
+                    href={(pt ? "/pt" : "") + "/cases/aster"}
                     variant="secondary"
                     context="inverted"
                     size="medium"
@@ -464,14 +464,14 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
           close={c.reflection[3]}
           nextLabel={pt ? "Próximo projeto" : "Next project"}
           next={{
-            href: (pt ? "/pt" : "") + "/cases/scrioo",
-            logoSrc: "/images/v3/home/book/next-scrioo-logo.svg",
-            logoAlt: "SCRIOO",
-            logoWidth: 63,
-            name: "SCRIOO",
-            summary: getCopy(locale, "shared.cases.scrioo.summary"),
-            background: "linear-gradient(to bottom, #5ed763, #51ac55)",
-            darkForeground: true,
+            href: (pt ? "/pt" : "") + "/cases/aster",
+            logoSrc: "/images/v3/home/brands/white/aster.svg",
+            logoAlt: "Aster",
+            logoWidth: 61,
+            locked: true,
+            name: getCopy(locale, "shared.cases.aster.name"),
+            summary: getCopy(locale, "shared.cases.aster.summary"),
+            background: "linear-gradient(124.44665889967976deg, #7e61df 29.643%, #2e7acc 57.345%, #03979a 85.046%)",
           }}
         />
         <div id="contact">
