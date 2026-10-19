@@ -11,7 +11,7 @@
 .section h3 {
   font-size: var(--font-size-heading-card);
   line-height: var(--line-height-heading-card);
-  margin: var(--space-700) 0 var(--space-500);
+  margin: calc(var(--space-700) * 2) 0 var(--space-500);
   font-weight: var(--font-weight-heading);
 }
 .page img {
