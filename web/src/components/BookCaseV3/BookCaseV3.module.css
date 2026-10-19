@@ -81,9 +81,9 @@
   margin-top: 0;
 }
 .tourHeading {
-  font-family: var(--font-family-display);
+  font-family: var(--font-family-editorial);
   font-size: var(--font-size-display-statement);
-  font-weight: var(--font-weight-display-regular);
+  font-weight: var(--font-weight-editorial-regular);
   line-height: var(--line-height-display-statement);
   color: var(--color-foreground-neutral-subtle);
   margin: 0 0 var(--space-700);
