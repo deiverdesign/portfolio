@@ -309,9 +309,13 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
                   ))}
                 </div>
               </div>
+            </article>
+            <article>
               <p className={styles.caption}>{c.kitchen[2]}</p>
               <Art name={pt ? "kitchen-poster" : "kitchen-poster-en"} alt={c.kitchen[0]} />
             </article>
+          </div>
+          <div className={`${styles.twoColumns} ${styles.atmosphereOpalRow}`}>
             <article>
               <div className={styles.studyCard}>
                 <h3>{c.opala[0]}</h3>
@@ -330,20 +334,9 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
                     </figure>
                   ))}
                 </div>
-                <div className={styles.evolutionVideo}>
-                <BookVideo
-                  src={VIDEO + "/evolution.mp4"}
-                  poster={ASSET + "/evolution-2000.webp"}
-                  locale={locale}
-                  label={
-                    pt
-                      ? "Evolução visual da rua do Opala"
-                      : "Visual evolution of the Opala street"
-                  }
-                />
-                </div>
               </div>
-              <h3>{c.opala[2]}</h3>
+            </article>
+            <article>
               {media(
                 "rain",
                 "rain-" + locale,
