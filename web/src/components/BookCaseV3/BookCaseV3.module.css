@@ -56,6 +56,9 @@
 .twoColumns > * {
   min-width: 0;
 }
+.twoColumns img {
+  border-radius: var(--radius-sm);
+}
 .caption {
   font-family: var(--font-family-data);
   color: var(--color-foreground-neutral-subtle);
@@ -260,6 +263,7 @@
 .layerComposition {
   width: 100%;
   margin-top: 24px;
+  border-radius: var(--radius-sm);
 }
 .steps {
   display: grid;
@@ -277,6 +281,7 @@
   width: 100%;
   aspect-ratio: 428 / 241;
   object-fit: cover;
+  border-radius: var(--radius-xs);
 }
 .evolutionVideo {
   width: 100%;
