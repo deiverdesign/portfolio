@@ -20,7 +20,7 @@ function useIsMobileDevices() {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   useEffect(() => {
     const query = window.matchMedia(MOBILE_DEVICES_QUERY);
-    setIsMobile(query.matches);
+    setIsMobile(query.matches); // eslint-disable-line react-hooks/set-state-in-effect
     const onChange = (event: MediaQueryListEvent) => setIsMobile(event.matches);
     query.addEventListener("change", onChange);
     return () => query.removeEventListener("change", onChange);

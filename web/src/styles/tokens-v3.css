@@ -144,12 +144,25 @@
   --font-size-editorial-title: 5rem; /* 80px */
   --line-height-editorial-title: 5.5rem; /* 88px */
 
+  /* BookCaseV3 heroCopy h1 — Newsreader Light, 88px. Valor próprio do case
+     do livro, ainda sem nome canônico no Figma; usando o tamanho definido
+     pelo Deiver no componente. */
+  --font-size-book-hero: 5.5rem; /* 88px */
+
   /* Display/Page — confirmado 28/09/2026 via painel de Text Styles do
      Figma (60/60); uma leitura de get_variable_defs num node composto
      (vários breakpoints juntos) retornou 52/52 por engano — não é o valor
      certo, o painel é a fonte confiável aqui. Só desktop por enquanto. */
   --font-size-display-page: 3.75rem; /* 60px */
   --line-height-display-page: 3.75rem; /* 60px */
+
+  /* AboutPageProcessV3 .title responsivo — clamp entre case-hero-mobile
+     (52px) e display-page (60px). */
+  --font-size-process-title: clamp(
+    var(--font-size-case-hero-mobile),
+    4.1vw,
+    var(--font-size-display-page)
+  );
 
   /* Display/Oversize — o maior papel do sistema; hoje só usado no "Design
      from Spark to Finish" do Footer. */

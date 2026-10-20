@@ -194,7 +194,7 @@
   }
 
   .title {
-    font-size: clamp(52px, 4.1vw, 60px);
+    font-size: var(--font-size-process-title);
     line-height: var(--line-height-display-page);
   }
 

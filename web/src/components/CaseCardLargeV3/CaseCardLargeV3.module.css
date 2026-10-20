@@ -85,19 +85,19 @@
 .editorialCard .title {
   left: 32px;
   bottom: 32px;
-  font-size: 28px;
+  font-size: var(--font-size-heading-section);
   line-height: 1.2;
 }
 
 .editorialCard .hoverTitle {
   top: 130px;
-  font-size: 44px;
+  font-size: var(--font-size-display-statement);
   line-height: 1.08;
 }
 
 .editorialCard .hoverQuote {
   top: 242px;
-  font-size: 17px;
+  font-size: var(--font-size-body-default);
   line-height: 1.55;
 }
 

@@ -41,7 +41,7 @@
   margin: 16px 0 24px;
   font-family: var(--font-family-editorial);
   font-weight: var(--font-weight-editorial-light);
-  font-size: 44px;
+  font-size: var(--font-size-display-section);
   line-height: 1.2;
 }
 .sectionHeader .title {
@@ -203,7 +203,7 @@
 }
 .backCompact { display: none; }
 .otherCases {
-  font-size: 13px;
+  font-size: var(--font-size-meta-label);
 }
 .otherCases a, .otherCases button { min-width:44px; min-height:44px; }
 .heroNav img { filter:brightness(0) invert(1); }
@@ -214,7 +214,7 @@
 .heroCopy h1 {
   margin: 32px 0 16px;
   font-family: var(--font-family-editorial);
-  font-size: 88px;
+  font-size: var(--font-size-book-hero);
   font-weight: 300;
   line-height: 1.08;
   white-space: pre-line;
@@ -294,7 +294,7 @@
   }
 }
 .pullquote {
-  font-size: 28px;
+  font-size: var(--font-size-body-lead);
   line-height: 1.3;
   margin-top: 24px !important;
 }
@@ -353,7 +353,7 @@
 }
 .meshPair p.caption {
   margin: 0;
-  font-size: 11px;
+  font-size: var(--font-size-scale-200);
 }
 .carouselControls {
   display: flex;
@@ -363,7 +363,7 @@
 }
 .carouselControls > span {
   font-family: var(--font-family-data);
-  font-size: 13px;
+  font-size: var(--font-size-meta-label);
   margin-left: auto;
 }
 @media (min-width: 1440px) {
@@ -477,7 +477,7 @@
     padding: 8px 4px;
   }
   .meshPair p.caption {
-    font-size: 11px;
+    font-size: var(--font-size-scale-200);
   }
   .mobileVideo { width: 72%; margin-inline: auto; }
   .mobileVideo video { aspect-ratio:580/1270; }
