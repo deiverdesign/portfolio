@@ -41,7 +41,7 @@ export function TheodoorPageV3({ locale }: TheodoorPageV3Props) {
         title={getCopy(locale, "theodoor.hero.title")}
         summary={getCopy(locale, "theodoor.hero.summary")}
         backHref={`${homeHref}#selected-work`}
-        prevCaseHref={locale === "pt" ? "/pt/cases/hp" : "/cases/hp"}
+        prevCaseHref={locale === "pt" ? "/pt/v3/cases/enquanto-durar-a-fe" : "/v3/cases/enquanto-durar-a-fe"}
         nextCaseHref={locale === "pt" ? "/pt/cases/intuit" : "/cases/intuit"}
         devices={THEODOOR_ASSETS.hero.devices}
         backgroundDesktop={THEODOOR_ASSETS.hero.backgroundDesktop}

@@ -96,6 +96,33 @@ function getCards(locale: Locale): CaseCardDefinition[] {
       hoverTags: [...TAGS.hp],
     },
     {
+      slug: "enquanto-durar-a-fe",
+      size: "small",
+      titleLines: locale === "pt"
+        ? ["Uma história", "para explorar.", "Um livro", "para descobrir."]
+        : ["A story", "to explore.", "A book", "to discover."],
+      logoSrc: `/images/v3/home/book/logo-${locale}-white.svg`,
+      hoverLogoSrc: `/images/v3/home/book/logo-${locale}-dark.svg`,
+      logoAlt: locale === "pt" ? "Enquanto durar a fé" : "Give us This Day Our Daily Lie",
+      logoWidth: locale === "pt" ? 107 : 108,
+      logoHeight: locale === "pt" ? 32 : 25,
+      artwork: {
+        desktop: "/images/v3/home/book/desktop.webp",
+        mobile: "/images/v3/home/book/mobile.webp",
+      },
+      background: "#080948",
+      noiseColor: "#080948",
+      titleColor: "#fff",
+      hoverTitle: locale === "pt" ? "Enquanto durar a fé" : "Give us This Day Our Daily Lie",
+      hoverQuote: locale === "pt"
+        ? "Da direção de arte ao código: uma experiência imersiva para despertar a vontade de ler."
+        : "From art direction to code: an immersive experience that sparks the desire to read.",
+      mobileTitle: locale === "pt"
+        ? "Uma experiência imersiva para despertar a vontade de ler."
+        : "An immersive experience that sparks the desire to read.",
+      hoverTags: ["Art direction", "Motion"],
+    },
+    {
       slug: "theodoor",
       size: "small",
       titleLines: descriptionLines(locale, "theodoor"),
@@ -134,33 +161,6 @@ function getCards(locale: Locale): CaseCardDefinition[] {
       hoverQuote: getCopy(locale, "home.work.intuit.contribution"),
       mobileTitle: getCopy(locale, "home.work.intuit.contribution-mobile"),
       hoverTags: [...TAGS.intuit],
-    },
-    {
-      slug: "enquanto-durar-a-fe",
-      size: "small",
-      titleLines: locale === "pt"
-        ? ["Uma história", "para explorar.", "Um livro", "para descobrir."]
-        : ["A story", "to explore.", "A book", "to discover."],
-      logoSrc: `/images/v3/home/book/logo-${locale}-white.svg`,
-      hoverLogoSrc: `/images/v3/home/book/logo-${locale}-dark.svg`,
-      logoAlt: locale === "pt" ? "Enquanto durar a fé" : "Give us This Day Our Daily Lie",
-      logoWidth: locale === "pt" ? 107 : 108,
-      logoHeight: locale === "pt" ? 32 : 25,
-      artwork: {
-        desktop: "/images/v3/home/book/desktop.webp",
-        mobile: "/images/v3/home/book/mobile.webp",
-      },
-      background: "#080948",
-      noiseColor: "#080948",
-      titleColor: "#fff",
-      hoverTitle: locale === "pt" ? "Enquanto durar a fé" : "Give us This Day Our Daily Lie",
-      hoverQuote: locale === "pt"
-        ? "Da direção de arte ao código: uma experiência imersiva para despertar a vontade de ler."
-        : "From art direction to code: an immersive experience that sparks the desire to read.",
-      mobileTitle: locale === "pt"
-        ? "Uma experiência imersiva para despertar a vontade de ler."
-        : "An immersive experience that sparks the desire to read.",
-      hoverTags: ["Art direction", "Motion"],
     },
     {
       slug: "aster",

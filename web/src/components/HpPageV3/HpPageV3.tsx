@@ -10,6 +10,7 @@ import { FooterV3 } from "@/components/FooterV3/FooterV3";
 import { HpOpenQuestionsV3 } from "@/components/HpOpenQuestionsV3/HpOpenQuestionsV3";
 import { NavBarV3, type NavBarV3Link } from "@/components/NavBarV3/NavBarV3";
 import { RESUME_HREF } from "@/components/NavBar/constants";
+import { BOOK_NEXT_BACKGROUND } from "@/content/book-next-card";
 import { HP_ASSETS } from "@/content/hp-assets";
 import type { Locale } from "@/content/i18n";
 import { getCopy, type CopyKey } from "@/content/site-copy";
@@ -66,7 +67,7 @@ export function HpPageV3({ locale }: HpPageV3Props) {
           summary={getCopy(locale, "hp.hero.summary")}
           backHref={`${homeHref}#selected-work`}
           prevCaseHref={locale === "pt" ? "/pt/cases/scrioo" : "/cases/scrioo"}
-          nextCaseHref={locale === "pt" ? "/pt/cases/theodoor" : "/cases/theodoor"}
+          nextCaseHref={locale === "pt" ? "/pt/v3/cases/enquanto-durar-a-fe" : "/v3/cases/enquanto-durar-a-fe"}
           devices={HP_ASSETS.hero.devices}
           backgroundDesktop={HP_ASSETS.hero.backgroundDesktop}
           backgroundTablet={HP_ASSETS.hero.backgroundTablet}
@@ -143,13 +144,14 @@ export function HpPageV3({ locale }: HpPageV3Props) {
           quote={getCopy(locale, "hp.reflection.body")}
           nextLabel={getCopy(locale, "shared.case.next")}
           next={{
-            href: locale === "pt" ? "/pt/cases/theodoor" : "/cases/theodoor",
-            logoSrc: "/images/v3/home/brands/white/theodoor.svg",
-            logoAlt: "Theodoor",
-            logoWidth: 104,
-            name: "Theodoor",
-            summary: locale === "pt" ? "App acessível para automação de portas inteligentes." : "Accessible app for smart door automation.",
-            background: "var(--color-case-theodoor-accent)",
+            href: locale === "pt" ? "/pt/v3/cases/enquanto-durar-a-fe" : "/v3/cases/enquanto-durar-a-fe",
+            logoSrc: `/images/v3/home/book/logo-${locale}-white.svg`,
+            logoAlt: locale === "pt" ? "Enquanto durar a fé" : "Give us This Day Our Daily Lie",
+            logoWidth: locale === "pt" ? 107 : 108,
+            name: locale === "pt" ? "Enquanto durar a fé" : "Give us This Day Our Daily Lie",
+            summary: locale === "pt" ? "Direção de arte, motion e desenvolvimento." : "Art direction, motion and development.",
+            background: BOOK_NEXT_BACKGROUND,
+            editorial: true,
           }}
         />
         <div id="contact">
