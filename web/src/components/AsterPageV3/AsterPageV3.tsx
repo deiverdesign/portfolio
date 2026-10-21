@@ -10,7 +10,6 @@ import { FooterV3 } from "@/components/FooterV3/FooterV3";
 import { NavBarV3, type NavBarV3Link } from "@/components/NavBarV3/NavBarV3";
 import { RESUME_HREF } from "@/components/NavBar/constants";
 import { ASTER_ASSETS } from "@/content/aster-assets";
-import { BOOK_NEXT_BACKGROUND } from "@/content/book-next-card";
 import type { Locale } from "@/content/i18n";
 import { getCopy, type CopyKey } from "@/content/site-copy";
 
@@ -23,9 +22,8 @@ export function AsterPageV3({ locale }: { locale: Locale }) {
   const languageHref = locale === "pt" ? "/cases/aster" : "/pt/cases/aster";
   const links: NavBarV3Link[] = [{ label:getCopy(locale,"shared.nav.home"),href:homeHref },{ label:getCopy(locale,"shared.nav.about"),href:aboutHref },{ label:getCopy(locale,"shared.nav.contact"),href:`${homeHref}#contact` },{ label:getCopy(locale,"shared.nav.resume"),href:RESUME_HREF[locale] }];
   const copy = (key: CopyKey) => getCopy(locale, key);
-  const bookHref = `${locale === "pt" ? "/pt" : ""}/v3/cases/enquanto-durar-a-fe`;
   return <><NavBarV3 locale={locale} identityHref={homeHref} languageHref={languageHref} context="light" links={links}/><main>
-    <CaseHeroV3 locale={locale} tags={TAG_KEYS.map(copy)} title={copy("aster.hero.title")} summary={copy("aster.hero.summary")} disclaimer={copy("aster.hero.disclaimer")} disclaimerTooltip={copy("aster.hero.disclaimer.tooltip")} backHref={`${homeHref}#selected-work`} prevCaseHref={locale === "pt" ? "/pt/v3/cases/enquanto-durar-a-fe" : "/v3/cases/enquanto-durar-a-fe"} nextCaseHref={locale === "pt" ? "/pt/cases/scrioo" : "/cases/scrioo"} devices={ASTER_ASSETS.hero.devices} backgroundDesktop={ASTER_ASSETS.hero.backgroundDesktop} backgroundTablet={ASTER_ASSETS.hero.backgroundTablet} backgroundMobile={`url(${ASTER_ASSETS.hero.backgroundMobile.src})`} noiseColor="var(--color-case-aster-surface)" />
+    <CaseHeroV3 locale={locale} tags={TAG_KEYS.map(copy)} title={copy("aster.hero.title")} summary={copy("aster.hero.summary")} disclaimer={copy("aster.hero.disclaimer")} disclaimerTooltip={copy("aster.hero.disclaimer.tooltip")} backHref={`${homeHref}#selected-work`} prevCaseHref={locale === "pt" ? "/pt/cases/intuit" : "/cases/intuit"} nextCaseHref={locale === "pt" ? "/pt/cases/scrioo" : "/cases/scrioo"} devices={ASTER_ASSETS.hero.devices} backgroundDesktop={ASTER_ASSETS.hero.backgroundDesktop} backgroundTablet={ASTER_ASSETS.hero.backgroundTablet} backgroundMobile={`url(${ASTER_ASSETS.hero.backgroundMobile.src})`} noiseColor="var(--color-case-aster-surface)" />
     <CaseContextV3 eyebrow={copy("shared.case.context.eyebrow")} title={copy("aster.context.title")} paragraphs={([1,2,3] as const).map(n=>copy(`aster.context.p${n}` as CopyKey))} media={<img src={ASTER_ASSETS.context.src} width={ASTER_ASSETS.context.width} height={ASTER_ASSETS.context.height} alt=""/>}/>
     <CaseMetaRowV3 items={[{icon:"person-card",label:copy("shared.case.role.label"),value:copy("aster.context.role")},{icon:"handshake-2",label:copy("shared.case.collab.label"),value:copy("aster.context.collab")}]} />
     <CaseDecisionsV3 locale={locale} eyebrow={copy("shared.case.decisions.eyebrow")} title={copy("aster.decisions.title")} items={([1,2,3] as const).map((n)=>({title:copy(`aster.decisions.${n}.title` as CopyKey),problem:copy(`aster.decisions.${n}.problem` as CopyKey),proposal:copy(`aster.decisions.${n}.proposal` as CopyKey),argument:copy(`aster.decisions.${n}.argument` as CopyKey),media:n===1?ASTER_ASSETS.decisions.primary:n===2?ASTER_ASSETS.decisions.secondary:ASTER_ASSETS.decisions.tertiary}))} mediaThumbnails={[ASTER_ASSETS.decisions.secondary,ASTER_ASSETS.decisions.tertiary]}/>

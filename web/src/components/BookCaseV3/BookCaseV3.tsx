@@ -135,7 +135,7 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
                 <div className={styles.otherCases}>
                   <span>{pt ? "OUTROS PROJETOS" : "OTHER PROJECTS"}</span>
                   <ButtonV3
-                    href={(pt ? "/pt" : "") + "/cases/intuit"}
+                    href={(pt ? "/pt" : "") + "/cases/hp"}
                     variant="secondary"
                     context="inverted"
                     size="medium"
@@ -144,7 +144,7 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
                     <IconV3 name="arrow-left" size={16} />
                   </ButtonV3>
                   <ButtonV3
-                    href={(pt ? "/pt" : "") + "/cases/aster"}
+                    href={(pt ? "/pt" : "") + "/cases/theodoor"}
                     variant="secondary"
                     context="inverted"
                     size="medium"
@@ -464,14 +464,13 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
           close={c.reflection[3]}
           nextLabel={pt ? "Próximo projeto" : "Next project"}
           next={{
-            href: (pt ? "/pt" : "") + "/cases/aster",
-            logoSrc: "/images/v3/home/brands/white/aster.svg",
-            logoAlt: "Aster",
-            logoWidth: 61,
-            locked: true,
-            name: getCopy(locale, "shared.cases.aster.name"),
-            summary: getCopy(locale, "shared.cases.aster.summary"),
-            background: "linear-gradient(124.44665889967976deg, #7e61df 29.643%, #2e7acc 57.345%, #03979a 85.046%)",
+            href: (pt ? "/pt" : "") + "/cases/theodoor",
+            logoSrc: "/images/v3/home/brands/white/theodoor.svg",
+            logoAlt: "Theodoor",
+            logoWidth: 104,
+            name: "Theodoor",
+            summary: pt ? "App acessível para automação de portas inteligentes." : "Accessible app for smart door automation.",
+            background: "var(--color-case-theodoor-accent)",
           }}
         />
         <div id="contact">
