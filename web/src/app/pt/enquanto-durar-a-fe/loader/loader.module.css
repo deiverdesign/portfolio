@@ -1,13 +1,12 @@
 /* Loader do hotsite (Figma "Enquanto Durar a Fé HotSite", nó 243:3195).
-   Degradê com as paradas exatas do Figma: o marinho ocupa o topo, o azul médio é a maior faixa
-   e o amarelo só chega puro na última linha. Ex.: numa tela de 900 px, 0–202 px é marinho sólido. */
+   Fundo chapado no lugar do degradê do Figma (Deiver, 23/10). */
 .loader {
   position: fixed;
   inset: 0;
   z-index: 1000;
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, #00045d 22.417%, #00558e 61.805%, #41b571 81.645%, #a0d939 93.462%, #fffd01 100%);
+  background: #171db5;
   opacity: 1;
   transition: opacity 450ms ease, visibility 0s linear 0s;
   /* Se o JavaScript falhar de vez, a trava de 25 s também existe só em CSS. */
