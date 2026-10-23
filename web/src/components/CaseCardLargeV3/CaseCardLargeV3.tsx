@@ -117,6 +117,10 @@ export interface CaseCardLargeV3Props {
    * no canto, tanto no estado default quanto no hover. Confirmado no
    * Figma em 27/09 (node 2264:72142), não é aproximação. */
   locked?: boolean;
+  /** Selo de premiação no canto superior direito (ex.: CSSDA no case do
+   * livro). Figma: nodes 2645:6263 (desktop) e 2645:6704 (mobile) — 70×70
+   * a 24px do topo e da direita nos dois breakpoints. */
+  award?: { src: string; alt: string };
   className?: string;
 }
 
@@ -168,6 +172,7 @@ export function CaseCardLargeV3({
   mobileTitle,
   hoverTags,
   locked = false,
+  award,
   className,
 }: CaseCardLargeV3Props) {
   const sizeClass = size === "small" ? styles.small : styles.large;
@@ -212,6 +217,10 @@ export function CaseCardLargeV3({
         <span className={styles.lockBadge} aria-label="Case protegido — acesso sob solicitação">
           <IconV3 name="lock" size={18} className={styles.lockIcon} />
         </span>
+      )}
+
+      {award && (
+        <img src={award.src} alt={award.alt} width={70} height={70} className={styles.award} />
       )}
 
       {secondDevice && (

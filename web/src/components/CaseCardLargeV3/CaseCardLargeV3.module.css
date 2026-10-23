@@ -123,6 +123,18 @@
   background: var(--color-overlay-neutral-strong);
 }
 
+/* Selo de premiação (CSSDA no case do livro). Figma 2645:6263/2645:6704:
+   70×70, 24px do topo e da direita — igual no desktop e no mobile. Fica
+   abaixo do painel de hover (z-index 2), que cobre o card inteiro. */
+.award {
+  position: absolute;
+  z-index: 1;
+  top: var(--space-700);
+  right: var(--space-700);
+  width: 70px;
+  height: 70px;
+}
+
 /* IconV3 crava a cor no SVG (#303735, ver limitação documentada no
    componente) — inverter é a mesma aproximação já usada no NavBarV3/
    FooterV3 pro logo de identidade em fundo escuro, até existir um SVG
