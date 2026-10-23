@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Newsreader } from "next/font/google";
+import { IBM_Plex_Mono, Inter, Newsreader } from "next/font/google";
 import { PortaoMaterial } from "./animatic-material/PortaoMaterial";
+import { HotsiteLoader } from "./loader/HotsiteLoader";
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
@@ -10,6 +11,8 @@ const newsreader = Newsreader({
 });
 
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: "500", display: "swap" });
+// Só para o "Loading..." do loader (Figma: Inter Regular 14).
+const inter = Inter({ subsets: ["latin"], weight: "400", display: "swap" });
 
 const SITE_URL = "https://enquantodurarafe.com.br";
 const TITLE = "Enquanto durar a fé — Um romance de Deiver Brito";
@@ -45,6 +48,7 @@ export const metadata: Metadata = {
 export default function EnquantoDurarAFePage() {
   return (
     <div className={newsreader.variable}>
+      <HotsiteLoader fontFamily={inter.style.fontFamily} />
       <PortaoMaterial creditFont={plexMono.style.fontFamily} />
     </div>
   );
