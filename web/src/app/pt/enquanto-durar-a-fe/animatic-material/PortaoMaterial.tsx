@@ -15,6 +15,7 @@ import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { loadJotaFigure } from "../personagem-jota/jotaFigura";
 import { PORTUGUESE_STORY, type StoryContent, type StoryExcerpt } from "../../../_shared/faithStory";
+import { announceSceneReady } from "../loader/sceneReady";
 
 // POC 3 — material. Mesma geometria e mesma trajetória do animatic cinza
 // (../animatic/PortaoAnimatic.tsx); aqui muda a "tinta" de cada objeto e a câmera
@@ -290,8 +291,30 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     } catch {
       container.dataset.webglUnavailable = "true";
+      // Sem 3D não há o que esperar: o loader sai e mostra a página como ela é.
+      announceSceneReady();
       return;
     }
+
+    // Loader (Deiver, 23/10): todos os downloads da cena (modelos e texturas) passam pelo
+    // DefaultLoadingManager do three.js. A Rua está pronta quando ele fica sem nada pendente.
+    // Ex.: no 4G, enquanto a palmeira e o Jota baixam, o loader continua na tela.
+    const loadingManager = THREE.DefaultLoadingManager;
+    let streetDownloadsStarted = false;
+    let streetDownloading = false;
+    let streetReady = false;
+    let streetCheck = 0;
+    loadingManager.onStart = () => {
+      streetDownloadsStarted = true;
+      streetDownloading = true;
+    };
+    loadingManager.onLoad = () => {
+      streetDownloading = false;
+      window.clearTimeout(streetCheck);
+      // Um arquivo pode abrir outro ao chegar (o modelo e depois a textura): espera um instante
+      // para ter certeza de que nada novo começou antes de dar a Rua por pronta.
+      streetCheck = window.setTimeout(() => { if (!streetDownloading) finishStreet(); }, 150);
+    };
 
     // Em tela vertical estreita, a área desenhada e a sombra custam mais que o ganho visual.
     // A composição não mostra as aves nesse enquadramento, então elas também não são carregadas.
@@ -2575,7 +2598,25 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     measureVh();
     resize();
     handleMotionPreference();
-    if (!reducedMotion) scheduleKitchenPreload();
+    // A Rua primeiro: a Cozinha só começa a baixar depois que ela está pronta, para não
+    // disputar a conexão com o que aparece na primeira tela.
+    const finishStreet = () => {
+      if (streetReady || disposed) return;
+      streetReady = true;
+      loadingManager.onStart = undefined;
+      loadingManager.onLoad = () => {};
+      document.fonts.ready.then(() => {
+        if (disposed) return;
+        if (reducedMotion) renderScene();
+        // Dois quadros: o primeiro desenha a cena com tudo, o segundo garante que ela foi pintada.
+        window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+          if (disposed) return;
+          announceSceneReady();
+          if (!reducedMotion) scheduleKitchenPreload();
+        }));
+      });
+    };
+    if (!streetDownloadsStarted) finishStreet();
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", updateScrollProgress, { passive: true });
     motionQuery.addEventListener("change", handleMotionPreference);
@@ -2590,6 +2631,11 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       cancelPreload();
       if (frame) window.cancelAnimationFrame(frame);
       disposed = true;
+      window.clearTimeout(streetCheck);
+      if (!streetReady) {
+        loadingManager.onStart = undefined;
+        loadingManager.onLoad = () => {};
+      }
       jota.dispose();
       outlineMaterial.dispose();
       helenaOutlineMaterial.dispose();

@@ -1,0 +1,66 @@
+/* Loader do hotsite (Figma "Enquanto Durar a Fé HotSite", nó 243:3195).
+   Fundo chapado no lugar do degradê do Figma (Deiver, 23/10). */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: #171db5;
+  opacity: 1;
+  transition: opacity 450ms ease, visibility 0s linear 0s;
+  /* Se o JavaScript falhar de vez, a trava de 25 s também existe só em CSS. */
+  animation: loader-give-up 450ms ease 25s forwards;
+}
+
+@keyframes loader-give-up {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 450ms ease, visibility 0s linear 450ms;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Só a lata, sem o círculo ciano do Figma (Ellipse 33): o Deiver tirou em 23/10. */
+.badge {
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+.motion {
+  position: absolute;
+  inset: 0;
+  width: 70px;
+  height: 70px;
+}
+
+/* No Figma o texto tem uma cópia azul 1 px abaixo e à direita: aqui vira sombra. */
+.label {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: normal;
+  text-shadow: 1px 1px 0 #1d2d65;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader,
+  .hidden {
+    transition: none;
+  }
+}
