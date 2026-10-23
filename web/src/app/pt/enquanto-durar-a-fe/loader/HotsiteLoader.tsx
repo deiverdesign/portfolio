@@ -12,8 +12,8 @@ const MOTION_URL = "/enquanto-durar-a-fe/loader-lata.json?v=1";
 // Primeiro quadro da lata (tampa de frente), já no HTML: no 4G o player chega uns segundos
 // depois do fundo, e sem isso o círculo ficaria vazio até lá.
 const POSTER_URL = "/enquanto-durar-a-fe/loader-lata-poster.webp?v=1";
-// Mesmo numa conexão rápida, o loader fica pelo menos 1 s (Deiver), para não piscar.
-const MIN_VISIBLE_MS = 1000;
+// Mesmo numa conexão rápida, o loader fica pelo menos 2 s (Deiver, 23/10), para a lata girar.
+const MIN_VISIBLE_MS = 2000;
 // Trava de segurança: se algum arquivo travar, o site aparece com o que já carregou.
 const MAX_VISIBLE_MS = 25000;
 const FADE_MS = 450;
