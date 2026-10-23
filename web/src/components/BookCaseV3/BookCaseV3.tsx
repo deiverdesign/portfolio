@@ -117,6 +117,15 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
         <section className={styles.heroOuter}>
           <div className={styles.hero}>
             <Art name="hero" className={styles.heroImage} eager />
+            {/* Selo CSSDA — Figma 2648:7068: 70×70, 24px da direita e da
+                base do banner. Só no desktop (≥1024px), pedido do Deiver. */}
+            <img
+              src="/images/v3/home/book/cssda-nominee.svg"
+              alt={pt ? "Indicado ao CSS Design Awards (Website Award)" : "CSS Design Awards Website Award nominee"}
+              width={70}
+              height={70}
+              className={styles.heroAward}
+            />
             <div className={styles.heroInner}>
               <nav
                 className={styles.heroNav}
