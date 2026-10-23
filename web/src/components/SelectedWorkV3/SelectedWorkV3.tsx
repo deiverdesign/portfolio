@@ -121,6 +121,12 @@ function getCards(locale: Locale): CaseCardDefinition[] {
         ? "Uma experiência imersiva para despertar a vontade de ler."
         : "An immersive experience that sparks the desire to read.",
       hoverTags: ["Art direction", "Motion"],
+      award: {
+        src: "/images/v3/home/book/cssda-nominee.svg",
+        alt: locale === "pt"
+          ? "Indicado ao CSS Design Awards (Website Award)"
+          : "CSS Design Awards Website Award nominee",
+      },
     },
     {
       slug: "theodoor",
