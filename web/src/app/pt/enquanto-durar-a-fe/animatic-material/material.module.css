@@ -147,7 +147,7 @@
 /* A antiga tela final separada: com o encerramento dentro da cena 3 ela sai (Deiver, 13/10).
    Continua só para quem pediu movimento reduzido, que não vê a cena andar. */
 .ending { display: none; }
-@media (prefers-reduced-motion: reduce) { .ending { display: grid; } }
+@media (prefers-reduced-motion: reduce) { .animatic:not([data-motion="on"]) .ending { display: grid; } }
 .ending { min-height: 100svh; place-content: center; padding: 44px 22px; background: #0e1042; text-align: center; }.ending p { max-width: 900px; color: #ededE7; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(36px, 5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; line-height: 1.15; }.ending span { max-width: 440px; margin: 25px auto 34px; color: #8e9ad6; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }.ending .buy { justify-self: center; }.endingCredit { margin-top: 24px; color: rgba(237,237,231,.72); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .05em; text-underline-offset: 3px; }.endingCredit:hover { color: #fff; }.endingCredit:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 680px) {
@@ -185,6 +185,24 @@
   .header { top: 19px; right: 4vw; left: 4vw; height: auto; padding: 12px; background: none; }.headerLine { right: auto; width: 371px; max-width: 45%; }.logoStack { flex-basis: 186.883px; }.logoStreet, .logoKitchen { opacity: 0; }.logoCinema { opacity: 1; }.englishWordmark, .languageMenu { color: #fff; }.headerBuy { height: 34px; padding: 4px 12px; gap: 8px; font-size: 14px; }
 }
 
+/* data-motion="on": a pessoa tem Reduzir Movimento ligado, mas pediu para ver a rua andando
+   (aviso MotionPrompt). Aí a página volta a ser a experiência completa. */
 @media (prefers-reduced-motion: reduce) {
-  .animatic { min-height: 100svh; }.stage { position: relative; }.scrollHint, .timeline { display: none; }.headerLine { clip-path: none; }.reducedNote { position: absolute; z-index: 3; right: 18px; bottom: 18px; left: 18px; display: block; color: rgba(244,244,238,.85); font-family: var(--font-dm-mono), monospace; font-size: 9px; letter-spacing: .07em; text-align: center; text-transform: uppercase; }.ending { min-height: 48svh; }
+  .animatic:not([data-motion="on"]) { min-height: 100svh; }.animatic:not([data-motion="on"]) .stage { position: relative; }.animatic:not([data-motion="on"]) .scrollHint, .animatic:not([data-motion="on"]) .timeline { display: none; }.animatic:not([data-motion="on"]) .headerLine { clip-path: none; }.animatic:not([data-motion="on"]) .reducedNote { position: absolute; z-index: 3; right: 18px; bottom: 18px; left: 18px; display: block; color: rgba(244,244,238,.85); font-family: var(--font-dm-mono), monospace; font-size: 9px; letter-spacing: .07em; text-align: center; text-transform: uppercase; }.animatic:not([data-motion="on"]) .ending { min-height: 48svh; }
 }
+
+/* Aviso de movimento reduzido (Deiver, 24/10): só aparece com Reduzir Movimento ligado e sem
+   escolha salva. Mesma paleta do bloco final: azul-noite, serifada clara e o botão amarelo. */
+.reducedNoteAllow { padding: 4px 2px; border: 0; background: none; color: #f1ee3c; font: inherit; letter-spacing: inherit; text-decoration: underline; text-transform: inherit; text-underline-offset: 3px; cursor: pointer; }
+.reducedNoteAllow:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.motionPrompt { width: min(420px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); box-sizing: border-box; margin: auto; overflow: auto; padding: 28px 24px 24px; border: 1px solid rgba(142,154,214,.35); border-radius: 18px; background: #0e1042; color: #ededE7; box-shadow: 0 24px 60px rgba(0,0,0,.45); text-align: center; }
+.motionPrompt::backdrop { background: rgba(6,7,30,.62); }
+.motionPrompt h2 { margin: 0 0 14px; font-family: var(--font-newsreader), Georgia, serif; font-size: 26px; font-weight: 300; line-height: 1.15; }
+.motionPrompt p { margin: 0 0 24px; color: #c9cdea; font-size: 15px; line-height: 1.5; }
+.motionPromptActions { display: grid; gap: 10px; }
+.motionPromptAllow, .motionPromptKeep { min-height: 44px; padding: 10px 16px; border-radius: 999px; font-family: var(--font-dm-mono), monospace; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.motionPromptAllow { border: 0; background: #f1ee3c; color: #0e1042; }
+.motionPromptAllow:hover { background: #fffebe; }
+.motionPromptKeep { border: 1px solid rgba(237,237,231,.4); background: none; color: #ededE7; }
+.motionPromptKeep:hover { border-color: #ededE7; }
+.motionPromptAllow:focus-visible, .motionPromptKeep:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }

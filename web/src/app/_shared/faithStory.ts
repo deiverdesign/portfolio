@@ -15,6 +15,7 @@ export type StoryContent = {
   scrollHint: string[];
   scrollPrompt: string;
   reducedMotionNote: string;
+  motionPrompt: { title: string; body: string; allow: string; keep: string };
   outroKicker: string;
   outroCta: string;
   amazonAvailability: string;
@@ -39,6 +40,12 @@ export const PORTUGUESE_STORY: StoryContent = {
   scrollHint: ["Jota vende Bíblias de porta em porta.", "O resto é mais difícil de explicar."],
   scrollPrompt: "Role para entrar",
   reducedMotionNote: "Quadro estático por preferência de movimento reduzido.",
+  motionPrompt: {
+    title: "Seu aparelho está pedindo menos movimento",
+    body: "Esta história anda em 3D conforme você rola a tela. Quer ver mesmo assim? A exceção vale só para este site.",
+    allow: "Ver com movimento",
+    keep: "Continuar sem movimento",
+  },
   outroKicker: "Há mais do que o que se ouve.",
   outroCta: "Conheça o livro",
   amazonAvailability: "Disponível na Amazon",
@@ -76,6 +83,12 @@ export const ENGLISH_STORY: StoryContent = {
   scrollHint: ["Jota sells Bibles door to door.", "The rest is harder to explain."],
   scrollPrompt: "Scroll to enter",
   reducedMotionNote: "Static frame shown because reduced motion is enabled.",
+  motionPrompt: {
+    title: "Your device is asking for less motion",
+    body: "This story moves in 3D as you scroll. Would you like to see it anyway? The exception applies to this site only.",
+    allow: "Show with motion",
+    keep: "Keep it still",
+  },
   outroKicker: "There is more than what we hear.",
   outroCta: "Discover the book",
   amazonAvailability: "Available on Amazon",
