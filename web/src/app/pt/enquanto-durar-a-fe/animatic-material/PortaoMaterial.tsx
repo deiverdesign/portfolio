@@ -15,7 +15,8 @@ import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { loadJotaFigure } from "../personagem-jota/jotaFigura";
 import { PORTUGUESE_STORY, type StoryContent, type StoryExcerpt } from "../../../_shared/faithStory";
-import { announceSceneReady } from "../loader/sceneReady";
+import { SCENE_READY_EVENT, announceSceneReady, isSceneReady } from "../loader/sceneReady";
+import { MOTION_CHOICE_EVENT, readMotionChoice, saveMotionChoice } from "./motionChoice";
 
 // POC 3 — material. Mesma geometria e mesma trajetória do animatic cinza
 // (../animatic/PortaoAnimatic.tsx); aqui muda a "tinta" de cada objeto e a câmera
@@ -263,6 +264,53 @@ const skyGradientShader = /* glsl */ `
 
 
 const TINTA = { sunOrange: "#f0a647", yellow: "#fefb4e", navyDeep: "#060b2c", ink: "#030a1a" };
+
+// Ligar o movimento começa a história do início: no quadro parado a página é curta e a pessoa
+// pode estar lá no CTA final.
+function showWithMotion() {
+  saveMotionChoice("on");
+  window.scrollTo(0, 0);
+}
+
+// Aviso que só aparece para quem tem Reduzir Movimento ligado e ainda não escolheu (Deiver, 24/10).
+// Espera o loader sair para não abrir por cima dele.
+function MotionPrompt({ story }: { story: StoryContent }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog || !window.matchMedia("(prefers-reduced-motion: reduce)").matches || readMotionChoice()) return;
+    let timer = 0;
+    const open = () => {
+      // Sem WebGL não há rua para mostrar andando: o aviso não faz sentido.
+      if (document.querySelector("[data-webgl-unavailable]") || readMotionChoice() || dialog.open) return;
+      timer = window.setTimeout(() => dialog.showModal(), 700);
+    };
+    if (isSceneReady()) open();
+    else window.addEventListener(SCENE_READY_EVENT, open, { once: true });
+    return () => {
+      window.removeEventListener(SCENE_READY_EVENT, open);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+  const choose = (allow: boolean) => {
+    dialogRef.current?.close();
+    if (allow) showWithMotion();
+    else saveMotionChoice("off");
+  };
+
+  return (
+    <dialog className={styles.motionPrompt} ref={dialogRef} aria-labelledby="motion-prompt-title" aria-describedby="motion-prompt-body">
+      <h2 id="motion-prompt-title">{story.motionPrompt.title}</h2>
+      <p id="motion-prompt-body">{story.motionPrompt.body}</p>
+      <div className={styles.motionPromptActions}>
+        <button type="button" className={styles.motionPromptAllow} onClick={() => choose(true)} autoFocus>{story.motionPrompt.allow}</button>
+        <button type="button" className={styles.motionPromptKeep} onClick={() => choose(false)}>{story.motionPrompt.keep}</button>
+      </div>
+    </dialog>
+  );
+}
 
 export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORTUGUESE_STORY }: { creditFont?: string; story?: StoryContent } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -2145,8 +2193,11 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     const birdHouseBounds = new THREE.Box3();
     const birdHouseEdge = new THREE.Vector3();
     const birdRay = new THREE.Vector3();
-    let reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // Quem tem Reduzir Movimento ligado vê o quadro parado, a não ser que tenha pedido para
+    // ver com movimento no aviso (MotionPrompt). Ex.: iPhone com o ajuste ligado + "on" salvo = rua andando.
+    const motionException = () => motionQuery.matches && readMotionChoice() === "on";
+    let reducedMotion = motionQuery.matches && !motionException();
 
     const resize = () => {
       const { width, height } = container.getBoundingClientRect();
@@ -2578,7 +2629,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     };
 
     const handleMotionPreference = () => {
-      reducedMotion = motionQuery.matches;
+      reducedMotion = motionQuery.matches && !motionException();
+      if (motionException()) scrollArea.dataset.motion = "on";
+      else delete scrollArea.dataset.motion;
       if (reducedMotion) {
         scrollArea.dataset.reducedMotion = "true";
         targetProgress = .66;
@@ -2620,6 +2673,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", updateScrollProgress, { passive: true });
     motionQuery.addEventListener("change", handleMotionPreference);
+    window.addEventListener(MOTION_CHOICE_EVENT, handleMotionPreference);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
@@ -2627,6 +2681,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       vhProbe.remove();
       window.removeEventListener("scroll", updateScrollProgress);
       motionQuery.removeEventListener("change", handleMotionPreference);
+      window.removeEventListener(MOTION_CHOICE_EVENT, handleMotionPreference);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       cancelPreload();
       if (frame) window.cancelAnimationFrame(frame);
@@ -2730,7 +2785,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
           <p>{story.scrollHint.map((line, index) => <span key={line}>{line}{index < story.scrollHint.length - 1 && <br />}</span>)}</p>
           <span>{story.scrollPrompt} <i aria-hidden="true">↓</i></span>
         </div>
-        <p className={styles.reducedNote}>{story.reducedMotionNote}</p>
+        <p className={styles.reducedNote}>
+          {story.reducedMotionNote}{" "}
+          <button type="button" className={styles.reducedNoteAllow} onClick={showWithMotion}>{story.motionPrompt.allow}</button>
+        </p>
         <div className={styles.timeline} ref={timelineRef} aria-hidden="true" />
         {/* Encerramento dentro da cena 3: a última página da experiência, sobre a rua parada. */}
         <div className={styles.outro} ref={outroRef} data-shown="false" inert>
@@ -2743,6 +2801,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
           </div>
         </div>
       </section>
+
+      <MotionPrompt story={story} />
 
       <section className={styles.ending}>
         <p>{story.endingQuote}</p>
