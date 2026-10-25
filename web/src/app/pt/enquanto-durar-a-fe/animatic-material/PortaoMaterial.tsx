@@ -2799,6 +2799,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
             <p className={styles.outroNote}>{story.amazonAvailability}</p>
             <p className={styles.outroCredit}>{story.credit} <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">Deiver Brito ↗</a></p>
           </div>
+          <img className={styles.cssdaBadge} src="/enquanto-durar-a-fe/cssda-best-innovation.svg" width={90} height={90} alt="CSSDA Best Innovation, Awarded" />
         </div>
       </section>
 
@@ -2809,6 +2810,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
         <span>{story.endingQuestion}</span>
         <a className={styles.buy} href={story.amazonUrl} target="_blank" rel="noopener noreferrer">{story.endingCta}</a>
         <a className={styles.endingCredit} href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">{story.credit} Deiver Brito ↗</a>
+        <img className={styles.cssdaBadge} src="/enquanto-durar-a-fe/cssda-best-innovation.svg" width={90} height={90} alt="CSSDA Best Innovation, Awarded" />
       </section>
     </main>
   );
