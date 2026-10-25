@@ -2799,6 +2799,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
             <p className={styles.outroNote}>{story.amazonAvailability}</p>
             <p className={styles.outroCredit}>{story.credit} <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">Deiver Brito ↗</a></p>
           </div>
+          {/* Selo do CSSDA (Best Innovation), no canto inferior direito da última tela. */}
+          <img className={styles.outroAward} src="/enquanto-durar-a-fe/cssda-best-innovation.svg" width={90} height={90} alt="CSSDA Best Innovation Awarded" />
         </div>
       </section>
 
