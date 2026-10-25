@@ -447,7 +447,7 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
                     ? "https://enquantodurarafe.com.br/"
                     : "https://enquantodurarafe.com.br/give-us-this-day-our-daily-lie"
                 }
-                variant="secondary"
+                variant="primary"
                 target="_blank"
                 rel="noopener noreferrer"
               >
