@@ -99,6 +99,13 @@
   color: var(--color-foreground-neutral-inverse-strong);
 }
 
+/* O IconV3 é um <img> com cor cravada (#303735), então não herda o
+   `color` do botão e some no fundo escuro do Primary. Pinta o ícone de
+   branco sólido, igual ao label (mesmo truque do LanguageSwitcherV3). */
+.primary.default .content > img {
+  filter: brightness(0) invert(1);
+}
+
 .primary.inverted {
   --button-rest-fill: var(--color-surface-neutral-default);
   --button-hover-fill: var(--color-surface-neutral-subtle);
