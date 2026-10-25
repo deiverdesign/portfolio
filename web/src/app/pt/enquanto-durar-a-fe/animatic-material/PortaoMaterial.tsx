@@ -115,6 +115,7 @@ const paperFragmentShader = /* glsl */ `
 `;
 
 const PORTFOLIO_URL = "https://deiver.com.br/";
+const CSSDA_URL = "https://www.cssdesignawards.com/sites/enquanto-durar-a-fe/50443/";
 
 // Quebra o trecho em linhas que cabem no papel (respeitando as quebras do Deiver) e
 // diminui a letra até o bloco caber na altura. Ex.: "Jota não é o seu nome, né?" sai em
@@ -2799,7 +2800,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
             <p className={styles.outroNote}>{story.amazonAvailability}</p>
             <p className={styles.outroCredit}>{story.credit} <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">Deiver Brito ↗</a></p>
           </div>
-          <img className={styles.cssdaBadge} src="/enquanto-durar-a-fe/cssda-best-innovation.svg" width={90} height={90} alt="CSSDA Best Innovation, Awarded" />
+          <a className={styles.cssdaBadge} href={CSSDA_URL} target="_blank" rel="noopener noreferrer"><img src="/enquanto-durar-a-fe/cssda-best-innovation.svg" width={90} height={90} alt="CSSDA Best Innovation, Awarded" /></a>
         </div>
       </section>
 
@@ -2810,7 +2811,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
         <span>{story.endingQuestion}</span>
         <a className={styles.buy} href={story.amazonUrl} target="_blank" rel="noopener noreferrer">{story.endingCta}</a>
         <a className={styles.endingCredit} href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">{story.credit} Deiver Brito ↗</a>
-        <img className={styles.cssdaBadge} src="/enquanto-durar-a-fe/cssda-best-innovation.svg" width={90} height={90} alt="CSSDA Best Innovation, Awarded" />
+        <a className={styles.cssdaBadge} href={CSSDA_URL} target="_blank" rel="noopener noreferrer"><img src="/enquanto-durar-a-fe/cssda-best-innovation.svg" width={90} height={90} alt="CSSDA Best Innovation, Awarded" /></a>
       </section>
     </main>
   );
