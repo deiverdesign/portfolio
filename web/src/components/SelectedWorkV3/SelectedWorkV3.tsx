@@ -122,10 +122,10 @@ function getCards(locale: Locale): CaseCardDefinition[] {
         : "An immersive experience that sparks the desire to read.",
       hoverTags: ["Art direction", "Motion"],
       award: {
-        src: "/images/v3/home/book/cssda-nominee.svg",
+        src: "/images/v3/home/book/cssda-best-ui.svg",
         alt: locale === "pt"
-          ? "Indicado ao CSS Design Awards (Website Award)"
-          : "CSS Design Awards Website Award nominee",
+          ? "Premiado no CSS Design Awards: Best UI Design"
+          : "CSS Design Awards: Best UI Design award",
       },
     },
     {
