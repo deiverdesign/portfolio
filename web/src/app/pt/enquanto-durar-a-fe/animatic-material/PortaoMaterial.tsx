@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { track } from "@vercel/analytics/react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
@@ -334,14 +335,30 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     const scrollArea = scrollRef.current;
     if (!container || !scrollArea) return;
     const timeline = timelineRef.current ? createTimeline(timelineRef.current, styles) : null;
+    const startedAt = performance.now();
 
+    // No retrato estreito, preservar a leitura da ilustração importa mais que AA e
+    // pixels extras. Esses três limites reduzem memória e trabalho da GPU sem mudar
+    // a composição, os textos ou o roteiro da cena.
+    const portraitMobile = window.matchMedia("(max-width: 680px) and (orientation: portrait)").matches;
+    const network = navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } };
+    const device = navigator as Navigator & { deviceMemory?: number };
+    const telemetry = () => ({
+      profile: portraitMobile ? "mobile-portrait" : "standard",
+      effective_type: network.connection?.effectiveType ?? "unknown",
+      save_data: network.connection?.saveData ?? false,
+      cores: navigator.hardwareConcurrency ?? null,
+      memory_gb: device.deviceMemory ?? null,
+    });
+    let webglLost = false;
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+      renderer = new THREE.WebGLRenderer({ antialias: !portraitMobile, alpha: false, powerPreference: "high-performance" });
     } catch {
       container.dataset.webglUnavailable = "true";
       // Sem 3D não há o que esperar: o loader sai e mostra a página como ela é.
       announceSceneReady();
+      track("Book experience unavailable", { ...telemetry(), reason: "webgl-init" });
       return;
     }
 
@@ -367,12 +384,19 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
 
     // Em tela vertical estreita, a área desenhada e a sombra custam mais que o ganho visual.
     // A composição não mostra as aves nesse enquadramento, então elas também não são carregadas.
-    const portraitMobile = window.matchMedia("(max-width: 680px) and (orientation: portrait)").matches;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, portraitMobile ? 1.25 : 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, portraitMobile ? 1 : 1.75));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
+    const textureAnisotropy = portraitMobile ? 1 : renderer.capabilities.getMaxAnisotropy();
     container.appendChild(renderer.domElement);
+    const onWebGLContextLost = (event: Event) => {
+      event.preventDefault();
+      webglLost = true;
+      container.dataset.webglUnavailable = "true";
+      track("Book experience unavailable", { ...telemetry(), reason: "webgl-context-lost" });
+    };
+    renderer.domElement.addEventListener("webglcontextlost", onWebGLContextLost, { once: true });
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(TINTA.navyDeep);
@@ -384,7 +408,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     sun.target.position.set(0, 0, 8);
     sun.position.copy(sun.target.position).addScaledVector(SCENE_LIGHT, 70);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(portraitMobile ? 1024 : 2048, portraitMobile ? 1024 : 2048);
+    sun.shadow.mapSize.set(portraitMobile ? 512 : 2048, portraitMobile ? 512 : 2048);
     sun.shadow.camera.left = -34;
     sun.shadow.camera.right = 34;
     sun.shadow.camera.top = 40;
@@ -606,7 +630,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     const cobbleTexture = new THREE.TextureLoader().load(COBBLE_URL);
     cobbleTexture.colorSpace = THREE.SRGBColorSpace;
     cobbleTexture.wrapT = THREE.RepeatWrapping;
-    cobbleTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    cobbleTexture.anisotropy = textureAnisotropy;
     const roadLength = (STREET_END_Z - TOP_Z) / Math.cos(slopeAngle);
     cobbleTexture.repeat.set(1, roadLength / (2 * ROAD_HALF * COBBLE_ASPECT));
     // A textura plana precisava de uma imperfeição pequena para pertencer à linguagem pintada
@@ -978,6 +1002,26 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     world.add(rail);
 
     let disposed = false;
+    type NonCriticalIdleWindow = Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const nonCriticalWindow = window as NonCriticalIdleWindow;
+    let nonCriticalLoadHandle: number | null = null;
+    let nonCriticalUsesIdleCallback = false;
+    const deferNonCriticalLoad = (load: () => void) => {
+      const run = () => {
+        nonCriticalLoadHandle = null;
+        if (!disposed) load();
+      };
+      if (nonCriticalWindow.requestIdleCallback) {
+        nonCriticalUsesIdleCallback = true;
+        nonCriticalLoadHandle = nonCriticalWindow.requestIdleCallback(run, { timeout: 1_200 });
+      } else {
+        nonCriticalUsesIdleCallback = false;
+        nonCriticalLoadHandle = window.setTimeout(run, 250);
+      }
+    };
     // Textura pintada (sem luz do site) + o mesmo fio de contorno à mão do poste: o lado
     // virado para a rua e o céu claro ganha amarelo-esverdeado. Ex.: no coqueiro, a borda
     // direita do tronco e a ponta de cima das folhas.
@@ -1059,7 +1103,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     const outlineMaterial = createOutlineMaterial({ color: JOTA_INK, worldWidth: .006 * METER });
     // Contorno da Helena no preto-violeta das linhas da cozinha.
     const helenaOutlineMaterial = createOutlineMaterial({ color: "#07031a", worldWidth: .005 * METER });
-    const jota = loadJotaFigure({ outline: outlineMaterial, anisotropy: renderer.capabilities.getMaxAnisotropy(), paintedFace: true });
+    const jota = loadJotaFigure({ outline: outlineMaterial, anisotropy: textureAnisotropy, paintedFace: true });
     jota.group.scale.setScalar(METER);
     jota.group.position.set(0, groundY(JOTA_Z), JOTA_Z);
     world.add(jota.group);
@@ -1114,30 +1158,34 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       placeFlying(holder, z, side, height, spin, .9);
       return holder;
     });
-    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(MONEY_URL, (gltf) => {
-      if (disposed) return;
-      const model = gltf.scene;
-      fitBox.setFromObject(model);
-      fitBox.getSize(fitSize);
-      const center = fitBox.getCenter(new THREE.Vector3());
-      const scale = MONEY_SIZE / Math.max(fitSize.x, fitSize.y, fitSize.z);
-      moneyHolders.forEach((holder) => {
-        const copy = model.clone(true);
-        copy.traverse((child) => {
-          if (!(child instanceof THREE.Mesh)) return;
-          const original = child.material as THREE.MeshStandardMaterial;
-          const material = new THREE.MeshBasicMaterial({ map: original.map, side: THREE.DoubleSide, transparent: true });
-          child.material = material;
-          child.onBeforeRender = (_renderer, _scene, camera) => {
-            const distance = camera.position.distanceTo(holder.position);
-            // Também só aparece a partir de ~1,2 m da lente; depois fica, como o livro (Deiver).
-            material.opacity = THREE.MathUtils.smoothstep(distance, 2.5, 6);
-            material.depthWrite = material.opacity > .99;
-          };
+    // O dinheiro só entra bem depois do primeiro quadro. Deixá-lo para um período ocioso
+    // reduz competição com a primeira cena sem deixá-lo visível tarde demais.
+    deferNonCriticalLoad(() => {
+      new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load(MONEY_URL, (gltf) => {
+        if (disposed) return;
+        const model = gltf.scene;
+        fitBox.setFromObject(model);
+        fitBox.getSize(fitSize);
+        const center = fitBox.getCenter(new THREE.Vector3());
+        const scale = MONEY_SIZE / Math.max(fitSize.x, fitSize.y, fitSize.z);
+        moneyHolders.forEach((holder) => {
+          const copy = model.clone(true);
+          copy.traverse((child) => {
+            if (!(child instanceof THREE.Mesh)) return;
+            const original = child.material as THREE.MeshStandardMaterial;
+            const material = new THREE.MeshBasicMaterial({ map: original.map, side: THREE.DoubleSide, transparent: true });
+            child.material = material;
+            child.onBeforeRender = (_renderer, _scene, camera) => {
+              const distance = camera.position.distanceTo(holder.position);
+              // Também só aparece a partir de ~1,2 m da lente; depois fica, como o livro (Deiver).
+              material.opacity = THREE.MathUtils.smoothstep(distance, 2.5, 6);
+              material.depthWrite = material.opacity > .99;
+            };
+          });
+          copy.scale.setScalar(scale);
+          copy.position.copy(center).multiplyScalar(-scale);
+          holder.add(copy);
         });
-        copy.scale.setScalar(scale);
-        copy.position.copy(center).multiplyScalar(-scale);
-        holder.add(copy);
       });
     });
 
@@ -1466,7 +1514,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     const addBackdrop = (url: string, width: number, aspect: number, x: number, top: number, z: number) => {
       const texture = backdropLoader.load(url);
       texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      texture.anisotropy = textureAnisotropy;
       const height = width / aspect;
       const plane = new THREE.Mesh(
         new THREE.PlaneGeometry(width, height),
@@ -1501,7 +1549,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       });
       birdSheet = sheet;
       sheet.colorSpace = THREE.SRGBColorSpace;
-      sheet.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      sheet.anisotropy = textureAnisotropy;
     // Sem RepeatWrapping, offset.x fica preso no último frame da folha de sprites.
       sheet.wrapS = THREE.RepeatWrapping;
       sheet.repeat.set(.25, 1);
@@ -2135,7 +2183,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
         })
         .catch((error) => console.warn("Cozinha: a preparação falhou", error))
         .then(() => {
-          if (!disposed) kitchenState = "ready";
+          if (!disposed) {
+            kitchenState = "ready";
+            wakeRenderer();
+          }
         });
     };
     const prepareOpala = () => {
@@ -2160,7 +2211,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
         })
         .catch((error) => console.warn("Opala: a preparação falhou", error))
         .then(() => {
-          if (!disposed) opalaState = "ready";
+          if (!disposed) {
+            opalaState = "ready";
+            wakeRenderer();
+          }
         });
     };
     // O primeiro frame já foi pintado quando a cozinha começa a ser preparada. Se a pessoa rolar
@@ -2189,6 +2243,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     let targetProgress = 0;
     let wipe = 0;
     let frame = 0;
+    let hasTemporalEffects = false;
+    let wakeRenderer: () => void = () => {};
     let birdFlightStartedAt: number | null = null;
     let birdFlightOrigin: THREE.Vector3 | null = null;
     const birdHouseBounds = new THREE.Box3();
@@ -2239,6 +2295,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     };
 
     const renderScene = () => {
+      if (webglLost) return;
+      renderedFrames += 1;
       ensureKitchen(progress);
       // Se a cozinha ainda não ficou pronta, a câmera espera na janela.
       const sceneProgress = kitchenState === "ready" ? Math.min(progress, 1) : Math.min(progress, STREET_END);
@@ -2442,6 +2500,8 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
           bird.material.opacity = bird.opacity * BIRD_FLOCK_ALPHA * birdPresence;
         });
       }
+      // Vaga-lumes e aves continuam animados apenas enquanto podem ser percebidos.
+      hasTemporalEffects = birdFlock.visible || (!reducedMotion && !inOpala && camera.position.distanceTo(fireflyLamp) < m(8));
       renderStory(storyItems, story, kitchenGroup);
       // O bilhete do Opala é parte do cenário: existe sempre que a rua está na tela.
       renderStory(opalaItems, inOpala ? 1 : 0, opalaGroup);
@@ -2453,6 +2513,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       const showOutro = inOpala && progress > OUTRO_RISE_END - .002;
       if (showOutro !== outroShown) {
         outroShown = showOutro;
+        if (showOutro && !hasTrackedCompletion) {
+          hasTrackedCompletion = true;
+          track("Book experience completed", telemetry());
+        }
         if (outroRef.current) {
           outroRef.current.dataset.shown = showOutro ? "true" : "false";
           // Escondido, o bloco não recebe foco nem é lido (o botão só existe quando aparece).
@@ -2497,6 +2561,9 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     };
 
     let lastFrameTime = performance.now();
+    let renderedFrames = 0;
+    let hasTrackedScroll = false;
+    let hasTrackedCompletion = false;
     // Quanto a câmera "alcança" o scroll por segundo (maior = mais grudada no dedo).
     const CAMERA_FOLLOW = 6;
     let wipeTarget = 0;
@@ -2514,13 +2581,18 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
     let streetlightFlickerTriggered = false;
     let streetlightFlickerStart: number | null = null;
     const animate = () => {
+      if (webglLost) {
+        frame = 0;
+        return;
+      }
       // O wipe anda no tempo, não no scroll: para a frente depois de WIPE_AT, para trás antes.
       const now = performance.now();
       const seconds = Math.min((now - lastFrameTime) / 1000, .1);
       lastFrameTime = now;
       // A câmera segue o scroll com um pequeno embalo, medido em segundos (não em quadros):
       // igual num celular lento ou numa tela de 120 Hz. Ao soltar, ela ainda anda ~0,3 s.
-      progress += (targetProgress - progress) * (1 - Math.exp(-seconds * CAMERA_FOLLOW));
+      const effectiveTargetProgress = kitchenState === "ready" ? targetProgress : Math.min(targetProgress, STREET_END);
+      progress += (effectiveTargetProgress - progress) * (1 - Math.exp(-seconds * CAMERA_FOLLOW));
       // Cozinha e Opala ainda não prontos: a câmera para no fim da rua, de frente para a janela.
       // Quando ficam prontos, ela sai dali com o mesmo embalo (sem pular o trecho que o scroll já
       // passou de uma vez).
@@ -2547,7 +2619,22 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
         flickerParts.forEach((part) => { part.visible = visible; });
         if (elapsed >= STREETLIGHT_FLICKER_STEPS[STREETLIGHT_FLICKER_STEPS.length - 1][0]) streetlightFlickerStart = null;
       }
-      frame = window.requestAnimationFrame(animate);
+      const cameraStillMoving = Math.abs(effectiveTargetProgress - progress) > .0002;
+      const wipeStillMoving = Math.abs(wipeTarget - wipe) > .001;
+      if (cameraStillMoving || wipeStillMoving || hasTemporalEffects || streetlightFlickerStart !== null) {
+        frame = window.requestAnimationFrame(animate);
+      } else {
+        // Não deixa uma diferença minúscula acordar o loop de novo sem necessidade.
+        progress = effectiveTargetProgress;
+        wipe = wipeTarget;
+        frame = 0;
+      }
+    };
+    // Scroll e carregamentos assíncronos chamam isto para acordar o render apenas quando necessário.
+    wakeRenderer = () => {
+      if (reducedMotion || webglLost || document.hidden || frame) return;
+      lastFrameTime = performance.now();
+      animate();
     };
 
     // RITMO DO SCROLL: quanto se rola em cada trecho, em vh (100vh = uma tela), e em que ponto
@@ -2613,10 +2700,15 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       const here = scrolledVh();
       const scrolled = THREE.MathUtils.clamp(here / PACE_TOTAL, 0, 1);
       targetProgress = progressAt(here);
+      if (!hasTrackedScroll && here > 0) {
+        hasTrackedScroll = true;
+        track("Book experience started", { ...telemetry(), first_scroll_ms: Math.round(performance.now() - startedAt) });
+      }
       // --scroll-progress continua indo de 0 a 1 só na rua + recuo (o texto de abertura usa ele);
       // a barrinha de progresso usa o scroll inteiro.
       scrollArea.style.setProperty("--scroll-progress", Math.min(targetProgress, 1).toFixed(4));
       scrollArea.style.setProperty("--scroll-total", scrolled.toFixed(4));
+      wakeRenderer();
     };
     // Não há motivo para manter WebGL animando e consumindo bateria numa aba escondida.
     const onVisibilityChange = () => {
@@ -2626,7 +2718,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
         return;
       }
       lastFrameTime = performance.now();
-      if (!reducedMotion && !frame) animate();
+      wakeRenderer();
     };
 
     const handleMotionPreference = () => {
@@ -2644,7 +2736,7 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       } else {
         delete scrollArea.dataset.reducedMotion;
         updateScrollProgress();
-        if (!frame) animate();
+        wakeRenderer();
       }
     };
 
@@ -2671,6 +2763,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       });
     };
     if (!streetDownloadsStarted) finishStreet();
+    const initialFrame = window.requestAnimationFrame(() => {
+      if (!webglLost) track("Book experience ready", { ...telemetry(), first_frame_ms: Math.round(performance.now() - startedAt) });
+    });
+    const performanceSample = window.setTimeout(() => {
+      if (!webglLost && !document.hidden) {
+        track("Book experience performance", { ...telemetry(), fps: Math.round(renderedFrames / 5), reduced_motion: reducedMotion });
+      }
+    }, 5_000);
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", updateScrollProgress, { passive: true });
     motionQuery.addEventListener("change", handleMotionPreference);
@@ -2685,7 +2785,14 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
       window.removeEventListener(MOTION_CHOICE_EVENT, handleMotionPreference);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       cancelPreload();
+      if (nonCriticalLoadHandle !== null) {
+        if (nonCriticalUsesIdleCallback) nonCriticalWindow.cancelIdleCallback?.(nonCriticalLoadHandle);
+        else window.clearTimeout(nonCriticalLoadHandle);
+      }
       if (frame) window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(initialFrame);
+      window.clearTimeout(performanceSample);
+      renderer.domElement.removeEventListener("webglcontextlost", onWebGLContextLost);
       disposed = true;
       window.clearTimeout(streetCheck);
       if (!streetReady) {

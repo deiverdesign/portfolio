@@ -13,6 +13,19 @@ const HOTSITE_HOSTS = [
 ];
 
 const nextConfig: NextConfig = {
+  async headers() {
+    return [
+      {
+        // Texturas são estáveis entre deploys e antes recebiam max-age=0 por
+        // viverem em /public. Um dia de cache local, com revalidação em segundo
+        // plano, acelera retornos sem deixar uma troca de arte presa por muito tempo.
+        source: "/enquanto-durar-a-fe/texturas/:asset*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return {
       // beforeFiles: roda antes das páginas normais, senão "/" abriria a home do portfólio.
