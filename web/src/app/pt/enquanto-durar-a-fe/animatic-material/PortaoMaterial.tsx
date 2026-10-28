@@ -2758,7 +2758,10 @@ export function PortaoMaterial({ creditFont = CREDIT_FONT_FALLBACK, story = PORT
         window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
           if (disposed) return;
           announceSceneReady();
-          if (!reducedMotion) scheduleKitchenPreload();
+          // A rua agora fica sozinha logo após o loader. A cozinha começa em PRELOAD_AT,
+          // antes da transição, e a câmera continua limitada à rua até ela estar pronta.
+          // Isso evita que os arquivos da próxima cena concorram com o primeiro momento
+          // de leitura, sem expor uma cena incompleta a quem rolar rapidamente.
         }));
       });
     };
