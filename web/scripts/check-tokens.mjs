@@ -21,6 +21,11 @@ const ARQUIVOS_TOKENS = [
 // Aqui os valores crus são corretos — é onde os tokens nascem.
 const IGNORAR = ARQUIVOS_TOKENS;
 
+// O hotsite do livro "Enquanto durar a fé" tem identidade visual própria
+// (Newsreader, DM Sans, DM Mono), fora do design system do portfólio.
+// Ex.: o título dele usa clamp(38px, 4.5vw, 66px), que não é um token daqui.
+const PASTAS_FORA = ["src/app/pt/enquanto-durar-a-fe/"];
+
 // Valores que não são tamanho, então não precisam de token.
 const PERMITIDOS = ["inherit", "initial", "unset", "0"];
 
@@ -45,6 +50,7 @@ const violacoes = [];
 
 for (const arquivo of listarCss(RAIZ)) {
   if (IGNORAR.includes(arquivo)) continue;
+  if (PASTAS_FORA.some((pasta) => arquivo.startsWith(pasta))) continue;
 
   readFileSync(arquivo, "utf8").split("\n").forEach((linha, i) => {
     const achou = linha.match(/font-size:\s*([^;]+);/);
