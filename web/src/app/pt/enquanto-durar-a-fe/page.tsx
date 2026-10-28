@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter, Newsreader } from "next/font/google";
-import { PortaoMaterial } from "./animatic-material/PortaoMaterial";
+import { BookExperience } from "./BookExperience";
 import { HotsiteLoader } from "./loader/HotsiteLoader";
 
 const newsreader = Newsreader({
@@ -49,7 +49,7 @@ export default function EnquantoDurarAFePage() {
   return (
     <div className={newsreader.variable}>
       <HotsiteLoader fontFamily={inter.style.fontFamily} />
-      <PortaoMaterial creditFont={plexMono.style.fontFamily} />
+      <BookExperience creditFont={plexMono.style.fontFamily} />
     </div>
   );
 }
