@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter, Newsreader } from "next/font/google";
 import { BookExperience } from "./BookExperience";
 import { HotsiteLoader } from "./loader/HotsiteLoader";
+import { PORTUGUESE_STORY } from "../../_shared/faithStory";
+import styles from "./animatic-material/material.module.css";
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
@@ -49,6 +51,13 @@ export default function EnquantoDurarAFePage() {
   return (
     <div className={newsreader.variable}>
       <HotsiteLoader fontFamily={inter.style.fontFamily} />
+      {/* O LCP é o título. Esta cópia fica atrás do loader e da cena 3D real: ela torna o
+          texto disponível no HTML inicial sem adiantar o Three.js nem duplicá-lo para leitores de tela. */}
+      <section className={styles.initialIntro} aria-hidden="true">
+        <div className={styles.initialIntroCopy}>
+          <h1>{PORTUGUESE_STORY.intro.map((line, index) => <span key={line}>{line}{index < PORTUGUESE_STORY.intro.length - 1 && <br />}</span>)}</h1>
+        </div>
+      </section>
       <BookExperience creditFont={plexMono.style.fontFamily} />
     </div>
   );

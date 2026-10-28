@@ -3,10 +3,19 @@
   /* Ritmo do scroll (PACE em PortaoMaterial.tsx): 1208vh de história + 100vh da tela.
      No celular, 84% disso: 1208 × 0,84 + 100. */
   min-height: 1308vh;
+  position: relative;
+  z-index: 1;
   background: #0e1042;
   color: #f0f0eb;
   font-family: var(--font-dm-sans), Arial, sans-serif;
 }
+
+/* Versão HTML do título inicial: fica apenas sob o loader e sob a cena real. Assim o texto
+   já pode ser desenhado no primeiro HTML, mas o Three.js continua chegando em seu próprio pacote. */
+.initialIntro { position: fixed; z-index: 0; inset: 0; overflow: hidden; background: #0e1042; pointer-events: none; }
+.initialIntro::before { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,7,35,.82) 0%, rgba(5,7,35,.55) 45%, rgba(5,7,35,0) 100%); content: ""; }
+.initialIntroCopy { position: absolute; z-index: 1; top: 71px; bottom: 106px; display: flex; align-items: center; left: 4.75vw; width: min(820px, 86vw); }
+.initialIntroCopy h1 { margin: 0; color: #fff; font-family: var(--font-newsreader), Georgia, serif; font-size: clamp(38px, 4.5vw, 66px); font-weight: 300; font-variation-settings: "opsz" 14; letter-spacing: normal; line-height: 1.15; white-space: nowrap; text-shadow: 0 2px 12px rgba(10,11,48,.45); }
 
 /* Header do Figma (nós 85:9666 e 95:10148): barra clara a 13 px do topo e a 4% das bordas,
    logo à esquerda e o botão com o ícone de livro à direita. A cor muda com a cena:
@@ -157,6 +166,7 @@
 
 @media (max-width: 680px) {
   .animatic { min-height: 1115vh; }.header { top: 16px; right: 18px; left: 18px; height: 61px; padding: 0 12px; }.logoStack { flex-basis: 168px; }.englishWordmark { font-size: 12px; }.headerActions { gap: 8px; }.glowRight, .glowRightHigh { opacity: calc(.1 * var(--street-glow, 1)); }.headerBuy { height: 32px; padding: 4px 10px; gap: 6px; font-size: 13px; }.copy { --copy-top: 77px; --copy-bottom: 95px; left: 20px; width: calc(100vw - 40px); }.copy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }.scrollHint { bottom: 19px; left: 18px; width: 290px; opacity: clamp(0, calc(1 - var(--scroll-progress) * 4.5), 1); }.scrollHint p { font-size: 15px; }.scrollHint span { font-size: 8px; }
+  .initialIntroCopy { top: 77px; bottom: 95px; left: 20px; width: calc(100vw - 40px); }.initialIntroCopy h1 { font-size: clamp(24px, calc((100vw - 40px) / 11.6), 36px); }
   /* Celular: centralizada no rodapé, acima da safe area, 164 px, com os pontos dos anos. O
      marcador fica parado no meio e a linha (60 px entre pontos) anda por baixo dele. Aparece
      depois que o texto "Role para entrar" sai, para os dois não se cruzarem. */
