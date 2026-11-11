@@ -4,6 +4,7 @@ import { AboutPageBeliefsV3 } from "@/components/AboutPageBeliefsV3/AboutPageBel
 import { AboutPageFactsV3 } from "@/components/AboutPageFactsV3/AboutPageFactsV3";
 import { AboutPageHeroV3 } from "@/components/AboutPageHeroV3/AboutPageHeroV3";
 import { AboutPageProcessV3 } from "@/components/AboutPageProcessV3/AboutPageProcessV3";
+import { AboutPageToolsV3 } from "@/components/AboutPageToolsV3/AboutPageToolsV3";
 import { CapabilitiesV3 } from "@/components/CapabilitiesV3/CapabilitiesV3";
 import { FooterV3 } from "@/components/FooterV3/FooterV3";
 import { NavBarV3, type NavBarV3Link } from "@/components/NavBarV3/NavBarV3";
@@ -55,6 +56,7 @@ export function AboutPageV3({ locale }: AboutPageV3Props) {
         <AboutPageHeroV3 locale={locale} />
         <AboutPageFactsV3 locale={locale} />
         <AboutPageProcessV3 locale={locale} />
+        <AboutPageToolsV3 locale={locale} />
         <CapabilitiesV3 locale={locale} />
         <AboutPageBeliefsV3 locale={locale} />
       </main>

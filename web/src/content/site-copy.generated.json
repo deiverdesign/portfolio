@@ -3,7 +3,7 @@
   "source": {
     "file": "site-copy.xlsx",
     "sha256": "aa1ce6c714db5c26ebcd075bd9effd255cf76f499f76686fbd42b320f9227cf8",
-    "entryCount": 364,
+    "entryCount": 387,
     "ignoredRows": [
       73
     ]
@@ -583,6 +583,213 @@
       "section": "How I work",
       "status": "revisar",
       "figma": "abrir",
+      "note": null
+    },
+    "about.tools.eyebrow": {
+      "en": "Tools in context",
+      "pt": "Ferramentas em contexto",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": "Seção editorial adicionada ao About; organiza ferramentas por capacidade, não como lista de logos."
+    },
+    "about.tools.title": {
+      "en": "Tools extend judgment — they don't replace it.",
+      "pt": "Ferramentas ampliam o julgamento — não o substituem.",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.intro": {
+      "en": "I choose tools based on the problem, the evidence available, and delivery constraints — not as a fixed process.",
+      "pt": "Escolho ferramentas a partir do problema, das evidências disponíveis e das restrições de entrega — não como um processo fixo.",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.design.title": {
+      "en": "Design systems & prototyping",
+      "pt": "Sistemas de design e prototipação",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.design.body": {
+      "en": "For turning product rules into flows, components, interactive prototypes, motion, and documentation.",
+      "pt": "Para transformar regras de produto em fluxos, componentes, protótipos interativos, motion e documentação.",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.delivery.title": {
+      "en": "Design-to-build collaboration",
+      "pt": "Colaboração entre design e desenvolvimento",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.delivery.body": {
+      "en": "For technical exploration, implementation context, and closer collaboration with engineering.",
+      "pt": "Para exploração técnica, contexto de implementação e colaboração mais próxima com engenharia.",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.research.title": {
+      "en": "Research, validation & accessibility",
+      "pt": "Pesquisa, validação e acessibilidade",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.research.body": {
+      "en": "For organizing evidence, planning usability studies, and making accessibility a product consideration.",
+      "pt": "Para organizar evidências, planejar estudos de usabilidade e considerar acessibilidade nas decisões de produto.",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.ai.title": {
+      "en": "AI-assisted exploration",
+      "pt": "Exploração assistida por IA",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.ai.body": {
+      "en": "For ideation, automation, and visual exploration — always checked against user needs, technical constraints, and quality criteria.",
+      "pt": "Para ideação, automação e exploração visual — sempre avaliadas contra necessidades de usuários, restrições técnicas e critérios de qualidade.",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.figma": {
+      "en": "Figma",
+      "pt": "Figma",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.figjam": {
+      "en": "FigJam",
+      "pt": "FigJam",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.lottie": {
+      "en": "Lottie",
+      "pt": "Lottie",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.github": {
+      "en": "GitHub",
+      "pt": "GitHub",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.claude-code": {
+      "en": "Claude Code",
+      "pt": "Claude Code",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.v0": {
+      "en": "v0",
+      "pt": "v0",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.notion": {
+      "en": "Notion",
+      "pt": "Notion",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.maze": {
+      "en": "Maze",
+      "pt": "Maze",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.fable": {
+      "en": "Fable",
+      "pt": "Fable",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.claude": {
+      "en": "Claude",
+      "pt": "Claude",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.nano-banana": {
+      "en": "Nano Banana",
+      "pt": "Nano Banana",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "about.tools.higgsfield": {
+      "en": "Higgsfield",
+      "pt": "Higgsfield",
+      "page": "About",
+      "section": "Tools",
+      "status": "revisar",
+      "figma": null,
       "note": null
     },
     "about.beliefs.title": {
