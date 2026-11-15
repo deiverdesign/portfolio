@@ -1810,8 +1810,8 @@
       "note": null
     },
     "theodoor.context.p3": {
-      "en": "The engagement was short and the goal was a pre-MVP build: a prototype finished enough to be tested and validated internally, and clear enough for a development team to work from. No hardware on my side, no direct user access — I relied on secondary research, forums, Reddit threads, ADA guidelines — to understand how wheelchair users navigated inaccessible entrances before a single screen was drawn.",
-      "pt": "O projeto foi curto e o objetivo era uma versão pré-MVP: um protótipo acabado o suficiente para ser testado e validado internamente, e claro o suficiente para um time de desenvolvimento trabalhar a partir dele. Sem hardware, sem acesso direto a usuários — me apoiei em pesquisa secundária, fóruns, threads do Reddit e diretrizes ADA — para entender como usuários de cadeira de rodas navegavam em entradas inacessíveis antes de uma única tela ser desenhada.",
+      "en": "The engagement was short and the goal was a pre-MVP build: a prototype finished enough to be tested and validated internally, and clear enough for a development team to work from. No hardware on my side, no direct user access. I relied on secondary research — forums, Reddit threads, ADA guidelines — to understand how wheelchair users navigated inaccessible entrances before a single screen was drawn.",
+      "pt": "O projeto foi curto e o objetivo era uma versão pré-MVP: um protótipo acabado o suficiente para ser testado e validado internamente, e claro o suficiente para um time de desenvolvimento trabalhar a partir dele. Sem hardware, sem acesso direto a usuários. Me apoiei em pesquisa secundária — fóruns, threads do Reddit e diretrizes da ADA — para entender como usuários de cadeira de rodas navegavam em entradas inacessíveis antes de uma única tela ser desenhada.",
       "page": "Theodoor",
       "section": "Context",
       "status": "revisar",
