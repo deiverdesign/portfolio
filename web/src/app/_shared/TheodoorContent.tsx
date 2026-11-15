@@ -29,7 +29,7 @@ const COPY = {
     ],
     minuteTitle: "Project in a minute",
     minuteParas: [
-      "Theodoor is a mobile app for controlling an accessible smart door automation system.",
+      "In the US, an estimated 5.5 million people use wheelchairs daily. Less than 5% of housing was built with them in mind. Theodoor retrofits that gap — a portable opener that makes any existing swing door automatic with no drilling, no rewiring, and no home modification — and I designed the mobile app that lets people whose hands can't grip the door operate it from their phone.",
       "My work focused on making door states, system feedback, errors, and controls clear enough that users could trust what was happening in the physical world.",
       "Because the app controlled a real door, motion, accessibility, and feedback weren't decorative. They were part of the core interaction model.",
     ],
@@ -52,7 +52,7 @@ const COPY = {
     ],
     approachTitle: "How I approached it",
     approachItems: [
-      { title: "Map door states and user actions", text: "I mapped what the system needed to communicate: open, closed, opening, closing, waiting, success, error, and connection issues." },
+      { title: "Research without direct access", text: "With no direct user access and four weeks on the clock, I relied on secondary research — forums, Reddit threads, ADA guidelines — to understand how wheelchair users navigated inaccessible entrances. Those insights shaped the design before a single screen was drawn." },
       { title: "Design feedback loops", text: "I explored how the app could confirm that a command was sent, the system was processing it, and the physical action was complete or failed." },
       { title: "Simulate behavior before building", text: "I used code-based and AI-assisted prototypes to run edge-case scenarios and make state timing and transitions visible to the team before development." },
       { title: "Build reusable foundations", text: "I organized UI patterns and states into reusable foundations so the app stayed consistent as the experience evolved." },
@@ -76,12 +76,20 @@ const COPY = {
         paragraphs: ["Motion was used to explain behavior, not just to make the app feel more polished. I explored animations for scanning, waiting, pairing, success, empty states, and error recovery so users understood what the system was doing over time. This was especially important because the app controlled a physical door — users needed feedback that a command had been received, was in progress, or required attention."],
       },
       {
-        title: "03 · Design feedback beyond visual UI",
-        paragraphs: ["Since this was an accessibility-oriented product, feedback couldn't rely only on what users saw. The interaction model considered visual, haptic, and audio feedback so system status could be understood across different contexts and by different users."],
+        title: "03 · Let the screen, not the remote, decide",
+        paragraphs: [
+          "Problem: The client wanted three buttons per door card — Open, Stop, Hold — as static labels for every state. I argued that a door mid-motion isn't the same context as a door at rest. The action that makes sense changes.",
+          "Process: I mapped every door state to what a user would actually want to do in that moment. Nine states. The only label that never changed was Stop. Everything else was context-dependent.",
+          "Decision: I proposed state-dependent controls. The PM was hesitant. I framed it as a safety argument — a Stop button that only appears when the door is moving is clearer than one that's always there competing with Open. Client approved it in review.",
+        ],
       },
       {
-        title: "04 · Prototype behavior before development",
-        paragraphs: ["Static screens weren't enough to discuss this experience. I used prototypes, AI-assisted exploration, and code-based experiments to make behavior tangible before implementation, helping the team discuss timing, transitions, edge cases, and system feedback."],
+        title: "04 · Name it before building it",
+        paragraphs: [
+          "Problem: The feature was called Park Mode internally. No one outside the team knew what it meant. When we tested the label informally, people associated park with cars, not doors.",
+          "Process: Internal naming survey, two rounds. I wrote six alternatives and removed any candidate that required explanation. Open & Hold was the only label that described the behavior and the outcome in the same phrase.",
+          "Decision: Renamed before engineering committed the string. The voice feedback followed the same logic — the script reads \"Door is opening and will stay open\" rather than announcing feature names the user never learned.",
+        ],
       },
     ],
     motionTitle: "Motion + AI",
@@ -137,7 +145,7 @@ const COPY = {
     ],
     minuteTitle: "O projeto em um minuto",
     minuteParas: [
-      "Theodoor é um app mobile para controlar um sistema acessível de automação de portas inteligentes.",
+      "Nos Estados Unidos, estima-se que 5,5 milhões de pessoas usam cadeira de rodas no dia a dia. Menos de 5% das moradias foram construídas pensando nelas. Theodoor retrofita essa lacuna — um abridor portátil que torna qualquer porta existente automática, sem furar, sem fiação, sem modificação — e eu desenhei o app mobile que permite que pessoas que não conseguem girar a maçaneta operem a porta pelo celular.",
       "Meu trabalho focou em tornar estados da porta, feedback do sistema, erros e controles claros o suficiente para que usuários pudessem confiar no que estava acontecendo no mundo físico.",
       "Como o app controlava uma porta real, motion, acessibilidade e feedback não eram decorativos. Eram parte do modelo de interação central.",
     ],
@@ -160,7 +168,7 @@ const COPY = {
     ],
     approachTitle: "Como eu abordei",
     approachItems: [
-      { title: "Mapear estados da porta e ações do usuário", text: "Mapeei o que o sistema precisava comunicar: aberta, fechada, abrindo, fechando, esperando, sucesso, erro e problemas de conexão." },
+      { title: "Pesquisa sem acesso direto", text: "Sem acesso direto a usuários e com quatro semanas no relógio, recorri a pesquisa secundária — fóruns, threads no Reddit, diretrizes ADA — para entender como pessoas em cadeira de rodas navegavam em entradas inacessíveis. Esses insights moldaram o design antes de uma única tela ser desenhada." },
       { title: "Desenhar loops de feedback", text: "Explorei como o app podia confirmar que um comando foi enviado, o sistema estava processando e a ação física foi completa ou falhou." },
       { title: "Simular comportamento antes de construir", text: "Usei protótipos baseados em código e assistidos por IA para rodar cenários de edge case e tornar timing e transições de estado visíveis pro time antes do desenvolvimento." },
       { title: "Construir fundações reutilizáveis", text: "Organizei padrões de UI e estados em fundações reutilizáveis para que o app se mantivesse consistente conforme a experiência evoluía." },
@@ -184,12 +192,20 @@ const COPY = {
         paragraphs: ["Motion foi usado para explicar comportamento, não só para deixar o app com cara mais polida. Explorei animações para escaneamento, espera, pareamento, sucesso, estados vazios e recuperação de erro para que usuários entendessem o que o sistema estava fazendo ao longo do tempo. Isso era especialmente importante porque o app controlava uma porta física — usuários precisavam de feedback de que um comando tinha sido recebido, estava em progresso ou precisava de atenção."],
       },
       {
-        title: "03 · Desenhar feedback além da UI visual",
-        paragraphs: ["Como esse era um produto orientado a acessibilidade, o feedback não podia depender só do que usuários viam. O modelo de interação considerava feedback visual, háptico e sonoro para que o status do sistema pudesse ser entendido em diferentes contextos e por diferentes usuários."],
+        title: "03 · A tela decide, não o controle remoto",
+        paragraphs: [
+          "Problema: O cliente queria três botões por card de porta — Abrir, Parar, Segurar — como rótulos estáticos para todo estado. Argumentei que uma porta em movimento não é o mesmo contexto que uma porta parada. A ação que faz sentido muda.",
+          "Processo: Mapeei cada estado da porta para o que um usuário realmente quereria fazer naquele momento. Nove estados. O único rótulo que nunca mudava era Parar. Todo o resto era dependente do contexto.",
+          "Decisão: Propus controles dependentes do estado. O PM ficou hesitante. Enquadrei como argumento de segurança — um botão Parar que só aparece quando a porta está em movimento é mais claro do que um que fica sempre lá competindo com Abrir. O cliente aprovou na revisão.",
+        ],
       },
       {
-        title: "04 · Prototipar comportamento antes do desenvolvimento",
-        paragraphs: ["Telas estáticas não eram suficientes para discutir essa experiência. Usei protótipos, exploração assistida por IA e experimentos baseados em código para tornar o comportamento tangível antes da implementação, ajudando o time a discutir timing, transições, edge cases e feedback de sistema."],
+        title: "04 · Nomear antes de construir",
+        paragraphs: [
+          "Problema: A funcionalidade era chamada de Modo Parque internamente. Ninguém fora do time sabia o que isso significava. Quando testamos o rótulo informalmente, as pessoas associavam parque a carros, não a portas.",
+          "Processo: Survey interno de nomenclatura, duas rodadas. Escrevi seis alternativas e removi qualquer candidato que precisasse de explicação. Abrir e Manter foi o único rótulo que descrevia o comportamento e o resultado na mesma frase.",
+          "Decisão: Renomeado antes da engenharia commitar a string. O feedback de voz seguiu a mesma lógica — o script diz \"A porta está abrindo e vai ficar aberta\" em vez de anunciar nomes de funcionalidades que o usuário nunca aprendeu.",
+        ],
       },
     ],
     motionTitle: "Motion + IA",
