@@ -1792,8 +1792,8 @@
       "note": null
     },
     "theodoor.context.p1": {
-      "en": "Theodoor makes an existing swing door automatic without drilling, rewiring or modifying the home. Its users are people for whom a door is a daily obstacle: wheelchair users, people recovering from a stroke, and people living with arthritis, MS, cerebral palsy or ALS.",
-      "pt": "O Theodoor deixa automática uma porta de giro já existente, sem furar, mexer na fiação ou modificar a casa. Seus usuários são pessoas para quem uma porta é um obstáculo diário: usuários de cadeira de rodas, pessoas se recuperando de um AVC e pessoas que convivem com artrite, esclerose múltipla, paralisia cerebral ou ELA.",
+      "en": "In the US, an estimated 5.5 million people use wheelchairs daily. Less than 5% of housing was built with them in mind. Theodoor retrofits that gap — a portable opener that makes any existing swing door automatic without drilling, rewiring or modifying the home. Its users are people for whom a door is a daily obstacle: wheelchair users, people recovering from a stroke, and people living with arthritis, MS, cerebral palsy or ALS.",
+      "pt": "Nos EUA, cerca de 5,5 milhões de pessoas usam cadeiras de rodas diariamente. Menos de 5% das residências foram construídas com isso em mente. O Theodoor preenche essa lacuna — um abridor portátil que deixa automática qualquer porta de giro já existente, sem furar, mexer na fiação ou modificar a casa. Seus usuários são pessoas para quem uma porta é um obstáculo diário: usuários de cadeira de rodas, pessoas se recuperando de um AVC e pessoas que convivem com artrite, esclerose múltipla, paralisia cerebral ou ELA.",
       "page": "Theodoor",
       "section": "Context",
       "status": "revisar",
@@ -1810,8 +1810,8 @@
       "note": null
     },
     "theodoor.context.p3": {
-      "en": "The engagement was short and the goal was a pre-MVP build: a prototype finished enough to be tested and validated internally, and clear enough for a development team to work from. No hardware existed on my side, and several product decisions were still being made while the screens were being drawn.",
-      "pt": "O projeto foi curto e o objetivo era uma versão pré-MVP: um protótipo acabado o suficiente para ser testado e validado internamente, e claro o suficiente para um time de desenvolvimento trabalhar a partir dele. Eu não tinha o hardware, e várias decisões de produto ainda estavam sendo tomadas enquanto as telas eram desenhadas.",
+      "en": "The engagement was short and the goal was a pre-MVP build: a prototype finished enough to be tested and validated internally, and clear enough for a development team to work from. No hardware on my side, no direct user access. I relied on secondary research — forums, Reddit threads, ADA guidelines — to understand how wheelchair users navigated inaccessible entrances before a single screen was drawn.",
+      "pt": "O projeto foi curto e o objetivo era uma versão pré-MVP: um protótipo acabado o suficiente para ser testado e validado internamente, e claro o suficiente para um time de desenvolvimento trabalhar a partir dele. Sem hardware, sem acesso direto a usuários. Me apoiei em pesquisa secundária — fóruns, threads do Reddit e diretrizes da ADA — para entender como usuários de cadeira de rodas navegavam em entradas inacessíveis antes de uma única tela ser desenhada.",
       "page": "Theodoor",
       "section": "Context",
       "status": "revisar",
