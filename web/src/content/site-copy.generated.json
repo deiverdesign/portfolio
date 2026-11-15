@@ -1926,6 +1926,78 @@
       "figma": "abrir",
       "note": null
     },
+    "theodoor.decisions.3.title": {
+      "en": "Let the Screen, Not the Remote, Decide",
+      "pt": "Que a Tela Decida, Não o Controle",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "theodoor.decisions.3.problem": {
+      "en": "The client wanted three buttons per door card: Open, Stop, Hold. Static labels for every state. I argued that a door mid-motion isn't the same context as a door at rest — the action that makes sense changes.",
+      "pt": "O cliente queria três botões por card de porta: Abrir, Parar, Segurar. Rótulos estáticos para cada estado. Argumentei que uma porta em movimento não tem o mesmo contexto de uma porta parada — a ação que faz sentido muda.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "theodoor.decisions.3.proposal": {
+      "en": "I mapped every door state to what a user would actually want to do in that moment. Nine states. The only label that never changed was Stop. Everything else was context-dependent.",
+      "pt": "Mapeei cada estado da porta para o que o usuário realmente quereria fazer naquele momento. Nove estados. O único rótulo que nunca mudou foi Parar. Todo o resto dependia do contexto.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "theodoor.decisions.3.argument": {
+      "en": "I proposed state-dependent controls. The PM was hesitant. I framed it as a safety argument — a Stop button that only appears when the door is moving is clearer than one that's always there competing with Open. Client approved it in review.",
+      "pt": "Propus controles dependentes de estado. O PM ficou hesitante. Enquadrei como argumento de segurança — um botão Parar que só aparece quando a porta está em movimento é mais claro do que um que fica lá o tempo todo competindo com Abrir. O cliente aprovou na revisão.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "theodoor.decisions.4.title": {
+      "en": "Name It Before Building It",
+      "pt": "Nomeie Antes de Construir",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "theodoor.decisions.4.problem": {
+      "en": "The feature was called Park Mode internally. No one outside the team knew what it meant. When we tested the label informally, people associated park with cars, not doors.",
+      "pt": "A feature era chamada Park Mode internamente. Ninguém fora do time sabia o que significava. Quando testamos o rótulo informalmente, as pessoas associavam park com carros, não com portas.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "theodoor.decisions.4.proposal": {
+      "en": "Internal naming survey, two rounds. I wrote six alternatives, removed any candidate that required explanation. Open & Hold was the only label that described the behavior and the outcome in the same phrase.",
+      "pt": "Pesquisa interna de nomes, duas rodadas. Escrevi seis alternativas e removi qualquer candidato que precisasse de explicação. Open & Hold foi o único rótulo que descrevia o comportamento e o resultado na mesma frase.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
+    "theodoor.decisions.4.argument": {
+      "en": "Renamed before engineering committed the string. The voice feedback followed the same logic — the script reads Door is opening and will stay open rather than announcing feature names the user never learned.",
+      "pt": "Renomeado antes de o time de engenharia confirmar a string. O feedback de voz seguiu a mesma lógica — o script diz A porta está abrindo e vai ficar aberta, em vez de anunciar nomes de features que o usuário nunca aprendeu.",
+      "page": "Theodoor",
+      "section": "Key decisions",
+      "status": "revisar",
+      "figma": null,
+      "note": null
+    },
     "theodoor.prototyping.eyebrow": {
       "en": "Behavioral prototyping",
       "pt": "Prototipagem de comportamento",
