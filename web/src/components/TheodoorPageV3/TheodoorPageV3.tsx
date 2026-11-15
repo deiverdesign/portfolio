@@ -63,12 +63,12 @@ export function TheodoorPageV3({ locale }: TheodoorPageV3Props) {
         locale={locale}
         eyebrow={getCopy(locale, "shared.case.decisions.eyebrow")}
         title={getCopy(locale, "theodoor.decisions.title")}
-        items={([1, 2] as const).map((index) => ({
+        items={([1, 2, 3, 4] as const).map((index) => ({
           title: getCopy(locale, `theodoor.decisions.${index}.title` as CopyKey),
           problem: getCopy(locale, `theodoor.decisions.${index}.problem` as CopyKey),
           proposal: getCopy(locale, `theodoor.decisions.${index}.proposal` as CopyKey),
           argument: getCopy(locale, `theodoor.decisions.${index}.argument` as CopyKey),
-          media: index === 1 ? THEODOOR_ASSETS.decisions.primary : THEODOOR_ASSETS.decisions.secondary,
+          media: index === 1 ? THEODOOR_ASSETS.decisions.primary : index === 2 ? THEODOOR_ASSETS.decisions.secondary : THEODOOR_ASSETS.decisions.tertiary,
         }))}
         mediaThumbnails={[THEODOOR_ASSETS.decisions.secondary, THEODOOR_ASSETS.decisions.tertiary]}
       />
