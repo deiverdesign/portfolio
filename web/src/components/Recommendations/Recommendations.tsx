@@ -101,7 +101,7 @@ const RECOMMENDATIONS: Recommendation[] = [
     company: "Softplan",
     image: "/images/recommendations/Tayron.png",
     originalLanguage: "pt",
-    role: { en: "Product Designer", pt: "Product Designer" },
+    role: { en: "Design Systems Specialist", pt: "Design Systems Specialist" },
     quote: {
       en: "Deiver is a highly competent, committed, and responsible professional. Always willing to face challenges and go beyond limits. He is a great teammate and is always ready to help. His attitude is consistently positive, and his work is of high quality.",
       pt: "Deiver é um profissional de muita competência, compromisso e responsabilidade. Sempre disposto a enfrentar desafios e ir além dos limites. É um grande parceiro de equipe e sempre se prontifica a ajudar. Sua postura é sempre positiva e suas entregas de muita qualidade.",
