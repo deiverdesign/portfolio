@@ -139,6 +139,9 @@
   );
   /* Display/Section — títulos como "Selected work" em todos os frames. */
   --font-size-display-section: 2.75rem; /* 44px */
+  --line-height-display-section: 3.3rem; /* 52.8px */
+  --font-size-display-section-mobile: 2rem; /* 32px */
+  --line-height-display-section-mobile: 2.4rem; /* 38.4px */
 
   /* Título do CTA compartilhado — desktop/laptop ("Display/CTA" no Figma) */
   --font-size-editorial-title: 5rem; /* 80px */

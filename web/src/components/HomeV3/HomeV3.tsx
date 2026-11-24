@@ -3,6 +3,7 @@ import { AboutV3 } from "@/components/AboutV3/AboutV3";
 import { BrandsSectionV3 } from "@/components/BrandsSectionV3/BrandsSectionV3";
 import { CapabilitiesV3 } from "@/components/CapabilitiesV3/CapabilitiesV3";
 import { ContactCTA } from "@/components/ContactCTA/ContactCTA";
+import { Recommendations } from "@/components/Recommendations/Recommendations";
 import { FooterV3 } from "@/components/FooterV3/FooterV3";
 import { HomeIntroV3 } from "@/components/HomeIntroV3/HomeIntroV3";
 import { SelectedWorkV3 } from "@/components/SelectedWorkV3/SelectedWorkV3";
@@ -50,6 +51,7 @@ export function HomeV3({ locale, introEnabled = true, introSessionKey }: HomeV3P
         <BrandsSectionV3 locale={locale} />
         <CapabilitiesV3 locale={locale} />
         <AboutV3 locale={locale} />
+        <Recommendations locale={locale} />
         <div id="contact">
           <ContactCTA locale={locale} contactHref={CONTACT_HREF} />
         </div>
