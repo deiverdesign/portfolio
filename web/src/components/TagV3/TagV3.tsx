@@ -1,7 +1,10 @@
+import type { ReactNode } from "react";
 import styles from "./TagV3.module.css";
 
 export interface TagV3Props {
   label: string;
+  /** Marca decorativa opcional, alinhada à altura do rótulo. */
+  icon?: ReactNode;
   className?: string;
   /**
    * O Figma usa a tag em dois contextos. O Hero é uma superfície escura:
@@ -14,8 +17,13 @@ export interface TagV3Props {
  * Figma: componente "Tag", com variação de contexto para superfícies
  * claras e escuras. O contexto não deve ser inferido pela cor do asset.
  */
-export function TagV3({ label, className, context = "default" }: TagV3Props) {
+export function TagV3({ label, icon, className, context = "default" }: TagV3Props) {
   const baseClasses = context === "inverted" ? `${styles.tag} ${styles.inverted}` : styles.tag;
   const classes = className ? `${baseClasses} ${className}` : baseClasses;
-  return <span className={classes}>{label}</span>;
+  return (
+    <span className={classes}>
+      {icon ? <span className={styles.icon} aria-hidden="true">{icon}</span> : null}
+      {label}
+    </span>
+  );
 }
