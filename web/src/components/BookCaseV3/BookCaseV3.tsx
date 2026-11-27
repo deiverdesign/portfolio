@@ -119,13 +119,22 @@ export function BookCaseV3({ locale }: { locale: Locale }) {
             <Art name="hero" className={styles.heroImage} eager />
             {/* Selo CSSDA — Figma 2648:7068: 70×70, 24px da direita e da
                 base do banner. Só no desktop (≥1024px), pedido do Deiver. */}
-            <img
-              src="/images/v3/home/book/cssda-best-ui.svg"
-              alt={pt ? "Premiado no CSS Design Awards: Best UI Design" : "CSS Design Awards: Best UI Design award"}
-              width={70}
-              height={70}
+            <a
               className={styles.heroAward}
-            />
+              href="https://www.cssdesignawards.com/sites/enquanto-durar-a-fe/50443/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={pt ? "Ver prêmio Best UI Design no CSS Design Awards" : "View the Best UI Design award on CSS Design Awards"}
+            >
+              {/* External award SVG is kept unoptimized to preserve its native mark. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/v3/home/book/cssda-best-ui.svg"
+                alt=""
+                width={70}
+                height={70}
+              />
+            </a>
             <div className={styles.heroInner}>
               <nav
                 className={styles.heroNav}
