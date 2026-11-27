@@ -194,6 +194,7 @@
   display: none;
   width: 70px;
   height: 70px;
+  z-index: 1;
 }
 @media (min-width: 1024px) {
   .hero .heroAward { display: block; }
