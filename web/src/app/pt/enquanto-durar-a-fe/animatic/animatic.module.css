@@ -1,0 +1,53 @@
+.animatic {
+  --scroll-progress: 0;
+  min-height: 1020vh;
+  background: #111210;
+  color: #f0f0eb;
+  font-family: var(--font-dm-sans), Arial, sans-serif;
+}
+
+.header {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 19px clamp(18px, 3vw, 48px);
+  color: #e9e9e3;
+  font-family: var(--font-dm-mono), monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  mix-blend-mode: difference;
+}
+
+.header p span { color: #a8a9a3; }
+.header a { border-bottom: 1px solid currentColor; padding-bottom: 4px; }
+.header a:focus-visible { outline: 2px solid #fff; outline-offset: 5px; }
+
+.stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: #70716c; }
+.canvasShell { position: absolute; inset: 0; }
+.canvasShell canvas { display: block; width: 100%; height: 100%; }
+.canvasShell[data-webgl-unavailable] { display: grid; place-items: center; background: repeating-linear-gradient(135deg, #72736e 0 12px, #666762 12px 24px); }
+.canvasShell[data-webgl-unavailable]::after { max-width: 270px; padding: 18px; border: 1px solid #292a27; background: #dcdcd5; color: #20211f; content: "WebGL não está disponível neste navegador. O animatic precisa de aceleração gráfica para renderizar a câmera espacial."; font-family: var(--font-dm-mono), monospace; font-size: 11px; line-height: 1.5; }
+
+.stage::after { position: absolute; z-index: 2; inset: 0; background: radial-gradient(circle at 50% 50%, transparent 36%, rgba(13,14,13,.28) 100%); content: ""; pointer-events: none; }
+.copy { position: absolute; z-index: 3; top: clamp(94px, 15vh, 156px); left: clamp(20px, 5vw, 76px); width: min(375px, 68vw); transform: translateY(calc(var(--scroll-progress) * -34px)); opacity: clamp(0, calc(1 - var(--scroll-progress) * 2.8), 1); pointer-events: none; }
+.copy p { color: #272825; font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .1em; }
+.copy h1 { margin: 14px 0 12px; color: #f5f5ef; font-family: var(--font-renamor), Georgia, serif; font-size: clamp(46px, 6.3vw, 90px); font-weight: 400; letter-spacing: -.04em; line-height: .86; text-shadow: 0 2px rgba(0,0,0,.15); }
+.copy span { display: block; color: #2e302d; font-size: 13px; line-height: 1.4; }
+
+.scrollHint { position: absolute; z-index: 3; bottom: 24px; left: clamp(20px, 3vw, 48px); color: rgba(244,244,238,.88); font-family: var(--font-dm-mono), monospace; font-size: 10px; letter-spacing: .075em; text-transform: uppercase; opacity: calc(1 - var(--scroll-progress) * 1.3); }.scrollHint i { display: inline-block; margin-left: 6px; font-size: 15px; font-style: normal; vertical-align: -1px; }
+.progress { position: absolute; z-index: 3; right: clamp(20px, 3vw, 48px); bottom: 30px; width: 90px; height: 2px; overflow: hidden; background: rgba(255,255,255,.34); }.progress i { display: block; width: 100%; height: 100%; background: #f2f2ec; transform: scaleX(var(--scroll-progress)); transform-origin: left; }
+.reducedNote { display: none; }
+
+.ending { display: grid; min-height: 100svh; place-content: center; padding: 44px 22px; background: #151614; text-align: center; }.ending p { color: #ededE7; font-family: var(--font-renamor), Georgia, serif; font-size: clamp(43px, 6vw, 78px); line-height: .9; }.ending span { max-width: 440px; margin: 25px auto 0; color: #9b9c96; font-family: var(--font-dm-mono), monospace; font-size: 10px; line-height: 1.55; letter-spacing: .06em; text-transform: uppercase; }
+
+@media (max-width: 680px) {
+  .animatic { min-height: 860vh; }.header { padding: 16px 18px; font-size: 8px; }.header p span { display: none; }.copy { top: 94px; left: 20px; width: 236px; }.copy h1 { font-size: 57px; }.copy span { font-size: 12px; }.scrollHint { bottom: 19px; left: 18px; width: 245px; font-size: 8px; }.progress { right: 18px; bottom: 23px; width: 62px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animatic { min-height: 100svh; }.stage { position: relative; }.scrollHint, .progress { display: none; }.reducedNote { position: absolute; z-index: 3; right: 18px; bottom: 18px; left: 18px; display: block; color: rgba(244,244,238,.85); font-family: var(--font-dm-mono), monospace; font-size: 9px; letter-spacing: .07em; text-align: center; text-transform: uppercase; }.ending { min-height: 48svh; }
+}
